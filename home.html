@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Đức Cương & Nguyễn Quyết</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Jost:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --cream: #faf7f2; --cream2: #f3ede2;
+  --gold: #c9a96e; --gold-light: #e8d5a3; --gold-dark: #9a7a45;
+  --text: #3a2a1e; --text-muted: #a0907a;
+  --white: #ffffff; --border: rgba(201,169,110,0.22);
+}
+body { font-family:'Jost',sans-serif; background:var(--cream); color:var(--text); min-height:100vh; overflow-x:hidden; }
+body::before { content:''; position:fixed; inset:0; pointer-events:none; z-index:0;
+  background: radial-gradient(ellipse at 15% 10%, rgba(201,169,110,0.11) 0%, transparent 55%),
+              radial-gradient(ellipse at 85% 90%, rgba(201,169,110,0.08) 0%, transparent 50%); }
+
+.topbar { background:var(--text); padding:0 28px; display:flex; align-items:center; height:52px; position:sticky; top:0; z-index:100; box-shadow:0 2px 20px rgba(0,0,0,0.15); }
+.topbar-brand { font-family:'Cormorant Garamond',serif; font-size:17px; font-style:italic; color:var(--gold-light); letter-spacing:1px; }
+.topbar-brand span { color:rgba(255,255,255,0.3); font-style:normal; margin:0 7px; }
+
+.page { max-width:860px; margin:0 auto; padding:28px 20px 56px; position:relative; z-index:1; display:flex; flex-direction:column; gap:18px; }
+
+/* HERO */
+.hero { text-align:center; padding:10px 0 0; animation:fadeDown 0.7s ease both; }
+.ornament { display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:10px; }
+.ol { width:44px; height:1px; background:linear-gradient(to right, transparent, var(--gold)); }
+.ol.r { background:linear-gradient(to left, transparent, var(--gold)); }
+.od { width:6px; height:6px; background:var(--gold); transform:rotate(45deg); }
+.hero-names { font-family:'Cormorant Garamond',serif; font-size:clamp(22px,4vw,34px); font-weight:300; color:var(--text); letter-spacing:2px; }
+.hero-names em { font-style:italic; color:var(--gold-dark); }
+.hero-sub { font-size:10px; font-weight:300; letter-spacing:3.5px; text-transform:uppercase; color:#c0b09a; margin-top:5px; }
+/* COUNTDOWN */
+.countdown-wrap {
+  margin-top: 14px;
+  display: flex; align-items: flex-end; justify-content: center; gap: 0;
+}
+.cd-block {
+  display: flex; flex-direction: column; align-items: center;
+  position: relative; padding: 0 clamp(8px,2.5vw,20px);
+}
+.cd-sep {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(30px, 6.5vw, 48px);
+  font-weight: 300; font-style: italic;
+  color: var(--gold); opacity: 0.35;
+  line-height: 1; padding-bottom: 19px;
+  align-self: flex-end;
+  user-select: none;
+}
+.cd-num {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(30px, 6.5vw, 48px);
+  font-weight: 300; font-style: italic;
+  line-height: 1; letter-spacing: 1px;
+  color: var(--gold-dark);
+  text-shadow:
+    0 0 20px rgba(201,169,110,0.55),
+    0 0 40px rgba(201,169,110,0.25),
+    0 1px 0 rgba(255,255,255,0.4);
+  animation: glow 2.4s ease-in-out infinite alternate;
+  min-width: 2ch; text-align: center;
+}
+.cd-label {
+  font-family: 'Jost', sans-serif;
+  font-size: 8px; font-weight: 500; letter-spacing: 2.5px; text-transform: uppercase;
+  color: #c5b090; margin-top: 5px;
+}
+@keyframes glow {
+  from { text-shadow: 0 0 12px rgba(201,169,110,0.3), 0 0 24px rgba(201,169,110,0.1); color: var(--gold-dark); }
+  to   { text-shadow: 0 0 22px rgba(201,169,110,0.7), 0 0 44px rgba(201,169,110,0.3), 0 0 60px rgba(201,169,110,0.1); color: #b8893a; }
+}
+.cd-block:nth-child(2) .cd-num { animation-delay: 0.5s; }
+.cd-block:nth-child(3) .cd-num { animation-delay: 1s; }
+.cd-block:nth-child(4) .cd-num { animation-delay: 1.5s; }
+
+/* THIEP */
+.thiep-card { background:var(--text); border-radius:3px; overflow:hidden; position:relative; box-shadow:0 8px 32px rgba(58,42,30,0.2); animation:fadeUp 0.55s 0.1s ease both; }
+.thiep-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(to right,var(--gold-dark),var(--gold-light),var(--gold),var(--gold-light),var(--gold-dark)); }
+.thiep-inner { display:flex; align-items:center; gap:16px; padding:15px 20px 15px 22px; }
+.thiep-text { flex:1; min-width:0; }
+.thiep-label { font-size:9px; font-weight:600; letter-spacing:3px; text-transform:uppercase; color:rgba(201,169,110,0.5); margin-bottom:4px; }
+.thiep-title { font-family:'Cormorant Garamond',serif; font-size:clamp(14px,2.5vw,19px); font-style:italic; color:var(--gold-light); letter-spacing:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.thiep-url { margin-top:3px; font-size:9px; color:rgba(255,255,255,0.2); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.thiep-actions { display:flex; flex-direction:column; gap:7px; flex-shrink:0; }
+.thiep-action-row { display:flex; gap:7px; }
+.btn-t { display:inline-flex; align-items:center; gap:5px; padding:8px 14px; border-radius:2px; cursor:pointer; font-family:'Jost',sans-serif; font-size:9.5px; font-weight:600; letter-spacing:1.5px; text-transform:uppercase; transition:all 0.2s; white-space:nowrap; border:none; text-decoration:none; }
+.btn-t svg { width:10px; height:10px; }
+.btn-t-copy { background:rgba(201,169,110,0.12); color:var(--gold-light); border:1px solid rgba(201,169,110,0.26); }
+.btn-t-copy:hover { background:rgba(201,169,110,0.22); }
+.btn-t-copy.copied { background:rgba(90,138,106,0.2); color:#a8d4b8; border-color:rgba(90,138,106,0.35); }
+.btn-t-view { background:linear-gradient(135deg,var(--gold-dark),var(--gold)); color:white; }
+.btn-t-view:hover { filter:brightness(1.1); transform:translateY(-1px); }
+.btn-t-invite { width:100%; justify-content:center; background:rgba(255,255,255,0.06); color:var(--gold-light); border:1px solid rgba(201,169,110,0.28); }
+.btn-t-invite:hover { background:rgba(201,169,110,0.18); }
+
+/* STATS */
+.stats { display:grid; grid-template-columns:1fr 1fr; gap:10px; animation:fadeUp 0.55s 0.18s ease both; }
+.stat { background:var(--white); border:1px solid var(--border); border-radius:3px; padding:12px 14px; text-align:center; position:relative; overflow:hidden; }
+.stat::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(to right,transparent,var(--gold),transparent); }
+.stat-val { font-family:'Cormorant Garamond',serif; font-size:28px; color:var(--text); line-height:1; }
+.stat-label { font-size:8px; letter-spacing:2px; text-transform:uppercase; color:var(--text-muted); margin-top:4px; }
+
+/* NAV */
+.nav-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; animation:fadeUp 0.55s 0.25s ease both; }
+.nav-card { background:var(--white); border:1px solid var(--border); border-radius:3px; padding:12px 14px; cursor:pointer; text-decoration:none; display:flex; align-items:center; gap:11px; position:relative; overflow:hidden; transition:transform 0.18s,box-shadow 0.18s,border-color 0.18s; }
+.nav-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(to right,var(--gold-light),var(--gold)); opacity:0; transition:opacity 0.2s; }
+.nav-card:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(92,64,51,0.09); border-color:rgba(201,169,110,0.4); }
+.nav-card:hover::before { opacity:1; }
+.nav-ico { width:30px; height:30px; background:var(--cream2); border:1px solid var(--border); border-radius:2px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.nav-ico svg { width:13px; height:13px; color:var(--gold-dark); }
+.nav-lbl { font-size:8px; font-weight:600; letter-spacing:2px; text-transform:uppercase; color:var(--text-muted); }
+.nav-ttl { font-family:'Cormorant Garamond',serif; font-size:14px; font-style:italic; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.nav-arr { margin-left:auto; font-size:12px; color:rgba(201,169,110,0.3); flex-shrink:0; transition:transform 0.2s,color 0.2s; }
+.nav-card:hover .nav-arr { transform:translateX(3px); color:var(--gold); }
+
+#_toast { position:fixed; bottom:22px; left:50%; transform:translateX(-50%) translateY(14px); background:var(--text); color:#fff; padding:10px 18px; border-radius:30px; font-size:12px; z-index:9999; opacity:0; transition:all .25s; pointer-events:none; box-shadow:0 4px 18px rgba(0,0,0,.22); }
+#_toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+.overlay {
+  position: fixed; inset: 0;
+  background: rgba(30,20,10,0.6); backdrop-filter: blur(6px);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 1000; opacity: 0; pointer-events: none;
+  transition: opacity 0.3s ease; padding: 20px;
+}
+.overlay.show { opacity: 1; pointer-events: all; }
+
+.popup {
+  background: var(--white); border-radius: 6px;
+  width: 100%; max-width: 370px; overflow: hidden;
+  transform: translateY(24px) scale(0.96);
+  transition: transform 0.35s cubic-bezier(0.175,0.885,0.32,1.275);
+  box-shadow: 0 30px 70px rgba(0,0,0,0.22); position: relative;
+}
+.overlay.show .popup { transform: translateY(0) scale(1); }
+
+.popup-header {
+  background: linear-gradient(135deg, var(--text) 0%, #7a5542 100%);
+  padding: 20px 24px 18px; text-align: center; position: relative;
+}
+.popup-header::after {
+  content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+  width: 60%; height: 1px;
+  background: linear-gradient(to right, transparent, rgba(201,169,110,0.5), transparent);
+}
+.popup-rings { font-size: 20px; margin-bottom: 6px; }
+.popup-header h2 {
+  font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 300;
+  color: var(--white); letter-spacing: 1px;
+}
+.popup-header h2 em { font-style: italic; color: var(--gold-light); }
+.popup-guest {
+  font-family: 'Cormorant Garamond', serif; font-size: 14px; font-style: italic;
+  color: var(--gold-light); margin-top: 5px; opacity: 0.85;
+}
+.btn-close {
+  position: absolute; top: 12px; right: 12px;
+  background: rgba(255,255,255,0.1); border: none; color: rgba(255,255,255,0.7);
+  width: 28px; height: 28px; border-radius: 50%; cursor: pointer; font-size: 13px;
+  display: flex; align-items: center; justify-content: center; transition: background 0.2s;
+}
+.btn-close:hover { background: rgba(255,255,255,0.2); color: white; }
+
+.popup-body { padding: 18px 20px 20px; }
+.share-title { font-size: 10px; font-weight: 500; letter-spacing: 3px; text-transform: uppercase; color: #bbb; margin-bottom: 14px; text-align: center; }
+
+.share-list { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+
+.shr {
+  display: flex; flex-direction: column; align-items: center; gap: 5px;
+  cursor: pointer; background: none; border: none; padding: 0;
+  transition: transform 0.18s; width: 54px;
+}
+.shr:hover { transform: translateY(-3px); }
+.shr-circle {
+  width: 44px; height: 44px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 2px 7px rgba(0,0,0,0.15); overflow: hidden; flex-shrink: 0;
+}
+.shr-label { font-size: 9px; font-weight: 500; letter-spacing: 0.3px; text-transform: uppercase; color: #888; line-height: 1; text-align: center; }
+
+.divider { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: rgba(201,169,110,0.2); }
+.divider span { font-size: 9.5px; color: #ccc; letter-spacing: 2px; text-transform: uppercase; }
+
+.copy-row {
+  display: flex; gap: 8px; background: var(--cream); border: 1px solid rgba(201,169,110,0.3);
+  border-radius: 4px; padding: 3px 3px 3px 12px; align-items: center;
+}
+.copy-row span { flex: 1; font-size: 11px; color: #999; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.btn-copy-small {
+  padding: 8px 13px; background: var(--gold); color: white; border: none;
+  border-radius: 3px; font-size: 10px; font-weight: 500; letter-spacing: 1px; text-transform: uppercase;
+  cursor: pointer; transition: background 0.2s; white-space: nowrap;
+}
+.btn-copy-small:hover { background: var(--gold-dark); }
+.btn-copy-small.copied { background: #4caf50; }
+
+@keyframes fadeDown { from{opacity:0;transform:translateY(-12px)} to{opacity:1;transform:translateY(0)} }
+@keyframes fadeUp   { from{opacity:0;transform:translateY(10px)}  to{opacity:1;transform:translateY(0)} }
+
+@media(max-width:600px){
+  .page{padding:16px 14px 44px;gap:12px;}
+  .topbar{padding:0 16px;}
+  .thiep-inner{flex-direction:column;align-items:flex-start;gap:10px;padding:13px 15px;}
+  .thiep-actions{width:100%;}
+  .thiep-action-row{width:100%;}
+  .btn-t{flex:1;justify-content:center;}
+  .thiep-url{display:none;}
+  .nav-grid{grid-template-columns:1fr;gap:7px;}
+}
+</style>
+</head>
+<body>
+<div id="_toast"></div>
+
+<div class="page">
+
+  <div class="hero">
+    <div class="ornament"><div class="ol"></div><div class="od"></div><div class="ol r"></div></div>
+    <div class="hero-names">Đức Cương <em>&amp; Nguyễn Quyết</em></div>
+    <div class="hero-sub" id="weddingDateLabel">Quản lý thiệp cưới( Nhà trai )</div>
+    <div class="countdown-wrap">
+      <div class="cd-block">
+        <div class="cd-num" id="cdDays">—</div>
+        <div class="cd-label">Ngày</div>
+      </div>
+      <span class="cd-sep">:</span>
+      <div class="cd-block">
+        <div class="cd-num" id="cdHours">—</div>
+        <div class="cd-label">Giờ</div>
+      </div>
+      <span class="cd-sep">:</span>
+      <div class="cd-block">
+        <div class="cd-num" id="cdMins">—</div>
+        <div class="cd-label">Phút</div>
+      </div>
+      <span class="cd-sep">:</span>
+      <div class="cd-block">
+        <div class="cd-num" id="cdSecs">—</div>
+        <div class="cd-label">Giây</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="thiep-card">
+    <div class="thiep-inner">
+      <div class="thiep-text">
+        <div class="thiep-label">Thiệp mời chung</div>
+        <div class="thiep-title">Đức Cương &amp; Nguyễn Quyết</div>
+        <div class="thiep-url" id="thiepUrlText">—</div>
+      </div>
+      <div class="thiep-actions">
+        <div class="thiep-action-row">
+          <button class="btn-t btn-t-copy" id="btnCopy" onclick="copyThiep()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            Copy Link
+          </button>
+          <a class="btn-t btn-t-view" id="thiepViewLink" href="#" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            Xem thiệp
+          </a>
+        </div>
+        <button class="btn-t btn-t-invite" onclick="openCommonSharePopup()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+          Mời cưới
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="stat-val" id="qsGuests">12</div><div class="stat-label">Khách đã tạo</div></div>
+    <div class="stat"><div class="stat-val" id="qsRsvp">8</div><div class="stat-label">Xác nhận đến</div></div>
+  </div>
+
+  <div class="nav-grid">
+    <a class="nav-card" href="/moi-cuoi">
+      <div class="nav-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 5v14M5 12h14"/></svg></div>
+      <div style="min-width:0;flex:1;"><div class="nav-lbl">Tạo thiệp </div><div class="nav-ttl">Tạo thiệp theo tên riêng</div></div>
+      <div class="nav-arr">→</div>
+    </a>
+    <a class="nav-card" href="/danh-sach">
+      <div class="nav-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg></div>
+      <div style="min-width:0;flex:1;"><div class="nav-lbl">Thiệp mời riêng</div><div class="nav-ttl">Danh sách thiệp mời đã tạo theo tên riêng</div></div>
+      <div class="nav-arr">→</div>
+    </a>
+    <a class="nav-card" href="/xac-nhan">
+      <div class="nav-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+      <div style="min-width:0;flex:1;"><div class="nav-lbl">Xác nhận tham dự </div><div class="nav-ttl">Xác nhận tham dự tiệc cưới và chúc phúc</div></div>
+      <div class="nav-arr">→</div>
+    </a>
+  </div>
+
+</div>
+
+<div class="overlay" id="commonInviteOverlay" onclick="closeCommonShareOnOverlay(event)">
+  <div class="popup">
+    <div class="popup-header">
+      <button class="btn-close" onclick="closeCommonSharePopup()">✕</button>
+      <div class="popup-rings">💍</div>
+      <h2>Chia sẻ <em>Thiệp</em> Cưới</h2>
+      <div class="popup-guest" id="commonInviteGuest">— Đức Cương &amp; Nguyễn Quyết —</div>
+    </div>
+    <div class="popup-body">
+      <p class="share-title">Chia sẻ qua</p>
+      <div class="share-list">
+        <button class="shr" onclick="shareZalo()" title="Zalo">
+          <div class="shr-circle" style="background:#0068ff;">
+            <svg width="26" height="26" viewBox="0 0 48 48"><text x="24" y="33" text-anchor="middle" font-size="24" font-weight="bold" fill="white" font-family="Arial">Z</text></svg>
+          </div>
+          <span class="shr-label">Zalo</span>
+        </button>
+        <button class="shr" onclick="shareMessenger()" title="Messenger">
+          <div class="shr-circle">
+            <svg width="44" height="44" viewBox="0 0 44 44"><defs><linearGradient id="commonMg" x1="0" y1="0" x2="44" y2="44"><stop offset="0%" stop-color="#0099ff"/><stop offset="100%" stop-color="#a033ff"/></linearGradient></defs><circle cx="22" cy="22" r="22" fill="url(#commonMg)"/><path d="M22 7C13.163 7 6 13.71 6 21.95c0 4.594 2.187 8.706 5.623 11.473V37l5.096-2.804c1.358.378 2.797.58 4.281.58 8.837 0 16-6.71 16-14.95C37 13.71 30.837 7 22 7zm1.616 20.137l-4.07-4.346-7.952 4.346 8.741-9.275 4.17 4.347 7.853-4.347-8.742 9.275z" fill="white"/></svg>
+          </div>
+          <span class="shr-label">Messenger</span>
+        </button>
+        <button class="shr" onclick="shareFacebook()" title="Facebook">
+          <div class="shr-circle" style="background:#1877f2;">
+            <svg width="24" height="24" viewBox="0 0 48 48"><path d="M28 16h-3c-1.1 0-1 .9-1 1.5V20h4l-.5 4H24v12h-4V24h-3v-4h3v-3c0-3.3 2-5 5-5 1.4 0 3 .1 3 .1V16z" fill="white"/></svg>
+          </div>
+          <span class="shr-label">Facebook</span>
+        </button>
+      </div>
+      <div class="divider"><span>Link thiệp</span></div>
+      <div class="copy-row">
+        <span id="commonInviteUrl">—</span>
+        <button class="btn-copy-small" id="commonInviteCopyBtn" onclick="copyCommonInviteLink()">Copy</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+const API_BASE = window.location.origin;
+const YES_KEYS = ['mình sẽ tham dự','sẽ tham dự','tham dự','có thể đến','đi','có'];
+let thiepUrl = '';
+let weddingDate = '';
+
+function parseWeddingDate(value) {
+  if (!value) return null;
+  const dateStr = String(value).trim();
+  
+  // Parse ISO format: YYYY-MM-DDTHH:MM:SS or YYYY-MM-DD HH:MM:SS
+  const match = dateStr.match(/^(\d{4})-(\d{2})-(\d{2})(?:[T ](\d{2}):(\d{2}):(\d{2}))?/);
+  if (match) {
+    const [, year, month, day, hour = '0', min = '0', sec = '0'] = match;
+    // Parse in local timezone
+    return new Date(Number(year), Number(month) - 1, Number(day), Number(hour), Number(min), Number(sec));
+  }
+  
+  return null;
+}
+
+function formatWeddingDate(value) {
+  const d = parseWeddingDate(value);
+  if (!d) return '';
+  return d.toLocaleDateString('vi-VN');
+}
+
+function updateCountdown(targetDate) {
+  if (!targetDate) {
+    ['cdDays','cdHours','cdMins','cdSecs'].forEach(id => document.getElementById(id).textContent = '00');
+    return;
+  }
+  const now = new Date();
+  const diff = targetDate - now;
+  if (diff <= 0) {
+    ['cdDays','cdHours','cdMins','cdSecs'].forEach(id => document.getElementById(id).textContent = '00');
+    return;
+  }
+  const d = Math.floor(diff / 86400000);
+  const h = Math.floor((diff % 86400000) / 3600000);
+  const m = Math.floor((diff % 3600000) / 60000);
+  const s = Math.floor((diff % 60000) / 1000);
+  document.getElementById('cdDays').textContent  = String(d).padStart(2,'0');
+  document.getElementById('cdHours').textContent = String(h).padStart(2,'0');
+  document.getElementById('cdMins').textContent  = String(m).padStart(2,'0');
+  document.getElementById('cdSecs').textContent  = String(s).padStart(2,'0');
+}
+
+function applyPublicConfig(cfg) {
+  thiepUrl = String(cfg.THIEP_PUBLIC_URL || cfg.thiep_public_url || '').trim();
+  weddingDate = String(cfg.NGAY_CUOI || cfg.ngay_cuoi || '').trim();
+
+  const urlText = document.getElementById('thiepUrlText');
+  const viewLink = document.getElementById('thiepViewLink');
+  const dateLabel = document.getElementById('weddingDateLabel');
+  const dateStr = formatWeddingDate(weddingDate);
+
+  urlText.textContent = thiepUrl || '—';
+  viewLink.href = thiepUrl || '#';
+  if (dateStr) {
+    dateLabel.textContent = `Quản lý thiệp cưới · ${dateStr}`;
+  }
+
+  const targetDate = parseWeddingDate(weddingDate);
+  updateCountdown(targetDate);
+  if (targetDate) {
+    setInterval(() => updateCountdown(targetDate), 1000);
+  }
+}
+
+async function loadStats() {
+  try {
+    const res = await fetch(`${API_BASE}/api/guests`);
+    const data = await res.json();
+    if (Array.isArray(data)) document.getElementById('qsGuests').textContent = data.length;
+  } catch (e) {}
+
+  try {
+    const res = await fetch(`${API_BASE}/api/messages-checkins`);
+    const rawData = await res.json();
+    if (Array.isArray(rawData)) {
+      const seen = new Set();
+      const uniqueData = rawData.filter(item => {
+        const key = `${item.id}-${item.name_guest}`;
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
+      const count = uniqueData.filter(item => YES_KEYS.some(key => (item.confirm_attendance || '').toLowerCase().includes(key))).length;
+      document.getElementById('qsRsvp').textContent = count;
+    }
+  } catch (e) {}
+}
+
+async function loadPublicConfig() {
+  try {
+    const res = await fetch(`${API_BASE}/api/public-config`);
+    if (!res.ok) throw new Error('Failed to load public config');
+    const cfg = await res.json();
+    applyPublicConfig(cfg || {});
+  } catch (e) {
+    applyPublicConfig({});
+  }
+}
+
+function copyThiep() {
+  const textToCopy = thiepUrl || '';
+  if (!textToCopy) {
+    toast('Chưa có link thiệp');
+    return;
+  }
+  navigator.clipboard.writeText(textToCopy).then(() => {
+    const b = document.getElementById('btnCopy');
+    b.classList.add('copied');
+    b.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:10px;height:10px"><polyline points="20 6 9 17 4 12"/></svg> Đã copy!';
+    toast('Đã copy link thiệp ✓');
+    setTimeout(() => {
+      b.classList.remove('copied');
+      b.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:10px;height:10px"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copy Link';
+    }, 2500);
+  }).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = textToCopy; document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta);
+    toast('Đã copy ✓');
+  });
+}
+
+function openCommonSharePopup() {
+  if (!thiepUrl) {
+    toast('Chưa có link thiệp');
+    return;
+  }
+  document.getElementById('commonInviteUrl').textContent = thiepUrl;
+  document.getElementById('commonInviteOverlay').classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeCommonSharePopup() {
+  document.getElementById('commonInviteOverlay').classList.remove('show');
+  document.body.style.overflow = '';
+}
+
+function closeCommonShareOnOverlay(e) {
+  if (e.target === document.getElementById('commonInviteOverlay')) {
+    closeCommonSharePopup();
+  }
+}
+
+function getCommonInviteMsg() {
+  return `💍 Kính mời bạn đến dự lễ cưới của Đức Cương & Nguyễn Quyết!\n\nXem thiệp tại: ${thiepUrl}`;
+}
+
+
+function openShareTarget(appUrl, webUrl) {
+  window.location.href = webUrl;
+}
+
+function openWebShareTarget(webUrl) {
+  window.location.href = webUrl;
+}
+
+let zaloShareSdkPromise = null;
+let zaloShareButtonEl = null;
+
+function ensureZaloShareButton(url) {
+  const hostButton = document.querySelector('button[onclick="shareZalo()"]');
+  if (!zaloShareButtonEl) {
+    zaloShareButtonEl = document.createElement('div');
+    zaloShareButtonEl.id = 'zaloShareButton';
+    zaloShareButtonEl.className = 'zalo-share-button';
+    zaloShareButtonEl.style.cssText = [
+      'position:absolute',
+      'inset:0',
+      'width:100%',
+      'height:100%',
+      'opacity:0',
+      'pointer-events:none',
+    ].join(';');
+    if (hostButton) {
+      hostButton.style.position = 'relative';
+      hostButton.appendChild(zaloShareButtonEl);
+    } else {
+      document.body.appendChild(zaloShareButtonEl);
+    }
+  } else if (hostButton && zaloShareButtonEl.parentNode !== hostButton) {
+    hostButton.appendChild(zaloShareButtonEl);
+  }
+
+  zaloShareButtonEl.setAttribute('data-href', url);
+  zaloShareButtonEl.setAttribute('data-oaid', '0');
+  zaloShareButtonEl.setAttribute('data-layout', '1');
+  zaloShareButtonEl.setAttribute('data-color', 'blue');
+  zaloShareButtonEl.setAttribute('data-customize', 'true');
+  zaloShareButtonEl.setAttribute('data-share-type', '0');
+  return zaloShareButtonEl;
+}
+
+function loadZaloShareSdk() {
+  if (window.ZaloSocialSDK) {
+    return Promise.resolve(window.ZaloSocialSDK);
+  }
+
+  if (!zaloShareSdkPromise) {
+    zaloShareSdkPromise = new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = 'https://sp.zalo.me/plugins/sdk.js';
+      script.async = true;
+      script.onload = () => resolve(window.ZaloSocialSDK || null);
+      script.onerror = () => {
+        zaloShareSdkPromise = null;
+        reject(new Error('Zalo SDK load failed'));
+      };
+      document.head.appendChild(script);
+    });
+  }
+
+  return zaloShareSdkPromise;
+}
+
+loadZaloShareSdk().catch(() => {});
+
+function openOfficialZaloShare(url) {
+  const shareButton = ensureZaloShareButton(url);
+  const clickShareButton = () => {
+    if (window.ZaloSocialSDK && typeof window.ZaloSocialSDK.reload === 'function') {
+      window.ZaloSocialSDK.reload();
+    }
+    shareButton.click();
+  };
+
+  if (window.ZaloSocialSDK) {
+    clickShareButton();
+    return;
+  }
+
+  loadZaloShareSdk()
+    .then(() => {
+      clickShareButton();
+    })
+    .catch(() => {
+      toast('Không mở được Zalo');
+    });
+}
+
+function shareZalo() {
+  if (!thiepUrl) {
+    toast('Chưa có link thiệp');
+    return;
+  }
+  const ua = navigator.userAgent || '';
+  const encodedUrl = encodeURIComponent(thiepUrl);
+
+  if (/Android/i.test(ua)) {
+    window.location.href = `intent://zaloapp.com/#Intent;action=android.intent.action.SEND;type=text/plain;S.android.intent.extra.SUBJECT=;S.android.intent.extra.TEXT=${encodedUrl};B.hidePostFeed=false;B.backToSource=true;end`;
+    return;
+  }
+
+  if (/iPhone|iPad|iPod/i.test(ua)) {
+    window.location.href = `zaloshareext://shareext?url=${encodedUrl}&type=8&version=1`;
+    return;
+  }
+
+  openOfficialZaloShare(thiepUrl);
+}
+
+function shareMessenger() {
+  if (!thiepUrl) {
+    toast('Chưa có link thiệp');
+    return;
+  }
+  const ua = navigator.userAgent || '';
+  const url = encodeURIComponent(thiepUrl);
+
+  if (/Android|iPhone|iPad|iPod/i.test(ua)) {
+    window.location.href = `fb-messenger://share/?link=${url}`;
+    return;
+  }
+
+  window.location.href = 'https://www.messenger.com/';
+}
+
+function shareFacebook() {
+  if (!thiepUrl) {
+    toast('Chưa có link thiệp');
+    return;
+  }
+  const url = encodeURIComponent(thiepUrl);
+  const webUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
+  openShareTarget(`fb://facewebmodal/f?href=${webUrl}`, webUrl);
+}
+
+function copyCommonInviteLink() {
+  if (!thiepUrl) {
+    toast('Chưa có link thiệp');
+    return;
+  }
+  navigator.clipboard.writeText(thiepUrl).then(() => {
+    const btn = document.getElementById('commonInviteCopyBtn');
+    btn.textContent = 'Đã copy ✓';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = 'Copy';
+      btn.classList.remove('copied');
+    }, 2200);
+  }).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = thiepUrl;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    toast('Đã copy ✓');
+  });
+}
+
+function toast(m) {
+  const t = document.getElementById('_toast');
+  t.textContent = m; t.classList.add('show');
+  clearTimeout(t._t);
+  t._t = setTimeout(() => t.classList.remove('show'), 2600);
+}
+
+loadPublicConfig();
+loadStats();
+</script>
+</body>
+</html>

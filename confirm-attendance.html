@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Xác Nhận Tham Dự</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --cream: #faf7f2;
+  --cream2: #f3ede2;
+  --gold: #c9a96e;
+  --gold-light: #e8d5a3;
+  --gold-dark: #9a7a45;
+  --brown: #5c4033;
+  --text: #3a2a1e;
+  --text-muted: #a0907a;
+  --white: #ffffff;
+  --border: rgba(201,169,110,0.2);
+  --green: #5a8a6a;
+  --red: #b05050;
+  --yellow: #a08040;
+}
+
+body {
+  font-family: 'Jost', sans-serif;
+  background: var(--cream);
+  min-height: 100vh;
+  color: var(--text);
+}
+
+body::before {
+  content: '';
+  position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background:
+    radial-gradient(ellipse at 0% 0%, rgba(201,169,110,0.08) 0%, transparent 60%),
+    radial-gradient(ellipse at 100% 100%, rgba(201,169,110,0.06) 0%, transparent 60%);
+}
+
+
+
+/* ── PAGE ── */
+.page { max-width: 1100px; margin: 0 auto; padding: 40px 24px 80px; position: relative; z-index: 1; }
+
+/* ── PAGE HEADER ── */
+.page-header { margin-bottom: 32px; text-align: center; animation: fadeDown 0.7s ease both; }
+.ornament { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 16px; }
+.ornament-line { width: 60px; height: 1px; background: linear-gradient(to right, transparent, var(--gold)); }
+.ornament-line.r { background: linear-gradient(to left, transparent, var(--gold)); }
+.ornament-diamond { width: 7px; height: 7px; background: var(--gold); transform: rotate(45deg); }
+.page-header h1 {
+  font-family: 'Cormorant Garamond', serif; font-size: 38px; font-weight: 300;
+  color: var(--text); letter-spacing: 2px; line-height: 1.1;
+}
+.page-header h1 em { font-style: italic; color: var(--gold-dark); }
+.page-header p { margin-top: 8px; font-size: 12px; font-weight: 300; letter-spacing: 3px; text-transform: uppercase; color: #aaa; }
+
+/* ── STATS ── */
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 28px; }
+.stat-card {
+  background: var(--white); border: 1px solid var(--border); border-radius: 2px;
+  padding: 18px 20px; text-align: center; position: relative; overflow: hidden;
+  animation: fadeUp 0.5s ease both;
+}
+.stat-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(to right, var(--gold-light), var(--gold));
+}
+.stat-val {
+  font-family: 'Cormorant Garamond', serif; font-size: 34px; font-weight: 400;
+  color: var(--text); line-height: 1; margin-bottom: 5px;
+}
+.stat-label { font-size: 9px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--text-muted); }
+
+/* ── FILTER CARD ── */
+.filter-card {
+  background: var(--white); border: 1px solid var(--border); border-radius: 2px;
+  margin-bottom: 24px; overflow: hidden;
+  box-shadow: 0 4px 20px rgba(92,64,51,0.05);
+  animation: fadeUp 0.5s 0.1s ease both;
+}
+.filter-card::before {
+  content: ''; display: block; height: 2px;
+  background: linear-gradient(to right, var(--gold-light), var(--gold), var(--gold-light));
+}
+.filter-head {
+  padding: 14px 24px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.filter-head-title {
+  font-size: 10px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; color: var(--text-muted);
+  display: flex; align-items: center; gap: 8px;
+}
+.filter-head-title svg { width: 12px; height: 12px; }
+.filter-body { padding: 20px 24px; }
+.filter-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+
+.f-label {
+  display: block; font-size: 9px; font-weight: 600; letter-spacing: 2.5px;
+  text-transform: uppercase; color: var(--gold-dark); margin-bottom: 7px;
+}
+.f-input, .f-select {
+  width: 100%; padding: 10px 14px;
+  border: 1px solid rgba(201,169,110,0.35); border-radius: 2px;
+  font-family: 'Jost', sans-serif; font-size: 13px; color: var(--text);
+  background: var(--cream); outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s; appearance: none;
+}
+.f-input::placeholder { color: #ccc; font-style: italic; }
+.f-input:focus, .f-select:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(201,169,110,0.1); }
+
+.select-wrap { position: relative; }
+.select-wrap::after {
+  content: ''; position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+  width: 0; height: 0;
+  border-left: 4px solid transparent; border-right: 4px solid transparent;
+  border-top: 5px solid var(--text-muted); pointer-events: none;
+}
+
+/* Advanced filters */
+.adv-toggle {
+  background: none; border: none; color: var(--text-muted); cursor: pointer;
+  font-family: 'Jost', sans-serif; font-size: 10px; font-weight: 500;
+  letter-spacing: 2px; text-transform: uppercase;
+  display: flex; align-items: center; gap: 6px; padding: 0;
+  transition: color 0.2s;
+}
+.adv-toggle:hover { color: var(--gold-dark); }
+.adv-toggle svg { width: 10px; height: 10px; transition: transform 0.2s; }
+.adv-toggle.open svg { transform: rotate(180deg); }
+
+.adv-filters {
+  display: none; padding-top: 16px; border-top: 1px dashed rgba(201,169,110,0.25); margin-top: 16px;
+}
+.adv-filters.show { display: block; }
+.adv-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+
+.filter-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); }
+
+/* ── BUTTONS ── */
+.btn {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 10px 20px; border: none; border-radius: 2px; cursor: pointer;
+  font-family: 'Jost', sans-serif; font-size: 10px; font-weight: 600;
+  letter-spacing: 2px; text-transform: uppercase; transition: all 0.2s; white-space: nowrap;
+}
+.btn svg { width: 12px; height: 12px; }
+.btn-primary {
+  background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+  color: white;
+}
+.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(201,169,110,0.35); }
+.btn-outline {
+  background: var(--white); color: var(--text-muted);
+  border: 1px solid var(--border);
+}
+.btn-outline:hover { border-color: var(--gold); color: var(--gold-dark); background: rgba(201,169,110,0.04); }
+.btn-dark {
+  background: var(--text); color: white;
+}
+.btn-dark:hover { background: var(--brown); transform: translateY(-1px); }
+
+/* ── TOOLBAR ── */
+.toolbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; gap: 12px; flex-wrap: wrap; }
+.count-badge {
+  font-size: 11px; color: var(--text-muted); letter-spacing: 1px;
+  padding: 4px 12px; background: var(--cream2); border-radius: 20px; border: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+/* ── TABLE ── */
+.table-card {
+  background: var(--white); border: 1px solid var(--border); border-radius: 2px;
+  overflow: hidden; box-shadow: 0 4px 24px rgba(92,64,51,0.05);
+  animation: fadeUp 0.5s 0.2s ease both;
+}
+.table-head {
+  display: grid; grid-template-columns: 2fr 2.5fr 1fr 1.1fr;
+  background: var(--cream2); border-bottom: 1px solid var(--border); padding: 0 20px;
+}
+.th { padding: 11px 10px; font-size: 9px; font-weight: 600; letter-spacing: 2.5px; text-transform: uppercase; color: var(--text-muted); }
+
+.guest-row {
+  display: grid; grid-template-columns: 2fr 2.5fr 1fr 1.1fr;
+  padding: 0 20px; border-bottom: 1px solid rgba(201,169,110,0.08);
+  cursor: pointer; transition: background 0.15s;
+  animation: rowIn 0.3s ease both;
+}
+.guest-row:last-child { border-bottom: none; }
+.guest-row:hover { background: #fdfaf5; }
+@keyframes rowIn { from { opacity:0; transform:translateX(-6px); } to { opacity:1; transform:translateX(0); } }
+
+.td { padding: 13px 10px; display: flex; align-items: center; font-size: 13px; overflow: hidden; }
+
+.guest-name-val {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 18px; font-style: italic; color: var(--text); font-weight: 400; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.msg-preview { font-size: 12px; color: #bbb; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* Status badges */
+.badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 10px; border-radius: 20px; font-size: 10px; font-weight: 500; white-space: nowrap;
+}
+.badge-yes  { background: rgba(90,138,106,0.12); color: var(--green); border: 1px solid rgba(90,138,106,0.25); }
+.badge-no   { background: rgba(176,80,80,0.1);  color: var(--red);   border: 1px solid rgba(176,80,80,0.2); }
+.badge-maybe{ background: rgba(160,128,64,0.1); color: var(--yellow); border: 1px solid rgba(160,128,64,0.2); }
+.badge svg  { width: 9px; height: 9px; }
+
+.accompany-val { font-size: 13px; color: var(--text-muted); }
+.guestof-val   { font-size: 11px; color: var(--text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.date-val      { font-size: 11px; color: #bbb; flex-direction: column; align-items: flex-start; gap: 1px; }
+.date-val span { font-size: 10px; color: #ccc; }
+
+/* Empty state */
+.empty-state { padding: 60px 24px; text-align: center; display: none; }
+.empty-state.show { display: block; }
+.empty-icon { font-size: 32px; opacity: 0.3; margin-bottom: 12px; }
+.empty-state h3 {
+  font-family: 'Cormorant Garamond', serif; font-size: 22px; font-style: italic;
+  color: var(--text-muted); font-weight: 300; margin-bottom: 6px;
+}
+.empty-state p { font-size: 11px; color: #ccc; letter-spacing: 1px; }
+
+/* ── PAGINATION ── */
+.pagination { display: flex; justify-content: center; gap: 6px; margin-top: 20px; }
+.pg-btn {
+  padding: 7px 13px; background: var(--white); border: 1px solid var(--border);
+  border-radius: 2px; font-size: 11px; color: var(--text-muted);
+  cursor: pointer; font-family: 'Jost', sans-serif; transition: all 0.15s; min-width: 36px; text-align: center;
+}
+.pg-btn:hover:not(.disabled):not(.active) { border-color: var(--gold); color: var(--gold-dark); }
+.pg-btn.active { background: var(--text); color: white; border-color: var(--text); }
+.pg-btn.disabled { opacity: 0.35; cursor: not-allowed; }
+
+/* ── MODAL ── */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(30,20,10,0.6); backdrop-filter: blur(6px);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; padding: 20px;
+}
+.modal-overlay.show { opacity: 1; pointer-events: all; }
+
+.modal-box {
+  background: var(--white); border-radius: 4px; width: 100%; max-width: 500px; overflow: hidden;
+  transform: translateY(24px) scale(0.96);
+  transition: transform 0.35s cubic-bezier(0.175,0.885,0.32,1.275);
+  box-shadow: 0 30px 70px rgba(0,0,0,0.2); position: relative;
+}
+.modal-overlay.show .modal-box { transform: translateY(0) scale(1); }
+
+.modal-top {
+  height: 3px;
+  background: linear-gradient(to right, var(--gold-light), var(--gold), var(--gold-light));
+}
+.modal-header {
+  padding: 24px 28px 20px; border-bottom: 1px solid var(--border); position: relative;
+  display: flex; align-items: flex-start; justify-content: space-between;
+}
+.modal-name {
+  font-family: 'Cormorant Garamond', serif; font-size: 30px; font-style: italic;
+  font-weight: 400; color: var(--text); letter-spacing: 1px; line-height: 1.1;
+}
+.modal-meta { margin-top: 10px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.btn-close-modal {
+  background: none; border: none; color: #ccc; cursor: pointer; font-size: 18px;
+  line-height: 1; padding: 4px; transition: color 0.2s; flex-shrink: 0; margin-left: 12px;
+}
+.btn-close-modal:hover { color: var(--text); }
+
+.modal-body { padding: 24px 28px; }
+.modal-field { margin-bottom: 18px; }
+.modal-field:last-child { margin-bottom: 0; }
+.modal-field-label {
+  font-size: 9px; letter-spacing: 3px; text-transform: uppercase;
+  color: var(--gold-dark); font-weight: 600; margin-bottom: 7px;
+}
+.modal-field-val {
+  font-size: 14px; color: var(--text); line-height: 1.7;
+  background: var(--cream); border: 1px solid var(--border); border-radius: 2px;
+  padding: 12px 16px; word-break: break-word;
+}
+.modal-field-val.empty { color: #ccc; font-style: italic; }
+
+/* ── TOAST ── */
+#_toast {
+  position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(20px);
+  background: var(--text); color: #fff; padding: 11px 20px; border-radius: 30px;
+  font-size: 12.5px; font-family: 'Jost', sans-serif; z-index: 9999; opacity: 0;
+  transition: all .3s; max-width: 300px; text-align: center; line-height: 1.4;
+  box-shadow: 0 4px 20px rgba(0,0,0,.25); pointer-events: none;
+}
+#_toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ── LOADING ── */
+.loading-bar {
+  position: fixed; top: 0; left: 0; height: 2px; width: 0;
+  background: linear-gradient(to right, var(--gold-dark), var(--gold));
+  z-index: 9999; transition: width 0.3s ease;
+}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeDown { from { opacity:0; transform:translateY(-16px); } to { opacity:1; transform:translateY(0); } }
+@keyframes fadeUp   { from { opacity:0; transform:translateY(12px);  } to { opacity:1; transform:translateY(0); } }
+
+/* ── MOBILE CARDS ── */
+.mobile-card {
+  background: var(--white); border: 1px solid var(--border); border-radius: 2px;
+  padding: 16px 18px; margin-bottom: 10px; cursor: pointer; transition: all 0.15s;
+  animation: rowIn 0.3s ease both;
+}
+.mobile-card:hover { background: #fdfaf5; border-color: var(--gold); }
+.mobile-card-name {
+  font-family: 'Cormorant Garamond', serif; font-size: 20px; font-style: italic;
+  color: var(--text); margin-bottom: 8px;
+}
+.mobile-card-row { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; font-size: 12px; color: var(--text-muted); }
+.mobile-card-msg { font-size: 12px; color: #bbb; margin-top: 6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 900px) {
+  .table-card { display: none; }
+  .filter-grid { grid-template-columns: 1fr 1fr; }
+  .stats { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 600px) {
+  .page { padding: 24px 14px 60px; }
+  .stats { grid-template-columns: repeat(2, 1fr); }
+  .filter-grid { grid-template-columns: 1fr 1fr; }
+  
+  .page-header h1 { font-size: 30px; }
+}
+
+@media print {
+   .filter-card, .pagination, #_toast, .modal-overlay { display: none !important; }
+  body::before { display: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="loading-bar" id="loadingBar"></div>
+<div id="_toast"></div>
+
+
+
+<!-- Page -->
+<div class="page">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div class="ornament">
+      <div class="ornament-line"></div>
+      <div class="ornament-diamond"></div>
+      <div class="ornament-line r"></div>
+    </div>
+    <h1>Xác Nhận <em>Tham Dự</em></h1>
+    <p>Danh sách khách mời phản hồi</p>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats">
+    <div class="stat-card" style="animation-delay:0.05s">
+      <div class="stat-val" id="statTotal">—</div>
+      <div class="stat-label">Tổng phản hồi</div>
+    </div>
+    <div class="stat-card" style="animation-delay:0.1s">
+      <div class="stat-val" id="statFiltered">—</div>
+      <div class="stat-label">Kết quả lọc</div>
+    </div>
+    <div class="stat-card" style="animation-delay:0.15s">
+      <div class="stat-val" id="statAttending">—</div>
+      <div class="stat-label">Xác nhận đến</div>
+    </div>
+  </div>
+
+  <!-- Filter -->
+  <div class="filter-card">
+    <div class="filter-head">
+      <div class="filter-head-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+        Bộ lọc
+      </div>
+    </div>
+    <div class="filter-body">
+      <div class="filter-grid">
+        <div>
+          <label class="f-label">Tìm kiếm</label>
+          <input class="f-input" type="text" id="searchText" placeholder="Tên hoặc lời nhắn…" />
+        </div>
+        <div>
+          <label class="f-label">Trạng thái tham dự</label>
+          <div class="select-wrap">
+            <select class="f-select" id="willAttendSelect">
+              <option value="all">Tất cả</option>
+              <option value="yes">Sẽ đến</option>
+              <option value="no">Không đến</option>
+              <option value="maybe">Chưa rõ</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <label class="f-label">Từ ngày</label>
+          <input class="f-input" type="date" id="dateFrom" />
+        </div>
+        <div>
+          <label class="f-label">Đến ngày</label>
+          <input class="f-input" type="date" id="dateTo" />
+        </div>
+      </div>
+
+      <div class="filter-actions">
+        <button class="btn btn-primary" onclick="applyFilter()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+          Áp dụng
+        </button>
+        <button class="btn btn-outline" onclick="resetFilter()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+          Đặt lại
+        </button>
+        <button class="btn btn-outline" onclick="exportExcel()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Xuất Excel
+        </button>
+        <button class="btn btn-outline" onclick="window.print()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+          In
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile cards -->
+  <div id="mobileList"></div>
+  <div class="empty-state" id="emptyTable" style="display:none;">
+    <div class="empty-icon"></div>
+    <h3>Chưa có dữ liệu</h3>
+    <p>Không tìm thấy phản hồi phù hợp</p>
+  </div>
+
+  <!-- Pagination -->
+  <div class="pagination" id="pagination"></div>
+
+</div>
+
+<!-- Detail Modal -->
+<div class="modal-overlay" id="modal" onclick="closeModalOutside(event)">
+  <div class="modal-box">
+    <div class="modal-top"></div>
+    <div class="modal-header">
+      <div>
+        <div class="modal-name" id="mName"></div>
+        <div class="modal-meta" id="mMeta"></div>
+      </div>
+      <button class="btn-close-modal" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-field">
+        <div class="modal-field-label">Lời nhắn</div>
+        <div class="modal-field-val" id="mMessage"></div>
+      </div>
+      <div class="modal-field" style="margin-top:14px;">
+        <div class="modal-field-label">Thời gian gửi</div>
+        <div class="modal-field-val" id="mTime"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let allData = [];
+let filtered = [];
+let currentPage = 1;
+const PAGE_SIZE = 10;
+
+// ── LOADING BAR ──
+function startLoad() {
+  const b = document.getElementById('loadingBar');
+  b.style.width = '60%';
+}
+function endLoad() {
+  const b = document.getElementById('loadingBar');
+  b.style.width = '100%';
+  setTimeout(() => { b.style.transition = 'none'; b.style.width = '0'; setTimeout(() => b.style.transition = 'width 0.3s ease', 50); }, 400);
+}
+
+// ── TOAST ──
+function showToast(msg) {
+  const t = document.getElementById('_toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(t._t);
+  t._t = setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ── STATUS ──
+const YES_KEYS = ['mình sẽ tham dự','sẽ tham dự','tham dự','có thể đến','đi','có'];
+const NO_KEYS  = ['thật tiếc mình bận','bận mất rồi','không tham gia','không thể'];
+
+function getStatus(val) {
+  const v = (val||'').toLowerCase();
+  if (YES_KEYS.some(s => v.includes(s))) return 'yes';
+  if (NO_KEYS.some(s => v.includes(s)))  return 'no';
+  return 'maybe';
+}
+
+function statusBadge(val) {
+  const s = getStatus(val);
+  const cfg = {
+    yes:   { cls: 'badge-yes',   icon: '✓', label: 'Mình sẽ tham dự' },
+    no:    { cls: 'badge-no',    icon: '✕', label: 'Thật tiếc mình bận mất rồi' },
+    maybe: { cls: 'badge-maybe', icon: '?', label: 'Mình đang cân nhắc' },
+  }[s];
+  return `<span class="badge ${cfg.cls}">${cfg.icon} ${cfg.label}</span>`;
+}
+
+// ── DATE ──
+function parseDate(v) {
+  if (!v) return null;
+  const d = new Date(v);
+  if (!isNaN(d)) return d;
+  const d2 = new Date(String(v).replace(' ','T'));
+  return isNaN(d2) ? null : d2;
+}
+function fmtDate(v) {
+  const d = parseDate(v); if (!d) return '—';
+  return d.toLocaleDateString('vi-VN');
+}
+function fmtTime(v) {
+  const d = parseDate(v); if (!d) return '';
+  return d.toLocaleTimeString('vi-VN', { hour:'2-digit', minute:'2-digit' });
+}
+function fmtFull(v) {
+  const d = parseDate(v); if (!d) return '—';
+  return d.toLocaleString('vi-VN');
+}
+
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── FETCH ──
+const API_BASE = window.location.origin;
+
+async function fetchAndRender() {
+  startLoad();
+  try {
+    const res = await fetch(`${API_BASE}/api/messages-checkins`);
+    if (!res.ok) throw new Error('Failed to fetch check-ins');
+    const rawData = await res.json();
+    if (!Array.isArray(rawData)) {
+      allData = [];
+    } else {
+      const seen = new Set();
+      allData = rawData.filter(item => {
+        const key = `${item.id}-${item.name_guest}`;
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      }).map(item => ({
+        id: item.id,
+        name: item.name_guest,
+        message: item.messages,
+        will_attend: item.confirm_attendance,
+        accompany: item.number_of_attendees,
+        guest_of: item.guests_type,
+        created_at: item.created_at,
+      }));
+    }
+  } catch(e) {
+    console.error('Error fetching check-ins:', e);
+    showToast('Không thể tải dữ liệu xác nhận');
+    allData = [];
+  }
+  endLoad();
+  applyFilter();
+}
+
+// ── FILTER ──
+function buildPredicate() {
+  const text = (document.getElementById('searchText').value||'').trim().toLowerCase();
+  const will = document.getElementById('willAttendSelect').value;
+
+  const dfrom = document.getElementById('dateFrom').value;
+  const dto   = document.getElementById('dateTo').value;
+  const dateFrom = dfrom ? new Date(dfrom + 'T00:00:00') : null;
+  const dateTo   = dto   ? new Date(dto   + 'T23:59:59') : null;
+
+  return g => {
+    if (text) {
+      const hay = ((g.name||'') + ' ' + (g.message||'')).toLowerCase();
+      if (!hay.includes(text)) return false;
+    }
+    if (will !== 'all') {
+      const s = getStatus(g.will_attend);
+      if (s !== will) return false;
+    }
+
+    const dt = parseDate(g.created_at);
+    if (dateFrom && (!dt || dt < dateFrom)) return false;
+    if (dateTo   && (!dt || dt > dateTo))   return false;
+    return true;
+  };
+}
+
+function applyFilter() {
+  currentPage = 1;
+  const pred = buildPredicate();
+  filtered = allData.filter(pred).sort((a,b) => {
+    const da = parseDate(a.created_at), db = parseDate(b.created_at);
+    if (!da && !db) return 0; if (!da) return 1; if (!db) return -1;
+    return db - da;
+  });
+  updateStats();
+  renderPage();
+}
+
+function resetFilter() {
+  document.getElementById('searchText').value = '';
+  document.getElementById('willAttendSelect').value = 'all';
+  document.getElementById('dateFrom').value = '';
+  document.getElementById('dateTo').value = '';
+  applyFilter();
+  showToast('Đã đặt lại bộ lọc');
+}
+
+// ── STATS ──
+function updateStats() {
+  document.getElementById('statTotal').textContent    = allData.length;
+  document.getElementById('statFiltered').textContent = filtered.length;
+  document.getElementById('statAttending').textContent = filtered.filter(g => getStatus(g.will_attend) === 'yes').length;
+}
+
+// ── RENDER ──
+function renderPage() {
+  const total = filtered.length;
+  const pages = Math.ceil(total / PAGE_SIZE);
+  const start = (currentPage - 1) * PAGE_SIZE;
+  const data  = filtered.slice(start, start + PAGE_SIZE);
+
+  renderMobile(data);
+  renderPagination(pages);
+}
+
+function renderTable(data) {
+  const body  = document.getElementById('tableBody');
+  const empty = document.getElementById('emptyTable');
+
+  if (data.length === 0) {
+    body.innerHTML = '';
+    empty.classList.add('show');
+    return;
+  }
+  empty.classList.remove('show');
+
+  body.innerHTML = data.map((g, i) => `
+    <div class="guest-row" style="animation-delay:${i*0.03}s" onclick="openModal(${allData.indexOf(g)})">
+      <div class="td"><span class="guest-name-val">${esc(g.name)}</span></div>
+      <div class="td"><span class="msg-preview">${esc(g.message)||'<span style="color:#ddd;font-style:italic;">—</span>'}</span></div>
+      <div class="td">${statusBadge(g.will_attend)}</div>
+      <div class="td date-val">${fmtDate(g.created_at)}<span>${fmtTime(g.created_at)}</span></div>
+    </div>
+  `).join('');
+}
+
+function renderMobile(data) {
+  const el = document.getElementById('mobileList');
+  el.innerHTML = data.map((g, i) => `
+    <div class="mobile-card" style="animation-delay:${i*0.04}s" onclick="openModal(${allData.indexOf(g)})">
+      <div class="mobile-card-name">${esc(g.name)}</div>
+      <div class="mobile-card-row">
+        ${statusBadge(g.will_attend)}
+        <span style="font-size:11px;color:#bbb;">${esc(g.guest_of||'')}</span>
+        <span style="font-size:11px;color:#bbb;margin-left:auto;">${fmtDate(g.created_at)}</span>
+      </div>
+      <div class="mobile-card-msg">${esc(g.message)||'<span style="color:#ddd;font-style:italic;">Không có lời nhắn</span>'}</div>
+    </div>
+  `).join('') || '<div style="text-align:center;padding:40px;color:#ccc;font-size:12px;letter-spacing:2px;text-transform:uppercase;">Không có dữ liệu</div>';
+}
+
+// ── PAGINATION ──
+function renderPagination(pages) {
+  const el = document.getElementById('pagination');
+  if (pages <= 1) { el.innerHTML = ''; return; }
+
+  let html = `<button class="pg-btn ${currentPage===1?'disabled':''}" onclick="goPage(${currentPage-1})">‹</button>`;
+
+  for (let i = 1; i <= pages; i++) {
+    if (i === 1 || i === pages || Math.abs(i - currentPage) <= 1) {
+      html += `<button class="pg-btn ${i===currentPage?'active':''}" onclick="goPage(${i})">${i}</button>`;
+    } else if (Math.abs(i - currentPage) === 2) {
+      html += `<button class="pg-btn disabled">…</button>`;
+    }
+  }
+
+  html += `<button class="pg-btn ${currentPage===pages?'disabled':''}" onclick="goPage(${currentPage+1})">›</button>`;
+  el.innerHTML = html;
+}
+
+function goPage(p) {
+  const pages = Math.ceil(filtered.length / PAGE_SIZE);
+  if (p < 1 || p > pages) return;
+  currentPage = p;
+  renderPage();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ── MODAL ──
+function openModal(idx) {
+  const g = allData[idx];
+  if (!g) return;
+  document.getElementById('mName').textContent = g.name || '—';
+  document.getElementById('mMessage').innerHTML = g.message
+    ? esc(g.message)
+    : '<span class="empty">Không có lời nhắn</span>';
+  document.getElementById('mTime').textContent = fmtFull(g.created_at);
+  document.getElementById('mMeta').innerHTML = statusBadge(g.will_attend);
+
+  document.getElementById('modal').classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal() {
+  document.getElementById('modal').classList.remove('show');
+  document.body.style.overflow = '';
+}
+function closeModalOutside(e) {
+  if (e.target === document.getElementById('modal')) closeModal();
+}
+
+// ── EXPORT ──
+function exportExcel() {
+  if (!filtered.length) { showToast('Không có dữ liệu để xuất'); return; }
+  const rows = filtered.map(r => ({
+    'Tên': r.name||'',
+    'Lời nhắn': r.message||'',
+    'Tham dự': r.will_attend||'',
+    'Số người': r.accompany||'0',
+    'Khách của': r.guest_of||'',
+    'Thời gian': fmtFull(r.created_at)
+  }));
+  const ws = XLSX.utils.json_to_sheet(rows);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Khách Mời');
+  XLSX.writeFile(wb, `xac-nhan-tham-du-${new Date().toISOString().slice(0,10)}.xlsx`);
+  showToast(`Đã xuất ${filtered.length} bản ghi ✓`);
+}
+
+// ── KEYBOARD ──
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeModal();
+  if (e.key === 'Enter' && document.activeElement.id === 'searchText') applyFilter();
+});
+
+// ── INIT ──
+fetchAndRender();
+</script>
+<script src="/floating-widget.js"></script>
+</body>
+</html>

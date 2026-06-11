@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="700" viewBox="0 0 1200 700">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fbf2e8"/>
+      <stop offset="100%" stop-color="#fffdf9"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f5d39b"/>
+      <stop offset="100%" stop-color="#d6a15c"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="700" fill="url(#bg)"/>
+  <rect x="56" y="48" width="1088" height="604" rx="34" fill="#fffdf9" stroke="#ead9c7" stroke-width="4"/>
+
+  <circle cx="1044" cy="118" r="130" fill="#f6e4d4"/>
+  <circle cx="1044" cy="118" r="88" fill="url(#gold)"/>
+  <text x="1044" y="142" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="72" font-weight="700" fill="#7b4c2d">4</text>
+
+  <text x="110" y="126" font-family="Arial, Helvetica, sans-serif" font-size="44" font-weight="700" fill="#5a3d2b">Bước 4: Chia sẻ cho khách</text>
+  <text x="110" y="168" font-family="Arial, Helvetica, sans-serif" font-size="24" fill="#7a5a46">Chỉ cần chọn một trong ba nút: Zalo, Messenger, Facebook.</text>
+
+  <rect x="112" y="224" width="966" height="330" rx="30" fill="#ffffff" stroke="#ead9c7" stroke-width="3"/>
+  <text x="158" y="282" font-family="Arial, Helvetica, sans-serif" font-size="28" font-weight="700" fill="#5a3d2b">Chọn nơi muốn gửi</text>
+  <text x="158" y="320" font-family="Arial, Helvetica, sans-serif" font-size="20" fill="#7a5a46">Bấm vào 1 nút rồi hệ thống sẽ mở đúng chỗ để gửi link.</text>
+
+  <rect x="160" y="374" width="220" height="110" rx="26" fill="#e8f7ef"/>
+  <circle cx="214" cy="429" r="28" fill="#0fb36a"/>
+  <text x="214" y="438" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="26" font-weight="700" fill="#ffffff">Z</text>
+  <text x="282" y="420" font-family="Arial, Helvetica, sans-serif" font-size="28" font-weight="700" fill="#5a3d2b">Zalo</text>
+  <text x="282" y="452" font-family="Arial, Helvetica, sans-serif" font-size="18" fill="#7a5a46">Gửi tin nhắn nhanh</text>
+
+  <rect x="420" y="374" width="260" height="110" rx="26" fill="#eaf1ff"/>
+  <circle cx="480" cy="429" r="28" fill="#2f66ff"/>
+  <text x="480" y="438" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="26" font-weight="700" fill="#ffffff">M</text>
+  <text x="548" y="420" font-family="Arial, Helvetica, sans-serif" font-size="28" font-weight="700" fill="#5a3d2b">Messenger</text>
+  <text x="548" y="452" font-family="Arial, Helvetica, sans-serif" font-size="18" fill="#7a5a46">Mở thẳng phần nhắn tin</text>
+
+  <rect x="724" y="374" width="250" height="110" rx="26" fill="#f1f1f1"/>
+  <circle cx="785" cy="429" r="28" fill="#1877f2"/>
+  <text x="785" y="438" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="26" font-weight="700" fill="#ffffff">f</text>
+  <text x="853" y="420" font-family="Arial, Helvetica, sans-serif" font-size="28" font-weight="700" fill="#5a3d2b">Facebook</text>
+  <text x="853" y="452" font-family="Arial, Helvetica, sans-serif" font-size="18" fill="#7a5a46">Chia sẻ lên trang cá nhân</text>
+</svg>

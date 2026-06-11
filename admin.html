@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Quản lý Thiệp Mời Cưới</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #333;
+            font-size: 28px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #eee;
+        }
+
+        .tab-btn {
+            padding: 12px 20px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .tab-btn.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        .tab-content {
+            display: none;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        input:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+        }
+
+        .btn-secondary {
+            background: #e9ecef;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #dee2e6;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+            padding: 8px 16px;
+            font-size: 12px;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .alert.show {
+            display: block;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .guest-list,
+        .checkin-list {
+            display: grid;
+            gap: 15px;
+        }
+
+        .guest-card,
+        .checkin-card {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 15px;
+            background: #f9f9f9;
+        }
+
+        .guest-card:hover,
+        .checkin-card:hover {
+            background: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .guest-name {
+            font-weight: 600;
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .guest-desc {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .guest-url {
+            background: #f0f0f0;
+            padding: 8px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+            color: #333;
+            word-break: break-all;
+            margin-bottom: 10px;
+        }
+
+        .guest-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .copy-btn {
+            background: #28a745;
+            color: white;
+            padding: 8px 16px;
+            font-size: 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .copy-btn:hover {
+            background: #218838;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+
+        .spinner {
+            animation: spin 1s linear infinite;
+            display: inline-block;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .two-col {
+                grid-template-columns: 1fr;
+            }
+
+            .tabs {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎊 Admin - Quản lý Thiệp Mời Cưới</h1>
+            <p style="color: #666; margin-top: 8px;">Tạo guest, lấy URL riêng, xem check-in</p>
+        </header>
+
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="guests">👥 Khách Mời</button>
+            <button class="tab-btn" data-tab="checkins">💌 Check-in</button>
+        </div>
+
+        <!-- Tab: Khách Mời -->
+        <div id="guests" class="tab-content active">
+            <div id="alert-guests" class="alert"></div>
+
+            <div class="two-col">
+                <!-- Tạo Guest -->
+                <div>
+                    <h2 style="margin-bottom: 20px; color: #333;">Tạo Khách Mời</h2>
+                    <form id="form-guest">
+                        <div class="form-group">
+                            <label for="guest-name">Tên khách *</label>
+                            <input type="text" id="guest-name" placeholder="Vd: Nguyễn Văn A" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="guest-desc">Mô tả (tùy chọn)</label>
+                            <textarea id="guest-desc" placeholder="Vd: Bạn thân của cô dâu"></textarea>
+                        </div>
+
+                        <div class="button-group">
+                            <button type="submit" class="btn-primary">Tạo Khách & URL Riêng</button>
+                            <button type="reset" class="btn-secondary">Xóa</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Danh sách Guest -->
+                <div>
+                    <h2 style="margin-bottom: 20px; color: #333;">Danh Sách Khách</h2>
+                    <div id="guests-list" class="guest-list">
+                        <div class="loading"><span class="spinner">⌛</span> Đang tải...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: Check-in -->
+        <div id="checkins" class="tab-content">
+            <div id="alert-checkins" class="alert"></div>
+
+            <h2 style="margin-bottom: 20px; color: #333;">Danh Sách Check-in / Lời Nhắn</h2>
+            <div id="checkins-list" class="checkin-list">
+                <div class="loading"><span class="spinner">⌛</span> Đang tải...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = window.location.origin;
+
+        // Tab switching
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                btn.classList.add('active');
+                document.getElementById(btn.dataset.tab).classList.add('active');
+            });
+        });
+
+        // Alert helpers
+        function showAlert(tabName, message, type = 'success') {
+            const alertEl = document.getElementById(`alert-${tabName}`);
+            alertEl.className = `alert show alert-${type}`;
+            alertEl.textContent = message;
+            setTimeout(() => alertEl.classList.remove('show'), 5000);
+        }
+
+        // Create Guest
+        document.getElementById('form-guest').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const name = document.getElementById('guest-name').value.trim();
+            const description = document.getElementById('guest-desc').value.trim();
+
+            if (!name) {
+                showAlert('guests', 'Vui lòng nhập tên khách!', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/api/guests`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, description: description || null })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Không tạo được khách!');
+                }
+
+                const result = await response.json();
+                showAlert('guests', `✅ Tạo thành công! URL: ${result.private_invitation.absolute_url}`, 'success');
+                document.getElementById('form-guest').reset();
+                loadGuests();
+            } catch (error) {
+                showAlert('guests', `❌ Lỗi: ${error.message}`, 'error');
+            }
+        });
+
+        // Load Guests
+        async function loadGuests() {
+            try {
+                const response = await fetch(`${API_BASE}/api/guests`);
+                if (!response.ok) throw new Error('Không tải được danh sách!');
+
+                const guests = await response.json();
+                const html = guests.length
+                    ? guests.map(g => `
+                        <div class="guest-card">
+                            <div class="guest-name">${escapeHtml(g.name)}</div>
+                            ${g.description ? `<div class="guest-desc">${escapeHtml(g.description)}</div>` : ''}
+                            ${g.private_invitation ? `
+                                <div class="guest-url">${g.private_invitation.absolute_url}</div>
+                                <div class="guest-actions">
+                                    <button class="copy-btn" onclick="copyToClipboard('${g.private_invitation.absolute_url}')">📋 Copy URL</button>
+                                    <button class="btn-danger" onclick="deleteGuest('${g.id}')">Xóa</button>
+                                </div>
+                            ` : '<div style="color: #999;">Chưa có URL riêng</div>'}
+                        </div>
+                    `).join('')
+                    : '<p style="color: #999;">Chưa có khách nào</p>';
+
+                document.getElementById('guests-list').innerHTML = html;
+            } catch (error) {
+                document.getElementById('guests-list').innerHTML = `<p style="color: red;">Lỗi: ${error.message}</p>`;
+            }
+        }
+
+        // Delete Guest
+        async function deleteGuest(id) {
+            if (!confirm('Xóa khách này?')) return;
+
+            try {
+                const response = await fetch(`${API_BASE}/api/guests/${id}`, { method: 'DELETE' });
+                if (!response.ok) throw new Error('Không xóa được!');
+
+                showAlert('guests', '✅ Xóa thành công!', 'success');
+                loadGuests();
+            } catch (error) {
+                showAlert('guests', `❌ Lỗi: ${error.message}`, 'error');
+            }
+        }
+
+        // Load Check-ins
+        async function loadCheckins() {
+            try {
+                const response = await fetch(`${API_BASE}/api/messages-checkins`);
+                if (!response.ok) throw new Error('Không tải được danh sách!');
+
+                const checkins = await response.json();
+                const html = checkins.length
+                    ? checkins.map(c => `
+                        <div class="checkin-card">
+                            <div class="guest-name">${escapeHtml(c.name_guest)}</div>
+                            <p style="color: #666; margin: 8px 0;">
+                                <strong>Trạng thái:</strong> ${c.confirm_attendance || 'Chưa xác nhận'}
+                            </p>
+                            ${c.messages ? `<p style="color: #666; margin: 8px 0;"><strong>Lời nhắn:</strong> ${escapeHtml(c.messages)}</p>` : ''}
+                            <p style="font-size: 12px; color: #999; margin: 8px 0;">
+                                ID: ${c.id}<br>
+                                Guest ID: ${c.guest_id || 'Public'}
+                            </p>
+                        </div>
+                    `).join('')
+                    : '<p style="color: #999;">Chưa có check-in nào</p>';
+
+                document.getElementById('checkins-list').innerHTML = html;
+            } catch (error) {
+                document.getElementById('checkins-list').innerHTML = `<p style="color: red;">Lỗi: ${error.message}</p>`;
+            }
+        }
+
+        // Copy to Clipboard
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert('✅ Đã copy URL!');
+            }).catch(err => {
+                console.error('Copy failed:', err);
+            });
+        }
+
+        // Escape HTML
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Initial load
+        loadGuests();
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (btn.dataset.tab === 'checkins') loadCheckins();
+                if (btn.dataset.tab === 'guests') loadGuests();
+            });
+        });
+    </script>
+    <script src="https://duccuong.thiepcuoi.me/floating-widget.js" defer></script>
+</body>
+</html>

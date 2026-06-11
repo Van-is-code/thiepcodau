@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="700" viewBox="0 0 1200 700">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fbf2e8"/>
+      <stop offset="100%" stop-color="#fffdf9"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f5d39b"/>
+      <stop offset="100%" stop-color="#d6a15c"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="700" fill="url(#bg)"/>
+  <rect x="56" y="48" width="1088" height="604" rx="34" fill="#fffdf9" stroke="#ead9c7" stroke-width="4"/>
+
+  <circle cx="1044" cy="118" r="130" fill="#f6e4d4"/>
+  <circle cx="1044" cy="118" r="88" fill="url(#gold)"/>
+  <text x="1044" y="142" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="72" font-weight="700" fill="#7b4c2d">2</text>
+
+  <text x="110" y="126" font-family="Arial, Helvetica, sans-serif" font-size="44" font-weight="700" fill="#5a3d2b">Bước 2: Nhập tên khách</text>
+  <text x="110" y="168" font-family="Arial, Helvetica, sans-serif" font-size="24" fill="#7a5a46">Chỉ cần gõ tên người nhận thiệp vào ô trống.</text>
+
+  <rect x="112" y="220" width="668" height="314" rx="26" fill="#fff8ef" stroke="#ead9c7" stroke-width="3"/>
+  <text x="150" y="274" font-family="Arial, Helvetica, sans-serif" font-size="28" font-weight="700" fill="#5a3d2b">Tên khách mời</text>
+  <rect x="150" y="300" width="580" height="64" rx="18" fill="#ffffff" stroke="#e7d8c8" stroke-width="3"/>
+  <text x="178" y="340" font-family="Arial, Helvetica, sans-serif" font-size="22" fill="#9b7d66">Ví dụ: Nguyễn Văn A</text>
+  <rect x="150" y="390" width="580" height="64" rx="18" fill="#ffffff" stroke="#e7d8c8" stroke-width="3"/>
+  <text x="178" y="430" font-family="Arial, Helvetica, sans-serif" font-size="22" fill="#9b7d66">Có thể thêm tên người thân nếu cần</text>
+
+  <rect x="498" y="478" width="232" height="54" rx="27" fill="url(#gold)"/>
+  <text x="614" y="512" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="700" fill="#5a3d2b">Tạo thiệp</text>
+
+  <rect x="824" y="230" width="250" height="260" rx="28" fill="#f8efe5"/>
+  <text x="949" y="292" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="30" font-weight="700" fill="#5a3d2b">Nhập tên</text>
+  <text x="949" y="334" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="20" fill="#7a5a46">rồi bấm</text>
+  <text x="949" y="370" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="30" font-weight="700" fill="#5a3d2b">Tạo thiệp</text>
+  <path d="M882 412 C900 412, 915 412, 930 412" fill="none" stroke="#d6a15c" stroke-width="8" stroke-linecap="round"/>
+  <path d="M920 400 L950 412 L920 424" fill="none" stroke="#d6a15c" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
