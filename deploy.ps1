@@ -148,14 +148,17 @@ if ($Config.KeyFile -and (Test-Path $Config.KeyFile)) {
 
 $remoteUserHost = "$($Config.User)@$($Config.Host)"
 
-# Ham gui va thuc thi bash script tren server qua stdin (tranh moi loi escaping dau nhay tren Windows)
+# Ham gui va thuc thi bash script tren server qua Base64 (tuyet doi an toan, tranh moi loi ky tu/newline)
 function Invoke-RemoteScript([string]$scriptText) {
     if ($DryRun) {
-        Write-Warn "[DryRun] SSH Script to ${remoteUserHost}:"
+        Write-Warn "[DryRun] Script se chay tren ${remoteUserHost}:"
         Write-Host $scriptText -ForegroundColor DarkGray
         return 0
     }
-    $scriptText | & $sshCmd.Path @sshArgs $remoteUserHost "bash -l"
+    $unixScript = $scriptText.Replace("`r`n", "`n")
+    $bytes = [System.Text.Encoding]::UTF8.GetBytes($unixScript)
+    $b64 = [Convert]::ToBase64String($bytes)
+    & $sshCmd.Path @sshArgs $remoteUserHost "echo $b64 | base64 -d | bash -l"
     return $LASTEXITCODE
 }
 
@@ -218,7 +221,7 @@ Write-Host ""
 Write-Step "Thuc thi [$Action] tren Home Server: $remoteUserHost"
 Write-Host "      Thu muc server : $($Config.RemotePath)"
 
-# Xay dung bash script hoan chinh de truyen qua stdin cua SSH
+# Xay dung bash script hoan chinh
 $remoteScript = @"
 REMOTE_PATH='$($Config.RemotePath)'
 REPO_URL='$($Config.RepoUrl)'
