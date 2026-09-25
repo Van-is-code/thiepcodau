@@ -12,8 +12,7 @@ import {
   IconAlertCircle,
   IconCheckCircle,
 } from '../components/Icons'
-
-const API_BASE = (import.meta.env.VITE_API_URL || 'https://api.thiepcuoi.me').replace(/\/+$/, '')
+import { API_BASE } from '../api'
 
 const css = `
   .auth-page {

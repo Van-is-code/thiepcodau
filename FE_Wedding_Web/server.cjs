@@ -21,7 +21,7 @@ const BE = {
 };
 
 // Những đường dẫn thuộc về backend. Còn lại là của giao diện.
-const CUA_BACKEND = /^\/(api|uploads|templates|media|api-docs|api-docs-assets)(\/|$)/;
+const CUA_BACKEND = /^\/(same-origin\/)?(api|uploads|templates|media|api-docs|api-docs-assets)(\/|$)/;
 
 const KIEU = {
   '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8',
@@ -42,11 +42,12 @@ const cacheCho = (duong) => (
 
 // Chuyển tiếp nguyên xi sang backend, giữ cả phần thân (tải ảnh, tải nhạc).
 const chuyenTiep = (req, res) => {
+  const cleanPath = req.url.replace(/^\/same-origin/, '');
   const opts = {
     host: BE.host,
     port: BE.port,
     method: req.method,
-    path: req.url,
+    path: cleanPath,
     headers: { ...req.headers, host: `${BE.host}:${BE.port}` },
   };
   const ra = http.request(opts, (tl) => {

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { api } from '../api'
+import { api, API_BASE } from '../api'
 import { IconMusic, IconX, IconPlus, IconTrash2, IconCheck, IconUploadCloud } from './Icons'
 
 // Nhạc nền cho thiệp: khách tự dán 1 hoặc nhiều link, hoặc chọn từ kho nhạc hệ thống.
@@ -145,8 +145,7 @@ function fileName(u) {
 }
 function audioSrc(u) {
   if (/^https?:\/\//i.test(u)) return u
-  const base = (import.meta.env.VITE_API_URL || 'https://api.thiepcuoi.me').replace(/\/+$/, '')
-  return base + (u.startsWith('/') ? u : '/' + u)
+  return API_BASE + (u.startsWith('/') ? u : '/' + u)
 }
 
 const S = {
