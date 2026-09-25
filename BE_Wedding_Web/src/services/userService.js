@@ -140,9 +140,11 @@ const updateProfile = async (userId, { username }) => {
 	return sanitizeUser(user);
 };
 
-const changePassword = async (userId, { currentPassword, newPassword }) => {
+const changePassword = async (userId, payload = {}) => {
+	const currentPassword = payload.currentPassword || payload.current_password;
+	const newPassword = payload.newPassword || payload.new_password;
 	if (!currentPassword || !newPassword) {
-		const error = new Error('currentPassword và newPassword là bắt buộc');
+		const error = new Error('Vui lòng nhập đầy đủ mật khẩu hiện tại và mật khẩu mới');
 		error.status = 400;
 		throw error;
 	}

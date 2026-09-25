@@ -14,8 +14,14 @@ import {
   IconCalendar,
   IconShield,
   IconChevronLeft,
+  IconKey,
+  IconLock,
+  IconEye,
+  IconEyeOff,
+  IconAlertCircle,
+  IconCheckCircle,
 } from '../components/Icons'
-import { API_BASE } from '../api'
+import { api, API_BASE } from '../api'
 
 const css = `
   .profile-layout {
@@ -213,12 +219,94 @@ const css = `
     background: #fff;
   }
 
+  .profile-pw-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .profile-eye-btn {
+    position: absolute;
+    right: 10px;
+    background: transparent;
+    border: none;
+    color: var(--text-subtle);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px;
+    border-radius: 4px;
+    transition: color 0.2s ease;
+  }
+
+  .profile-eye-btn:hover {
+    color: var(--primary);
+  }
+
+  .profile-alert {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px 16px;
+    border-radius: var(--radius-md);
+    font-size: 13.5px;
+    line-height: 1.5;
+    margin-bottom: 18px;
+  }
+
+  .profile-alert-error {
+    background: rgba(192, 73, 56, 0.08);
+    border: 1px solid rgba(192, 73, 56, 0.25);
+    color: #c04938;
+  }
+
+  .profile-alert-success {
+    background: rgba(79, 126, 101, 0.1);
+    border: 1px solid rgba(79, 126, 101, 0.25);
+    color: var(--sage);
+  }
+
+  .profile-mobile-tabs {
+    display: none;
+    gap: 8px;
+    margin-bottom: 24px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+
+  .profile-mobile-tab-btn {
+    padding: 8px 16px;
+    border-radius: 9999px;
+    border: 1px solid var(--border-subtle);
+    background: var(--bg-card);
+    color: var(--text-muted);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+  }
+
+  .profile-mobile-tab-btn.active {
+    background: var(--primary-light);
+    border-color: var(--primary);
+    color: var(--primary);
+    font-weight: 600;
+  }
+
   @media (max-width: 860px) {
     .profile-layout {
       grid-template-columns: 1fr;
     }
     .profile-sidebar {
       display: none;
+    }
+    .profile-mobile-tabs {
+      display: flex;
     }
     .profile-content {
       padding: 24px 20px 60px;
@@ -240,6 +328,61 @@ export default function Profile() {
   const [editMode, setEditMode] = useState(false)
   const [editForm, setEditForm] = useState({})
   const [saving, setSaving] = useState(false)
+
+  // Password state
+  const [pwForm, setPwForm] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: '',
+  })
+  const [showCurrentPw, setShowCurrentPw] = useState(false)
+  const [showNewPw, setShowNewPw] = useState(false)
+  const [showConfirmPw, setShowConfirmPw] = useState(false)
+  const [pwLoading, setPwLoading] = useState(false)
+  const [pwAlert, setPwAlert] = useState(null)
+
+  const handleChangePassword = async (e) => {
+    if (e && e.preventDefault) e.preventDefault()
+    setPwAlert(null)
+
+    if (!pwForm.currentPassword) {
+      setPwAlert({ type: 'error', msg: 'Vui lòng nhập mật khẩu hiện tại' })
+      return
+    }
+    if (!pwForm.newPassword) {
+      setPwAlert({ type: 'error', msg: 'Vui lòng nhập mật khẩu mới' })
+      return
+    }
+    if (pwForm.newPassword.length < 6) {
+      setPwAlert({ type: 'error', msg: 'Mật khẩu mới phải có ít nhất 6 ký tự' })
+      return
+    }
+    if (pwForm.newPassword === pwForm.currentPassword) {
+      setPwAlert({ type: 'error', msg: 'Mật khẩu mới phải khác mật khẩu hiện tại' })
+      return
+    }
+    if (pwForm.newPassword !== pwForm.confirmPassword) {
+      setPwAlert({ type: 'error', msg: 'Mật khẩu xác nhận không trùng khớp' })
+      return
+    }
+
+    try {
+      setPwLoading(true)
+      const res = await api.changePassword(pwForm.currentPassword, pwForm.newPassword)
+      setPwAlert({
+        type: 'success',
+        msg: res.data?.message || 'Đổi mật khẩu thành công! Bạn có thể sử dụng mật khẩu mới từ lần đăng nhập sau.',
+      })
+      setPwForm({ currentPassword: '', newPassword: '', confirmPassword: '' })
+    } catch (err) {
+      setPwAlert({
+        type: 'error',
+        msg: err.response?.data?.message || err.message || 'Đổi mật khẩu thất bại',
+      })
+    } finally {
+      setPwLoading(false)
+    }
+  }
 
   useEffect(() => {
     fetchProfile()
@@ -338,14 +481,21 @@ export default function Profile() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
             <button
               className={`profile-nav-btn${tab === 'info' ? ' active' : ''}`}
-              onClick={() => setTab('info')}
+              onClick={() => { setTab('info'); setPwAlert(null); }}
             >
               <IconUser size={16} />
               <span>Thông Tin Cá Nhân</span>
             </button>
             <button
+              className={`profile-nav-btn${tab === 'password' ? ' active' : ''}`}
+              onClick={() => { setTab('password'); setPwAlert(null); }}
+            >
+              <IconKey size={16} />
+              <span>Đổi Mật Khẩu</span>
+            </button>
+            <button
               className={`profile-nav-btn${tab === 'settings' ? ' active' : ''}`}
-              onClick={() => setTab('settings')}
+              onClick={() => { setTab('settings'); setPwAlert(null); }}
             >
               <IconSettings size={16} />
               <span>Cài Đặt Tài Khoản</span>
@@ -354,7 +504,7 @@ export default function Profile() {
               <IconMail size={16} />
               <span>Quản Lý Thiệp Cưới</span>
             </button>
-            <button className="profile-nav-btn" onClick={() => navigate('/dashboard/templates')}>
+            <button className="profile-nav-btn" onClick={() => navigate('/templates')}>
               <IconPalette size={16} />
               <span>Kho Mẫu Templates</span>
             </button>
@@ -376,7 +526,7 @@ export default function Profile() {
         </aside>
 
         <main className="profile-content">
-          <div style={{ marginBottom: 20 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
             <button
               className="btn-ghost"
               style={{ padding: '6px 14px', fontSize: 12.5 }}
@@ -384,6 +534,30 @@ export default function Profile() {
             >
               <IconChevronLeft size={14} />
               <span>Về Trang Quản Lý</span>
+            </button>
+          </div>
+
+          <div className="profile-mobile-tabs">
+            <button
+              className={`profile-mobile-tab-btn${tab === 'info' ? ' active' : ''}`}
+              onClick={() => { setTab('info'); setPwAlert(null); }}
+            >
+              <IconUser size={14} />
+              <span>Thông Tin</span>
+            </button>
+            <button
+              className={`profile-mobile-tab-btn${tab === 'password' ? ' active' : ''}`}
+              onClick={() => { setTab('password'); setPwAlert(null); }}
+            >
+              <IconKey size={14} />
+              <span>Đổi Mật Khẩu</span>
+            </button>
+            <button
+              className={`profile-mobile-tab-btn${tab === 'settings' ? ' active' : ''}`}
+              onClick={() => { setTab('settings'); setPwAlert(null); }}
+            >
+              <IconSettings size={14} />
+              <span>Cài Đặt</span>
             </button>
           </div>
 
@@ -502,29 +676,152 @@ export default function Profile() {
                 </div>
               )}
 
-              {tab === 'settings' && (
+              {tab === 'password' && (
                 <div className="profile-card" style={{ maxWidth: 540 }}>
                   <h3>
-                    <IconSettings size={18} color="#d97757" />
-                    <span>Cài Đặt & Đăng Xuất</span>
+                    <IconKey size={19} color="#d97757" />
+                    <span>Thay Đổi Mật Khẩu</span>
                   </h3>
 
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
-                    <p style={{ fontSize: 13.5, color: 'var(--text-muted)', lineHeight: 1.6 }}>
-                      Đăng xuất tài khoản trên thiết bị này hoặc liên hệ hỗ trợ nếu cần đổi mật khẩu / nâng cấp lượt tạo thiệp.
+                  <p style={{ fontSize: 13.5, color: 'var(--text-muted)', marginBottom: 20, lineHeight: 1.6 }}>
+                    Để bảo vệ an toàn cho tài khoản của bạn, vui lòng nhập mật khẩu hiện tại và tạo mật khẩu mới (tối thiểu 6 ký tự).
+                  </p>
+
+                  {pwAlert && (
+                    <div className={`profile-alert profile-alert-${pwAlert.type}`}>
+                      {pwAlert.type === 'error' ? (
+                        <IconAlertCircle size={18} color="#c04938" />
+                      ) : (
+                        <IconCheckCircle size={18} color="#4f7e65" />
+                      )}
+                      <span>{pwAlert.msg}</span>
+                    </div>
+                  )}
+
+                  <form onSubmit={handleChangePassword} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                    <div className="profile-field-group">
+                      <label className="profile-field-label">Mật khẩu hiện tại</label>
+                      <div className="profile-pw-wrap">
+                        <input
+                          className="profile-input"
+                          type={showCurrentPw ? 'text' : 'password'}
+                          placeholder="Nhập mật khẩu đang dùng..."
+                          value={pwForm.currentPassword}
+                          onChange={(e) => setPwForm((f) => ({ ...f, currentPassword: e.target.value }))}
+                          style={{ paddingRight: 40 }}
+                          autoComplete="current-password"
+                        />
+                        <button
+                          className="profile-eye-btn"
+                          type="button"
+                          onClick={() => setShowCurrentPw((v) => !v)}
+                          tabIndex={-1}
+                          aria-label="Hiện/Ẩn mật khẩu"
+                        >
+                          {showCurrentPw ? <IconEyeOff size={16} /> : <IconEye size={16} />}
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="profile-field-group">
+                      <label className="profile-field-label">Mật khẩu mới</label>
+                      <div className="profile-pw-wrap">
+                        <input
+                          className="profile-input"
+                          type={showNewPw ? 'text' : 'password'}
+                          placeholder="Tối thiểu 6 ký tự..."
+                          value={pwForm.newPassword}
+                          onChange={(e) => setPwForm((f) => ({ ...f, newPassword: e.target.value }))}
+                          style={{ paddingRight: 40 }}
+                          autoComplete="new-password"
+                        />
+                        <button
+                          className="profile-eye-btn"
+                          type="button"
+                          onClick={() => setShowNewPw((v) => !v)}
+                          tabIndex={-1}
+                          aria-label="Hiện/Ẩn mật khẩu"
+                        >
+                          {showNewPw ? <IconEyeOff size={16} /> : <IconEye size={16} />}
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="profile-field-group">
+                      <label className="profile-field-label">Xác nhận mật khẩu mới</label>
+                      <div className="profile-pw-wrap">
+                        <input
+                          className="profile-input"
+                          type={showConfirmPw ? 'text' : 'password'}
+                          placeholder="Nhập lại mật khẩu mới..."
+                          value={pwForm.confirmPassword}
+                          onChange={(e) => setPwForm((f) => ({ ...f, confirmPassword: e.target.value }))}
+                          style={{ paddingRight: 40 }}
+                          autoComplete="new-password"
+                        />
+                        <button
+                          className="profile-eye-btn"
+                          type="button"
+                          onClick={() => setShowConfirmPw((v) => !v)}
+                          tabIndex={-1}
+                          aria-label="Hiện/Ẩn mật khẩu"
+                        >
+                          {showConfirmPw ? <IconEyeOff size={16} /> : <IconEye size={16} />}
+                        </button>
+                      </div>
+                    </div>
+
+                    <div style={{ marginTop: 8 }}>
+                      <button className="btn-main" type="submit" disabled={pwLoading}>
+                        <IconKey size={15} />
+                        <span>{pwLoading ? 'Đang cập nhật...' : 'Cập Nhật Mật Khẩu'}</span>
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              )}
+
+              {tab === 'settings' && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 24, maxWidth: 540 }}>
+                  <div className="profile-card">
+                    <h3>
+                      <IconKey size={19} color="#d97757" />
+                      <span>Đổi Mật Khẩu Nhanh</span>
+                    </h3>
+                    <p style={{ fontSize: 13.5, color: 'var(--text-muted)', marginBottom: 16, lineHeight: 1.6 }}>
+                      Bạn có thể cập nhật mật khẩu tài khoản bất cứ lúc nào để tăng cường tính bảo mật.
                     </p>
                     <div>
-                      <button
-                        className="btn-ghost"
-                        style={{ color: '#c04938', borderColor: 'rgba(192,73,56,0.3)' }}
-                        onClick={() => {
-                          localStorage.removeItem('token')
-                          navigate('/auth')
-                        }}
-                      >
-                        <IconLogOut size={15} />
-                        <span>Đăng Xuất Khỏi Thiết Bị</span>
+                      <button className="btn-main" onClick={() => setTab('password')}>
+                        <IconKey size={15} />
+                        <span>Mở Form Đổi Mật Khẩu</span>
                       </button>
+                    </div>
+                  </div>
+
+                  <div className="profile-card">
+                    <h3>
+                      <IconSettings size={18} color="#d97757" />
+                      <span>Đăng Xuất Tài Khoản</span>
+                    </h3>
+
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+                      <p style={{ fontSize: 13.5, color: 'var(--text-muted)', lineHeight: 1.6 }}>
+                        Đăng xuất tài khoản trên thiết bị này. Bạn có thể đăng nhập lại bất kỳ lúc nào.
+                      </p>
+                      <div>
+                        <button
+                          className="btn-ghost"
+                          style={{ color: '#c04938', borderColor: 'rgba(192,73,56,0.3)' }}
+                          onClick={() => {
+                            localStorage.removeItem('token')
+                            navigate('/auth')
+                          }}
+                        >
+                          <IconLogOut size={15} />
+                          <span>Đăng Xuất Khỏi Thiết Bị</span>
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>

@@ -43,7 +43,9 @@ apiClient.interceptors.response.use(
 
     if (status === 401 && !isAuthCall) {
       localStorage.removeItem('token')
-      if (!window.location.pathname.startsWith('/auth')) {
+      const publicPrefixes = ['/auth', '/login', '/templates', '/mau-thiep', '/preview', '/pay']
+      const isPublicPath = publicPrefixes.some((p) => window.location.pathname.startsWith(p))
+      if (!isPublicPath) {
         window.location.assign('/auth')
       }
     }

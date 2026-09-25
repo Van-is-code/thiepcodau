@@ -13,6 +13,7 @@ import GuestsPage from './pages/dashboard/GuestsPage'
 import CheckinsPage from './pages/dashboard/CheckinsPage'
 import EditorPage from './pages/dashboard/EditorPage'
 import TemplatePreviewPage from './pages/dashboard/TemplatePreviewPage'
+import PublicTemplatesPage from './pages/PublicTemplatesPage'
 import AdminPage from './pages/admin/AdminPage'
 import CtvDashboard from './pages/ctv/CtvDashboard'
 import PayPage from './pages/PayPage'
@@ -48,6 +49,11 @@ function App() {
         {/* Public payment page - no auth required */}
         <Route path="/pay/:token" element={<PayPage />} />
 
+        {/* Public template catalog and preview - no auth required */}
+        <Route path="/templates" element={<PublicTemplatesPage />} />
+        <Route path="/mau-thiep" element={<PublicTemplatesPage />} />
+        <Route path="/preview/:templateId" element={<TemplatePreviewPage />} />
+
         {/* Public template route - no auth required */}
         <Route path="/:slug" element={<TemplateLoader />} />
 
@@ -81,10 +87,6 @@ function App() {
         <Route
           path="/editor/:invitationId"
           element={token ? <EditorPage /> : <Navigate to="/auth" />}
-        />
-        <Route
-          path="/preview/:templateId"
-          element={token ? <TemplatePreviewPage /> : <Navigate to="/auth" />}
         />
         <Route
           path="/pricing"

@@ -1,6 +1,21 @@
 const jwt = require('jsonwebtoken');
 const env = require('../config/env');
 
+// Optional JWT verification - attaches req.user if valid token present, but doesn't block if missing or invalid
+const optionalAuth = (req, res, next) => {
+  try {
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      const token = authHeader.substring(7);
+      const decoded = jwt.verify(token, env.jwtSecret);
+      req.user = decoded;
+    }
+  } catch (error) {
+    req.user = null;
+  }
+  next();
+};
+
 // Verify JWT token
 const authenticate = (req, res, next) => {
   try {
@@ -84,6 +99,7 @@ const adminOrCtv = (req, res, next) => {
 
 module.exports = {
   authenticate,
+  optionalAuth,
   adminOnly,
   userOrAdmin,
   ctvOnly,
