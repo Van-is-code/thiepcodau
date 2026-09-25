@@ -11,6 +11,7 @@ import {
   IconMail,
   IconAlertCircle,
   IconCheckCircle,
+  IconPalette,
 } from '../components/Icons'
 import { API_BASE } from '../api'
 
@@ -157,6 +158,7 @@ const css = `
 
   /* Right Form Area */
   .auth-form-panel {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -299,6 +301,61 @@ const css = `
     opacity: 0.6;
     cursor: not-allowed;
     transform: none;
+  }
+
+  .auth-preview-btn {
+    width: 100%;
+    height: 48px;
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: #4a3b32;
+    background: #fdf5ef;
+    border: 1.5px solid #ebd9cb;
+    border-radius: var(--radius-full);
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  .auth-preview-btn:hover {
+    background: #faece0;
+    border-color: #d97757;
+    color: #d97757;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(217, 119, 87, 0.18);
+  }
+
+  .auth-top-showcase-btn {
+    position: absolute;
+    top: 24px;
+    right: 28px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(8px);
+    border: 1px solid #ebdcd0;
+    border-radius: 9999px;
+    color: #5c4d43;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s ease;
+    z-index: 10;
+  }
+
+  .auth-top-showcase-btn:hover {
+    background: #fff;
+    color: #d97757;
+    border-color: #d97757;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(217, 119, 87, 0.2);
   }
 
   .auth-alert {
@@ -464,6 +521,16 @@ export default function Auth({ onLogin }) {
 
         {/* Right Form Panel */}
         <div className="auth-form-panel">
+          <button
+            className="auth-top-showcase-btn"
+            type="button"
+            onClick={() => navigate('/templates')}
+            title="Xem danh sách mẫu thiệp cưới không cần đăng nhập"
+          >
+            <IconPalette size={16} color="#d97757" />
+            <span>✨ Xem Mẫu Thiệp</span>
+          </button>
+
           <div className="auth-card">
             <div className="auth-card-head">
               <h2 className="auth-card-title">Đăng Nhập</h2>
@@ -545,6 +612,15 @@ export default function Auth({ onLogin }) {
                     <IconSparkles size={16} />
                   </>
                 )}
+              </button>
+
+              <button
+                className="auth-preview-btn"
+                type="button"
+                onClick={() => navigate('/templates')}
+              >
+                <IconEye size={17} color="#d97757" />
+                <span>✨ Khám Phá & Xem Thử Mẫu Thiệp</span>
               </button>
 
               <div className="auth-divider">hỗ trợ tài khoản</div>

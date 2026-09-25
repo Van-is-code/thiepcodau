@@ -43,7 +43,9 @@ apiClient.interceptors.response.use(
 
     if (status === 401 && !isAuthCall) {
       localStorage.removeItem('token')
-      if (!window.location.pathname.startsWith('/auth')) {
+      const publicPrefixes = ['/auth', '/login', '/templates', '/mau-thiep', '/preview', '/pay']
+      const isPublicPath = publicPrefixes.some((p) => window.location.pathname.startsWith(p))
+      if (!isPublicPath) {
         window.location.assign('/auth')
       }
     }
@@ -78,10 +80,8 @@ export const api = {
   editorSaveInvitation: (id, payload) => apiClient.post(`/api/invitations/${id}/editor-save`, payload),
   // Đổi mẫu — KHÔNG tính vào hạn mức sửa.
   changeInvitationTemplate: (id, templateId) => apiClient.patch(`/api/invitations/${id}/template`, { template_id: templateId }),
-  setInvitationMusic: (id, payload) => {
-    const body = Array.isArray(payload) ? { music_playlist: payload } : (payload || {})
-    return apiClient.patch(`/api/invitations/${id}/music`, body)
-  },
+  // Nhạc nền (nhiều link / kho nhạc) — KHÔNG tính vào hạn mức.
+  setInvitationMusic: (id, playlist) => apiClient.patch(`/api/invitations/${id}/music`, { music_playlist: playlist }),
   // Tài khoản ngân hàng mừng cưới (1 QR chung) — KHÔNG tính vào hạn mức.
   setInvitationBank: (id, bank) => apiClient.patch(`/api/invitations/${id}/bank`, bank),
 
