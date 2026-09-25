@@ -115,6 +115,12 @@ export const buildMergedData = (invitation) => {
   if (data.images) data.images = normalizeImageList(data.images)
   if (data.invitation_images) data.invitation_images = normalizeImageList(data.invitation_images)
   if (data.music_url) data.music_url = toAbsoluteMediaUrl(data.music_url)
+  if (data.extra_data?.music_settings?.voice_url) {
+    data.extra_data.music_settings.voice_url = toAbsoluteMediaUrl(data.extra_data.music_settings.voice_url)
+  }
+  if (data.music_settings?.voice_url) {
+    data.music_settings.voice_url = toAbsoluteMediaUrl(data.music_settings.voice_url)
+  }
 
   data.groom_name = invitation?.groom?.name_groom || ''
   data.bride_name = invitation?.bride?.name_bride || ''
@@ -574,9 +580,57 @@ const buildDomInjectScript = (editMode) => `
     try { renderTimeline(data); } catch (e) {}
     try { renderQrPopup(data); } catch (e) {}
 
+    var mSettings = data.music_settings || (data.extra_data && data.extra_data.music_settings) || {};
+    var mVol = typeof mSettings.music_volume === 'number' ? mSettings.music_volume / 100 : 0.8;
+    var audioEl = document.querySelector('audio:not([data-skip-auto-music])');
+
     if (data.music_url) {
-      var audioEl = document.querySelector('audio:not([data-skip-auto-music])');
-      if (audioEl) audioEl.src = data.music_url;
+      if (!audioEl) {
+        audioEl = document.createElement('audio');
+        audioEl.id = 'ww-injected-music';
+        audioEl.loop = true;
+        audioEl.preload = 'auto';
+        document.body.appendChild(audioEl);
+      }
+      if (audioEl.src !== data.music_url) {
+        audioEl.src = data.music_url;
+      }
+      audioEl.volume = mVol;
+    }
+
+    var vUrl = mSettings.voice_url;
+    var vVol = typeof mSettings.voice_volume === 'number' ? mSettings.voice_volume / 100 : 1.0;
+    var shouldDuck = mSettings.duck_music !== false;
+
+    if (vUrl) {
+      var voiceEl = document.querySelector('#ww-injected-voice');
+      if (!voiceEl) {
+        voiceEl = document.createElement('audio');
+        voiceEl.id = 'ww-injected-voice';
+        voiceEl.preload = 'auto';
+        document.body.appendChild(voiceEl);
+      }
+      if (voiceEl.src !== vUrl) voiceEl.src = vUrl;
+      voiceEl.volume = vVol;
+
+      voiceEl.onplay = function() {
+        if (audioEl && shouldDuck) {
+          audioEl.volume = Math.max(0.05, mVol * 0.25);
+        }
+      };
+      var restoreMusic = function() {
+        if (audioEl) audioEl.volume = mVol;
+      };
+      voiceEl.onended = restoreMusic;
+      voiceEl.onpause = restoreMusic;
+
+      if (audioEl) {
+        audioEl.addEventListener('play', function() {
+          if (voiceEl && voiceEl.paused && voiceEl.currentTime === 0) {
+            voiceEl.play().catch(function() {});
+          }
+        }, { once: true });
+      }
     }
   }
 

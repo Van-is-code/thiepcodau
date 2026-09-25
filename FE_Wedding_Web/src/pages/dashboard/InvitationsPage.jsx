@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { api } from '../../api'
 import { formatDate, invitationName, invitationSlug, toArray } from './helpers'
 import BankQrUpload from '../../components/BankQrUpload'
+import MusicPanel from '../../components/MusicPanel'
 import {
   IconMail,
   IconPlus,
@@ -67,6 +68,11 @@ export default function InvitationsPage() {
     navigator.clipboard.writeText(url)
     setCopiedSlug(slug)
     setTimeout(() => setCopiedSlug(''), 2000)
+  }
+
+  const handleMusicSaved = (updated) => {
+    if (!updated || !updated.id) return
+    setItems((prev) => prev.map((item) => (item.id === updated.id ? { ...item, ...updated } : item)))
   }
 
   if (loading) {
@@ -209,7 +215,7 @@ export default function InvitationsPage() {
                       { id: 'thiep', label: 'Thông Tin Thiệp', Icon: IconMail },
                       { id: 'chure', label: 'Chú Rể & QR', Icon: IconUser },
                       { id: 'codau', label: 'Cô Dâu & QR', Icon: IconUser },
-                      { id: 'media', label: 'Ảnh & Nhạc Nền', Icon: IconImage },
+                      { id: 'media', label: 'Âm Thanh & Nhạc', Icon: IconMusic },
                     ].map((t) => {
                       const TabIcon = t.Icon
                       return (
@@ -349,20 +355,57 @@ export default function InvitationsPage() {
 
                   {activeTab === 'media' && (
                     <div className="dsec">
-                      <div className="empty" style={{ padding: '32px 20px' }}>
-                        <div className="empty-ico">
-                          <IconImage size={32} color="#d97757" />
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          gap: 12,
+                          padding: '14px 18px',
+                          background: '#fdf8f4',
+                          border: '1px solid #f2dbcb',
+                          borderRadius: 'var(--radius-md)',
+                          marginBottom: 16,
+                          flexWrap: 'wrap',
+                        }}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                          <div
+                            style={{
+                              width: 38,
+                              height: 38,
+                              borderRadius: 10,
+                              background: '#fdebe7',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              color: 'var(--primary)',
+                            }}
+                          >
+                            <IconImage size={20} />
+                          </div>
+                          <div>
+                            <div style={{ fontSize: 13.5, fontWeight: 700, color: 'var(--text-main)' }}>
+                              Hình ảnh cưới trên thiệp
+                            </div>
+                            <div style={{ fontSize: 12, color: 'var(--text-subtle)', marginTop: 2 }}>
+                              Mở trình chỉnh sửa để chạm vào các khung ảnh và tải ảnh cưới của hai bạn lên
+                            </div>
+                          </div>
                         </div>
-                        <div className="empty-txt" style={{ maxWidth: 480, margin: '0 auto', lineHeight: 1.6 }}>
-                          Ảnh cưới và nhạc nền được thay thế trực tiếp trên bản xem thiệp — hãy mở trình chỉnh sửa và bấm vào bất kỳ khung ảnh nào để tải ảnh cưới của bạn lên.
-                        </div>
-                      </div>
-                      <div className="savebar" style={{ justifyContent: 'flex-end' }}>
+
                         <button className="btn-main" onClick={() => navigate(`/editor/${inv.id}`)}>
-                          <IconImage size={15} />
-                          <span>Mở Trình Sửa Ảnh & Nhạc</span>
+                          <IconEdit3 size={15} />
+                          <span>Mở Trình Sửa Để Đổi Ảnh</span>
                         </button>
                       </div>
+
+                      {/* Music & Voice Studio */}
+                      <MusicPanel
+                        inline={true}
+                        invitation={inv}
+                        onSaved={handleMusicSaved}
+                      />
                     </div>
                   )}
                 </div>

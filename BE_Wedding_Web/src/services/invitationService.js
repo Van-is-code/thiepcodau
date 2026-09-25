@@ -548,7 +548,25 @@ const setMusic = async (id, body, actor) => {
 		try { primary = getRandomDefaultMusicUrl(); } catch (_e) { primary = null; }
 	}
 
-	const extra = { ...(item.extra_data || {}), music_playlist: playlist };
+	let voiceUrl = body?.voice_url !== undefined
+		? (body.voice_url ? String(body.voice_url).trim() : null)
+		: (item.extra_data?.music_settings?.voice_url || null);
+	if (voiceUrl && /^\/uploads\/music\//i.test(voiceUrl)) {
+		assertOwnMusic([voiceUrl], item.users_id);
+	}
+
+	const musicSettings = {
+		music_volume: typeof body?.music_volume === 'number' ? Math.max(0, Math.min(100, Math.round(body.music_volume))) : (item.extra_data?.music_settings?.music_volume ?? 80),
+		voice_url: voiceUrl || null,
+		voice_volume: typeof body?.voice_volume === 'number' ? Math.max(0, Math.min(100, Math.round(body.voice_volume))) : (item.extra_data?.music_settings?.voice_volume ?? 100),
+		duck_music: body?.duck_music !== undefined ? Boolean(body.duck_music) : (item.extra_data?.music_settings?.duck_music ?? true),
+	};
+
+	const extra = {
+		...(item.extra_data || {}),
+		music_playlist: playlist,
+		music_settings: musicSettings,
+	};
 	item.extra_data = extra;
 	item.music_url = primary;
 	if (Invitation.rawAttributes.updated_at) item.updated_at = new Date();

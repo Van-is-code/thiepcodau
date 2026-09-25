@@ -20,10 +20,12 @@ import {
   IconAlertCircle,
   IconQrCode,
   IconMusic,
+  IconHelpCircle,
 } from '../../components/Icons'
 import BankQrPanel from '../../components/BankQrPanel'
 import MusicPanel from '../../components/MusicPanel'
 import ImageCropper from '../../components/ImageCropper'
+import EditorTourGuide from '../../components/EditorTourGuide'
 
 // data:image/png;base64,... -> File (để upload QR sinh ra làm ảnh thiệp)
 function dataUriToFile(uri, name) {
@@ -56,6 +58,13 @@ export default function EditorPage() {
   const [lockState, setLockState] = useState(null)
   const [bankPanel, setBankPanel] = useState(false)
   const [musicPanel, setMusicPanel] = useState(false)
+  const [showTour, setShowTour] = useState(() => {
+    try {
+      return !localStorage.getItem('has_seen_editor_tour_v1')
+    } catch {
+      return false
+    }
+  })
   const [cropTask, setCropTask] = useState(null) // { file, ratio, field, index }
   // Hàng đợi cắt ảnh khi tải NHIỀU ảnh album 1 lần: cắt xong ảnh này -> lưu -> ảnh kế.
   const [cropQueue, setCropQueue] = useState(null) // { files: File[], ratio, field, baseIndex, pos, total }
@@ -447,13 +456,17 @@ export default function EditorPage() {
     await modal.alert({ tone: 'success', title: 'Đã lưu QR', message: 'Mã QR & tài khoản ngân hàng đã lưu vào mục Quà cưới của thiệp.' })
   }
 
-  // Sau khi lưu nhạc: cập nhật music_url + playlist local + đẩy vào iframe.
+  // Sau khi lưu nhạc: cập nhật music_url + playlist + music_settings local + đẩy vào iframe.
   const handleMusicSaved = (data) => {
     setMusicPanel(false)
     const nextInv = {
       ...invitation,
       music_url: data?.music_url || invitation.music_url,
-      extra_data: { ...(invitation.extra_data || {}), music_playlist: data?.extra_data?.music_playlist || [] },
+      extra_data: {
+        ...(invitation.extra_data || {}),
+        music_playlist: data?.extra_data?.music_playlist || [],
+        music_settings: data?.extra_data?.music_settings || invitation?.extra_data?.music_settings,
+      },
     }
     setInvitation(nextInv)
     pushToIframe(nextInv, pending)
@@ -528,12 +541,19 @@ export default function EditorPage() {
         </div>
 
         <div style={S.rightActions}>
-          {coHopNhac && (
-            <button style={S.tplBtn} onClick={openMusicPanel} disabled={locked}>
-              <IconMusic size={15} />
-              <span>Nhạc Nền</span>
-            </button>
-          )}
+          <button style={S.tplBtn} onClick={openMusicPanel} disabled={locked} title="Cài đặt nhạc nền và ghi âm lời chúc">
+            <IconMusic size={15} />
+            <span>Âm Thanh & Nhạc</span>
+          </button>
+
+          <button
+            style={{ ...S.tplBtn, background: '#fdf6ee', borderColor: '#f2ded0', color: '#c96547', fontWeight: 700 }}
+            onClick={() => setShowTour(true)}
+            title="Xem hướng dẫn sử dụng cách sửa thiệp"
+          >
+            <IconHelpCircle size={15} color="#c96547" />
+            <span>Hướng Dẫn</span>
+          </button>
 
           <button style={S.tplBtn} onClick={openBankPanel} disabled={locked}>
             <IconQrCode size={15} />
@@ -592,9 +612,19 @@ export default function EditorPage() {
       {bankPanel && (
         <BankQrPanel invitation={invitation} onSaved={handleBankSaved} onClose={() => setBankPanel(false)} />
       )}
-      {musicPanel && coHopNhac && (
+      {musicPanel && (
         <MusicPanel invitation={invitation} onSaved={handleMusicSaved} onClose={() => setMusicPanel(false)} />
       )}
+      <EditorTourGuide
+        isOpen={showTour}
+        onClose={() => setShowTour(false)}
+        onComplete={() => {
+          try {
+            localStorage.setItem('has_seen_editor_tour_v1', 'true')
+          } catch {}
+          setShowTour(false)
+        }}
+      />
       {cropTask && (
         <ImageCropper
           key={cropTask.file?.name + '|' + cropTask.index}
