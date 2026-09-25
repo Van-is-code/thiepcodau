@@ -89,8 +89,13 @@ const server = http.createServer((req, res) => {
 
   const backendMatch = req.url.match(CUA_BACKEND);
   if (backendMatch) {
-    const cleanPath = '/' + backendMatch[1] + (backendMatch[2] || '');
-    return chuyenTiep(req, res, cleanPath);
+    // Nếu là /templates hoặc /templates/ (không có tệp con mẫu thiệp như /templates/theme/index.html)
+    // thì đây là route hiển thị kho mẫu của giao diện React (SPA), không chuyển tiếp sang backend.
+    const isTemplateShowcasePage = backendMatch[1] === 'templates' && (!backendMatch[2] || backendMatch[2] === '/');
+    if (!isTemplateShowcasePage) {
+      const cleanPath = '/' + backendMatch[1] + (backendMatch[2] || '');
+      return chuyenTiep(req, res, cleanPath);
+    }
   }
 
   const abs = duongDanThat(urlPath);

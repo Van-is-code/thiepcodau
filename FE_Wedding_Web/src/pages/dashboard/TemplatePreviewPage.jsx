@@ -73,23 +73,7 @@ export default function TemplatePreviewPage() {
     return () => window.removeEventListener('message', handleMessage)
   }, [template])
 
-  const handleBack = () => {
-    const token = localStorage.getItem('token')
-    if (window.history.length > 1) {
-      navigate(-1)
-    } else {
-      navigate(token ? '/dashboard/templates' : '/templates')
-    }
-  }
-
   const handleUseTemplate = async () => {
-    const token = localStorage.getItem('token')
-    if (!token) {
-      if (window.confirm('Để chọn và chỉnh sửa mẫu thiệp này, bạn cần đăng nhập tài khoản. Bạn có muốn chuyển đến trang đăng nhập ngay không?')) {
-        navigate('/auth')
-      }
-      return
-    }
     if (creating) return
     try {
       setCreating(true)
@@ -121,7 +105,7 @@ export default function TemplatePreviewPage() {
       <div style={S.center}>
         <div style={{ ...S.loadingCard, borderColor: 'rgba(192,73,56,0.3)' }}>
           <p style={{ color: '#c04938', marginBottom: 16, fontSize: 14, fontWeight: 500 }}>❌ {error}</p>
-          <button style={S.btnBack} onClick={handleBack}>
+          <button style={S.btnBack} onClick={() => navigate('/dashboard/templates')}>
             Quay lại Kho Mẫu
           </button>
         </div>
@@ -132,9 +116,9 @@ export default function TemplatePreviewPage() {
   return (
     <div style={S.wrap}>
       <header style={S.topbar}>
-        <button style={S.backBtn} onClick={handleBack}>
+        <button style={S.backBtn} onClick={() => navigate('/dashboard/templates')}>
           <IconChevronLeft size={16} />
-          <span>Danh Sách Mẫu</span>
+          <span>Kho Mẫu</span>
         </button>
 
         <div style={S.titleWrap}>
