@@ -43,11 +43,15 @@ const cacheCho = (duong) => (
 
 // Chuyển tiếp sang backend, giữ cả phần thân (tải ảnh, tải nhạc).
 const chuyenTiep = (req, res, targetPath) => {
+  let p = targetPath || req.url;
+  try {
+    p = encodeURI(decodeURI(p));
+  } catch (_) {}
   const opts = {
     host: BE.host,
     port: BE.port,
     method: req.method,
-    path: targetPath || req.url,
+    path: p,
     headers: { ...req.headers, host: `${BE.host}:${BE.port}` },
   };
   const ra = http.request(opts, (tl) => {

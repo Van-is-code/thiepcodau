@@ -25,8 +25,16 @@ function fileName(u) {
 
 function audioSrc(u) {
   if (!u) return ''
-  if (/^https?:\/\//i.test(u)) return u
-  return API_BASE + (u.startsWith('/') ? u : '/' + u)
+  let full = String(u).trim()
+  if (!/^https?:\/\//i.test(full)) {
+    const base = API_BASE || (typeof window !== 'undefined' ? window.location.origin : '')
+    full = base + (full.startsWith('/') ? full : '/' + full)
+  }
+  try {
+    return encodeURI(decodeURI(full))
+  } catch {
+    return encodeURI(full)
+  }
 }
 
 export default function MusicPanel({ invitation, onSaved, onClose, inline = false }) {
@@ -96,40 +104,71 @@ export default function MusicPanel({ invitation, onSaved, onClose, inline = fals
   // Stop single preview if playing
   const stopSinglePreview = () => {
     if (singleAudioRef.current) {
-      singleAudioRef.current.pause()
-      singleAudioRef.current.src = ''
+      try {
+        singleAudioRef.current.pause()
+        singleAudioRef.current.currentTime = 0
+      } catch (_) {}
     }
     setPlayingTrackUrl(null)
   }
 
   const togglePreviewTrack = (url) => {
     stopDuet()
-    const full = audioSrc(url)
     if (playingTrackUrl === url) {
       stopSinglePreview()
       return
     }
-    if (!singleAudioRef.current) {
-      singleAudioRef.current = new Audio()
-      singleAudioRef.current.onended = () => setPlayingTrackUrl(null)
+    stopSinglePreview()
+
+    const full = audioSrc(url)
+    if (!full) return
+
+    setErr('')
+    const audio = new Audio(full)
+    singleAudioRef.current = audio
+    audio.volume = Math.max(0, Math.min(1, musicVolume / 100))
+
+    audio.onended = () => {
+      if (singleAudioRef.current === audio) {
+        setPlayingTrackUrl(null)
+      }
     }
-    singleAudioRef.current.src = full
-    singleAudioRef.current.volume = musicVolume / 100
-    singleAudioRef.current
+
+    audio.onerror = () => {
+      if (singleAudioRef.current === audio) {
+        setPlayingTrackUrl(null)
+        setErr('Không thể tải bài hát này. Hãy kiểm tra đường dẫn hoặc tải bài khác lên.')
+      }
+    }
+
+    audio
       .play()
-      .then(() => setPlayingTrackUrl(url))
-      .catch((e) => setErr('Không phát được âm thanh: ' + e.message))
+      .then(() => {
+        if (singleAudioRef.current === audio) {
+          setPlayingTrackUrl(url)
+        }
+      })
+      .catch((e) => {
+        if (singleAudioRef.current === audio) {
+          setPlayingTrackUrl(null)
+          setErr('Không phát được âm thanh: ' + (e.name === 'NotAllowedError' ? 'Trình duyệt đang chặn tự phát âm thanh. Vui lòng bấm nghe thử lại.' : e.message))
+        }
+      })
   }
 
   // Live Duet Preview
   const stopDuet = () => {
     if (duetMusicRef.current) {
-      duetMusicRef.current.pause()
-      duetMusicRef.current.currentTime = 0
+      try {
+        duetMusicRef.current.pause()
+        duetMusicRef.current.currentTime = 0
+      } catch (_) {}
     }
     if (duetVoiceRef.current) {
-      duetVoiceRef.current.pause()
-      duetVoiceRef.current.currentTime = 0
+      try {
+        duetVoiceRef.current.pause()
+        duetVoiceRef.current.currentTime = 0
+      } catch (_) {}
     }
     setIsDuetPlaying(false)
   }
@@ -153,27 +192,31 @@ export default function MusicPanel({ invitation, onSaved, onClose, inline = fals
     setIsDuetPlaying(true)
 
     if (musicToPlay) {
-      if (!duetMusicRef.current) duetMusicRef.current = new Audio()
-      duetMusicRef.current.src = musicToPlay
-      duetMusicRef.current.loop = true
-      // Ducking: if voice is playing and duckMusic is enabled, lower music volume to 25% of target
+      const audio = new Audio(musicToPlay)
+      duetMusicRef.current = audio
+      audio.loop = true
       const initialVol = voiceToPlay && duckMusic ? (musicVolume / 100) * 0.25 : musicVolume / 100
-      duetMusicRef.current.volume = Math.max(0, Math.min(1, initialVol))
-      duetMusicRef.current.play().catch(() => {})
+      audio.volume = Math.max(0, Math.min(1, initialVol))
+      audio.onerror = () => {
+        setErr('Không tải được bài nhạc nền trong nghe thử kết hợp.')
+      }
+      audio.play().catch(() => {})
     }
 
     if (voiceToPlay) {
-      if (!duetVoiceRef.current) duetVoiceRef.current = new Audio()
-      duetVoiceRef.current.src = voiceToPlay
-      duetVoiceRef.current.volume = Math.max(0, Math.min(1, voiceVolume / 100))
-      duetVoiceRef.current.onended = () => {
-        // Restore music volume when voice ends
+      const vAudio = new Audio(voiceToPlay)
+      duetVoiceRef.current = vAudio
+      vAudio.volume = Math.max(0, Math.min(1, voiceVolume / 100))
+      vAudio.onerror = () => {
+        setErr('Không tải được file ghi âm trong nghe thử kết hợp.')
+      }
+      vAudio.onended = () => {
         if (duetMusicRef.current) {
           duetMusicRef.current.volume = Math.max(0, Math.min(1, musicVolume / 100))
         }
         if (!musicToPlay) setIsDuetPlaying(false)
       }
-      duetVoiceRef.current.play().catch(() => {})
+      vAudio.play().catch(() => {})
     }
   }
 

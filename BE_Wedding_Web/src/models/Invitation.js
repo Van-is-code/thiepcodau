@@ -96,7 +96,8 @@ const Invitation = sequelize.define('Invitation', {
   },
   music_url: {
     type: DataTypes.STRING(255),
-    allowNull: false
+    allowNull: true,
+    defaultValue: ''
   },
   extra_data: {
     // Dữ liệu riêng theo từng mẫu thiệp (không phổ quát cho mọi template),

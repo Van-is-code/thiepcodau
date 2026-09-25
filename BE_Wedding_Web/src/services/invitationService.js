@@ -524,18 +524,24 @@ const setMusic = async (id, body, actor) => {
 	await ensureCustomerActivated(item.users_id, actor);
 	ensureNotLocked(item, actor);
 
-	let playlist = Array.isArray(body?.music_playlist) ? body.music_playlist : [];
+	// Nhận cả dạng payload phẳng lẫn payload lồng nhau do client truyền
+	const rawPayload = (body?.music_playlist && typeof body.music_playlist === 'object' && !Array.isArray(body.music_playlist))
+		? { ...body.music_playlist, ...body }
+		: (body || {});
+
+	let playlist = [];
+	if (Array.isArray(rawPayload.music_playlist)) {
+		playlist = rawPayload.music_playlist;
+	} else if (Array.isArray(rawPayload.playlist)) {
+		playlist = rawPayload.playlist;
+	}
 	playlist = playlist
 		.map((u) => String(u || '').trim())
 		.filter((u) => /^(https?:\/\/|\/media\/|\/uploads\/)/i.test(u));
 
 	assertOwnMusic(playlist, item.users_id);
 
-	// Không có link nào -> dùng kho nhạc của hệ thống (1 bài ngẫu nhiên).
-	//
-	// Chỉ gán nhạc mặc định khi mẫu thiệp THỰC SỰ có hộp nhạc. Mẫu không có thẻ
-	// <audio> mà vẫn gán thì chỉ là dữ liệu thừa, và nếu thư mục nhạc rỗng thì
-	// hàm kia còn ném lỗi 500 làm hỏng cả thao tác lưu.
+	// Mẫu thiệp có hộp nhạc không
 	const mau = item.template_id
 		? await InvitationTemplate.findByPk(item.template_id, { attributes: ['has_music_box', 'manifest'] })
 		: null;
@@ -543,23 +549,27 @@ const setMusic = async (id, body, actor) => {
 		? (mau.has_music_box != null ? Boolean(mau.has_music_box) : Boolean(mau.manifest && mau.manifest.has_music_box))
 		: true;
 
-	let primary = playlist[0] || null;
+	// Giữ nguyên bài nhạc đang có nếu playlist chưa chọn bài mới, tránh bị null
+	let primary = playlist[0] || item.music_url || null;
 	if (!primary && coHopNhac) {
-		try { primary = getRandomDefaultMusicUrl(); } catch (_e) { primary = null; }
+		try { primary = getRandomDefaultMusicUrl(); } catch (_e) { primary = ''; }
+	}
+	if (!primary) {
+		primary = '';
 	}
 
-	let voiceUrl = body?.voice_url !== undefined
-		? (body.voice_url ? String(body.voice_url).trim() : null)
+	let voiceUrl = rawPayload.voice_url !== undefined
+		? (rawPayload.voice_url ? String(rawPayload.voice_url).trim() : null)
 		: (item.extra_data?.music_settings?.voice_url || null);
 	if (voiceUrl && /^\/uploads\/music\//i.test(voiceUrl)) {
 		assertOwnMusic([voiceUrl], item.users_id);
 	}
 
 	const musicSettings = {
-		music_volume: typeof body?.music_volume === 'number' ? Math.max(0, Math.min(100, Math.round(body.music_volume))) : (item.extra_data?.music_settings?.music_volume ?? 80),
+		music_volume: typeof rawPayload.music_volume === 'number' ? Math.max(0, Math.min(100, Math.round(rawPayload.music_volume))) : (item.extra_data?.music_settings?.music_volume ?? 80),
 		voice_url: voiceUrl || null,
-		voice_volume: typeof body?.voice_volume === 'number' ? Math.max(0, Math.min(100, Math.round(body.voice_volume))) : (item.extra_data?.music_settings?.voice_volume ?? 100),
-		duck_music: body?.duck_music !== undefined ? Boolean(body.duck_music) : (item.extra_data?.music_settings?.duck_music ?? true),
+		voice_volume: typeof rawPayload.voice_volume === 'number' ? Math.max(0, Math.min(100, Math.round(rawPayload.voice_volume))) : (item.extra_data?.music_settings?.voice_volume ?? 100),
+		duck_music: rawPayload.duck_music !== undefined ? Boolean(rawPayload.duck_music) : (item.extra_data?.music_settings?.duck_music ?? true),
 	};
 
 	const extra = {
@@ -568,7 +578,7 @@ const setMusic = async (id, body, actor) => {
 		music_settings: musicSettings,
 	};
 	item.extra_data = extra;
-	item.music_url = primary;
+	item.music_url = primary || '';
 	if (Invitation.rawAttributes.updated_at) item.updated_at = new Date();
 	await item.save();
 	return withLockState(await findRaw(id));

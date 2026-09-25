@@ -37,9 +37,16 @@ const pad2 = (n) => String(n).padStart(2, '0')
 // API_BASE để mọi ảnh/nhạc load đúng ở cả trình sửa lẫn trang khách xem.
 export const toAbsoluteMediaUrl = (url) => {
   if (!url || typeof url !== 'string') return url
-  if (/^(https?:|data:|blob:)/i.test(url) || url.startsWith('//')) return url
-  const base = API_BASE || (typeof window !== 'undefined' ? window.location.origin : '')
-  return `${base}${url.startsWith('/') ? '' : '/'}${url}`
+  let full = url
+  if (!/^(https?:|data:|blob:)/i.test(full) && !full.startsWith('//')) {
+    const base = API_BASE || (typeof window !== 'undefined' ? window.location.origin : '')
+    full = `${base}${full.startsWith('/') ? '' : '/'}${full}`
+  }
+  try {
+    return encodeURI(decodeURI(full))
+  } catch {
+    return full
+  }
 }
 
 // Chuẩn hoá 1 ảnh trước khi bơm vào iframe:
