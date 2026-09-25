@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { api, API_BASE } from '../../api'
+import { api } from '../../api'
 import { useModal } from '../../components/Modal'
 import TemplateManager from './TemplateManager'
 import {
@@ -827,7 +827,8 @@ function Templates() {
 /* ---------------- Kho Nhạc ---------------- */
 function musicSrc(u) {
   if (/^https?:\/\//i.test(u)) return u
-  return API_BASE + (u.startsWith('/') ? u : '/' + u)
+  const base = (import.meta.env.VITE_API_URL || 'https://api.thiepcuoi.me').replace(/\/+$/, '')
+  return base + (u.startsWith('/') ? u : '/' + u)
 }
 
 const S = {
