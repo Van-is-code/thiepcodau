@@ -44,11 +44,11 @@ const css = `
   }
 
   .payment-success-title {
-    font-family: var(--font-serif);
-    font-size: 36px;
+    font-family: var(--font-sans);
+    font-size: 26px;
     color: var(--text-main);
     margin-bottom: 12px;
-    font-weight: 600;
+    font-weight: 700;
   }
 
   .payment-success-text {

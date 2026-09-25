@@ -43,7 +43,7 @@ const css = `
   }
 
   .profile-sb-brand {
-    font-family: var(--font-serif);
+    font-family: var(--font-sans);
     font-size: 22px;
     font-weight: 600;
     color: var(--text-main);
@@ -119,7 +119,7 @@ const css = `
   }
 
   .profile-hero-text h1 {
-    font-family: var(--font-serif);
+    font-family: var(--font-sans);
     font-size: 32px;
     font-weight: 600;
     color: var(--text-main);
@@ -168,7 +168,7 @@ const css = `
   }
 
   .profile-card h3 {
-    font-family: var(--font-serif);
+    font-family: var(--font-sans);
     font-size: 22px;
     font-weight: 600;
     margin-bottom: 20px;

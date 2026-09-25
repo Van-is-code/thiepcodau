@@ -578,7 +578,7 @@
 }
 
 .inv-title {
-  font-family: var(--font-serif);
+  font-family: var(--font-sans);
   font-size: 20px;
   font-weight: 600;
   color: var(--text-main);
@@ -729,7 +729,7 @@
 }
 
 .tp-names {
-  font-family: var(--font-serif);
+  font-family: var(--font-sans);
   font-size: 18px;
   font-style: italic;
   line-height: 1.4;
@@ -850,7 +850,7 @@
 }
 
 .isd-name {
-  font-family: var(--font-serif);
+  font-family: var(--font-sans);
   font-size: 14px;
   font-weight: 600;
   overflow: hidden;
@@ -934,7 +934,7 @@
 }
 
 .iso-name {
-  font-family: var(--font-serif);
+  font-family: var(--font-sans);
   font-size: 14px;
   font-weight: 600;
   color: var(--text-main);
@@ -985,7 +985,7 @@
 }
 
 .inv-pt {
-  font-family: var(--font-serif);
+  font-family: var(--font-sans);
   font-size: 20px;
   font-weight: 600;
   color: var(--text-main);
@@ -1113,7 +1113,7 @@
 }
 
 .gen-name {
-  font-family: var(--font-serif);
+  font-family: var(--font-sans);
   font-size: 22px;
   font-style: italic;
   font-weight: 600;
@@ -1203,7 +1203,7 @@
 }
 
 .share-ttl {
-  font-family: var(--font-serif);
+  font-family: var(--font-sans);
   font-size: 22px;
   font-weight: 500;
   color: #fff;
@@ -1218,7 +1218,7 @@
   font-size: 13px;
   color: rgba(255, 255, 255, 0.85);
   margin-top: 4px;
-  font-family: var(--font-serif);
+  font-family: var(--font-sans);
   font-style: italic;
 }
 
@@ -1436,7 +1436,7 @@
 }
 
 .ci-val {
-  font-family: var(--font-serif);
+  font-family: var(--font-sans);
   font-size: 32px;
   font-weight: 600;
   color: var(--text-main);
@@ -1622,7 +1622,7 @@
 }
 
 .ci-modal-name {
-  font-family: var(--font-serif);
+  font-family: var(--font-sans);
   font-size: 22px;
   font-weight: 600;
   color: var(--text-main);

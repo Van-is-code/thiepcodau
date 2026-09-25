@@ -65,7 +65,7 @@ const css = `
   }
 
   .auth-hero-brand-name {
-    font-family: var(--font-serif);
+    font-family: var(--font-sans);
     font-size: 24px;
     font-weight: 600;
     color: var(--text-main);
@@ -97,7 +97,7 @@ const css = `
   }
 
   .auth-hero-title {
-    font-family: var(--font-serif);
+    font-family: var(--font-sans);
     font-size: 46px;
     font-weight: 500;
     line-height: 1.15;
@@ -183,7 +183,7 @@ const css = `
   }
 
   .auth-card-title {
-    font-family: var(--font-serif);
+    font-family: var(--font-sans);
     font-size: 32px;
     font-weight: 600;
     color: var(--text-main);

@@ -195,9 +195,9 @@ const styles = {
     boxShadow: '0 4px 16px rgba(217, 119, 87, 0.35)',
   },
   loadingTitle: {
-    fontFamily: "'Cormorant Garamond', serif",
-    fontSize: 26,
-    fontWeight: 600,
+    fontFamily: "'Plus Jakarta Sans', sans-serif",
+    fontSize: 20,
+    fontWeight: 700,
     color: '#1f1917',
     marginBottom: 6,
   },
@@ -246,8 +246,8 @@ const styles = {
     marginBottom: 14,
   },
   errorTitle: {
-    fontFamily: "'Cormorant Garamond', serif",
-    fontSize: 26,
+    fontFamily: "'Plus Jakarta Sans', sans-serif",
+    fontSize: 20,
     fontWeight: 600,
     color: '#1f1917',
     marginBottom: 8,

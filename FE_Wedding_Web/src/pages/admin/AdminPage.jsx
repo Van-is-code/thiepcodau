@@ -859,9 +859,9 @@ const S = {
     flexShrink: 0,
   },
   brand: {
-    fontFamily: "'Cormorant Garamond', serif",
-    fontSize: 22,
-    fontWeight: 600,
+    fontFamily: "'Plus Jakarta Sans', sans-serif",
+    fontSize: 18,
+    fontWeight: 700,
     color: '#1f1917',
   },
   sub: {
@@ -920,9 +920,9 @@ const S = {
     maxWidth: 420,
   },
   h3: {
-    fontFamily: "'Cormorant Garamond', serif",
-    fontSize: 22,
-    fontWeight: 600,
+    fontFamily: "'Plus Jakarta Sans', sans-serif",
+    fontSize: 18,
+    fontWeight: 700,
     margin: '32px 0 14px',
     color: '#1f1917',
   },
@@ -939,9 +939,9 @@ const S = {
     boxShadow: '0 2px 8px rgba(31,25,23,0.04)',
   },
   statVal: {
-    fontFamily: "'Cormorant Garamond', serif",
-    fontSize: 32,
-    fontWeight: 600,
+    fontFamily: "'Plus Jakarta Sans', sans-serif",
+    fontSize: 28,
+    fontWeight: 700,
     lineHeight: 1,
     marginTop: 4,
   },

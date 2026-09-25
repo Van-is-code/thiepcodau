@@ -16,8 +16,15 @@ router.get('/customers', ctv.listCustomers);
 router.post('/customers', ctv.createCustomer);
 router.get('/customers/:id', ctv.getCustomer);
 router.patch('/customers/:id', ctv.updateCustomer);
+router.delete('/customers/:id', ctv.deleteCustomer);
 router.get('/customers/:id/orders', ctv.getCustomerOrders);
 router.get('/customers/:id/cards', ctv.getCustomerCards);
+router.post('/customers/:id/invitations', ctv.createCustomerInvitation);
+
+// Quản lý thiệp
+router.get('/invitations', ctv.listInvitations);
+router.post('/invitations/:id/lock', ctv.lockInvitation);
+router.post('/invitations/:id/unlock', ctv.unlockInvitation);
 
 // Đơn hàng
 router.post('/orders', ctv.createOrder);

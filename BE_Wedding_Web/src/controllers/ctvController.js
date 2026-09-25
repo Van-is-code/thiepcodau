@@ -82,6 +82,39 @@ const getCustomerCards = async (req, res) => {
   catch (e) { fail(res, e); }
 };
 
+const createCustomerInvitation = async (req, res) => {
+  try {
+    const templateId = req.body.template_id || req.body.templateId;
+    const data = await customerService.createInvitationForCustomer(req.params.id, req.ctv, templateId, ctxOf(req));
+    ok(res, data, 'Đã tạo thiệp cho khách', 201);
+  } catch (e) { fail(res, e); }
+};
+
+const deleteCustomer = async (req, res) => {
+  try {
+    ok(res, await customerService.deleteCustomer(req.params.id, req.ctv, ctxOf(req)), 'Đã xoá khách hàng');
+  } catch (e) { fail(res, e); }
+};
+
+const listInvitations = async (req, res) => {
+  try {
+    const { search = '', page = 1, limit = 30, customerId } = req.query;
+    ok(res, await customerService.listInvitationsForCtv(req.ctv, { search, page, limit, customerId }), 'Danh sách thiệp');
+  } catch (e) { fail(res, e); }
+};
+
+const lockInvitation = async (req, res) => {
+  try {
+    ok(res, await customerService.lockInvitationForCtv(req.params.id, req.ctv), 'Đã khoá sửa thiệp');
+  } catch (e) { fail(res, e); }
+};
+
+const unlockInvitation = async (req, res) => {
+  try {
+    ok(res, await customerService.unlockInvitationForCtv(req.params.id, req.ctv, req.body || {}), 'Đã mở khoá sửa thiệp');
+  } catch (e) { fail(res, e); }
+};
+
 // ---- Đơn hàng ----
 const createOrder = async (req, res) => {
   try {
@@ -176,8 +209,13 @@ module.exports = {
   createCustomer,
   getCustomer,
   updateCustomer,
+  deleteCustomer,
   getCustomerOrders,
   getCustomerCards,
+  createCustomerInvitation,
+  listInvitations,
+  lockInvitation,
+  unlockInvitation,
   createOrder,
   listOrders,
   getOrder,

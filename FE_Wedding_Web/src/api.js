@@ -80,11 +80,8 @@ export const api = {
   editorSaveInvitation: (id, payload) => apiClient.post(`/api/invitations/${id}/editor-save`, payload),
   // Đổi mẫu — KHÔNG tính vào hạn mức sửa.
   changeInvitationTemplate: (id, templateId) => apiClient.patch(`/api/invitations/${id}/template`, { template_id: templateId }),
-  // Nhạc nền và ghi âm giọng nói — KHÔNG tính vào hạn mức.
-  setInvitationMusic: (id, payload) => {
-    const body = Array.isArray(payload) ? { music_playlist: payload } : (payload || {})
-    return apiClient.patch(`/api/invitations/${id}/music`, body)
-  },
+  // Nhạc nền (nhiều link / kho nhạc) — KHÔNG tính vào hạn mức.
+  setInvitationMusic: (id, playlist) => apiClient.patch(`/api/invitations/${id}/music`, { music_playlist: playlist }),
   // Tài khoản ngân hàng mừng cưới (1 QR chung) — KHÔNG tính vào hạn mức.
   setInvitationBank: (id, bank) => apiClient.patch(`/api/invitations/${id}/bank`, bank),
 
@@ -192,8 +189,16 @@ export const api = {
     createCustomer: (data) => apiClient.post('/api/ctv/customers', data),
     getCustomer: (id) => apiClient.get(`/api/ctv/customers/${id}`),
     updateCustomer: (id, data) => apiClient.patch(`/api/ctv/customers/${id}`, data),
+    deleteCustomer: (id) => apiClient.delete(`/api/ctv/customers/${id}`),
     customerOrders: (id, params = {}) => apiClient.get(`/api/ctv/customers/${id}/orders`, { params }),
     customerCards: (id) => apiClient.get(`/api/ctv/customers/${id}/cards`),
+    createCustomerInvitation: (id, templateId) =>
+      apiClient.post(`/api/ctv/customers/${id}/invitations`, { template_id: templateId }),
+
+    // Quản lý thiệp của khách thuộc CTV
+    listInvitations: (params = {}) => apiClient.get('/api/ctv/invitations', { params }),
+    lockInvitation: (id) => apiClient.post(`/api/ctv/invitations/${id}/lock`),
+    unlockInvitation: (id, data = {}) => apiClient.post(`/api/ctv/invitations/${id}/unlock`, data),
 
     createOrder: (customerId, productCode) =>
       apiClient.post('/api/ctv/orders', { customerId, productCode }),

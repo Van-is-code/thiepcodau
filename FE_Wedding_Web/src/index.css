@@ -39,8 +39,8 @@
   --radius-lg: 18px;
   --radius-full: 9999px;
 
-  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-serif: 'Cormorant Garamond', Georgia, serif;
+  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-serif: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 
 *, *::before, *::after {
@@ -75,8 +75,8 @@ body {
 
 /* Typography defaults */
 h1, h2, h3, h4, .font-serif {
-  font-family: var(--font-serif);
-  font-weight: 500;
+  font-family: var(--font-sans);
+  font-weight: 600;
   color: var(--text-main);
 }
 

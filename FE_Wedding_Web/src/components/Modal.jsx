@@ -162,11 +162,11 @@ const S = {
     minWidth: 0,
   },
   title: {
-    fontFamily: "'Cormorant Garamond', Georgia, serif",
-    fontSize: 22,
-    fontWeight: 600,
+    fontFamily: "'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+    fontSize: 18,
+    fontWeight: 700,
     color: '#1f1917',
-    lineHeight: 1.2,
+    lineHeight: 1.25,
   },
   closeBtn: {
     background: '#f6f1eb',

@@ -90,12 +90,12 @@ const S = {
     marginBottom: 16,
   },
   title: {
-    fontFamily: "'Cormorant Garamond', serif",
-    fontSize: 32,
-    fontWeight: 600,
+    fontFamily: "'Plus Jakarta Sans', sans-serif",
+    fontSize: 24,
+    fontWeight: 700,
     margin: '8px 0 14px',
     color: '#1f1917',
-    lineHeight: 1.2,
+    lineHeight: 1.25,
   },
   lead: {
     fontSize: 14.5,
