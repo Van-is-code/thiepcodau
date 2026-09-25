@@ -21,7 +21,8 @@ const BE = {
 };
 
 // Những đường dẫn thuộc về backend. Còn lại là của giao diện.
-const CUA_BACKEND = /^\/(api|uploads|templates|media|api-docs|api-docs-assets)(\/|$)/;
+// Khớp cả trường hợp tiền tố /same-origin/ hoặc relative fetch từ route con (/auth/api/...)
+const CUA_BACKEND = /(?:^|\/)(?:same-origin\/)?(api|uploads|templates|media|api-docs|api-docs-assets)(\/.*)?$/;
 
 const KIEU = {
   '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8',
@@ -40,13 +41,13 @@ const cacheCho = (duong) => (
   duong.startsWith('/assets/') ? 'public, max-age=31536000, immutable' : 'no-cache'
 );
 
-// Chuyển tiếp nguyên xi sang backend, giữ cả phần thân (tải ảnh, tải nhạc).
-const chuyenTiep = (req, res) => {
+// Chuyển tiếp sang backend, giữ cả phần thân (tải ảnh, tải nhạc).
+const chuyenTiep = (req, res, targetPath) => {
   const opts = {
     host: BE.host,
     port: BE.port,
     method: req.method,
-    path: req.url,
+    path: targetPath || req.url,
     headers: { ...req.headers, host: `${BE.host}:${BE.port}` },
   };
   const ra = http.request(opts, (tl) => {
@@ -86,7 +87,11 @@ const guiTep = (res, abs, urlPath) => {
 const server = http.createServer((req, res) => {
   const urlPath = (req.url || '/').split('?')[0];
 
-  if (CUA_BACKEND.test(urlPath)) return chuyenTiep(req, res);
+  const backendMatch = req.url.match(CUA_BACKEND);
+  if (backendMatch) {
+    const cleanPath = '/' + backendMatch[1] + (backendMatch[2] || '');
+    return chuyenTiep(req, res, cleanPath);
+  }
 
   const abs = duongDanThat(urlPath);
   if (!abs) { res.writeHead(400).end('duong dan khong hop le'); return; }

@@ -15,8 +15,7 @@ import {
   IconShield,
   IconChevronLeft,
 } from '../components/Icons'
-
-const API_BASE = (import.meta.env.VITE_API_URL || 'https://api.thiepcuoi.me').replace(/\/+$/, '')
+import { API_BASE } from '../api'
 
 const css = `
   .profile-layout {
@@ -256,9 +255,14 @@ export default function Profile() {
         navigate('/auth')
         return
       }
-      const res = await fetch(`${API_BASE}/api/users/profile`, {
+      const url = `${API_BASE}/api/users/profile`.replace(/^\/\//, '/')
+      const res = await fetch(url, {
         headers: { Authorization: `Bearer ${token}` },
       })
+      const contentType = res.headers.get('content-type') || ''
+      if (!contentType.includes('application/json')) {
+        throw new Error('Máy chủ phản hồi không đúng định dạng JSON (' + res.status + ')')
+      }
       const data = await res.json()
       if (!res.ok) throw new Error(data.message || 'Lỗi tải hồ sơ')
       const p = data.data || data
@@ -275,7 +279,8 @@ export default function Profile() {
     try {
       setSaving(true)
       const token = localStorage.getItem('token')
-      const res = await fetch(`${API_BASE}/api/users/profile`, {
+      const url = `${API_BASE}/api/users/profile`.replace(/^\/\//, '/')
+      const res = await fetch(url, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -283,6 +288,10 @@ export default function Profile() {
         },
         body: JSON.stringify(editForm),
       })
+      const contentType = res.headers.get('content-type') || ''
+      if (!contentType.includes('application/json')) {
+        throw new Error('Máy chủ phản hồi không đúng định dạng JSON (' + res.status + ')')
+      }
       const data = await res.json()
       if (!res.ok) throw new Error(data.message || 'Cập nhật thất bại')
       setProfile(editForm)
