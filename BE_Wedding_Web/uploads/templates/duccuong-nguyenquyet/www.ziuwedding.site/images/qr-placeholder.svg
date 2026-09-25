@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Thêm mã QR chuyển khoản">
+  <rect width="800" height="800" fill="#faf7f2"/>
+  <rect x="24" y="24" width="752" height="752" rx="28" fill="none" stroke="#c8856a" stroke-width="6" stroke-dasharray="26 18"/>
+  <g transform="translate(220,190)" fill="#b8896f">
+    <path d="M0 0h130v130H0z M30 30v70h70V30z"/>
+    <path d="M230 0h130v130H230z M260 30v70h70V30z"/>
+    <path d="M0 230h130v130H0z M30 260v70h70V260z"/>
+    <rect x="200" y="200" width="40" height="40"/>
+    <rect x="280" y="240" width="40" height="40"/>
+    <rect x="240" y="300" width="40" height="40"/>
+    <rect x="320" y="320" width="40" height="40"/>
+  </g>
+  <text x="400" y="560" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="46" fill="#7a5c28">Thêm mã QR của bạn</text>
+  <text x="400" y="614" text-anchor="middle" font-family="Arial, sans-serif" font-size="26" fill="#9a8a70">QR chuyển khoản mừng cưới</text>
+</svg>

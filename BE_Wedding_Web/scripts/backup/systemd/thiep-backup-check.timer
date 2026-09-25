@@ -1,0 +1,13 @@
+# Chạy restic check mỗi Chủ nhật 04:00.
+#   sudo cp scripts/backup/systemd/thiep-backup-check.{service,timer} /etc/systemd/system/
+#   sudo systemctl daemon-reload && sudo systemctl enable --now thiep-backup-check.timer
+[Unit]
+Description=thiep-backup: lịch restic check hằng tuần
+
+[Timer]
+OnCalendar=Sun *-*-* 04:00:00
+Persistent=true
+RandomizedDelaySec=600
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,11 @@
+# Override chỉ dùng cho TEST cục bộ (compose tự merge file này khi "docker compose up").
+# Bật payOS mock để chạy end-to-end mà không cần credentials thật.
+# Xoá file này nếu không muốn dùng.
+services:
+  backend:
+    environment:
+      PAYOS_MOCK: "true"
+      FRONTEND_URL: "http://localhost:5173"
+      PAYOS_ORDER_TTL_HOURS: "24"
+      AUTO_PAYOUT_ENABLED: "false"
+      JWT_SECRET: "test_jwt_secret_ctv_local"

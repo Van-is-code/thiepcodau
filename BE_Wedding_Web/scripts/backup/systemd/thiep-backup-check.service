@@ -1,0 +1,14 @@
+# Kiểm toàn vẹn kho restic (hằng tuần). Đi kèm thiep-backup-check.timer.
+[Unit]
+Description=thiep-backup: restic check (integrity)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+Environment=THIEP_BACKUP_ENV=/etc/thiep-backup/backup.env
+ExecStart=/opt/thiep-backup/thiep-backup check
+Nice=15
+IOSchedulingClass=idle
+User=thiepbackup
+Group=thiepbackup

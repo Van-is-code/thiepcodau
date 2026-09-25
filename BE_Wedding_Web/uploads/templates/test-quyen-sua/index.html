@@ -1,0 +1,865 @@
+<!DOCTYPE html><html lang="vi"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Duy Nam &amp; Vân Anh — Thiệp Cưới Editorial</title>
+  <meta name="description" content="Thiệp mời cưới Duy Nam &amp; Vân Anh — Atelier Lavender Hydrangea Wedding Editorial.">
+  <meta name="theme-color" content="#FAF7F2">
+
+  <!-- Google Fonts: Plus Jakarta Sans (Primary Refined Modern Sans) + Cormorant Garamond (Names/Accents) + Alex Brush (Calligraphic Accent) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+  <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&amp;family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&amp;family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&amp;display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/letter-intro.css?v=7.0">
+
+  <!-- Intro Scripts deferred for immediate initialization -->
+  <script src="assets/js/gsap.min.js" defer=""></script>
+  <script src="assets/js/letter-intro.js?v=7.0" defer=""></script>
+</head>
+<body>
+
+<!-- ================= CINEMATIC WEDDING LETTER INTRO SCREEN ================= -->
+<aside id="wedding-letter-intro" class="wedding-letter-intro" aria-label="Mở thư mời cưới" role="region">
+  <div class="intro-portrait-canvas">
+    <!-- Floating Petals Layer -->
+    <div class="floating-petals" aria-hidden="true">
+      <div class="petal petal-1"></div>
+      <div class="petal petal-2"></div>
+      <div class="petal petal-3"></div>
+      <div class="petal petal-4"></div>
+    </div>
+
+    <!-- Sky Flight Arena: Rig Carrying Envelope -->
+    <div class="flight-arena" id="flight-arena" aria-hidden="true">
+      <div class="carrier-rig" id="carrier-rig">
+        <!-- Left Dove (Authentic Watercolor Art with Natural Wing Flapping) -->
+        <div class="dove dove-left" id="dove-left">
+          <div class="dove-layer dove-wing-back dove-wing-back-left">
+            <img src="assets/images/dove-left-back-wing.png" alt="" draggable="false">
+          </div>
+          <div class="dove-layer dove-body-part dove-body-left">
+            <img src="assets/images/dove-left-body.png" alt="Chim bồ câu trắng" draggable="false">
+          </div>
+          <div class="dove-layer dove-wing-front dove-wing-front-left">
+            <img src="assets/images/dove-left-front-wing.png" alt="" draggable="false">
+          </div>
+        </div>
+
+        <!-- Carried Envelope (inside rig during flight) -->
+        <div class="carried-envelope" id="carried-envelope">
+          <div class="carried-cord"></div>
+          <div class="carried-seal"></div>
+        </div>
+
+        <!-- Right Dove (Authentic Watercolor Art with Natural Wing Flapping) -->
+        <div class="dove dove-right" id="dove-right">
+          <div class="dove-layer dove-wing-back dove-wing-back-right">
+            <img src="assets/images/dove-right-back-wing.png" alt="" draggable="false">
+          </div>
+          <div class="dove-layer dove-body-part dove-body-right">
+            <img src="assets/images/dove-right-body.png" alt="Chim bồ câu trắng" draggable="false">
+          </div>
+          <div class="dove-layer dove-wing-front dove-wing-front-right">
+            <img src="assets/images/dove-right-front-wing.png" alt="" draggable="false">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Delivered Wedding Letter Stage -->
+    <div class="stage-envelope-anchor" id="stage-envelope-anchor">
+      <div class="envelope-wrapper" id="wedding-envelope-wrapper">
+        <div class="physical-envelope" id="wedding-envelope" role="button" tabindex="0" aria-label="Mở thư mời cưới của Duy Nam và Vân Anh">
+          <!-- Envelope Interior Pocket Lining -->
+          <div class="envelope-back-pocket"></div>
+
+          <!-- Enclosed Stationery Letter Paper (emerges & expands on tap, matching Panel 6) -->
+          <div class="enclosed-letter-paper" id="envelope-letter-paper">
+            <div class="inner-card-botanical-top" aria-hidden="true">
+              <svg width="24" height="10" viewBox="0 0 24 10" fill="none">
+                <path d="M12 1 C10 4 3 5 0 7 M12 1 C14 4 21 5 24 7" stroke="#7E6BA4" stroke-width="0.85" stroke-linecap="round"></path>
+                <circle cx="12" cy="5" r="1.3" fill="#7E6BA4" fill-opacity="0.6"></circle>
+              </svg>
+            </div>
+            <span class="letter-top-tag" data-field="wedding_tag">WEDDING INVITATION</span>
+            <span class="letter-sub-tag" data-field="wedding_tag">SAVE THE DATE</span>
+            <h3 class="letter-names" data-field="couple_names">DUY NAM &amp; VÂN ANH</h3>
+            <div class="letter-botanical-rule"></div>
+            <p class="letter-date-loc" data-field="ceremony_short">18 . 01 . 2026 — HÀ NỘI</p>
+          </div>
+
+          <!-- Envelope Front Pocket -->
+          <div class="envelope-front-pocket">
+            <svg class="pocket-crease-svg" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+              <polyline points="0,0 50,50 100,0" fill="none" stroke="rgba(122, 104, 144, 0.22)" stroke-width="1.1" vector-effect="non-scaling-stroke"></polyline>
+            </svg>
+          </div>
+
+          <!-- Botanical Corner Flourishes on Envelope (Matching Reference Panel 4 & 5) -->
+          <img src="assets/images/intro-env-sprig-bl.png?v=7.2" alt="" class="envelope-corner-decor envelope-decor-bl" aria-hidden="true">
+          <img src="assets/images/intro-env-sprig-tr.png?v=7.2" alt="" class="envelope-corner-decor envelope-decor-tr" aria-hidden="true">
+
+          <!-- Envelope Top Flap (Flips open in 3D, matching Panel 5 & 6) -->
+          <div class="envelope-top-flap" id="envelope-top-flap">
+            <div class="top-flap-triangle">
+              <svg class="flap-crease-svg" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+                <polyline points="0,0 50,100 100,0" fill="none" stroke="rgba(122, 104, 144, 0.28)" stroke-width="1.2" vector-effect="non-scaling-stroke"></polyline>
+              </svg>
+            </div>
+            <!-- Recipient Name Plaque on Flap Face -->
+            <div class="recipient-box" id="envelope-recipient-box">
+              <span class="recipient-prefix">Kính gửi</span>
+              <h2 class="recipient-name" id="envelope-recipient-name">QUÝ KHÁCH</h2>
+              <div class="recipient-rule"></div>
+            </div>
+            <div class="top-flap-inner-lining"></div>
+            <!-- Lilac Wax Seal -->
+            <div class="wax-seal" id="envelope-wax-seal"></div>
+          </div>
+        </div>
+
+        <!-- Subtle Call-to-Action Prompt (Below Envelope) -->
+        <div class="prompt-cue" id="intro-prompt-cue" role="button" tabindex="0" aria-label="Chạm để mở thư">
+          <svg class="tap-icon-svg" viewBox="0 0 24 24">
+            <path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83" opacity="0.4"></path>
+            <path d="M9 11V6a2 2 0 1 1 4 0v5m0-2a2 2 0 1 1 4 0v3m0-2a2 2 0 1 1 4 0v4a7 7 0 1 1-14 0v-4a2 2 0 1 1 4 0v2" stroke-linecap="round" stroke-linejoin="round"></path>
+          </svg>
+          <span class="prompt-text">CHẠM ĐỂ MỞ THƯ</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<div class="stationery-container">
+
+  <!-- ================= SCENE 01: HERO COVER (ATELIER MAGAZINE COVER) ================= -->
+  <header class="cover-hero" id="hero">
+    <!-- Heroic large cropped Pale Lavender Hydrangea bloom bleeding off top-right -->
+    <div class="hero-hydrangea-wrapper" aria-hidden="true">
+      <img src="assets/images/hydrangea-cluster.webp" alt="" class="hero-hydrangea-drift botanical-sway">
+    </div>
+
+    <!-- Organic curved branch arching gracefully towards the couple's names -->
+    <div class="hero-branch-flow" aria-hidden="true">
+      <img src="assets/images/hydrangea-branch.webp" alt="" class="hero-flow-branch botanical-sway-slow">
+    </div>
+
+    <div class="cover-header">
+      <span class="cover-invitation-badge" data-field="wedding_tag">WEDDING INVITATION</span>
+      <p class="cover-sub-eyebrow">SAVE THE DATE</p>
+    </div>
+
+    <!-- Editorial Couple Signature Names -->
+    <div class="cover-names-composition">
+      <span class="cover-name cover-name--groom" data-field="groom_short_name">Duy Nam</span>
+      <span class="cover-amp">&amp;</span>
+      <span class="cover-name cover-name--bride" data-field="bride_short_name">Vân Anh</span>
+    </div>
+
+    <div class="cover-datestamp">
+      <span class="date-digit" data-field="ceremony_short">18</span>
+      <span class="date-sep">·</span>
+      <span class="date-digit" data-field="ceremony_short">01</span>
+      <span class="date-sep">·</span>
+      <span class="date-digit" data-field="ceremony_short">2026</span>
+      <span class="cover-city">— HÀ NỘI —</span>
+    </div>
+
+    <!-- Portrait with overlapping botanical branches breaking frame boundaries -->
+    <div class="cover-portrait-wrapper">
+      <img src="assets/images/hydrangea-branch.webp" alt="" class="cover-branch-left botanical-sway-slow" aria-hidden="true">
+      <div class="cover-portrait-frame">
+        <img src="assets/images/52ed9a3f-608e-403c-98a9-9cf73747e2a8.jpg" alt="Duy Nam &amp; Vân Anh" class="cover-portrait-img" data-image="cover">
+      </div>
+      <img src="assets/images/hydrangea-branch.webp" alt="" class="cover-branch-right botanical-sway" aria-hidden="true">
+    </div>
+
+    <div class="cover-scroll-cue">
+      <span class="scroll-cue-line"></span>
+      <span class="scroll-cue-text">Cuộn xuống để xem thiệp</span>
+    </div>
+
+    <!-- Cross-section botanical branch extending into Scene 02 -->
+    <div class="scene-transition-branch scene-transition--down" aria-hidden="true">
+      <img src="assets/images/hydrangea-branch.webp" alt="" class="transition-branch-img">
+    </div>
+  </header>
+
+
+  <!-- ================= SCENE 02: THE PROCLAMATION & POETIC PRELUDE ================= -->
+  <section class="editorial-scene scene-proclamation" id="quote">
+    <div class="scene-inner text-center">
+      <span class="emotional-script-accent">Our Beginning</span>
+      <blockquote class="poetic-statement">
+        “Từ khoảnh khắc ta tìm thấy nhau giữa vạn người, từng ngày trôi qua đều hóa thành một lời hẹn ước dịu dàng...”
+      </blockquote>
+      <p class="poetic-author" data-field="couple_names">— DUY NAM &amp; VÂN ANH —</p>
+    </div>
+
+    <!-- Subtle connecting botanical bridge between text and photograph -->
+    <div class="proclamation-botanical-bridge" aria-hidden="true">
+      <svg class="bridge-stem-svg" width="40" height="24" viewBox="0 0 40 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M20 0 V10 C20 16 12 18 6 24 M20 10 C20 16 28 18 34 24" stroke="#7E6C94" stroke-opacity="0.3" stroke-width="1.2" stroke-linecap="round"></path>
+        <circle cx="20" cy="8" r="2" fill="#7E6C94" fill-opacity="0.45"></circle>
+      </svg>
+    </div>
+
+    <!-- Centered portrait frame strictly aligned to ONE central visual axis with subtle botanical overlap -->
+    <div class="proclamation-photo-wrap">
+      <!-- Subtle botanical leaf softly touching the top-left corner of the photograph -->
+      <div class="proclamation-photo-flourish" aria-hidden="true">
+        <img src="assets/images/hydrangea-branch.webp" alt="" class="proclamation-sprig botanical-sway-slow">
+      </div>
+
+      <div class="proclamation-photo-frame">
+        <img src="assets/images/2f85443c-e6a1-44a4-8bd4-43dd576fd24e.jpg" alt="Khoảnh khắc cô dâu và chú rể">
+      </div>
+      <span class="proclamation-photo-caption">Hà Nội, những ngày vào đông</span>
+    </div>
+
+    <!-- Subtle Section Transition Gem -->
+    <div class="scene-transition-gem text-center" aria-hidden="true">
+      <span class="botanical-star-gem">✦</span>
+    </div>
+  </section>
+
+
+  <!-- ================= SCENE 03: HAI BÊN GIA ĐÌNH (THE TWO FAMILIES — EQUAL OPEN CANVAS) ================= -->
+  <section class="editorial-scene scene-family" id="family">
+    <!-- Implied botanical frame accents (organic, asymmetric, framing from edges without forming a box) -->
+    <div class="family-botanical-accent family-botanical-accent--left" aria-hidden="true">
+      <img src="assets/images/hydrangea-branch.webp" alt="" class="family-branch-left botanical-sway-slow">
+    </div>
+    <div class="family-botanical-accent family-botanical-accent--right" aria-hidden="true">
+      <img src="assets/images/hydrangea-branch.webp" alt="" class="family-branch-right botanical-sway">
+    </div>
+
+    <div class="family-composition-inner">
+      <div class="family-header text-center">
+        <span class="section-eyebrow">TRÂN TRỌNG BÁO TIN</span>
+        <h2 class="section-title">HAI BÊN GIA ĐÌNH</h2>
+        <p class="section-lead-text" data-field="family_lead_text">
+          Trân trọng thông báo tin vui của hai con đến Quý thân bằng quyến thuộc, người thân và bạn hữu gần xa
+        </p>
+      </div>
+
+      <!-- Unified Side-by-Side Canvas: Two Equal Sides, Subtle Vertical Ornamental Divider -->
+      <div class="family-duo-canvas">
+        <!-- NHÀ TRAI (Left Column) -->
+        <div class="family-unit family-unit--groom">
+          <span class="family-side-tag">NHÀ TRAI</span>
+          <div class="family-members">
+            <p class="family-member-line">
+              <span class="member-title">Ông</span>
+              <span class="member-name" data-field="groom.father_grom">Dương Văn Kiên</span>
+            </p>
+            <p class="family-member-line">
+              <span class="member-title">Bà</span>
+              <span class="member-name" data-field="groom.mother_groom">Đặng Thị Hiền</span>
+            </p>
+          </div>
+          <span class="family-location" data-field="groom.address">Hoài Đức · Hà Nội</span>
+        </div>
+
+        <!-- Delicate Vertical Botanical Divider (Connects rather than separates) -->
+        <div class="family-center-divider" aria-hidden="true">
+          <span class="divider-stem-top"></span>
+          <div class="divider-jewel-node">
+            <span class="jewel-floral-symbol">✦</span>
+          </div>
+          <span class="divider-stem-bottom"></span>
+        </div>
+
+        <!-- NHÀ GÁI (Right Column) -->
+        <div class="family-unit family-unit--bride">
+          <span class="family-side-tag">NHÀ GÁI</span>
+          <div class="family-members">
+            <p class="family-member-line">
+              <span class="member-title">Ông</span>
+              <span class="member-name" data-field="bride.father_bride">Nguyễn Duy Kiên</span>
+            </p>
+            <p class="family-member-line">
+              <span class="member-title">Bà</span>
+              <span class="member-name" data-field="bride.mother_bride">Nguyễn Vân Anh</span>
+            </p>
+          </div>
+          <span class="family-location" data-field="bride.address">Đông Anh · Hà Nội</span>
+        </div>
+      </div>
+
+      <!-- Bottom subtle floral flourish -->
+      <div class="family-footer-flourish" aria-hidden="true">
+        <img src="assets/images/bieu-tuong-trai-tim-01.png" alt="" class="family-flourish-heart">
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ================= SCENE 04: LỄ THÀNH HÔN & TIỆC CƯỚI (OPEN BOTANICAL EVENT SCENE) ================= -->
+  <section class="editorial-scene scene-events" id="events">
+    <div class="events-header text-center">
+      <span class="section-eyebrow">THỜI GIAN &amp; ĐỊA ĐIỂM</span>
+      <h2 class="section-title">LỄ THÀNH HÔN &amp; TIỆC CƯỚI</h2>
+      <p class="section-lead-text">Sự hiện diện của Quý khách là niềm vinh hạnh trọn vẹn nhất cho ngày vui của hai gia đình chúng tôi</p>
+    </div>
+
+    <!-- Open Event Flow with Botanical Line Connection (NO boxes, NO cards) -->
+    <div class="events-botanical-flow">
+      
+      <!-- Event 01: LỄ THÀNH HÔN -->
+      <article class="event-moment-node">
+        <div class="event-moment-icon-node" aria-hidden="true">
+          <svg class="fine-moment-svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z"></path>
+            <path d="M9 21V12h6v9"></path>
+          </svg>
+        </div>
+        <span class="event-stage-tag">LỄ THÀNH HÔN</span>
+        
+        <div class="event-datetime-line">
+          <span class="event-exact-time">09:00</span>
+          <span class="event-datetime-sep">·</span>
+          <span class="event-exact-date" data-field="ceremony_short">THỨ BẢY, 18.01.2026</span>
+        </div>
+        <p class="event-lunar-note" data-field="ceremony_lunar_text">(Nhằm ngày 30 tháng 11 năm Ất Tỵ)</p>
+
+        <h3 class="event-venue-title" data-field="venue_name">TƯ GIA NHÀ TRAI</h3>
+        <address class="event-venue-address" data-field="venue_address">Thôn Kim Chung, Xã Kim Chung, Huyện Hoài Đức, TP. Hà Nội</address>
+
+        <a class="event-action-pill" href="https://maps.app.goo.gl/EqgrhhWk7vfXXbVN7" target="_blank" rel="noopener" data-field-href="map_url">
+          <span>Chỉ đường tới Nhà Trai</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </a>
+      </article>
+
+      <!-- Connecting Botanical Stem Line -->
+      <div class="events-inter-stem" aria-hidden="true">
+        <svg class="inter-stem-svg" width="24" height="64" viewBox="0 0 24 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 0 V24 C12 30 18 34 18 40 C18 46 12 50 12 64" stroke="#7E6C94" stroke-opacity="0.35" stroke-width="1.2" stroke-dasharray="2 3"></path>
+          <circle cx="12" cy="32" r="3" fill="#7E6C94" fill-opacity="0.6"></circle>
+        </svg>
+      </div>
+
+      <!-- Event 02: TIỆC CƯỚI CHÍNH -->
+      <article class="event-moment-node">
+        <div class="event-moment-icon-node" aria-hidden="true">
+          <svg class="fine-moment-svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8 22h8M12 15v7M5 2h14l-2 9a5 5 0 0 1-10 0L5 2z"></path>
+          </svg>
+        </div>
+        <span class="event-stage-tag">TIỆC CƯỚI CHÍNH</span>
+
+        <div class="event-datetime-line">
+          <span class="event-exact-time" data-field="reception_time">11:00</span>
+          <span class="event-datetime-sep">·</span>
+          <span class="event-exact-date" data-field="reception_short">THỨ BẢY, 18.01.2026</span>
+        </div>
+        <p class="event-lunar-note" data-field="reception_lunar_text">(Nhằm ngày 30 tháng 11 năm Ất Tỵ)</p>
+
+        <h3 class="event-venue-title" data-field="reception_venue_name">TRỐNG ĐỒNG PALACE</h3>
+        <p class="event-venue-sub" data-field="reception_venue_name">Sảnh Lavender, Tầng 2</p>
+        <address class="event-venue-address" data-field="reception_venue_address">Số 72 Trần Đăng Ninh, Phường Dịch Vọng, Quận Cầu Giấy, TP. Hà Nội</address>
+
+        <a class="event-action-pill" href="https://maps.app.goo.gl/EqgrhhWk7vfXXbVN7" target="_blank" rel="noopener" data-field-href="map_url">
+          <span>Chỉ đường tới Trống Đồng Palace</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </a>
+      </article>
+
+    </div>
+  </section>
+
+
+  <!-- ================= SCENE 05: THE DAY IS COMING (ANTICIPATION & COUNTDOWN) ================= -->
+  <section class="editorial-scene scene-countdown" id="countdown">
+    <!-- Thin botanical branch gently passing behind countdown numbers -->
+    <div class="countdown-botanical-drift" aria-hidden="true">
+      <img src="assets/images/hydrangea-branch.webp" alt="" class="countdown-drift-img botanical-sway-slow">
+    </div>
+
+    <div class="countdown-open-content text-center">
+      <span class="countdown-eyebrow">THE DAY IS COMING</span>
+      <h2 class="countdown-title">HÔN LỄ SẮP DIỄN RA</h2>
+
+      <!-- Four Balanced Units with Identical Visual Scale -->
+      <div class="pure-countdown-row" data-countdown="2026-01-18T11:00:00+07:00">
+        <div class="countdown-unit-box">
+          <span class="countdown-num" data-unit="days">48</span>
+          <span class="countdown-unit-label">NGÀY</span>
+        </div>
+        <span class="countdown-sep">:</span>
+        <div class="countdown-unit-box">
+          <span class="countdown-num" data-unit="hours">12</span>
+          <span class="countdown-unit-label">GIỜ</span>
+        </div>
+        <span class="countdown-sep">:</span>
+        <div class="countdown-unit-box">
+          <span class="countdown-num" data-unit="minutes">30</span>
+          <span class="countdown-unit-label">PHÚT</span>
+        </div>
+        <span class="countdown-sep">:</span>
+        <div class="countdown-unit-box">
+          <span class="countdown-num" data-unit="seconds">45</span>
+          <span class="countdown-unit-label">GIÂY</span>
+        </div>
+      </div>
+
+      <p class="countdown-target-note">Thứ Bảy · 18 tháng 01 năm 2026</p>
+    </div>
+  </section>
+
+
+  <!-- ================= SCENE 06: LIVING BOTANICAL STEM TIMELINE & DRESS CODE ================= -->
+  <section class="editorial-scene scene-timeline" id="timeline">
+    <div class="timeline-header text-center">
+      <span class="section-eyebrow">CHƯƠNG TRÌNH</span>
+      <h2 class="section-title">TIMELINE TIỆC CƯỚI</h2>
+    </div>
+
+    <!-- Living Botanical Stem Journey -->
+    <div class="living-botanical-stem">
+      <div class="stem-central-vine" aria-hidden="true"></div>
+
+      <!-- Milestone 1 -->
+      <div class="stem-milestone stem-milestone--node">
+        <div class="stem-node-badge" aria-hidden="true">
+          <svg class="fine-stem-svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+          </svg>
+        </div>
+        <div class="stem-milestone-content">
+          <span class="milestone-time" data-field="timeline_time_1">10:30</span>
+          <h4 class="milestone-title" data-field="timeline_title_1">Đón Khách &amp; Check-in</h4>
+          <p class="milestone-desc" data-field="timeline_desc_1">Chụp ảnh kỷ niệm cùng Cô dâu - Chú rể tại sảnh hoa Lavender</p>
+        </div>
+      </div>
+
+      <!-- Milestone 2 -->
+      <div class="stem-milestone stem-milestone--node">
+        <div class="stem-node-badge" aria-hidden="true">
+          <svg class="fine-stem-svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="9" cy="12" r="5"></circle>
+            <circle cx="15" cy="12" r="5"></circle>
+          </svg>
+        </div>
+        <div class="stem-milestone-content">
+          <span class="milestone-time" data-field="timeline_time_2">11:00</span>
+          <h4 class="milestone-title" data-field="timeline_title_2">Nghi Lễ Thành Hôn</h4>
+          <p class="milestone-desc" data-field="timeline_desc_2">Lễ thành hôn trang trọng và bắt đầu khai tiệc mừng</p>
+        </div>
+      </div>
+
+      <!-- Milestone 3 -->
+      <div class="stem-milestone stem-milestone--node">
+        <div class="stem-node-badge" aria-hidden="true">
+          <svg class="fine-stem-svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8 22h8M12 15v7M5 2h14l-2 9a5 5 0 0 1-10 0L5 2z"></path>
+          </svg>
+        </div>
+        <div class="stem-milestone-content">
+          <span class="milestone-time" data-field="timeline_time_3">12:00</span>
+          <h4 class="milestone-title" data-field="timeline_title_3">Cắt Bánh &amp; Nâng Ly</h4>
+          <p class="milestone-desc" data-field="timeline_desc_3">Cô dâu chú rể rót tháp rượu hạnh phúc và gửi lời tri ân</p>
+        </div>
+      </div>
+
+      <!-- Milestone 4 -->
+      <div class="stem-milestone stem-milestone--node">
+        <div class="stem-node-badge" aria-hidden="true">
+          <svg class="fine-stem-svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 18V5l12-2v13"></path>
+            <circle cx="6" cy="18" r="3"></circle>
+            <circle cx="18" cy="16" r="3"></circle>
+          </svg>
+        </div>
+        <div class="stem-milestone-content">
+          <span class="milestone-time" data-field="timeline_time_4">12:30</span>
+          <h4 class="milestone-title" data-field="timeline_title_4">Âm Nhạc &amp; Minigame</h4>
+          <p class="milestone-desc" data-field="timeline_desc_4">Giao lưu âm nhạc cùng bạn bè thân hữu và bốc thăm may mắn</p>
+        </div>
+      </div>
+
+      <!-- Milestone 5 -->
+      <div class="stem-milestone stem-milestone--node">
+        <div class="stem-node-badge" aria-hidden="true">
+          <svg class="fine-stem-svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+            <polyline points="22,6 12,13 2,6"></polyline>
+          </svg>
+        </div>
+        <div class="stem-milestone-content">
+          <span class="milestone-time" data-field="timeline_time_5">13:30</span>
+          <h4 class="milestone-title" data-field="timeline_title_5">Tiễn Khách &amp; Ký Lưu Bút</h4>
+          <p class="milestone-desc" data-field="timeline_desc_5">Lưu lại những kỷ niệm đẹp và gửi lời chúc tốt lành</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Editorial Dress Code Palette (Open Canvas) -->
+    <div class="dresscode-open-area text-center">
+      <span class="dresscode-eyebrow">DRESS CODE GỢI Ý</span>
+      <p class="dresscode-desc">Để có những bức hình đồng điệu và trang nhã nhất, Quý khách có thể ưu tiên các gam màu:</p>
+      
+      <div class="dresscode-palette-row">
+        <div class="dresscode-swatch">
+          <span class="swatch-circle swatch--lavender"></span>
+          <span class="swatch-name">Lavender</span>
+          <span class="swatch-sub">Lụa Tím Nhạt</span>
+        </div>
+        <div class="dresscode-swatch">
+          <span class="swatch-circle swatch--cream"></span>
+          <span class="swatch-name">Cream</span>
+          <span class="swatch-sub">Kem Sữa</span>
+        </div>
+        <div class="dresscode-swatch">
+          <span class="swatch-circle swatch--sage"></span>
+          <span class="swatch-name">Sage</span>
+          <span class="swatch-sub">Xanh Bạc Hà</span>
+        </div>
+        <div class="dresscode-swatch">
+          <span class="swatch-circle swatch--plum"></span>
+          <span class="swatch-name">Plum</span>
+          <span class="swatch-sub">Mận Trầm</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ================= SCENE 07: CALENDAR SAVE THE DATE ================= -->
+  <section class="editorial-scene scene-calendar" id="calendar">
+    <div class="calendar-header text-center">
+      <span class="section-eyebrow">LỊCH CƯỚI</span>
+      <h2 class="section-title">THÁNG 01 / 2026</h2>
+    </div>
+
+    <div class="calendar-stationery-wrap">
+      <table class="editorial-calendar-table">
+        <thead>
+          <tr>
+            <th>Hai</th><th>Ba</th><th>Tư</th><th>Năm</th><th>Sáu</th><th>Bảy</th><th>CN</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td></td><td></td><td></td><td>01</td><td>02</td><td>03</td><td>04</td>
+          </tr>
+          <tr>
+            <td>05</td><td>06</td><td>07</td><td>08</td><td>09</td><td>10</td><td>11</td>
+          </tr>
+          <tr>
+            <td>12</td><td>13</td><td>14</td><td>15</td><td>16</td><td>17</td>
+            <td class="calendar-wedding-day">
+              <div class="calendar-jewel-marker">
+                <span class="marker-day">18</span>
+                <span class="marker-flower-badge" aria-hidden="true">✦</span>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>19</td><td>20</td><td>21</td><td>22</td><td>23</td><td>24</td><td>25</td>
+          </tr>
+          <tr>
+            <td>26</td><td>27</td><td>28</td><td>29</td><td>30</td><td>31</td><td></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="calendar-action-row text-center">
+        <a class="google-calendar-pill" href="https://www.google.com/calendar/render?action=TEMPLATE&amp;text=%C4%90%C3%A1m+c%C6%B0%E1%BB%9Bi+Duy+Nam+%26+V%C3%A2n+Anh&amp;dates=20260118T040000Z/20260118T070000Z&amp;details=Ti%E1%BB%87c+c%C6%B0%E1%BB%9Bi+Duy+Nam+%26+V%C3%A2n+Anh+t%E1%BA%A1i+Tr%E1%BB%91ng+%C4%90%E1%BB%93ng+Palace&amp;location=Tr%E1%BB%91ng+%C4%90%E1%BB%93ng+Palace%2C+72+Tr%E1%BA%A7n+%C4%90%C4%83ng+Ninh%2C+C%E1%BA%A7u+Gi%E1%BA%A5y%2C+H%C3%A0+N%E1%BB%99i" target="_blank" rel="noopener">
+          <svg class="btn-line-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
+          </svg>
+          <span>Thêm sự kiện vào Google Calendar</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ================= SCENE 08: FULL-BLEED PHOTO & EDITORIAL LOOKBOOK ================= -->
+  <section class="editorial-scene scene-gallery" id="gallery">
+    <div class="scene-header text-center">
+      <span class="emotional-script-accent">Every picture tells a story</span>
+      <h2 class="section-title">KHOẢNH KHẮC CỦA CHÚNG TA</h2>
+      <p class="section-lead-text">Chạm nhẹ vào từng khung hình để chiêm ngưỡng trọn vẹn bộ ảnh cưới</p>
+    </div>
+
+    <div class="lookbook-stream">
+      <!-- 1. Full-width cinematic banner -->
+      <figure class="lookbook-entry lookbook-entry--full gallery-item">
+        <img src="assets/images/74807c96-05b1-406d-9baf-460cd417ab3b.jpg" alt="Duy Nam &amp; Vân Anh trong ngày chung đôi" data-image="gallery" data-image-index="0">
+        <figcaption class="lookbook-overlay-tag">Our Wedding Day</figcaption>
+      </figure>
+
+      <!-- 2. Asymmetric duo: tall portrait + offset square with poetic caption -->
+      <div class="lookbook-asym-pair">
+        <figure class="lookbook-entry lookbook-entry--tall gallery-item">
+          <img src="assets/images/45a36f75-193b-41c4-a6ba-9e071ee1870c.jpg" alt="Khoảnh khắc tình yêu" data-image="gallery" data-image-index="1">
+        </figure>
+        
+        <div class="lookbook-offset-stack">
+          <figure class="lookbook-entry lookbook-entry--square gallery-item">
+            <img src="assets/images/97d061d7-b200-40c3-8ddf-13d483e29eef.jpg" alt="Nụ cười hạnh phúc" data-image="gallery" data-image-index="2">
+          </figure>
+          <div class="lookbook-micro-quote">
+            <span class="quote-mark">“</span>
+            <p>Và ta chọn bên nhau, đi qua tất cả những năm tháng bình yên phía trước.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. Wide landscape break with botanical side sprig -->
+      <div class="lookbook-wide-container">
+        <img src="assets/images/hydrangea-branch.webp" alt="" class="lookbook-sprig-left botanical-sway-slow" aria-hidden="true">
+        <figure class="lookbook-entry lookbook-entry--wide gallery-item">
+          <img src="assets/images/591f1988-dea4-4997-8911-a862e5bd1174.jpg" alt="Hôn lễ trọn vẹn" data-image="gallery" data-image-index="3">
+        </figure>
+      </div>
+
+      <!-- 4. Intimate duo grid -->
+      <div class="lookbook-duo-grid">
+        <figure class="lookbook-entry gallery-item">
+          <img src="assets/images/a2115149-724b-4b3c-a583-9d44a39fd8c3.jpg" alt="Ánh nhìn yêu thương" data-image="gallery" data-image-index="4">
+        </figure>
+        <figure class="lookbook-entry gallery-item">
+          <img src="assets/images/52ed9a3f-608e-403c-98a9-9cf73747e2a8.jpg" alt="Bên nhau trọn đời" data-image="gallery" data-image-index="5">
+        </figure>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ================= SCENE 09: LỜI CHÚC PHÚC & XÁC NHẬN THAM DỰ (UNIFIED WEDDING SECTION) ================= -->
+  <section class="editorial-scene scene-blessing" id="blessing">
+    
+    <!-- Top Delicate Botanical Flourish -->
+    <div class="blessing-ornament-top text-center" aria-hidden="true">
+      <span class="botanical-star-gem">✦</span>
+    </div>
+
+    <div class="blessing-header text-center">
+      <span class="section-eyebrow">LỜI CHÚC PHÚC</span>
+      <h2 class="section-title">GỬI MỘT LỜI CHÚC<br>ĐẾN CHÚNG MÌNH</h2>
+      <p class="blessing-lead-quote">“Những lời chúc và sự hiện diện của bạn là món quà đặc biệt ý nghĩa nhất dành cho chúng mình.”</p>
+    </div>
+
+    <!-- Unified Form: Attendance + Wish Message in One Seamless Canvas -->
+    <form class="stationery-form unified-blessing-form" data-unified-form="">
+      
+      <!-- 1. RSVP Attendance Interaction -->
+      <div class="blessing-attendance-block">
+        <label class="attendance-block-label text-center">BẠN CÓ THỂ THAM DỰ CÙNG CHÚNG MÌNH?</label>
+        <div class="attendance-pill-group">
+          <label class="attendance-pill-item">
+            <input type="radio" name="attending" value="yes" checked="">
+            <span class="attendance-pill-btn">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              <span>Có, mình sẽ tham dự</span>
+            </span>
+          </label>
+          <label class="attendance-pill-item">
+            <input type="radio" name="attending" value="no">
+            <span class="attendance-pill-btn">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+              <span>Tiếc quá, mình không thể</span>
+            </span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Guest Count Row -->
+      <div class="form-field-hairline" id="blessing-guests-wrap">
+        <label for="blessing-guests">Số lượng người tham dự</label>
+        <select id="blessing-guests" name="guests">
+          <option value="1">1 người (Đi một mình)</option>
+          <option value="2">2 người (+1 người đi cùng)</option>
+          <option value="3">3 người trở lên (Cùng gia đình)</option>
+        </select>
+      </div>
+
+      <!-- Guest Name Field -->
+      <div class="form-field-hairline">
+        <label for="blessing-name">Họ và tên của bạn *</label>
+        <input id="blessing-name" name="name" type="text" placeholder="Nhập họ và tên..." required="">
+      </div>
+
+      <!-- Wish Message Field with Fine-Line Wand -->
+      <div class="form-field-hairline">
+        <div class="label-with-tool-row">
+          <label for="blessing-message">Lời chúc tốt đẹp gửi dâu rể *</label>
+          <button class="editorial-wand-btn" type="button" data-ai-wish-btn="" title="Lấy câu chúc gợi ý">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2l2.4 7.2h7.6l-6.1 4.5 2.3 7.3-6.2-4.6-6.2 4.6 2.3-7.3-6.1-4.5h7.6z"></path>
+            </svg>
+            <span>Gợi ý lời chúc</span>
+          </button>
+        </div>
+        <textarea id="blessing-message" name="message" rows="3" placeholder="Gửi gắm lời chúc yêu thương tới đôi uyên ương..." required=""></textarea>
+      </div>
+
+      <!-- Primary Action: GỬI LỜI CHÚC & XÁC NHẬN -->
+      <div class="blessing-submit-row">
+        <button class="editorial-submit-btn" type="submit">
+          GỬI LỜI CHÚC &amp; XÁC NHẬN
+        </button>
+      </div>
+
+      <!-- Inline Feedback Notice -->
+      <div class="blessing-feedback-msg" data-blessing-feedback=""></div>
+
+      <!-- Delicate Ornamental Divider -->
+      <div class="blessing-actions-divider" aria-hidden="true">
+        <span class="blessing-div-line"></span>
+        <span class="blessing-div-gem">✦</span>
+        <span class="blessing-div-line"></span>
+      </div>
+
+      <!-- Tertiary Action: GỬI QUÀ MỪNG (Opens Modal) -->
+      <div class="blessing-gift-action text-center">
+        <p class="gift-trigger-hint">Nếu Quý khách có nhã ý gửi quà mừng từ xa:</p>
+        <button class="editorial-gift-trigger-btn" type="button" id="btn-open-gift-modal" data-open-gift-modal="">
+          <svg class="btn-gift-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="8" width="18" height="13" rx="1"></rect>
+            <path d="M12 8v13M3 12h18M12 8a3 3 0 1 0-3-3c2.5 0 3 3 3 3zm0 0a3 3 0 1 1 3-3c-2.5 0-3 3-3 3z"></path>
+          </svg>
+          <span>GỬI QUÀ MỪNG</span>
+        </button>
+      </div>
+
+    </form>
+
+    <!-- Live Wishes Journal -->
+    <div class="blessing-journal-block">
+      <span class="journal-sub-eyebrow text-center">LƯU BÚT ĐÔI UYÊN ƯƠNG</span>
+      <div class="wishes-journal" data-guestbook-list=""></div>
+    </div>
+
+    <!-- Bottom Botanical Flourish -->
+    <div class="blessing-botanical-tail text-center" aria-hidden="true">
+      <span class="botanical-star-gem">✦</span>
+    </div>
+
+  </section>
+
+
+  <!-- ================= SCENE 10: EMOTIONAL FINALE & GRATITUDE ================= -->
+  <footer class="editorial-finale" id="finale">
+    <div class="finale-portrait-bleed">
+      <img src="assets/images/911e4e3e-0b3c-485f-9353-ce15b34af69b.jpg" alt="Duy Nam &amp; Vân Anh trong hạnh phúc ngập tràn">
+    </div>
+
+    <div class="finale-text-content text-center">
+      <span class="emotional-script-accent finale-script-lg">Thank You</span>
+      <h2 class="finale-couple-names" data-field="couple_names">DUY NAM &amp; VÂN ANH</h2>
+      <p class="finale-date" data-field="ceremony_short">18 · 01 · 2026</p>
+      <p class="finale-heartfelt" data-field="ceremony_heartfelt_quote">Cảm ơn gia đình, thầy cô và những người bạn quý báu đã luôn đồng hành, chở che và dành thời gian đến chung vui trong ngày hạnh phúc nhất của chúng con.</p>
+    </div>
+
+    <!-- Bottom Botanical Garland -->
+    <div class="finale-botanical-bottom" aria-hidden="true">
+      <img src="assets/images/hydrangea-bottom.webp" alt="" class="finale-garland-img botanical-sway-slow">
+    </div>
+
+    <div class="stationery-hallmark text-center">
+      <span>ZIU WEDDING · ATELIER BOTANICAL SUITE</span>
+    </div>
+  </footer>
+
+</div>
+
+<!-- ================= STATIONERY GIFT POPUP MODAL (HIDDEN INITIALLY) ================= -->
+<div id="gift-modal" class="gift-modal-backdrop" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="gift-modal-title">
+  <div class="gift-modal-card">
+    <button id="gift-modal-close" class="gift-modal-close" type="button" aria-label="Đóng popup">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+
+    <!-- Corner Hydrangea Flourish -->
+    <img src="assets/images/intro-env-sprig-tr.png?v=7.2" alt="" class="modal-corner-flourish" aria-hidden="true">
+
+    <div class="gift-modal-body text-center">
+      <span class="modal-eyebrow">HỘP MỪNG CƯỚI</span>
+      <h3 id="gift-modal-title" class="gift-modal-title">GỬI QUÀ MỪNG</h3>
+      <div class="modal-gem-sep" aria-hidden="true">✦</div>
+      <p class="modal-lead-note">Tình cảm và lời chúc phúc của Quý khách là món quà quý báu nhất. Xin chân thành cảm ơn tấm lòng của Quý khách.</p>
+
+      <!-- Recipient Switcher Tabs -->
+      <div class="recipient-switcher-row" role="tablist">
+        <button type="button" class="recipient-tab is-active" data-recipient="bride" role="tab" aria-selected="true">
+          Cô Dâu Vân Anh
+        </button>
+        <button type="button" class="recipient-tab" data-recipient="groom" role="tab" aria-selected="false">
+          Chú Rể Duy Nam
+        </button>
+      </div>
+
+      <!-- EXACTLY ONE SINGLE QR CODE IN THE ENTIRE APPLICATION -->
+      <div class="single-qr-mat">
+        <img id="single-gift-qr" src="assets/images/qr_bride.png" alt="Mã QR mừng cưới" width="180" height="180" data-image="bank_qr" data-image-index="0">
+      </div>
+
+      <!-- Dynamic Bank Details -->
+      <div class="gift-modal-account-box">
+        <p class="gift-modal-bank" id="gift-modal-bank">TECHCOMBANK</p>
+        <p class="gift-modal-acc-num" id="gift-modal-acc-num">19033445566778</p>
+        <p class="gift-modal-acc-name" id="gift-modal-acc-name">NGUYEN VAN ANH</p>
+      </div>
+
+      <!-- 1-Click Copy STK Button -->
+      <button class="editorial-copy-btn" id="gift-modal-copy-btn" type="button" data-copy-account="19033445566778">
+        <svg class="btn-copy-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+        </svg>
+        <span>Sao chép số tài khoản</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Full-Screen Lightbox Modal -->
+<div id="lightbox-modal" class="lightbox-modal" role="dialog" aria-modal="true" aria-label="Xem ảnh cưới phóng to">
+  <button id="lightbox-close" class="lightbox-close" aria-label="Đóng">✕</button>
+  <button id="lightbox-prev" class="lightbox-nav lightbox-prev" aria-label="Ảnh trước">‹</button>
+  <img id="lightbox-img" class="lightbox-img" src="" alt="Ảnh cưới phóng to">
+  <button id="lightbox-next" class="lightbox-nav lightbox-next" aria-label="Ảnh tiếp">›</button>
+  <div id="lightbox-counter" class="lightbox-counter"></div>
+</div>
+
+<!-- Floating Disc Music Toggle -->
+<button class="music-disc-btn" id="music-toggle" type="button" aria-pressed="false" title="Bật / Tắt nhạc cưới">
+  <svg class="music-disc-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+    <circle cx="12" cy="12" r="10"></circle>
+    <circle cx="12" cy="12" r="3.5"></circle>
+    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10"></path>
+  </svg>
+</button>
+<audio id="bg-audio" loop="" preload="none">
+  <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=romantic-wedding-113886.mp3" type="audio/mpeg">
+</audio>
+
+<!-- Toast Pill Notification -->
+<div id="toast-pill" class="toast-pill">✓ Đã sao chép!</div>
+
+<script src="assets/js/main.js"></script>
+
+
+</body></html>

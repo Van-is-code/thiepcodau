@@ -1,3 +1,7 @@
+# ─────────────────────────────────────────────
+#  Wedding_Web — gitignore chung cho cả BE và FE
+# ─────────────────────────────────────────────
+
 # Dependencies
 node_modules/
 yarn.lock
@@ -6,25 +10,42 @@ yarn.lock
 .env
 .env.local
 .env.*.local
-
-# Logs
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# Runtime data
-.DS_Store
-Thumbs.db
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
+!.env.example
 
 # Build output
 dist/
 build/
 
-# Cache
-hts-cache/
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+BE_Wedding_Web/logs/
+
+# Runtime uploads của người dùng (ảnh, nhạc). Gói mẫu ở uploads/templates/ vẫn commit.
+BE_Wedding_Web/uploads/images/
+BE_Wedding_Web/uploads/music/
+BE_Wedding_Web/uploads/tmp/
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Backup .git của repo BE_Wedding_Web tách riêng trước đây — xoá khi không cần nữa.
+_BE_Wedding_Web_git_backup/
+
+# Thư mục phụ, theme mẫu và tài liệu phát triển cục bộ (chỉ deploy hệ thống chính)
+theme-to-template/
+theme_blue_botanical_masterpiece/
+theme_hydrangea_editorial/
+LUAT_AGENT/
+.claude/
+
+# Cấu hình deploy cá nhân
+deploy.config.json
+*.tar.gz

@@ -1,0 +1,29 @@
+# Watcher sao lưu (kích hoạt theo thay đổi + mốc ngày) -> Google Drive.
+#   sudo cp scripts/backup/systemd/thiep-backup.service /etc/systemd/system/
+#   sudo systemctl daemon-reload && sudo systemctl enable --now thiep-backup
+#   journalctl -u thiep-backup -f
+[Unit]
+Description=thiep-backup watcher (PostgreSQL + files -> Google Drive)
+After=network-online.target postgresql.service docker.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+# Script tự đọc cấu hình từ file này (không cần EnvironmentFile).
+Environment=THIEP_BACKUP_ENV=/etc/thiep-backup/backup.env
+ExecStart=/opt/thiep-backup/thiep-backup watch
+Restart=always
+RestartSec=15
+Nice=15
+IOSchedulingClass=idle
+# Chạy bằng user riêng (tạo trước: sudo useradd -r -s /usr/sbin/nologin thiepbackup)
+# và cấp quyền đọc UPLOADS_DIRS + rclone.conf + restic.pass cho user đó.
+User=thiepbackup
+Group=thiepbackup
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ReadWritePaths=/var/lib/thiep-backup
+
+[Install]
+WantedBy=multi-user.target

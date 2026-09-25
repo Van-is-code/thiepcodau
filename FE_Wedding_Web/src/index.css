@@ -1,0 +1,151 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+
+:root {
+  /* Color Palette - Modern Warm Terracotta & Champagne */
+  --bg-main: #fcfaf7;
+  --bg-subtle: #f6f1eb;
+  --bg-card: #ffffff;
+  --bg-card-glass: rgba(255, 255, 255, 0.85);
+
+  --primary: #d97757;
+  --primary-hover: #c46344;
+  --primary-light: rgba(217, 119, 87, 0.1);
+  --primary-gradient: linear-gradient(135deg, #e58d6f 0%, #c96547 100%);
+  --gold-gradient: linear-gradient(135deg, #e3c47e 0%, #c9a96e 100%);
+
+  --gold: #c9a96e;
+  --gold-light: #f4ecdc;
+  --gold-dark: #a38243;
+
+  --sage: #4f7e65;
+  --sage-light: rgba(79, 126, 101, 0.12);
+
+  --text-main: #1f1917;
+  --text-muted: #6e625c;
+  --text-subtle: #9e918a;
+  --text-placeholder: #b5a9a2;
+
+  --border-light: rgba(217, 119, 87, 0.14);
+  --border-subtle: #ede5db;
+  --border-focus: rgba(217, 119, 87, 0.4);
+
+  --shadow-sm: 0 2px 8px -1px rgba(31, 25, 23, 0.04);
+  --shadow-md: 0 8px 24px -4px rgba(31, 25, 23, 0.07);
+  --shadow-lg: 0 16px 36px -6px rgba(31, 25, 23, 0.1);
+  --shadow-glow: 0 8px 25px -3px rgba(217, 119, 87, 0.28);
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-full: 9999px;
+
+  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-serif: 'Cormorant Garamond', Georgia, serif;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-family: var(--font-sans);
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  font-size: 14.5px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  width: 100%;
+  min-height: 100vh;
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  overflow-x: hidden;
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Typography defaults */
+h1, h2, h3, h4, .font-serif {
+  font-family: var(--font-serif);
+  font-weight: 500;
+  color: var(--text-main);
+}
+
+a {
+  color: var(--primary);
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+a:hover {
+  color: var(--primary-hover);
+}
+
+button {
+  font-family: var(--font-sans);
+  border: none;
+  outline: none;
+  background: none;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+input, select, textarea {
+  font-family: var(--font-sans);
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #dfd7cc;
+  border-radius: var(--radius-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #c7beaf;
+}
+
+/* Utilities */
+.icon-line {
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { opacity: 0.8; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.03); }
+}

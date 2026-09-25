@@ -1,0 +1,699 @@
+/* ==========================================================================
+   WEDDING LETTER INTRO — DOVES DELIVER THE WEDDING LETTER
+   Masterpiece Botanical Watercolor Stationery & 60 FPS GSAP Motion Engine
+   Source of Truth: Reference Storyboard (media_1789570012744.jpg)
+   ========================================================================== */
+
+:root {
+  --intro-paper-ivory: #FAF7F2;
+  --intro-paper-warm: #F8F3EA;
+  --intro-hydrangea-deep: #4E3C64;
+  --intro-hydrangea-mid: #7A6890;
+  --intro-hydrangea-soft: #A294B2;
+  --intro-wax-purple: #9F8AA8;
+  --intro-ink-primary: #2A2421;
+  --intro-ink-muted: #7E756F;
+}
+
+/* -------------------------------------------------------------------------- */
+/* 1. INTRO FULLSCREEN BACKDROP & PORTRAIT STATIONERY CANVAS                  */
+/* -------------------------------------------------------------------------- */
+.wedding-letter-intro {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  z-index: 99999;
+  background-color: #ECE5D8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.65s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.65s ease;
+}
+
+/* Desktop ambient background staging */
+@media (min-width: 768px) {
+  .wedding-letter-intro {
+    padding: 24px 0;
+    background: radial-gradient(circle at 50% 20%, #F5EFE6 0%, #DCD2C2 100%);
+  }
+}
+
+.wedding-letter-intro.is-hidden {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+body.intro-active {
+  overflow: hidden !important;
+  touch-action: none;
+}
+
+/* Mobile-First Portrait Stationery Canvas (Crisp Botanical Watercolor, Zero Blur) */
+.intro-portrait-canvas {
+  width: 100%;
+  max-width: 440px;
+  height: 100vh;
+  height: 100dvh;
+  position: relative;
+  background-color: var(--intro-paper-ivory);
+  background-image: url('../images/intro-storyboard-bg.webp'), url('../images/intro-storyboard-bg.png');
+  background-size: cover;
+  background-position: center;
+  overflow: hidden;
+  box-shadow: 0 0 60px rgba(0, 0, 0, 0.08);
+}
+
+@media (min-width: 768px) {
+  .intro-portrait-canvas {
+    border-radius: 20px;
+    box-shadow: 0 30px 80px -15px rgba(52, 38, 68, 0.22), 0 0 0 1px rgba(122, 104, 144, 0.15);
+    height: min(100vh - 40px, 880px);
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/* 2. FLOATING PETALS LAYER                                                   */
+/* -------------------------------------------------------------------------- */
+.floating-petals {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  overflow: hidden;
+}
+
+.petal {
+  position: absolute;
+  width: 12px;
+  height: 14px;
+  background: radial-gradient(ellipse at 35% 35%, #DDD4E4 0%, #B8A8C6 60%, #9D8AA8 100%);
+  border-radius: 50% 10% 50% 50%;
+  opacity: 0.7;
+  filter: drop-shadow(0 2px 4px rgba(78, 60, 100, 0.12));
+}
+
+.petal-1 { top: 18%; left: 28%; transform: rotate(15deg); animation: petalDrift1 6s ease-in-out infinite alternate; }
+.petal-2 { top: 38%; left: 74%; transform: rotate(-25deg); animation: petalDrift2 7s ease-in-out infinite alternate; }
+.petal-3 { top: 58%; left: 16%; transform: rotate(45deg); animation: petalDrift1 8s ease-in-out infinite alternate 1s; }
+.petal-4 { top: 72%; left: 62%; transform: rotate(-10deg); animation: petalDrift2 6.5s ease-in-out infinite alternate 0.5s; }
+
+@keyframes petalDrift1 {
+  0%   { transform: translate(0, 0) rotate(15deg); }
+  100% { transform: translate(12px, 20px) rotate(35deg); }
+}
+
+@keyframes petalDrift2 {
+  0%   { transform: translate(0, 0) rotate(-25deg); }
+  100% { transform: translate(-15px, 22px) rotate(-45deg); }
+}
+
+/* -------------------------------------------------------------------------- */
+/* 3. FLIGHT ARENA: TWO WATERCOLOR DOVES & CARRIED ENVELOPE RIG              */
+/* -------------------------------------------------------------------------- */
+.flight-arena {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* Carrier Rig holding Doves & Envelope as a dynamic synchronized flight unit */
+.carrier-rig {
+  position: absolute;
+  top: 10%;
+  left: 50%;
+  width: 320px;
+  height: 220px;
+  margin-left: -160px;
+  will-change: transform, opacity;
+  opacity: 0;
+  transform: translate3d(-180px, -160px, 0) rotate(-12deg) scale(0.75);
+}
+
+/* Doves inside carrier rig (Authentic Watercolor Illustration) */
+.dove {
+  position: absolute;
+  will-change: transform, opacity;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.dove-left {
+  top: 15px;
+  left: -5px;
+  width: 142px;
+  height: 167px;
+  z-index: 6;
+  transform-origin: 65% 70%;
+}
+
+.dove-right {
+  top: 5px;
+  right: -5px;
+  width: 122px;
+  height: 198px;
+  z-index: 6;
+  transform-origin: 35% 65%;
+}
+
+/* Articulated Dove Layers */
+.dove-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+  will-change: transform;
+}
+
+.dove-layer img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+  filter: drop-shadow(0 6px 14px rgba(60, 45, 80, 0.12));
+}
+
+.dove-wing-back {
+  z-index: 1;
+}
+
+.dove-body-part {
+  z-index: 2;
+}
+
+.dove-wing-front {
+  z-index: 3;
+}
+
+/* WING FLAPPING KEYFRAMES — SOFT, ELEGANT, 60 FPS COMPOSITOR TRANSFORM */
+/* Left Dove Flapping (2.8 cycles/second) */
+.dove-wing-front-left {
+  transform-origin: 68.7% 66.1%;
+  animation: flapLeftWingFront 0.36s ease-in-out infinite alternate;
+}
+
+.dove-wing-back-left {
+  transform-origin: 61.7% 44.0%;
+  animation: flapLeftWingBack 0.36s ease-in-out infinite alternate;
+}
+
+.dove-body-left {
+  animation: bobLeftBody 0.36s ease-in-out infinite alternate;
+}
+
+@keyframes flapLeftWingFront {
+  0%   { transform: rotate(-9deg) scaleY(0.96); }
+  100% { transform: rotate(11deg) scaleY(1.02); }
+}
+
+@keyframes flapLeftWingBack {
+  0%   { transform: rotate(7deg); }
+  100% { transform: rotate(-8deg); }
+}
+
+@keyframes bobLeftBody {
+  0%   { transform: translateY(-2px) rotate(-1deg); }
+  100% { transform: translateY(2px) rotate(1.5deg); }
+}
+
+/* Right Dove Flapping (2.4 cycles/second, 180ms phase shift) */
+.dove-wing-front-right {
+  transform-origin: 48.3% 65.0%;
+  animation: flapRightWingFront 0.40s ease-in-out 0.18s infinite alternate;
+}
+
+.dove-wing-back-right {
+  transform-origin: 39.1% 45.2%;
+  animation: flapRightWingBack 0.40s ease-in-out 0.18s infinite alternate;
+}
+
+.dove-body-right {
+  animation: bobRightBody 0.40s ease-in-out 0.18s infinite alternate 0.18s;
+}
+
+@keyframes flapRightWingFront {
+  0%   { transform: rotate(9deg) scaleY(0.96); }
+  100% { transform: rotate(-11deg) scaleY(1.02); }
+}
+
+@keyframes flapRightWingBack {
+  0%   { transform: rotate(-7deg); }
+  100% { transform: rotate(8deg); }
+}
+
+@keyframes bobRightBody {
+  0%   { transform: translateY(-2px) rotate(1deg); }
+  100% { transform: translateY(2px) rotate(-1.5deg); }
+}
+
+/* Carried Envelope (inside rig during flight) */
+.carried-envelope {
+  position: absolute;
+  top: 55px;
+  left: 88px;
+  width: 144px;
+  height: 96px;
+  background: #FAF6EE;
+  background-image: 
+    radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.95) 0%, rgba(246, 240, 230, 0.85) 100%),
+    linear-gradient(135deg, #FAF6EE 0%, #EFE7DA 100%);
+  border-radius: 4px;
+  box-shadow: 0 14px 30px rgba(55, 42, 68, 0.18);
+  transform: rotate(14deg);
+  z-index: 5;
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  will-change: transform, opacity;
+}
+
+.carried-envelope::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 48px;
+  background: linear-gradient(to bottom, #F9F5EE 0%, #ECE3D4 100%);
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+  opacity: 0.85;
+}
+
+.carried-cord {
+  position: absolute;
+  top: 48%;
+  left: -20px;
+  right: -20px;
+  height: 1.5px;
+  background: linear-gradient(to right, transparent, rgba(185, 170, 195, 0.75) 20%, rgba(185, 170, 195, 0.75) 80%, transparent);
+  z-index: 4;
+}
+
+.carried-seal {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: url('../images/intro-wax-seal.png?v=7.2') center/contain no-repeat;
+  filter: drop-shadow(0 2px 6px rgba(55, 40, 70, 0.3));
+  z-index: 5;
+}
+
+/* -------------------------------------------------------------------------- */
+/* 4. SETTLING & PHYSICAL 3D ENVELOPE STAGE                                   */
+/* -------------------------------------------------------------------------- */
+.stage-envelope-anchor {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  max-width: 380px;
+  padding: 0 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 20;
+  pointer-events: auto;
+}
+
+.envelope-wrapper {
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  perspective: 1000px;
+  opacity: 0;
+  transform: translate3d(0, -180px, 0) rotate(14deg) scale(0.72);
+  will-change: transform, opacity;
+}
+
+/* Resting subtle breath pulse after ready */
+.wedding-letter-intro.is-ready-to-open:not(.is-opening) .physical-envelope {
+  animation: envelopeShadowPulse 3.5s ease-in-out infinite alternate;
+}
+
+@keyframes envelopeShadowPulse {
+  0% {
+    box-shadow: 
+      0 18px 38px rgba(45, 35, 55, 0.12),
+      0 4px 12px rgba(122, 104, 144, 0.08),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.9);
+  }
+  100% {
+    box-shadow: 
+      0 24px 50px rgba(45, 35, 55, 0.18),
+      0 6px 18px rgba(122, 104, 144, 0.14),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.95);
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/* 5. PHYSICAL ENVELOPE CRAFT (Fine Botanical Stationery)                     */
+/* -------------------------------------------------------------------------- */
+.physical-envelope {
+  position: relative;
+  width: clamp(290px, 82vw, 335px);
+  height: clamp(185px, 52vw, 215px);
+  background-color: #FFFFFF;
+  background-image: 
+    radial-gradient(circle at 50% 35%, #FFFFFF 0%, #FAF6F0 60%, #F5EDE0 100%),
+    linear-gradient(145deg, #FFFFFF 0%, #FAF5EB 50%, #F4EBE0 100%);
+  border-radius: 6px;
+  border: 1px solid rgba(135, 120, 155, 0.25);
+  box-shadow: 
+    0 20px 48px rgba(45, 35, 55, 0.14),
+    0 4px 14px rgba(45, 35, 55, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  cursor: pointer;
+  transform-origin: center center;
+  transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.35s ease;
+  outline: none;
+}
+
+.physical-envelope:hover {
+  box-shadow: 
+    0 26px 58px rgba(45, 35, 55, 0.2),
+    0 8px 24px rgba(122, 104, 144, 0.15);
+}
+
+/* Interior lining of the pocket (Crisp Hydrangea Arch Lining) */
+.envelope-back-pocket {
+  position: absolute;
+  inset: 0;
+  border-radius: 6px;
+  background-color: #E6DCED;
+  background-image: url('../images/intro-envelope-lining.png');
+  background-size: cover;
+  background-position: center;
+  overflow: hidden;
+  z-index: 2;
+}
+
+/* Enclosed stationery card (emerges & expands on tap) */
+.enclosed-letter-paper {
+  position: absolute;
+  top: 10px;
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
+  background-color: #FFFFFF;
+  background-image: 
+    radial-gradient(circle at 50% 20%, #FFFFFF 0%, #FAF7F2 100%),
+    linear-gradient(to bottom, #FFFFFF 0%, #F8F4EC 100%);
+  border-radius: 4px;
+  border: 1px solid rgba(122, 104, 144, 0.22);
+  box-shadow: 0 6px 16px rgba(42, 37, 33, 0.08);
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 16px;
+  pointer-events: none;
+  will-change: transform, box-shadow;
+}
+
+.inner-card-botanical-top {
+  margin-bottom: 6px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0.85;
+}
+
+.letter-top-tag {
+  font-size: 8.5px;
+  font-weight: 500;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--intro-hydrangea-mid);
+  margin-bottom: 2px;
+}
+
+.letter-sub-tag {
+  font-size: 7.5px;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--intro-hydrangea-soft);
+  margin-bottom: 8px;
+}
+
+.letter-names {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 16.5px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  color: var(--intro-hydrangea-deep);
+  text-transform: uppercase;
+  line-height: 1.2;
+}
+
+.letter-botanical-rule {
+  width: 32px;
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(122, 104, 144, 0.5), transparent);
+  margin: 7px auto;
+}
+
+.letter-date-loc {
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--intro-ink-muted);
+}
+
+/* Front Pocket (Holds enclosed card with authentic stationery V-pocket) */
+.envelope-front-pocket {
+  position: absolute;
+  inset: 0;
+  border-radius: 6px;
+  z-index: 8;
+  pointer-events: none;
+  background-color: #FAF5EB;
+  background-image: 
+    radial-gradient(circle at 50% 65%, rgba(255, 255, 255, 0.96) 0%, rgba(246, 239, 229, 0.88) 100%),
+    linear-gradient(135deg, #FAF6EE 0%, #EFE5D6 100%);
+  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.8);
+  overflow: hidden;
+  clip-path: polygon(0 0, 50% 50%, 100% 0, 100% 100%, 0 100%);
+}
+
+.pocket-crease-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* Diagonal envelope crease lines */
+.envelope-front-pocket::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: 
+    linear-gradient(to bottom right, transparent 49.6%, rgba(122, 104, 144, 0.1) 50%, transparent 50.4%),
+    linear-gradient(to bottom left, transparent 49.6%, rgba(122, 104, 144, 0.1) 50%, transparent 50.4%);
+}
+
+/* Botanical Corner Flourishes on Envelope (Matching Reference Panel 4 & 5) */
+.envelope-corner-decor {
+  position: absolute;
+  width: 72px;
+  height: 72px;
+  opacity: 0.82;
+  pointer-events: none;
+  z-index: 9;
+  object-fit: contain;
+}
+
+.envelope-decor-bl {
+  bottom: 2px;
+  left: 2px;
+  transform: none;
+}
+
+.envelope-decor-tr {
+  top: 2px;
+  right: 2px;
+  transform: none;
+}
+
+/* Recipient Plaque (On Top Flap Face, above the wax seal) */
+.recipient-box {
+  position: absolute;
+  top: 18px;
+  left: 10px;
+  right: 10px;
+  z-index: 6;
+  text-align: center;
+  padding: 4px 8px;
+  opacity: 0;
+  transform: translate3d(0, 10px, 0);
+  backface-visibility: hidden;
+  pointer-events: none;
+}
+
+.recipient-prefix {
+  display: block;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-style: italic;
+  font-size: 13px;
+  color: var(--intro-hydrangea-mid);
+  margin-bottom: 2px;
+}
+
+.recipient-name {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: clamp(14px, 3.8vw, 17px);
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  color: var(--intro-ink-primary);
+  text-transform: uppercase;
+  margin: 0;
+  line-height: 1.25;
+}
+
+.recipient-rule {
+  width: 24px;
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(122, 104, 144, 0.4), transparent);
+  margin: 4px auto 0;
+}
+
+/* Top Flap (Flips open in 3D, sits on top of front pocket until opened) */
+.envelope-top-flap {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 125px;
+  transform-origin: top center;
+  transform-style: preserve-3d;
+  z-index: 10;
+  filter: drop-shadow(0 4px 8px rgba(50, 38, 65, 0.14));
+  will-change: transform;
+  transition: filter 0.25s ease;
+}
+
+.wedding-letter-intro.is-opening .envelope-top-flap {
+  filter: none;
+}
+
+.top-flap-triangle {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, #FFFFFF 0%, #FAF6EE 70%, #F2E9DC 100%);
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+  box-shadow: 0 4px 14px rgba(42, 37, 33, 0.08);
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+  border-top: 1px solid rgba(255, 255, 255, 0.95);
+  backface-visibility: hidden;
+}
+
+.flap-crease-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.top-flap-inner-lining {
+  position: absolute;
+  inset: 0;
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+  background-color: #E6DCED;
+  background-image: url('../images/intro-envelope-lining.png');
+  background-size: cover;
+  background-position: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+.wedding-letter-intro.is-opening .top-flap-inner-lining {
+  opacity: 1;
+}
+
+/* Crisp Lilac Wax Seal with Embossed Botanical Sprig */
+.wax-seal {
+  position: absolute;
+  bottom: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 44px;
+  height: 44px;
+  z-index: 15;
+  background: url('../images/intro-wax-seal.png?v=7.2') center/contain no-repeat;
+  filter: drop-shadow(0 4px 8px rgba(55, 40, 70, 0.25));
+  backface-visibility: hidden;
+  pointer-events: none;
+}
+
+/* -------------------------------------------------------------------------- */
+/* 6. PROMPT CUE (Delicate Minimalist Interaction Prompt — No Button UI)     */
+/* -------------------------------------------------------------------------- */
+.prompt-cue {
+  margin-top: 22px;
+  text-align: center;
+  opacity: 0;
+  transform: translate3d(0, 10px, 0);
+  cursor: pointer;
+  pointer-events: auto;
+  position: relative;
+  z-index: 25;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  outline: none;
+}
+
+.tap-icon-svg {
+  width: 20px;
+  height: 20px;
+  stroke: var(--intro-hydrangea-mid);
+  stroke-width: 1.25;
+  fill: none;
+  animation: tapPulse 2.2s ease-in-out infinite alternate;
+}
+
+@keyframes tapPulse {
+  0%   { transform: translateY(0) scale(1); opacity: 0.75; }
+  100% { transform: translateY(-3px) scale(1.08); opacity: 1; }
+}
+
+.prompt-text {
+  font-size: 9.5px;
+  font-weight: 500;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--intro-hydrangea-deep);
+}
+
+

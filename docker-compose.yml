@@ -1,0 +1,64 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: Wedding_Web
+    ports:
+      # map ra 5433 để tránh đụng Postgres cài sẵn trên máy host ở 5432 (nếu có)
+      - "5433:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build: ./BE_Wedding_Web
+    restart: unless-stopped
+    # Dùng lại toàn bộ secret (JWT, Cloudinary, Sepay...) đã có sẵn trong .env của bạn.
+    # File này bắt buộc phải tồn tại — copy từ .env.example nếu chưa có.
+    env_file:
+      - ./BE_Wedding_Web/.env
+    environment:
+      # Ghi đè để backend nối vào service "db" trong mạng Docker thay vì localhost
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: Wedding_Web
+      PORT: 3000
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./BE_Wedding_Web:/app
+      - be_node_modules:/app/node_modules
+
+  frontend:
+    build: ./FE_Wedding_Web
+    restart: unless-stopped
+    env_file:
+      - ./FE_Wedding_Web/.env
+    environment:
+      # Trình duyệt gọi thẳng URL này, nên phải là địa chỉ trên máy host (không phải
+      # tên service nội bộ "backend"), trỏ vào cổng backend đã map ở trên.
+      VITE_API_URL: http://localhost:3000
+    depends_on:
+      - backend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./FE_Wedding_Web:/app
+      - fe_node_modules:/app/node_modules
+
+volumes:
+  db_data:
+  be_node_modules:
+  fe_node_modules:

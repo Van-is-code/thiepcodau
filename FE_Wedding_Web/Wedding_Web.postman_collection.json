@@ -1,0 +1,3247 @@
+{
+  "info": {
+    "_postman_id": "84e4f362-ce8f-4eda-9f4c-0901147943e6",
+    "name": "Wedding_Web",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "30786328"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"username\": \"admin\" ,\r\n  \"password\": \"admin123\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users",
+                "login"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "login",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"username\": \"admin\" ,\r\n  \"password\": \"admin123\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/users/login",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "users",
+                    "login"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "474"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"1da-KAZ04AmBlXOG9Hjy7AoFQznBoTI\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Mon, 23 Mar 2026 09:40:14 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"success\": true,\n    \"message\": \"Đăng nhập thành công\",\n    \"data\": {\n        \"user\": {\n            \"id\": \"11111111-1111-1111-1111-111111111111\",\n            \"username\": \"admin\",\n            \"role\": \"admin\",\n            \"created_at\": \"2026-03-23T09:07:14.887Z\",\n            \"updated_at\": \"2026-03-23T09:07:14.887Z\"\n        },\n        \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjExMTExMTExLTExMTEtMTExMS0xMTExLTExMTExMTExMTExMSIsInVzZXJuYW1lIjoiYWRtaW4iLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NzQyNTg4MTQsImV4cCI6MTc3NDg2MzYxNH0.uiL3y8ATsmG-zUXRmZqCCuJ3mXdB7zpwtwvyOJzvezo\"\n    }\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Invitation Templates",
+      "item": [
+        {
+          "name": "create",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n\"template_code\": \"temp_code_001\",\r\n\"template_name\": \"Template 001\",\r\n\"html_path\": \"templates/template-001/index.html\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/invitation-templates",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "invitation-templates"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "create",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n\"template_code\": \"temp_code_001\",\r\n\"template_name\": \"Template 001\",\r\n\"html_path\": \"templates/template-001/index.html\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/invitation-templates",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "invitation-templates"
+                  ]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "272"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"110-8Io2lcNWj5ZIqBik6hltzmmjEos\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Mon, 23 Mar 2026 09:51:43 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"success\": true,\n    \"message\": \"Create invitation_template successfully\",\n    \"data\": {\n        \"id\": \"ca4c087e-1178-4c6b-a68e-eb9eed550943\",\n        \"created_at\": \"2026-03-23T09:51:40.928Z\",\n        \"template_code\": \"temp_code_001\",\n        \"template_name\": \"Template 001\",\n        \"html_path\": \"templates/template-001/index.html\"\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "get all",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n\"template_code\": \"temp_code_001\",\r\n\"template_name\": \"Template 001\",\r\n\"html_path\": \"templates/template-001/index.html\"\r\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/invitation-templates",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "invitation-templates"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "get all",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n\"template_code\": \"temp_code_001\",\r\n\"template_name\": \"Template 001\",\r\n\"html_path\": \"templates/template-001/index.html\"\r\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/invitation-templates",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "invitation-templates"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "346"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"15a-D9Cfo7Lqe5z+OP048m3dEexoPJc\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Mon, 23 Mar 2026 09:49:14 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"success\": true,\n    \"message\": \"Get invitation_template list successfully\",\n    \"data\": {\n        \"items\": [\n            {\n                \"id\": \"9eade476-28a1-4c28-87d2-3b1446d862cc\",\n                \"template_code\": \"temp_code_001\",\n                \"template_name\": \"Template 001\",\n                \"html_path\": \"templates/template-001/index.html\",\n                \"created_at\": \"2026-03-23T09:47:52.668Z\"\n            }\n        ],\n        \"pagination\": {\n            \"total\": 1,\n            \"page\": 1,\n            \"limit\": 20,\n            \"totalPages\": 1\n        }\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "get by id",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n\"template_code\": \"temp_code_001\",\r\n\"template_name\": \"Template 001\",\r\n\"html_path\": \"templates/template-001/index.html\"\r\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/invitation-templates/9eade476-28a1-4c28-87d2-3b1446d862cc",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "invitation-templates",
+                "9eade476-28a1-4c28-87d2-3b1446d862cc"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "get by id",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n\"template_code\": \"temp_code_001\",\r\n\"template_name\": \"Template 001\",\r\n\"html_path\": \"templates/template-001/index.html\"\r\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/invitation-templates/9eade476-28a1-4c28-87d2-3b1446d862cc",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "invitation-templates",
+                    "9eade476-28a1-4c28-87d2-3b1446d862cc"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "269"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"10d-lAnMc2h1bbtW1PFxnZBFLLXbHsI\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Mon, 23 Mar 2026 09:50:05 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"success\": true,\n    \"message\": \"Get invitation_template successfully\",\n    \"data\": {\n        \"id\": \"9eade476-28a1-4c28-87d2-3b1446d862cc\",\n        \"template_code\": \"temp_code_001\",\n        \"template_name\": \"Template 001\",\n        \"html_path\": \"templates/template-001/index.html\",\n        \"created_at\": \"2026-03-23T09:47:52.668Z\"\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "edit by id",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n\"template_name\": \"Template 001 Updated\"\r\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/invitation-templates/9eade476-28a1-4c28-87d2-3b1446d862cc",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "invitation-templates",
+                "9eade476-28a1-4c28-87d2-3b1446d862cc"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "edit by id",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n\"template_name\": \"Template 001 Updated\"\r\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/invitation-templates/9eade476-28a1-4c28-87d2-3b1446d862cc",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "invitation-templates",
+                    "9eade476-28a1-4c28-87d2-3b1446d862cc"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "272"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"110-X+zrMRY9uLlwZxCZUcCgp6J8ajs\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Mon, 23 Mar 2026 09:50:54 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"success\": true,\n    \"message\": \"Update invitation_template successfully\",\n    \"data\": {\n        \"id\": \"9eade476-28a1-4c28-87d2-3b1446d862cc\",\n        \"template_code\": \"temp_code_001\",\n        \"template_name\": \"Template 001\",\n        \"html_path\": \"templates/template-001/index.html\",\n        \"created_at\": \"2026-03-23T09:47:52.668Z\"\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "delete",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n\"template_name\": \"Template 001 Updated\"\r\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/invitation-templates/9eade476-28a1-4c28-87d2-3b1446d862cc",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "invitation-templates",
+                "9eade476-28a1-4c28-87d2-3b1446d862cc"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "delete",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n\"template_name\": \"Template 001 Updated\"\r\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/invitation-templates/9eade476-28a1-4c28-87d2-3b1446d862cc",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "invitation-templates",
+                    "9eade476-28a1-4c28-87d2-3b1446d862cc"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "68"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"44-Ksw5Rt63NYux0JYl+C7YGiX8QTg\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Mon, 23 Mar 2026 09:51:25 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"success\": true,\n    \"message\": \"Delete invitation_template successfully\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Grooms",
+      "item": [
+        {
+          "name": "create",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n\"name_groom\": \"Chu re A\",\r\n\"father_grom\": \"Ong A\",\r\n\"mother_groom\": \"Ba A\",\r\n\"province\": \"HCM\",\r\n\"district\": \"Q1\",\r\n\"commune\": \"Ben Nghe\",\r\n\"address\": \"12 Le Loi\",\r\n\"bank_name\": \"VCB\",\r\n\"bank_account_name\": \"CHU RE A\",\r\n\"bank_account_number\": \"123456789\"\r\n}\r\n\r\n\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/grooms",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "grooms"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "create",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n\"name_groom\": \"Chu re A\",\r\n\"father_grom\": \"Ong A\",\r\n\"mother_groom\": \"Ba A\",\r\n\"province\": \"HCM\",\r\n\"district\": \"Q1\",\r\n\"commune\": \"Ben Nghe\",\r\n\"address\": \"12 Le Loi\",\r\n\"bank_name\": \"VCB\",\r\n\"bank_account_name\": \"CHU RE A\",\r\n\"bank_account_number\": \"123456789\"\r\n}\r\n\r\n\r\n",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/grooms",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "grooms"
+                  ]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "463"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"1cf-AYMA9NU3avDO3Lf0h5x/rWtIfDw\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Mon, 23 Mar 2026 10:13:06 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"success\": true,\n    \"message\": \"Create groom successfully\",\n    \"data\": {\n        \"name_groom\": \"Chu re A\",\n        \"father_grom\": \"Ong A\",\n        \"mother_groom\": \"Ba A\",\n        \"province\": \"HCM\",\n        \"district\": \"Q1\",\n        \"commune\": \"Ben Nghe\",\n        \"address\": \"12 Le Loi\",\n        \"bank_name\": \"VCB\",\n        \"bank_account_name\": \"CHU RE A\",\n        \"bank_account_number\": \"123456789\",\n        \"id\": \"bad85996-3f12-46be-a0f9-830c1e6cbf9d\",\n        \"users_id\": \"11111111-1111-1111-1111-111111111111\",\n        \"create_at\": \"2026-03-23T10:13:05.870Z\",\n        \"updated_at\": \"2026-03-23T10:13:05.870Z\"\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "get by user",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/grooms",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "grooms"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "get by user",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/grooms",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "grooms"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "537"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"219-BKUWn+jGIrRvDGwIY+g1D0n0+vI\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Mon, 23 Mar 2026 11:41:29 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"success\": true,\n    \"message\": \"Get groom list successfully\",\n    \"data\": {\n        \"items\": [\n            {\n                \"id\": \"bad85996-3f12-46be-a0f9-830c1e6cbf9d\",\n                \"users_id\": \"11111111-1111-1111-1111-111111111111\",\n                \"name_groom\": \"Chu re A\",\n                \"father_grom\": \"Ong A\",\n                \"mother_groom\": \"Ba A\",\n                \"province\": \"HCM\",\n                \"district\": \"Q1\",\n                \"commune\": \"Ben Nghe\",\n                \"address\": \"12 Le Loi\",\n                \"bank_name\": \"VCB\",\n                \"bank_account_name\": \"CHU RE A\",\n                \"bank_account_number\": \"123456789\",\n                \"create_at\": \"2026-03-23T10:13:05.870Z\",\n                \"updated_at\": \"2026-03-23T10:13:05.870Z\"\n            }\n        ],\n        \"pagination\": {\n            \"total\": 1,\n            \"page\": 1,\n            \"limit\": 20,\n            \"totalPages\": 1\n        }\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "get by id",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/grooms/bad85996-3f12-46be-a0f9-830c1e6cbf9d",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "grooms",
+                "bad85996-3f12-46be-a0f9-830c1e6cbf9d"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "get by id",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/grooms/bad85996-3f12-46be-a0f9-830c1e6cbf9d",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "grooms",
+                    "bad85996-3f12-46be-a0f9-830c1e6cbf9d"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "460"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"1cc-Ah3IKkEScBjQ8Zz6VyUQWXiw2Y0\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Mon, 23 Mar 2026 11:42:15 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"success\": true,\n    \"message\": \"Get groom successfully\",\n    \"data\": {\n        \"id\": \"bad85996-3f12-46be-a0f9-830c1e6cbf9d\",\n        \"users_id\": \"11111111-1111-1111-1111-111111111111\",\n        \"name_groom\": \"Chu re A\",\n        \"father_grom\": \"Ong A\",\n        \"mother_groom\": \"Ba A\",\n        \"province\": \"HCM\",\n        \"district\": \"Q1\",\n        \"commune\": \"Ben Nghe\",\n        \"address\": \"12 Le Loi\",\n        \"bank_name\": \"VCB\",\n        \"bank_account_name\": \"CHU RE A\",\n        \"bank_account_number\": \"123456789\",\n        \"create_at\": \"2026-03-23T10:13:05.870Z\",\n        \"updated_at\": \"2026-03-23T10:13:05.870Z\"\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "edit",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n\"address\": \"34 Nguyen Hue\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/grooms/bad85996-3f12-46be-a0f9-830c1e6cbf9d",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "grooms",
+                "bad85996-3f12-46be-a0f9-830c1e6cbf9d"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "edit",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n\"address\": \"34 Nguyen Hue\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/grooms/bad85996-3f12-46be-a0f9-830c1e6cbf9d",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "grooms",
+                    "bad85996-3f12-46be-a0f9-830c1e6cbf9d"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "467"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"1d3-7av75Zzzk1j6cQnk3yyvUjBe4Ag\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Mon, 23 Mar 2026 11:43:53 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"success\": true,\n    \"message\": \"Update groom successfully\",\n    \"data\": {\n        \"id\": \"bad85996-3f12-46be-a0f9-830c1e6cbf9d\",\n        \"users_id\": \"11111111-1111-1111-1111-111111111111\",\n        \"name_groom\": \"Chu re A\",\n        \"father_grom\": \"Ong A\",\n        \"mother_groom\": \"Ba A\",\n        \"province\": \"HCM\",\n        \"district\": \"Q1\",\n        \"commune\": \"Ben Nghe\",\n        \"address\": \"34 Nguyen Hue\",\n        \"bank_name\": \"VCB\",\n        \"bank_account_name\": \"CHU RE A\",\n        \"bank_account_number\": \"123456789\",\n        \"create_at\": \"2026-03-23T10:13:05.870Z\",\n        \"updated_at\": \"2026-03-23T11:43:53.717Z\"\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "delete",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n\"address\": \"34 Nguyen Hue\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/grooms/bad85996-3f12-46be-a0f9-830c1e6cbf9d",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "grooms",
+                "bad85996-3f12-46be-a0f9-830c1e6cbf9d"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Brides",
+      "item": [
+        {
+          "name": "create",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n\"name_bride\": \"Co dau A\",\r\n\"father_bride\": \"Ong B\",\r\n\"mother_bride\": \"Ba B\",\r\n\"province\": \"HCM\",\r\n\"district\": \"Q7\",\r\n\"commune\": \"Tan Phu\",\r\n\"address\": \"45 Nguyen Van Linh\",\r\n\"bank_name\": \"MB\",\r\n\"bank_account_name\": \"CO DAU A\",\r\n\"bank_account_number\": \"987654321\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/brides",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "brides"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "create",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n\"name_bride\": \"Co dau A\",\r\n\"father_bride\": \"Ong B\",\r\n\"mother_bride\": \"Ba B\",\r\n\"province\": \"HCM\",\r\n\"district\": \"Q7\",\r\n\"commune\": \"Tan Phu\",\r\n\"address\": \"45 Nguyen Van Linh\",\r\n\"bank_name\": \"MB\",\r\n\"bank_account_name\": \"CO DAU A\",\r\n\"bank_account_number\": \"987654321\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/brides",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "brides"
+                  ]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "472"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"1d8-lc8bxpuMYYdykEumlguf8bM0yvg\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Mon, 23 Mar 2026 11:46:53 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"success\": true,\n    \"message\": \"Create bride successfully\",\n    \"data\": {\n        \"name_bride\": \"Co dau A\",\n        \"father_bride\": \"Ong B\",\n        \"mother_bride\": \"Ba B\",\n        \"province\": \"HCM\",\n        \"district\": \"Q7\",\n        \"commune\": \"Tan Phu\",\n        \"address\": \"45 Nguyen Van Linh\",\n        \"bank_name\": \"MB\",\n        \"bank_account_name\": \"CO DAU A\",\n        \"bank_account_number\": \"987654321\",\n        \"id\": \"11986611-5322-46b3-8898-1c127e2404ef\",\n        \"users_id\": \"11111111-1111-1111-1111-111111111111\",\n        \"created_at\": \"2026-03-23T11:46:53.683Z\",\n        \"updated_at\": \"2026-03-23T11:46:53.683Z\"\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "get by users",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n\"name_bride\": \"Co dau A\",\r\n\"father_bride\": \"Ong B\",\r\n\"mother_bride\": \"Ba B\",\r\n\"province\": \"HCM\",\r\n\"district\": \"Q7\",\r\n\"commune\": \"Tan Phu\",\r\n\"address\": \"45 Nguyen Van Linh\",\r\n\"bank_name\": \"MB\",\r\n\"bank_account_name\": \"CO DAU A\",\r\n\"bank_account_number\": \"987654321\"\r\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/brides",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "brides"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "get by users",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n\"name_bride\": \"Co dau A\",\r\n\"father_bride\": \"Ong B\",\r\n\"mother_bride\": \"Ba B\",\r\n\"province\": \"HCM\",\r\n\"district\": \"Q7\",\r\n\"commune\": \"Tan Phu\",\r\n\"address\": \"45 Nguyen Van Linh\",\r\n\"bank_name\": \"MB\",\r\n\"bank_account_name\": \"CO DAU A\",\r\n\"bank_account_number\": \"987654321\"\r\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/brides",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "brides"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "546"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"222-knR4hJLJhxxgL1QlKjEW7kUuO1A\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Mon, 23 Mar 2026 11:47:54 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"success\": true,\n    \"message\": \"Get bride list successfully\",\n    \"data\": {\n        \"items\": [\n            {\n                \"id\": \"11986611-5322-46b3-8898-1c127e2404ef\",\n                \"users_id\": \"11111111-1111-1111-1111-111111111111\",\n                \"name_bride\": \"Co dau A\",\n                \"father_bride\": \"Ong B\",\n                \"mother_bride\": \"Ba B\",\n                \"province\": \"HCM\",\n                \"district\": \"Q7\",\n                \"commune\": \"Tan Phu\",\n                \"address\": \"45 Nguyen Van Linh\",\n                \"bank_name\": \"MB\",\n                \"bank_account_name\": \"CO DAU A\",\n                \"bank_account_number\": \"987654321\",\n                \"created_at\": \"2026-03-23T11:46:53.683Z\",\n                \"updated_at\": \"2026-03-23T11:46:53.683Z\"\n            }\n        ],\n        \"pagination\": {\n            \"total\": 1,\n            \"page\": 1,\n            \"limit\": 20,\n            \"totalPages\": 1\n        }\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "get by id",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n\"name_bride\": \"Co dau A\",\r\n\"father_bride\": \"Ong B\",\r\n\"mother_bride\": \"Ba B\",\r\n\"province\": \"HCM\",\r\n\"district\": \"Q7\",\r\n\"commune\": \"Tan Phu\",\r\n\"address\": \"45 Nguyen Van Linh\",\r\n\"bank_name\": \"MB\",\r\n\"bank_account_name\": \"CO DAU A\",\r\n\"bank_account_number\": \"987654321\"\r\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/brides/11986611-5322-46b3-8898-1c127e2404ef",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "brides",
+                "11986611-5322-46b3-8898-1c127e2404ef"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "get by id",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n\"name_bride\": \"Co dau A\",\r\n\"father_bride\": \"Ong B\",\r\n\"mother_bride\": \"Ba B\",\r\n\"province\": \"HCM\",\r\n\"district\": \"Q7\",\r\n\"commune\": \"Tan Phu\",\r\n\"address\": \"45 Nguyen Van Linh\",\r\n\"bank_name\": \"MB\",\r\n\"bank_account_name\": \"CO DAU A\",\r\n\"bank_account_number\": \"987654321\"\r\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/brides/11986611-5322-46b3-8898-1c127e2404ef",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "brides",
+                    "11986611-5322-46b3-8898-1c127e2404ef"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "469"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"1d5-EUpSv00mQcvo2tcQx8ufjZlS68Q\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Mon, 23 Mar 2026 11:48:57 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"success\": true,\n    \"message\": \"Get bride successfully\",\n    \"data\": {\n        \"id\": \"11986611-5322-46b3-8898-1c127e2404ef\",\n        \"users_id\": \"11111111-1111-1111-1111-111111111111\",\n        \"name_bride\": \"Co dau A\",\n        \"father_bride\": \"Ong B\",\n        \"mother_bride\": \"Ba B\",\n        \"province\": \"HCM\",\n        \"district\": \"Q7\",\n        \"commune\": \"Tan Phu\",\n        \"address\": \"45 Nguyen Van Linh\",\n        \"bank_name\": \"MB\",\n        \"bank_account_name\": \"CO DAU A\",\n        \"bank_account_number\": \"987654321\",\n        \"created_at\": \"2026-03-23T11:46:53.683Z\",\n        \"updated_at\": \"2026-03-23T11:46:53.683Z\"\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "edit",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n\"address\": \"77 Nguyen Huu Tho\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/brides/11986611-5322-46b3-8898-1c127e2404ef",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "brides",
+                "11986611-5322-46b3-8898-1c127e2404ef"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "edit",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n\"address\": \"77 Nguyen Huu Tho\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/brides/11986611-5322-46b3-8898-1c127e2404ef",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "brides",
+                    "11986611-5322-46b3-8898-1c127e2404ef"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "471"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"1d7-0OVakhIC6CLzIJWCnv+4XuOmk3M\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Mon, 23 Mar 2026 11:49:47 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"success\": true,\n    \"message\": \"Update bride successfully\",\n    \"data\": {\n        \"id\": \"11986611-5322-46b3-8898-1c127e2404ef\",\n        \"users_id\": \"11111111-1111-1111-1111-111111111111\",\n        \"name_bride\": \"Co dau A\",\n        \"father_bride\": \"Ong B\",\n        \"mother_bride\": \"Ba B\",\n        \"province\": \"HCM\",\n        \"district\": \"Q7\",\n        \"commune\": \"Tan Phu\",\n        \"address\": \"77 Nguyen Huu Tho\",\n        \"bank_name\": \"MB\",\n        \"bank_account_name\": \"CO DAU A\",\n        \"bank_account_number\": \"987654321\",\n        \"created_at\": \"2026-03-23T11:46:53.683Z\",\n        \"updated_at\": \"2026-03-23T11:49:47.854Z\"\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "delete",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n\"address\": \"77 Nguyen Huu Tho\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/brides/11986611-5322-46b3-8898-1c127e2404ef",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "brides",
+                "11986611-5322-46b3-8898-1c127e2404ef"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Invitations",
+      "item": [
+        {
+          "name": "create",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n\r\n\"template_id\": \"9eade476-28a1-4c28-87d2-3b1446d862cc\",\r\n\"invitation_slug\": \"thiep-cuoi-001\",\r\n\"title_vi\": \"Thiep cuoi\",\r\n\"title_en\": \"Wedding Invitation\",\r\n\"groom_id\": \"bad85996-3f12-46be-a0f9-830c1e6cbf9d\",\r\n\"bride_id\": \"11986611-5322-46b3-8898-1c127e2404ef\",\r\n\"ceremony_date\": \"2026-12-20T08:00:00.000Z\",\r\n\"ceremony_lunar_text\": \"Mung 1 thang 11\",\r\n\"reception_date\": \"2026-12-20\",\r\n\"reception_lunar_text\": \"Mung 1 thang 11\",\r\n\"venue_address\": \"123 ABC\",\r\n\"map_url\": \"https://maps.app\",\r\n\"reception_venue_address\": \"456 XYZ\",\r\n\"reception_map_url\": \"https://maps.app\",\r\n\"thank_you_message\": \"Cam on ban\",\r\n\"extra_notes\": \"Dress code: Formal\",\r\n\"music_url\": \"https://example.com/song.mp3\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/invitations",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "invitations"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "create",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n\r\n\"template_id\": \"ca4c087e-1178-4c6b-a68e-eb9eed550943\",\r\n\"invitation_slug\": \"thiep-cuoi-001\",\r\n\"title_vi\": \"Thiep cuoi\",\r\n\"title_en\": \"Wedding Invitation\",\r\n\"groom_id\": \"bad85996-3f12-46be-a0f9-830c1e6cbf9d\",\r\n\"bride_id\": \"11986611-5322-46b3-8898-1c127e2404ef\",\r\n\"ceremony_date\": \"2026-12-20T08:00:00.000Z\",\r\n\"ceremony_lunar_text\": \"Mung 1 thang 11\",\r\n\"reception_date\": \"2026-12-20\",\r\n\"reception_lunar_text\": \"Mung 1 thang 11\",\r\n\"venue_address\": \"123 ABC\",\r\n\"map_url\": \"https://maps.app\",\r\n\"reception_venue_address\": \"456 XYZ\",\r\n\"reception_map_url\": \"https://maps.app\",\r\n\"thank_you_message\": \"Cam on ban\",\r\n\"extra_notes\": \"Dress code: Formal\",\r\n\"music_url\": \"https://example.com/song.mp3\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/invitations",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "invitations"
+                  ]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "881"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"371-wPFYSwakr1Z6HR6ChesNNyT3mjU\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Tue, 24 Mar 2026 12:25:14 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"success\": true,\n    \"message\": \"Create invitation successfully\",\n    \"data\": {\n        \"template_id\": \"ca4c087e-1178-4c6b-a68e-eb9eed550943\",\n        \"invitation_slug\": \"thiep-cuoi-001\",\n        \"title_vi\": \"Thiep cuoi\",\n        \"title_en\": \"Wedding Invitation\",\n        \"groom_id\": \"bad85996-3f12-46be-a0f9-830c1e6cbf9d\",\n        \"bride_id\": \"11986611-5322-46b3-8898-1c127e2404ef\",\n        \"ceremony_date\": \"2026-12-20T08:00:00.000Z\",\n        \"ceremony_lunar_text\": \"Mung 1 thang 11\",\n        \"reception_date\": \"2026-12-20\",\n        \"reception_lunar_text\": \"Mung 1 thang 11\",\n        \"venue_address\": \"123 ABC\",\n        \"map_url\": \"https://maps.app\",\n        \"reception_venue_address\": \"456 XYZ\",\n        \"reception_map_url\": \"https://maps.app\",\n        \"thank_you_message\": \"Cam on ban\",\n        \"extra_notes\": \"Dress code: Formal\",\n        \"music_url\": \"https://example.com/song.mp3\",\n        \"id\": \"fbb7a2b6-cd67-4689-83fb-5efca7673855\",\n        \"users_id\": \"11111111-1111-1111-1111-111111111111\",\n        \"created_at\": \"2026-03-24T12:25:14.855Z\",\n        \"updated_at\": \"2026-03-24T12:25:14.856Z\"\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "get by userid",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n\r\n\"template_id\": \"9eade476-28a1-4c28-87d2-3b1446d862cc\",\r\n\"invitation_slug\": \"thiep-cuoi-001\",\r\n\"title_vi\": \"Thiep cuoi\",\r\n\"title_en\": \"Wedding Invitation\",\r\n\"groom_id\": \"bad85996-3f12-46be-a0f9-830c1e6cbf9d\",\r\n\"bride_id\": \"11986611-5322-46b3-8898-1c127e2404ef\",\r\n\"ceremony_date\": \"2026-12-20T08:00:00.000Z\",\r\n\"ceremony_lunar_text\": \"Mung 1 thang 11\",\r\n\"reception_date\": \"2026-12-20\",\r\n\"reception_lunar_text\": \"Mung 1 thang 11\",\r\n\"venue_address\": \"123 ABC\",\r\n\"map_url\": \"https://maps.app\",\r\n\"reception_venue_address\": \"456 XYZ\",\r\n\"reception_map_url\": \"https://maps.app\",\r\n\"thank_you_message\": \"Cam on ban\",\r\n\"extra_notes\": \"Dress code: Formal\",\r\n\"music_url\": \"https://example.com/song.mp3\"\r\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/invitations",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "invitations"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "get by userid",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n\r\n\"template_id\": \"9eade476-28a1-4c28-87d2-3b1446d862cc\",\r\n\"invitation_slug\": \"thiep-cuoi-001\",\r\n\"title_vi\": \"Thiep cuoi\",\r\n\"title_en\": \"Wedding Invitation\",\r\n\"groom_id\": \"bad85996-3f12-46be-a0f9-830c1e6cbf9d\",\r\n\"bride_id\": \"11986611-5322-46b3-8898-1c127e2404ef\",\r\n\"ceremony_date\": \"2026-12-20T08:00:00.000Z\",\r\n\"ceremony_lunar_text\": \"Mung 1 thang 11\",\r\n\"reception_date\": \"2026-12-20\",\r\n\"reception_lunar_text\": \"Mung 1 thang 11\",\r\n\"venue_address\": \"123 ABC\",\r\n\"map_url\": \"https://maps.app\",\r\n\"reception_venue_address\": \"456 XYZ\",\r\n\"reception_map_url\": \"https://maps.app\",\r\n\"thank_you_message\": \"Cam on ban\",\r\n\"extra_notes\": \"Dress code: Formal\",\r\n\"music_url\": \"https://example.com/song.mp3\"\r\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/invitations",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "invitations"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "3103"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"c1f-Bt0P8qIbKDoKU1zJ0vuFJST29+0\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Tue, 24 Mar 2026 14:44:37 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"success\": true,\n    \"message\": \"Get invitation list successfully\",\n    \"data\": {\n        \"items\": [\n            {\n                \"id\": \"fa895113-931b-4460-aa63-e1dbfe5a3e30\",\n                \"users_id\": \"11111111-1111-1111-1111-111111111111\",\n                \"template_id\": \"ca4c087e-1178-4c6b-a68e-eb9eed550943\",\n                \"invitation_slug\": \"thiep-cuoi-003\",\n                \"title_vi\": \"Thiep cuoi\",\n                \"title_en\": \"Wedding Invitation\",\n                \"groom_id\": \"bad85996-3f12-46be-a0f9-830c1e6cbf9d\",\n                \"bride_id\": \"11986611-5322-46b3-8898-1c127e2404ef\",\n                \"ceremony_date\": \"2026-12-20T08:00:00.000Z\",\n                \"ceremony_lunar_text\": \"Mung 1 thang 11\",\n                \"reception_date\": \"2026-12-20\",\n                \"reception_lunar_text\": \"Mung 1 thang 11\",\n                \"venue_address\": \"123 ABC\",\n                \"map_url\": \"https://maps.app\",\n                \"reception_venue_address\": \"456 XYZ\",\n                \"reception_map_url\": \"https://maps.app\",\n                \"thank_you_message\": \"Cam on ban\",\n                \"extra_notes\": \"Dress code: Formal\",\n                \"music_url\": \"/uploads/music/11111111-1111-1111-1111-111111111111/1774362341692-f04f126d-c85e-4d0d-b238-5d34218cf32d.mp3\",\n                \"created_at\": \"2026-03-24T14:24:25.592Z\",\n                \"updated_at\": \"2026-03-24T14:25:41.698Z\",\n                \"images\": []\n            },\n            {\n                \"id\": \"f0718db4-2cb6-4c35-85ce-8244ac316324\",\n                \"users_id\": \"11111111-1111-1111-1111-111111111111\",\n                \"template_id\": \"ca4c087e-1178-4c6b-a68e-eb9eed550943\",\n                \"invitation_slug\": \"thiep-cuoi-002\",\n                \"title_vi\": \"Thiep cuoi\",\n                \"title_en\": \"Wedding Invitation\",\n                \"groom_id\": \"bad85996-3f12-46be-a0f9-830c1e6cbf9d\",\n                \"bride_id\": \"11986611-5322-46b3-8898-1c127e2404ef\",\n                \"ceremony_date\": \"2026-12-20T08:00:00.000Z\",\n                \"ceremony_lunar_text\": \"Mung 1 thang 11\",\n                \"reception_date\": \"2026-12-20\",\n                \"reception_lunar_text\": \"Mung 1 thang 11\",\n                \"venue_address\": \"123 ABC\",\n                \"map_url\": \"https://maps.app\",\n                \"reception_venue_address\": \"456 XYZ\",\n                \"reception_map_url\": \"https://maps.app\",\n                \"thank_you_message\": \"Cam on ban\",\n                \"extra_notes\": \"Dress code: Formal\",\n                \"music_url\": \"/media/music/Vocaroo%201tWvK6cKvsyz.mp3\",\n                \"created_at\": \"2026-03-24T14:24:13.302Z\",\n                \"updated_at\": \"2026-03-24T14:24:13.302Z\",\n                \"images\": []\n            },\n            {\n                \"id\": \"fbb7a2b6-cd67-4689-83fb-5efca7673855\",\n                \"users_id\": \"11111111-1111-1111-1111-111111111111\",\n                \"template_id\": \"ca4c087e-1178-4c6b-a68e-eb9eed550943\",\n                \"invitation_slug\": \"thiep-cuoi-001\",\n                \"title_vi\": \"Thiep cuoi\",\n                \"title_en\": \"Wedding Invitation\",\n                \"groom_id\": \"bad85996-3f12-46be-a0f9-830c1e6cbf9d\",\n                \"bride_id\": \"11986611-5322-46b3-8898-1c127e2404ef\",\n                \"ceremony_date\": \"2026-12-20T08:00:00.000Z\",\n                \"ceremony_lunar_text\": \"Mung 1 thang 11\",\n                \"reception_date\": \"2026-12-20\",\n                \"reception_lunar_text\": \"Mung 1 thang 11\",\n                \"venue_address\": \"123 ABC\",\n                \"map_url\": \"https://maps.app\",\n                \"reception_venue_address\": \"456 XYZ\",\n                \"reception_map_url\": \"https://maps.app\",\n                \"thank_you_message\": \"Cam on ban\",\n                \"extra_notes\": \"No smoke area\",\n                \"music_url\": \"https://example.com/song.mp3\",\n                \"created_at\": \"2026-03-24T12:25:14.855Z\",\n                \"updated_at\": \"2026-03-24T12:28:30.654Z\",\n                \"images\": [\n                    {\n                        \"id\": \"ff148da2-f7c1-4e08-87b1-6f4c3d039a1b\",\n                        \"users_id\": \"11111111-1111-1111-1111-111111111111\",\n                        \"invitation_id\": \"fbb7a2b6-cd67-4689-83fb-5efca7673855\",\n                        \"image_url\": \"/uploads/images/fbb7a2b6-cd67-4689-83fb-5efca7673855/1774361312403-4062d0eb-bf94-42ac-9406-43afce5c4c5e.jpg\",\n                        \"image_alt\": \"Anh cuoi cap nhat\",\n                        \"image_type\": \"gallery\",\n                        \"sort_order\": 1,\n                        \"is_cover\": true,\n                        \"created_at\": \"2026-03-24T14:06:13.395Z\"\n                    }\n                ]\n            }\n        ],\n        \"pagination\": {\n            \"total\": 3,\n            \"page\": 1,\n            \"limit\": 20,\n            \"totalPages\": 1\n        }\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "get by id",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n\r\n\"template_id\": \"9eade476-28a1-4c28-87d2-3b1446d862cc\",\r\n\"invitation_slug\": \"thiep-cuoi-001\",\r\n\"title_vi\": \"Thiep cuoi\",\r\n\"title_en\": \"Wedding Invitation\",\r\n\"groom_id\": \"bad85996-3f12-46be-a0f9-830c1e6cbf9d\",\r\n\"bride_id\": \"11986611-5322-46b3-8898-1c127e2404ef\",\r\n\"ceremony_date\": \"2026-12-20T08:00:00.000Z\",\r\n\"ceremony_lunar_text\": \"Mung 1 thang 11\",\r\n\"reception_date\": \"2026-12-20\",\r\n\"reception_lunar_text\": \"Mung 1 thang 11\",\r\n\"venue_address\": \"123 ABC\",\r\n\"map_url\": \"https://maps.app\",\r\n\"reception_venue_address\": \"456 XYZ\",\r\n\"reception_map_url\": \"https://maps.app\",\r\n\"thank_you_message\": \"Cam on ban\",\r\n\"extra_notes\": \"Dress code: Formal\",\r\n\"music_url\": \"https://example.com/song.mp3\"\r\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/invitations/fbb7a2b6-cd67-4689-83fb-5efca7673855",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "invitations",
+                "fbb7a2b6-cd67-4689-83fb-5efca7673855"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "get by id",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n\r\n\"template_id\": \"9eade476-28a1-4c28-87d2-3b1446d862cc\",\r\n\"invitation_slug\": \"thiep-cuoi-001\",\r\n\"title_vi\": \"Thiep cuoi\",\r\n\"title_en\": \"Wedding Invitation\",\r\n\"groom_id\": \"bad85996-3f12-46be-a0f9-830c1e6cbf9d\",\r\n\"bride_id\": \"11986611-5322-46b3-8898-1c127e2404ef\",\r\n\"ceremony_date\": \"2026-12-20T08:00:00.000Z\",\r\n\"ceremony_lunar_text\": \"Mung 1 thang 11\",\r\n\"reception_date\": \"2026-12-20\",\r\n\"reception_lunar_text\": \"Mung 1 thang 11\",\r\n\"venue_address\": \"123 ABC\",\r\n\"map_url\": \"https://maps.app\",\r\n\"reception_venue_address\": \"456 XYZ\",\r\n\"reception_map_url\": \"https://maps.app\",\r\n\"thank_you_message\": \"Cam on ban\",\r\n\"extra_notes\": \"Dress code: Formal\",\r\n\"music_url\": \"https://example.com/song.mp3\"\r\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/invitations/fbb7a2b6-cd67-4689-83fb-5efca7673855",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "invitations",
+                    "fbb7a2b6-cd67-4689-83fb-5efca7673855"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "1283"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"503-TVbq+eL6VWLbkR1aJVvRA4C3bd8\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Tue, 24 Mar 2026 14:44:48 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"success\": true,\n    \"message\": \"Get invitation successfully\",\n    \"data\": {\n        \"id\": \"fbb7a2b6-cd67-4689-83fb-5efca7673855\",\n        \"users_id\": \"11111111-1111-1111-1111-111111111111\",\n        \"template_id\": \"ca4c087e-1178-4c6b-a68e-eb9eed550943\",\n        \"invitation_slug\": \"thiep-cuoi-001\",\n        \"title_vi\": \"Thiep cuoi\",\n        \"title_en\": \"Wedding Invitation\",\n        \"groom_id\": \"bad85996-3f12-46be-a0f9-830c1e6cbf9d\",\n        \"bride_id\": \"11986611-5322-46b3-8898-1c127e2404ef\",\n        \"ceremony_date\": \"2026-12-20T08:00:00.000Z\",\n        \"ceremony_lunar_text\": \"Mung 1 thang 11\",\n        \"reception_date\": \"2026-12-20\",\n        \"reception_lunar_text\": \"Mung 1 thang 11\",\n        \"venue_address\": \"123 ABC\",\n        \"map_url\": \"https://maps.app\",\n        \"reception_venue_address\": \"456 XYZ\",\n        \"reception_map_url\": \"https://maps.app\",\n        \"thank_you_message\": \"Cam on ban\",\n        \"extra_notes\": \"No smoke area\",\n        \"music_url\": \"https://example.com/song.mp3\",\n        \"created_at\": \"2026-03-24T12:25:14.855Z\",\n        \"updated_at\": \"2026-03-24T12:28:30.654Z\",\n        \"images\": [\n            {\n                \"id\": \"ff148da2-f7c1-4e08-87b1-6f4c3d039a1b\",\n                \"users_id\": \"11111111-1111-1111-1111-111111111111\",\n                \"invitation_id\": \"fbb7a2b6-cd67-4689-83fb-5efca7673855\",\n                \"image_url\": \"/uploads/images/fbb7a2b6-cd67-4689-83fb-5efca7673855/1774361312403-4062d0eb-bf94-42ac-9406-43afce5c4c5e.jpg\",\n                \"image_alt\": \"Anh cuoi cap nhat\",\n                \"image_type\": \"gallery\",\n                \"sort_order\": 1,\n                \"is_cover\": true,\n                \"created_at\": \"2026-03-24T14:06:13.395Z\"\n            }\n        ]\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "edit",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n\"extra_notes\": \"No smoke area\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/invitations/fbb7a2b6-cd67-4689-83fb-5efca7673855",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "invitations",
+                "fbb7a2b6-cd67-4689-83fb-5efca7673855"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "edit",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n\"extra_notes\": \"No smoke area\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/invitations/fbb7a2b6-cd67-4689-83fb-5efca7673855",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "invitations",
+                    "fbb7a2b6-cd67-4689-83fb-5efca7673855"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "",
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "876"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"36c-xpv5AGQfYliOGoeU38+CDPn8z/E\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Tue, 24 Mar 2026 12:28:30 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [
+                {
+                  "expires": "Invalid Date",
+                  "domain": "",
+                  "path": ""
+                }
+              ],
+              "body": "{\n    \"success\": true,\n    \"message\": \"Update invitation successfully\",\n    \"data\": {\n        \"id\": \"fbb7a2b6-cd67-4689-83fb-5efca7673855\",\n        \"users_id\": \"11111111-1111-1111-1111-111111111111\",\n        \"template_id\": \"ca4c087e-1178-4c6b-a68e-eb9eed550943\",\n        \"invitation_slug\": \"thiep-cuoi-001\",\n        \"title_vi\": \"Thiep cuoi\",\n        \"title_en\": \"Wedding Invitation\",\n        \"groom_id\": \"bad85996-3f12-46be-a0f9-830c1e6cbf9d\",\n        \"bride_id\": \"11986611-5322-46b3-8898-1c127e2404ef\",\n        \"ceremony_date\": \"2026-12-20T08:00:00.000Z\",\n        \"ceremony_lunar_text\": \"Mung 1 thang 11\",\n        \"reception_date\": \"2026-12-20\",\n        \"reception_lunar_text\": \"Mung 1 thang 11\",\n        \"venue_address\": \"123 ABC\",\n        \"map_url\": \"https://maps.app\",\n        \"reception_venue_address\": \"456 XYZ\",\n        \"reception_map_url\": \"https://maps.app\",\n        \"thank_you_message\": \"Cam on ban\",\n        \"extra_notes\": \"No smoke area\",\n        \"music_url\": \"https://example.com/song.mp3\",\n        \"created_at\": \"2026-03-24T12:25:14.855Z\",\n        \"updated_at\": \"2026-03-24T12:28:30.654Z\"\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "delete",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/invitations/fbb7a2b6-cd67-4689-83fb-5efca7673855",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "invitations",
+                "fbb7a2b6-cd67-4689-83fb-5efca7673855"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Guests",
+      "item": [
+        {
+          "name": "create",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"name\": \"Khach moi A\",\r\n  \"description\": \"Ban than\",\r\n  \"invitation_id\": \"fbb7a2b6-cd67-4689-83fb-5efca7673855\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/guests",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "guests"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get usersid",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"name\": \"Khach moi A\",\r\n  \"description\": \"Ban than\",\r\n  \"invitation_id\": \"fbb7a2b6-cd67-4689-83fb-5efca7673855\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/guests",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "guests"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "get usersid",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"name\": \"Khach moi A\",\r\n  \"description\": \"Ban than\",\r\n  \"invitation_id\": \"fbb7a2b6-cd67-4689-83fb-5efca7673855\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/guests",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "guests"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "564"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"234-PSBVcT7FKZDIJXV52PDZjFqgkxk\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Tue, 24 Mar 2026 14:45:46 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"success\": true,\n    \"message\": \"Get guest list successfully\",\n    \"data\": {\n        \"items\": [\n            {\n                \"id\": \"5c53a69a-ddb0-4edd-8636-4cd40b6e4d79\",\n                \"users_id\": \"11111111-1111-1111-1111-111111111111\",\n                \"name\": \"Khach moi A\",\n                \"description\": \"Ban dai hoc\",\n                \"created_at\": \"2026-03-24T12:47:47.800Z\",\n                \"updated_at\": \"2026-03-24T12:51:38.936Z\",\n                \"privateInvitation\": {\n                    \"id\": \"26ec0a2a-fac5-40a9-b657-f910dee8c25c\",\n                    \"url\": \"/invitation/thiep-cuoi-001?guest_id=5c53a69a-ddb0-4edd-8636-4cd40b6e4d79\",\n                    \"invitationns_id\": \"fbb7a2b6-cd67-4689-83fb-5efca7673855\"\n                }\n            }\n        ],\n        \"pagination\": {\n            \"total\": 1,\n            \"page\": 1,\n            \"limit\": 20,\n            \"totalPages\": 1\n        }\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "get by id",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"name\": \"Khach moi A\",\r\n  \"description\": \"Ban than\",\r\n  \"invitation_id\": \"fbb7a2b6-cd67-4689-83fb-5efca7673855\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/guests/5c53a69a-ddb0-4edd-8636-4cd40b6e4d79",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "guests",
+                "5c53a69a-ddb0-4edd-8636-4cd40b6e4d79"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "get by id",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"name\": \"Khach moi A\",\r\n  \"description\": \"Ban than\",\r\n  \"invitation_id\": \"fbb7a2b6-cd67-4689-83fb-5efca7673855\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/guests/5c53a69a-ddb0-4edd-8636-4cd40b6e4d79",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "guests",
+                    "5c53a69a-ddb0-4edd-8636-4cd40b6e4d79"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "487"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"1e7-PQChRmWCngeemejPPbOu+cekFgU\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Tue, 24 Mar 2026 14:46:25 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"success\": true,\n    \"message\": \"Get guest successfully\",\n    \"data\": {\n        \"id\": \"5c53a69a-ddb0-4edd-8636-4cd40b6e4d79\",\n        \"users_id\": \"11111111-1111-1111-1111-111111111111\",\n        \"name\": \"Khach moi A\",\n        \"description\": \"Ban dai hoc\",\n        \"created_at\": \"2026-03-24T12:47:47.800Z\",\n        \"updated_at\": \"2026-03-24T12:51:38.936Z\",\n        \"privateInvitation\": {\n            \"id\": \"26ec0a2a-fac5-40a9-b657-f910dee8c25c\",\n            \"url\": \"/invitation/thiep-cuoi-001?guest_id=5c53a69a-ddb0-4edd-8636-4cd40b6e4d79\",\n            \"invitationns_id\": \"fbb7a2b6-cd67-4689-83fb-5efca7673855\"\n        }\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "edit",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"description\": \"Ban dai hoc\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/guests/5c53a69a-ddb0-4edd-8636-4cd40b6e4d79",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "guests",
+                "5c53a69a-ddb0-4edd-8636-4cd40b6e4d79"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "edit",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"description\": \"Ban dai hoc\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/guests/5c53a69a-ddb0-4edd-8636-4cd40b6e4d79",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "guests",
+                    "5c53a69a-ddb0-4edd-8636-4cd40b6e4d79"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "286"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"11e-+n8Cch16vLC3TNZJcahpEE9zk7U\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Tue, 24 Mar 2026 12:51:38 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"success\": true,\n    \"message\": \"Update guest successfully\",\n    \"data\": {\n        \"id\": \"5c53a69a-ddb0-4edd-8636-4cd40b6e4d79\",\n        \"users_id\": \"11111111-1111-1111-1111-111111111111\",\n        \"name\": \"Khach moi A\",\n        \"description\": \"Ban dai hoc\",\n        \"created_at\": \"2026-03-24T12:47:47.800Z\",\n        \"updated_at\": \"2026-03-24T12:51:38.936Z\"\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "edit Copy",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"description\": \"Ban dai hoc\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/guests/5c53a69a-ddb0-4edd-8636-4cd40b6e4d79",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "guests",
+                "5c53a69a-ddb0-4edd-8636-4cd40b6e4d79"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Invitation Images",
+      "item": [
+        {
+          "name": "create",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "image",
+                  "type": "file",
+                  "uuid": "a6dc8c40-f86c-4b46-b142-6f814737012f",
+                  "src": "/C:/Users/thanh/Downloads/fix/LVT03982.jpg"
+                },
+                {
+                  "key": "image_alt",
+                  "value": "Anh cuoi",
+                  "type": "text",
+                  "uuid": "2e17bf78-1e59-45a4-a87d-43e15048d276"
+                },
+                {
+                  "key": "image_type",
+                  "value": "gallery",
+                  "type": "text",
+                  "uuid": "95de8111-623c-4b15-901f-f4cc597d5c33"
+                },
+                {
+                  "key": "sort_order",
+                  "value": "1",
+                  "type": "text",
+                  "uuid": "170111d5-95c7-4d4a-8a37-9e58c6ad6bf8"
+                },
+                {
+                  "key": "is_cover",
+                  "value": "true",
+                  "type": "text",
+                  "uuid": "901bc852-e99f-4f34-a497-ccf118ec6806"
+                },
+                {
+                  "key": "invitation_id",
+                  "value": "fbb7a2b6-cd67-4689-83fb-5efca7673855",
+                  "type": "text",
+                  "uuid": "1a1ba576-1ec6-47f8-91e4-07da9bf24886"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/guests",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "guests"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "create",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "image",
+                      "type": "file",
+                      "uuid": "a6dc8c40-f86c-4b46-b142-6f814737012f",
+                      "src": "/C:/Users/thanh/Downloads/fix/LVT03982.jpg"
+                    },
+                    {
+                      "key": "invitation_id",
+                      "value": "fbb7a2b6-cd67-4689-83fb-5efca7673855",
+                      "type": "text",
+                      "uuid": "1a1ba576-1ec6-47f8-91e4-07da9bf24886"
+                    },
+                    {
+                      "key": "image_alt",
+                      "value": "Anh cuoi",
+                      "type": "text",
+                      "uuid": "2e17bf78-1e59-45a4-a87d-43e15048d276"
+                    },
+                    {
+                      "key": "image_type",
+                      "value": "gallery",
+                      "type": "text",
+                      "uuid": "95de8111-623c-4b15-901f-f4cc597d5c33"
+                    },
+                    {
+                      "key": "sort_order",
+                      "value": "1",
+                      "type": "text",
+                      "uuid": "170111d5-95c7-4d4a-8a37-9e58c6ad6bf8"
+                    },
+                    {
+                      "key": "is_cover",
+                      "value": "true",
+                      "type": "text",
+                      "uuid": "901bc852-e99f-4f34-a497-ccf118ec6806"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/invitation-images",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "invitation-images"
+                  ]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "462"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"1ce-Pt+kW4itf46LEfdjgqHaGEe9iR8\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Tue, 24 Mar 2026 14:06:13 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"success\": true,\n    \"message\": \"Create invitation_image successfully\",\n    \"data\": {\n        \"invitation_id\": \"fbb7a2b6-cd67-4689-83fb-5efca7673855\",\n        \"image_alt\": \"Anh cuoi\",\n        \"image_type\": \"gallery\",\n        \"sort_order\": 1,\n        \"is_cover\": true,\n        \"id\": \"ff148da2-f7c1-4e08-87b1-6f4c3d039a1b\",\n        \"users_id\": \"11111111-1111-1111-1111-111111111111\",\n        \"image_url\": \"/uploads/images/fbb7a2b6-cd67-4689-83fb-5efca7673855/1774361173385-16a30ddf-7bbd-4bf1-a01e-0e1fb8db9408.jpg\",\n        \"created_at\": \"2026-03-24T14:06:13.395Z\"\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "edit",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "image",
+                  "type": "file",
+                  "uuid": "a6dc8c40-f86c-4b46-b142-6f814737012f",
+                  "src": "/C:/Users/thanh/Downloads/fix/LVT03694.jpg"
+                },
+                {
+                  "key": "invitation_id",
+                  "value": "fbb7a2b6-cd67-4689-83fb-5efca7673855",
+                  "type": "text",
+                  "uuid": "1a1ba576-1ec6-47f8-91e4-07da9bf24886"
+                },
+                {
+                  "key": "image_alt",
+                  "value": "Anh cuoi cap nhat",
+                  "type": "text",
+                  "uuid": "2e17bf78-1e59-45a4-a87d-43e15048d276"
+                },
+                {
+                  "key": "image_type",
+                  "value": "gallery",
+                  "type": "text",
+                  "uuid": "95de8111-623c-4b15-901f-f4cc597d5c33",
+                  "disabled": true
+                },
+                {
+                  "key": "sort_order",
+                  "value": "1",
+                  "type": "text",
+                  "uuid": "170111d5-95c7-4d4a-8a37-9e58c6ad6bf8",
+                  "disabled": true
+                },
+                {
+                  "key": "is_cover",
+                  "value": "true",
+                  "type": "text",
+                  "uuid": "901bc852-e99f-4f34-a497-ccf118ec6806",
+                  "disabled": true
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/invitation-images/ff148da2-f7c1-4e08-87b1-6f4c3d039a1b",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "invitation-images",
+                "ff148da2-f7c1-4e08-87b1-6f4c3d039a1b"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "edit",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "image",
+                      "type": "file",
+                      "uuid": "a6dc8c40-f86c-4b46-b142-6f814737012f",
+                      "src": "/C:/Users/thanh/Downloads/fix/LVT03694.jpg"
+                    },
+                    {
+                      "key": "invitation_id",
+                      "value": "fbb7a2b6-cd67-4689-83fb-5efca7673855",
+                      "type": "text",
+                      "uuid": "1a1ba576-1ec6-47f8-91e4-07da9bf24886"
+                    },
+                    {
+                      "key": "image_alt",
+                      "value": "Anh cuoi cap nhat",
+                      "type": "text",
+                      "uuid": "2e17bf78-1e59-45a4-a87d-43e15048d276"
+                    },
+                    {
+                      "key": "image_type",
+                      "value": "gallery",
+                      "type": "text",
+                      "uuid": "95de8111-623c-4b15-901f-f4cc597d5c33",
+                      "disabled": true
+                    },
+                    {
+                      "key": "sort_order",
+                      "value": "1",
+                      "type": "text",
+                      "uuid": "170111d5-95c7-4d4a-8a37-9e58c6ad6bf8",
+                      "disabled": true
+                    },
+                    {
+                      "key": "is_cover",
+                      "value": "true",
+                      "type": "text",
+                      "uuid": "901bc852-e99f-4f34-a497-ccf118ec6806",
+                      "disabled": true
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/invitation-images/ff148da2-f7c1-4e08-87b1-6f4c3d039a1b",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "invitation-images",
+                    "ff148da2-f7c1-4e08-87b1-6f4c3d039a1b"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "471"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"1d7-Vnz7SCG7g1qrFox8m00jgFJwj5c\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Tue, 24 Mar 2026 14:08:32 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"success\": true,\n    \"message\": \"Update invitation_image successfully\",\n    \"data\": {\n        \"id\": \"ff148da2-f7c1-4e08-87b1-6f4c3d039a1b\",\n        \"users_id\": \"11111111-1111-1111-1111-111111111111\",\n        \"invitation_id\": \"fbb7a2b6-cd67-4689-83fb-5efca7673855\",\n        \"image_url\": \"/uploads/images/fbb7a2b6-cd67-4689-83fb-5efca7673855/1774361312403-4062d0eb-bf94-42ac-9406-43afce5c4c5e.jpg\",\n        \"image_alt\": \"Anh cuoi cap nhat\",\n        \"image_type\": \"gallery\",\n        \"sort_order\": 1,\n        \"is_cover\": true,\n        \"created_at\": \"2026-03-24T14:06:13.395Z\"\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "delete",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "DELETE /invitation-images/199e5d8e-f935-455b-8773-56bab85215ef",
+              "host": [
+                "DELETE "
+              ],
+              "path": [
+                "invitation-images",
+                "199e5d8e-f935-455b-8773-56bab85215ef"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "delete",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/invitation-images/199e5d8e-f935-455b-8773-56bab85215ef",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "invitation-images",
+                    "199e5d8e-f935-455b-8773-56bab85215ef"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "65"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"41-NxqabInbY4TsG1jUuw+Typ/6mW0\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Tue, 24 Mar 2026 14:04:34 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"success\": true,\n    \"message\": \"Delete invitation_image successfully\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Upload Music",
+      "item": [
+        {
+          "name": "create",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "music",
+                  "type": "file",
+                  "uuid": "faaff61a-18c3-4bd2-855a-70e331ec7385",
+                  "src": "/C:/Users/thanh/Downloads/remix/Vầng_Trăng_Cô_Đơn_Remix.mp3"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/media-upload/music/local",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "media-upload",
+                "music",
+                "local"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "create",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "music",
+                      "type": "file",
+                      "uuid": "faaff61a-18c3-4bd2-855a-70e331ec7385",
+                      "src": "/C:/Users/thanh/Downloads/remix/Vầng_Trăng_Cô_Đơn_Remix.mp3"
+                    },
+                    {
+                      "key": "invitation_id",
+                      "value": "fa895113-931b-4460-aa63-e1dbfe5a3e30",
+                      "type": "text",
+                      "uuid": "e64b4359-f1b5-41f3-bdef-00906d1b77e5"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/media-upload/music/local",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "media-upload",
+                    "music",
+                    "local"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "355"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"163-kn9YBnqskrGVvfdONRt2qyxXSnQ\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Tue, 24 Mar 2026 14:25:41 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"success\": true,\n    \"message\": \"Upload nhạc local thành công\",\n    \"data\": {\n        \"userId\": \"11111111-1111-1111-1111-111111111111\",\n        \"invitationId\": \"fa895113-931b-4460-aa63-e1dbfe5a3e30\",\n        \"fileName\": \"1774362341692-f04f126d-c85e-4d0d-b238-5d34218cf32d.mp3\",\n        \"url\": \"/uploads/music/11111111-1111-1111-1111-111111111111/1774362341692-f04f126d-c85e-4d0d-b238-5d34218cf32d.mp3\"\n    }\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "messages-checkins",
+      "item": [
+        {
+          "name": "create",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"invitation_id\": \"fa895113-931b-4460-aa63-e1dbfe5a3e30\",\r\n  \r\n  \"name_guest\": \"Khach moi A\",\r\n  \"messages\": \"Chuc mung\",\r\n  \"confirm_attendance\": \"yes\",\r\n  \"number_of_attendees\": 2,\r\n  \"guests_type\": \"friend\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/messages-checkins",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "messages-checkins"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "create",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"invitation_id\": \"fa895113-931b-4460-aa63-e1dbfe5a3e30\",\r\n  \r\n  \"name_guest\": \"Khach moi A\",\r\n  \"messages\": \"Chuc mung\",\r\n  \"confirm_attendance\": \"yes\",\r\n  \"number_of_attendees\": 2,\r\n  \"guests_type\": \"friend\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/messages-checkins",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "messages-checkins"
+                  ]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "352"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"160-vUziVxfp6dtrCq7xyEJx6kcGDTM\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Tue, 24 Mar 2026 14:30:27 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"success\": true,\n    \"message\": \"Create message_checkin successfully\",\n    \"data\": {\n        \"invitation_id\": \"fa895113-931b-4460-aa63-e1dbfe5a3e30\",\n        \"name_guest\": \"Khach moi A\",\n        \"messages\": \"Chuc mung\",\n        \"confirm_attendance\": \"yes\",\n        \"number_of_attendees\": 2,\n        \"guests_type\": \"friend\",\n        \"id\": \"e60698fd-32db-4662-aee8-48cca8998645\",\n        \"created_at\": \"2026-03-24T14:30:27.834Z\",\n        \"guest_id\": null\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "get all by invitationid",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"invitation_id\": \"fa895113-931b-4460-aa63-e1dbfe5a3e30\",\r\n  \r\n  \"name_guest\": \"Khach moi A\",\r\n  \"messages\": \"Chuc mung\",\r\n  \"confirm_attendance\": \"yes\",\r\n  \"number_of_attendees\": 2,\r\n  \"guests_type\": \"friend\"\r\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/messages-checkins/invitation/fa895113-931b-4460-aa63-e1dbfe5a3e30",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "messages-checkins",
+                "invitation",
+                "fa895113-931b-4460-aa63-e1dbfe5a3e30"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "get all by invitationid",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"invitation_id\": \"fa895113-931b-4460-aa63-e1dbfe5a3e30\",\r\n  \r\n  \"name_guest\": \"Khach moi A\",\r\n  \"messages\": \"Chuc mung\",\r\n  \"confirm_attendance\": \"yes\",\r\n  \"number_of_attendees\": 2,\r\n  \"guests_type\": \"friend\"\r\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/messages-checkins/invitation/fa895113-931b-4460-aa63-e1dbfe5a3e30",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "messages-checkins",
+                    "invitation",
+                    "fa895113-931b-4460-aa63-e1dbfe5a3e30"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "443"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"1bb-6LH+owGCjCq/hUY6FH70FOXCe74\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Tue, 24 Mar 2026 14:34:00 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"success\": true,\n    \"message\": \"Get message_checkin list by invitation_id successfully\",\n    \"data\": {\n        \"items\": [\n            {\n                \"id\": \"e60698fd-32db-4662-aee8-48cca8998645\",\n                \"invitation_id\": \"fa895113-931b-4460-aa63-e1dbfe5a3e30\",\n                \"guest_id\": null,\n                \"name_guest\": \"Khach moi A\",\n                \"messages\": \"Chuc mung\",\n                \"confirm_attendance\": \"yes\",\n                \"number_of_attendees\": 2,\n                \"guests_type\": \"friend\",\n                \"created_at\": \"2026-03-24T14:30:27.834Z\"\n            }\n        ],\n        \"pagination\": {\n            \"total\": 1,\n            \"page\": 1,\n            \"limit\": 20,\n            \"totalPages\": 1\n        }\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "get  by id",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"invitation_id\": \"fa895113-931b-4460-aa63-e1dbfe5a3e30\",\r\n  \r\n  \"name_guest\": \"Khach moi A\",\r\n  \"messages\": \"Chuc mung\",\r\n  \"confirm_attendance\": \"yes\",\r\n  \"number_of_attendees\": 2,\r\n  \"guests_type\": \"friend\"\r\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/messages-checkins/e60698fd-32db-4662-aee8-48cca8998645",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "messages-checkins",
+                "e60698fd-32db-4662-aee8-48cca8998645"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "get  by id",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"invitation_id\": \"fa895113-931b-4460-aa63-e1dbfe5a3e30\",\r\n  \r\n  \"name_guest\": \"Khach moi A\",\r\n  \"messages\": \"Chuc mung\",\r\n  \"confirm_attendance\": \"yes\",\r\n  \"number_of_attendees\": 2,\r\n  \"guests_type\": \"friend\"\r\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/messages-checkins/e60698fd-32db-4662-aee8-48cca8998645",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "messages-checkins",
+                    "e60698fd-32db-4662-aee8-48cca8998645"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "349"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"15d-mQWHteTxEXVh22jlTGO0Nw3nGOo\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Tue, 24 Mar 2026 14:34:54 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"success\": true,\n    \"message\": \"Get message_checkin successfully\",\n    \"data\": {\n        \"id\": \"e60698fd-32db-4662-aee8-48cca8998645\",\n        \"invitation_id\": \"fa895113-931b-4460-aa63-e1dbfe5a3e30\",\n        \"guest_id\": null,\n        \"name_guest\": \"Khach moi A\",\n        \"messages\": \"Chuc mung\",\n        \"confirm_attendance\": \"yes\",\n        \"number_of_attendees\": 2,\n        \"guests_type\": \"friend\",\n        \"created_at\": \"2026-03-24T14:30:27.834Z\"\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "edit",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n \r\n  \r\n \r\n  \"messages\": \"Chuc mung\",\r\n  \"confirm_attendance\": \"no\",\r\n  \"number_of_attendees\": 2,\r\n  \"guests_type\": \"friend\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/messages-checkins/e60698fd-32db-4662-aee8-48cca8998645",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "messages-checkins",
+                "e60698fd-32db-4662-aee8-48cca8998645"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "edit",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n \r\n  \r\n \r\n  \"messages\": \"Chuc mung\",\r\n  \"confirm_attendance\": \"no\",\r\n  \"number_of_attendees\": 2,\r\n  \"guests_type\": \"friend\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/messages-checkins/e60698fd-32db-4662-aee8-48cca8998645",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "messages-checkins",
+                    "e60698fd-32db-4662-aee8-48cca8998645"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "351"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"15f-Vum7/vc4ZmfUGyTW3el33zjSwi8\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Tue, 24 Mar 2026 14:36:43 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"success\": true,\n    \"message\": \"Update message_checkin successfully\",\n    \"data\": {\n        \"id\": \"e60698fd-32db-4662-aee8-48cca8998645\",\n        \"invitation_id\": \"fa895113-931b-4460-aa63-e1dbfe5a3e30\",\n        \"guest_id\": null,\n        \"name_guest\": \"Khach moi A\",\n        \"messages\": \"Chuc mung\",\n        \"confirm_attendance\": \"no\",\n        \"number_of_attendees\": 2,\n        \"guests_type\": \"friend\",\n        \"created_at\": \"2026-03-24T14:30:27.834Z\"\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "delete",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n \r\n  \r\n \r\n  \"messages\": \"Chuc mung\",\r\n  \"confirm_attendance\": \"no\",\r\n  \"number_of_attendees\": 2,\r\n  \"guests_type\": \"friend\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/messages-checkins/e60698fd-32db-4662-aee8-48cca8998645",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "messages-checkins",
+                "e60698fd-32db-4662-aee8-48cca8998645"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": ""
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "default"
+    }
+  ]
+}

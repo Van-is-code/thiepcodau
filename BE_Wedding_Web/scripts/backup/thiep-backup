@@ -1,0 +1,359 @@
+#!/usr/bin/env bash
+# thiep-backup — sao lưu PostgreSQL + file đĩa lên Google Drive (restic + rclone).
+# Kích hoạt theo thay đổi (có điều tiết) + 1 mốc mỗi ngày. Giữ 3 ngày (mặc định).
+#
+# Lệnh:
+#   thiep-backup init             khởi tạo kho restic (chạy 1 lần)
+#   thiep-backup run [--anchor]   chạy 1 lần sao lưu
+#   thiep-backup watch            vòng lặp giám sát (systemd / pm2 gọi cái này)
+#   thiep-backup snapshots        liệt kê các bản sao lưu
+#   thiep-backup status           trạng thái + tuổi bản gần nhất + dung lượng
+#   thiep-backup check [--deep]   kiểm toàn vẹn kho (--deep tải về verify 5%)
+#   thiep-backup restore ...      khôi phục (xem: thiep-backup restore)
+#
+# Cấu hình: đọc từ $THIEP_BACKUP_ENV hoặc /etc/thiep-backup/backup.env
+set -euo pipefail
+
+CONF="${THIEP_BACKUP_ENV:-/etc/thiep-backup/backup.env}"
+if [ -f "$CONF" ]; then
+  set -a; . "$CONF"; set +a
+else
+  echo "!! Không tìm thấy file cấu hình: $CONF" >&2
+  echo "   cp scripts/backup/backup.env.example \"$CONF\"   rồi điền." >&2
+  exit 1
+fi
+
+# ---------------- mặc định ----------------
+: "${APP_DIR:?APP_DIR chưa đặt — thư mục chứa BE_Wedding_Web/}"
+: "${RESTIC_REPOSITORY:?RESTIC_REPOSITORY chưa đặt}"
+: "${PGDATABASE:?PGDATABASE chưa đặt}"
+
+BACKUP_TAG="${BACKUP_TAG:-thiepcodau}"
+BACKUP_HOSTNAME="${BACKUP_HOSTNAME:-$(hostname -s 2>/dev/null || echo host)}"
+STATE_FILE="${STATE_FILE:-/var/lib/thiep-backup/state}"
+LOCK_FILE="${LOCK_FILE:-/var/lib/thiep-backup/lock}"
+WORK_ROOT="${WORK_ROOT:-/tmp}"
+WATCH_INTERVAL="${WATCH_INTERVAL:-60}"     # giây giữa 2 lần kiểm
+MIN_INTERVAL="${MIN_INTERVAL:-300}"        # giây tối thiểu giữa 2 backup do-thay-đổi
+ANCHOR_HOUR="${ANCHOR_HOUR:-3}"            # giờ chạy mốc ngày (0-23)
+KEEP_WITHIN="${KEEP_WITHIN:-72h}"          # giữ MỌI snapshot trong khoảng này ("3 ngày")
+KEEP_DAILY="${KEEP_DAILY:-14}"             # thêm 1/ngày cho N ngày (dedup nên gần như free); để trống = tắt
+UPLOADS_DIRS="${UPLOADS_DIRS:-$APP_DIR/BE_Wedding_Web/uploads $APP_DIR/BE_Wedding_Web/media}"
+HEALTHCHECK_URL="${HEALTHCHECK_URL:-}"     # vd https://hc-ping.com/<uuid> — ping khi xong / /fail khi lỗi
+LATEST_DEST="${LATEST_DEST:-}"            # rclone syntax, vd gdrive:thiepcodau/latest — bản db.dump.gz cứu nhanh
+TG_ALERT_BOT_TOKEN="${TG_ALERT_BOT_TOKEN:-}"
+TG_ALERT_CHAT_ID="${TG_ALERT_CHAT_ID:-}"
+PG_DOCKER_CONTAINER="${PG_DOCKER_CONTAINER:-}"  # nếu Postgres chạy trong Docker và KHÔNG mở cổng host
+
+NICE="${NICE:-nice -n 15}"
+IONICE="${IONICE:-}"
+if [ -z "$IONICE" ] && command -v ionice >/dev/null 2>&1; then IONICE="ionice -c3"; fi
+
+mkdir -p "$(dirname "$STATE_FILE")" "$(dirname "$LOCK_FILE")"
+
+log() { printf '%s [thiep-backup] %s\n' "$(date '+%F %T')" "$*"; }
+err() { printf '%s [thiep-backup] ERROR: %s\n' "$(date '+%F %T')" "$*" >&2; }
+
+need() { command -v "$1" >/dev/null 2>&1 || { err "thiếu lệnh: $1 — hãy cài đặt."; exit 1; }; }
+
+tg() { # thông báo Telegram (best-effort, không chặn)
+  [ -n "$TG_ALERT_BOT_TOKEN" ] && [ -n "$TG_ALERT_CHAT_ID" ] || return 0
+  curl -fsS -m 10 -X POST "https://api.telegram.org/bot${TG_ALERT_BOT_TOKEN}/sendMessage" \
+    --data-urlencode "chat_id=${TG_ALERT_CHAT_ID}" \
+    --data-urlencode "text=$1" >/dev/null 2>&1 || true
+}
+hc() { [ -n "$HEALTHCHECK_URL" ] && curl -fsS -m 10 "${HEALTHCHECK_URL}${1:-}" >/dev/null 2>&1 || true; }
+
+# ---------------- Postgres ----------------
+psql_q() {
+  if [ -n "$PG_DOCKER_CONTAINER" ]; then
+    docker exec -i -e PGPASSWORD="${PGPASSWORD:-}" "$PG_DOCKER_CONTAINER" \
+      psql -h "${PGHOST:-127.0.0.1}" -p "${PGPORT:-5432}" -U "${PGUSER:-postgres}" -d "$PGDATABASE" -tAqc "$1"
+  else
+    psql -tAqc "$1"
+  fi
+}
+pg_dump_c() { # -> stdout: bản dump custom-format (nén sẵn)
+  if [ -n "$PG_DOCKER_CONTAINER" ]; then
+    docker exec -i -e PGPASSWORD="${PGPASSWORD:-}" "$PG_DOCKER_CONTAINER" \
+      pg_dump -h "${PGHOST:-127.0.0.1}" -p "${PGPORT:-5432}" -U "${PGUSER:-postgres}" \
+      -d "$PGDATABASE" -Fc --no-owner --no-privileges
+  else
+    pg_dump -Fc --no-owner --no-privileges "$PGDATABASE"
+  fi
+}
+
+# Tín hiệu "dữ liệu đã đổi" — tổng số dòng ins/upd/del. Không cần quyền đặc biệt.
+change_signal() {
+  psql_q "SELECT COALESCE(sum(n_tup_ins+n_tup_upd+n_tup_del),0)::text FROM pg_stat_user_tables" 2>/dev/null || echo "ERR"
+}
+
+# ---------------- state ----------------
+state_get() { [ -f "$STATE_FILE" ] && sed -n "s/^$1=//p" "$STATE_FILE" | head -1 || true; }
+state_set() {
+  local k="$1" v="$2" tmp; tmp="$(mktemp)"
+  { [ -f "$STATE_FILE" ] && grep -v "^$k=" "$STATE_FILE" || true; echo "$k=$v"; } > "$tmp"
+  mv "$tmp" "$STATE_FILE"
+}
+
+# ---------------- sao lưu ----------------
+do_backup() {
+  local anchor="${1:-}" work ts db_bytes git_sha pg_ver anchor_json=false
+  [ -n "$anchor" ] && anchor_json=true
+
+  exec 9>"$LOCK_FILE"
+  if ! flock -n 9; then log "đang có backup khác chạy — bỏ qua lần này."; return 0; fi
+
+  need pg_dump; need restic
+  ts="$(date '+%Y-%m-%d_%H%M%S')"
+  # Thư mục meta CỐ ĐỊNH (flock đảm bảo chỉ 1 backup chạy 1 lúc) -> đường dẫn db.dump
+  # trong snapshot là xác định, restore bằng "restic dump" theo path.
+  work="${WORK_ROOT%/}/thiep-backup-meta"
+  rm -rf "$work"; mkdir -p "$work"
+  # shellcheck disable=SC2064
+  trap "rm -rf '$work'" RETURN
+
+  log "bắt đầu ${anchor:+[mốc ngày] }$ts"
+
+  # 1) DB TRƯỚC (nhất quán, không cần dừng app)
+  if ! pg_dump_c > "$work/db.dump"; then
+    err "pg_dump thất bại"; tg "🔴 Backup thất bại — pg_dump lỗi ($BACKUP_HOSTNAME)"; hc "/fail"; return 1
+  fi
+  db_bytes="$(wc -c < "$work/db.dump" | tr -d ' ')"
+  [ "${db_bytes:-0}" -gt 0 ] || { err "db.dump rỗng"; tg "🔴 Backup thất bại — db.dump rỗng ($BACKUP_HOSTNAME)"; hc "/fail"; return 1; }
+
+  # roles (best-effort, chỉ khi có psql tools trên host)
+  if [ -z "$PG_DOCKER_CONTAINER" ] && command -v pg_dumpall >/dev/null 2>&1; then
+    pg_dumpall --roles-only > "$work/roles.sql" 2>/dev/null || true
+  fi
+
+  # 2) secrets + manifest
+  for f in \
+    "$APP_DIR/BE_Wedding_Web/.env" \
+    "$APP_DIR/FE_Wedding_Web/.env" \
+    "$APP_DIR/FE_Wedding_Web/.env.local" \
+    "$APP_DIR/FE_Wedding_Web/.env.production" \
+    "$APP_DIR/docker-compose.yml" \
+    "$APP_DIR/docker-compose.override.yml"
+  do
+    [ -f "$f" ] && cp "$f" "$work/$(printf '%s' "${f#"$APP_DIR"/}" | tr '/' '__')" || true
+  done
+
+  git_sha="$(git -C "$APP_DIR" rev-parse --short HEAD 2>/dev/null || echo n/a)"
+  pg_ver="$(psql_q 'SHOW server_version' 2>/dev/null || echo '?')"
+  cat > "$work/manifest.json" <<EOF
+{
+  "ts": "$ts",
+  "hostname": "$BACKUP_HOSTNAME",
+  "database": "$PGDATABASE",
+  "db_dump_bytes": ${db_bytes:-0},
+  "change_signal": "$(change_signal)",
+  "pg_version": "$pg_ver",
+  "git_commit": "$git_sha",
+  "restic_version": "$(restic version 2>/dev/null | head -1 || echo '?')",
+  "anchor": $anchor_json,
+  "created_at": "$(date -Iseconds)"
+}
+EOF
+
+  # 3) restic backup: dump + secrets + manifest + thư mục file
+  # shellcheck disable=SC2086
+  if ! $NICE $IONICE restic backup \
+        --tag "$BACKUP_TAG" --tag "$ts" ${anchor:+--tag anchor} \
+        --host "$BACKUP_HOSTNAME" \
+        --exclude '**/tmp/**' --exclude '**/node_modules/**' --exclude '**/.git/**' \
+        "$work" $UPLOADS_DIRS
+  then
+    err "restic backup thất bại"; tg "🔴 Backup thất bại — restic ($BACKUP_HOSTNAME)"; hc "/fail"; return 1
+  fi
+
+  # 4) retention: giữ mọi thứ trong KEEP_WITHIN (+ tail KEEP_DAILY), rồi prune
+  # shellcheck disable=SC2086
+  $NICE $IONICE restic forget --tag "$BACKUP_TAG" \
+    --keep-within "$KEEP_WITHIN" ${KEEP_DAILY:+--keep-daily "$KEEP_DAILY"} \
+    --prune >/dev/null 2>&1 || err "restic forget/prune có cảnh báo (không chặn)"
+
+  # 5) bản DB "mới nhất" để cứu nhanh — 1 file ghi đè, không cần restic khi restore gấp
+  if [ -n "$LATEST_DEST" ] && command -v rclone >/dev/null 2>&1; then
+    { gzip -c "$work/db.dump" | rclone rcat "${LATEST_DEST%/}/db.dump.gz"; } 2>/dev/null || err "đẩy bản latest thất bại (không chặn)"
+    rclone rcat "${LATEST_DEST%/}/manifest.json" < "$work/manifest.json" 2>/dev/null || true
+  fi
+
+  log "xong: $ts · db ${db_bytes} bytes"
+  hc ""
+  return 0
+}
+
+# ---------------- vòng lặp giám sát ----------------
+cmd_watch() {
+  need psql; need restic
+  log "watcher bật — kiểm mỗi ${WATCH_INTERVAL}s · điều tiết ${MIN_INTERVAL}s · mốc ${ANCHOR_HOUR}h · giữ $KEEP_WITHIN"
+  local sig last_sig last_epoch now today hour last_anchor changed throttle_ok anchor_due d
+  while :; do
+    sig="$(change_signal)"
+    if [ "$sig" = "ERR" ]; then
+      err "không đọc được trạng thái PostgreSQL"
+      tg "⚠️ Backup: không kết nối được PostgreSQL ($BACKUP_HOSTNAME)"
+      sleep "$WATCH_INTERVAL"; continue
+    fi
+
+    last_sig="$(state_get last_sig)"
+    last_epoch="$(state_get last_epoch)"; last_epoch="${last_epoch:-0}"
+    last_anchor="$(state_get last_anchor)"
+    now="$(date +%s)"; today="$(date +%F)"; hour="$(date +%-H)"
+
+    changed=0
+    [ "$sig" != "$last_sig" ] && changed=1
+    if [ "$changed" = 0 ] && [ "$last_epoch" -gt 0 ]; then
+      for d in $UPLOADS_DIRS; do
+        [ -d "$d" ] || continue
+        if find "$d" -type f -newermt "@$last_epoch" -print -quit 2>/dev/null | grep -q .; then changed=1; break; fi
+      done
+    fi
+
+    throttle_ok=0
+    [ $(( now - last_epoch )) -ge "$MIN_INTERVAL" ] && throttle_ok=1
+
+    anchor_due=0
+    [ "$today" != "$last_anchor" ] && [ "$hour" -ge "$ANCHOR_HOUR" ] && anchor_due=1
+
+    if [ "$anchor_due" = 1 ]; then
+      if do_backup anchor; then
+        state_set last_sig "$sig"; state_set last_epoch "$now"; state_set last_anchor "$today"
+      fi
+    elif [ "$changed" = 1 ] && [ "$throttle_ok" = 1 ]; then
+      if do_backup; then
+        state_set last_sig "$sig"; state_set last_epoch "$now"
+      fi
+    fi
+
+    sleep "$WATCH_INTERVAL"
+  done
+}
+
+cmd_run() {
+  local anchor=""
+  [ "${1:-}" = "--anchor" ] && anchor="anchor"
+  if do_backup $anchor; then
+    state_set last_sig "$(change_signal)"; state_set last_epoch "$(date +%s)"
+    [ -n "$anchor" ] && state_set last_anchor "$(date +%F)"
+    log "run OK"
+  else
+    err "run thất bại"; exit 1
+  fi
+}
+
+cmd_init() {
+  need restic
+  mkdir -p "$(dirname "$STATE_FILE")"
+  if restic snapshots >/dev/null 2>&1; then
+    log "kho restic đã tồn tại: $RESTIC_REPOSITORY"
+  else
+    log "khởi tạo kho restic: $RESTIC_REPOSITORY"
+    restic init
+  fi
+  log "OK. Chạy thử:  thiep-backup run"
+}
+
+cmd_snapshots() { need restic; restic snapshots --tag "$BACKUP_TAG" "$@"; }
+
+cmd_check() {
+  need restic
+  if [ "${1:-}" = "--deep" ]; then restic check --read-data-subset=5%; else restic check; fi
+}
+
+cmd_status() {
+  echo "== state ($STATE_FILE) =="
+  cat "$STATE_FILE" 2>/dev/null || echo "(chưa có)"
+  local le; le="$(state_get last_epoch)"
+  if [ -n "$le" ] && [ "$le" -gt 0 ] 2>/dev/null; then
+    echo "backup gần nhất: $(date -d "@$le" '+%F %T' 2>/dev/null || date -r "$le" '+%F %T') · $(( ($(date +%s) - le) / 60 )) phút trước"
+  fi
+  echo "== restic =="
+  restic stats --tag "$BACKUP_TAG" 2>/dev/null || echo "(không đọc được kho)"
+  if command -v rclone >/dev/null 2>&1 && printf '%s' "$RESTIC_REPOSITORY" | grep -q '^rclone:'; then
+    echo "== Google Drive =="
+    rclone about "$(printf '%s' "$RESTIC_REPOSITORY" | sed 's/^rclone://; s#:.*#:#')" 2>/dev/null || true
+  fi
+}
+
+cmd_restore() {
+  local kind="${1:-}"; shift 2>/dev/null || true
+  case "$kind" in
+    db)
+      local src="${1:-latest}"; shift 2>/dev/null || true
+      local target="${PGDATABASE}_restore" yes=0
+      while [ $# -gt 0 ]; do case "$1" in
+        --target-db) target="$2"; shift 2;;
+        --yes) yes=1; shift;;
+        *) err "tham số lạ: $1"; exit 2;;
+      esac; done
+
+      if [ "$target" = "$PGDATABASE" ] && [ "$yes" != 1 ]; then
+        echo "⚠️  Bạn sắp GHI ĐÈ DB ĐANG CHẠY: $PGDATABASE"
+        printf 'Gõ đúng để tiếp tục >  GHI DE %s\n> ' "$PGDATABASE"
+        read -r ans; [ "$ans" = "GHI DE $PGDATABASE" ] || { echo "đã huỷ."; exit 1; }
+      fi
+
+      need pg_restore
+      local dump; dump="$(mktemp)"
+      if [ "$src" = "latest" ]; then
+        [ -n "$LATEST_DEST" ] || { err "LATEST_DEST chưa cấu hình"; exit 1; }
+        need rclone; rclone cat "${LATEST_DEST%/}/db.dump.gz" | gunzip > "$dump"
+      else
+        need restic
+        local metapath
+        metapath="$(restic ls "$src" 2>/dev/null | grep -E '[/\\]thiep-backup-meta[/\\]db\.dump$' | head -1)"
+        [ -n "$metapath" ] || { err "không tìm thấy db.dump trong snapshot $src"; exit 1; }
+        # Cách 1: stream thẳng (nhanh, không cần đĩa tạm)
+        if ! restic dump "$src" "$metapath" > "$dump" 2>/dev/null || [ ! -s "$dump" ]; then
+          # Cách 2 (dự phòng): giải nén ra thư mục tạm rồi copy
+          log "restic dump không dùng được, chuyển sang restic restore..."
+          local out; out="$(mktemp -d)"
+          restic restore "$src" --target "$out" --include "$metapath" 2>/dev/null || restic restore "$src" --target "$out"
+          cp "$(find "$out" -name db.dump | head -1)" "$dump"
+          rm -rf "$out"
+        fi
+      fi
+      [ -s "$dump" ] || { err "không lấy được db.dump từ snapshot"; exit 1; }
+
+      log "pg_restore -> DB: $target"
+      createdb "$target" 2>/dev/null || true
+      pg_restore --clean --if-exists --no-owner --no-privileges -d "$target" "$dump"
+      rm -f "$dump"
+      log "xong. Kiểm tra DB '$target' rồi tự đổi tên / swap sang '$PGDATABASE' nếu ưng."
+      ;;
+    files|full)
+      local src="${1:-}"; shift 2>/dev/null || true
+      local to=""
+      while [ $# -gt 0 ]; do case "$1" in --to) to="$2"; shift 2;; *) shift;; esac; done
+      [ -n "$src" ] || { err "thiếu <snapshot-id> (xem: thiep-backup snapshots)"; exit 2; }
+      [ -n "$to" ]  || { err "thiếu --to /đường/dẫn"; exit 2; }
+      need restic
+      restic restore "$src" --target "$to"
+      log "đã giải nén vào $to — tự rsync 'uploads'/'media' vào chỗ thật."
+      ;;
+    *)
+      cat <<'EOF'
+thiep-backup restore db  [latest|<snapshot-id>] [--target-db NAME] [--yes]
+    Mặc định restore vào DB "<PGDATABASE>_restore" (KHÔNG đụng DB live).
+    Muốn ghi đè DB live: --target-db "<PGDATABASE>" (phải gõ xác nhận).
+
+thiep-backup restore files <snapshot-id> --to /path      # chỉ file
+thiep-backup restore full  <snapshot-id> --to /path      # db.dump + file
+EOF
+      exit 2;;
+  esac
+}
+
+case "${1:-}" in
+  init)      shift; cmd_init "$@";;
+  run)       shift; cmd_run "$@";;
+  watch)     shift; cmd_watch "$@";;
+  snapshots) shift; cmd_snapshots "$@";;
+  status)    shift; cmd_status "$@";;
+  check)     shift; cmd_check "$@";;
+  restore)   shift; cmd_restore "$@";;
+  ""|-h|--help) sed -n '2,20p' "$0";;
+  *) err "lệnh không hợp lệ: $1  (init|run|watch|snapshots|status|check|restore)"; exit 2;;
+esac

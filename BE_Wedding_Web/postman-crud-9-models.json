@@ -1,0 +1,223 @@
+{
+  "info": {
+    "name": "Wedding Web - Users Auth + 8 Models CRUD",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Users auth/profile + CRUD (POST/GET/PUT/DELETE) for InvitationTemplate, Invitation, InvitationImage, PrivateInvitation, Guest, MessageCheckin, Groom, Bride"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000/api" },
+    { "key": "token", "value": "" },
+    { "key": "username", "value": "user_test_01" },
+    { "key": "password", "value": "123456" },
+    { "key": "newPassword", "value": "12345678" },
+    { "key": "templateId", "value": "22222222-2222-2222-2222-222222222222" },
+    { "key": "groomId", "value": "88888888-8888-8888-8888-888888888888" },
+    { "key": "brideId", "value": "99999999-9999-9999-9999-999999999999" },
+    { "key": "invitationId", "value": "33333333-3333-3333-3333-333333333333" },
+    { "key": "guestId", "value": "66666666-6666-6666-6666-666666666666" },
+    { "key": "invitationImageId", "value": "44444444-4444-4444-4444-444444444444" },
+    { "key": "privateInvitationId", "value": "55555555-5555-5555-5555-555555555555" },
+    { "key": "messageCheckinId", "value": "77777777-7777-7777-7777-777777777777" },
+    { "key": "mediaPublicId", "value": "wedding/media/sample_public_id" },
+    { "key": "mediaResourceType", "value": "image" },
+    { "key": "mediaFolder", "value": "wedding/media" }
+  ],
+  "item": [
+    {
+      "name": "Users Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"username\": \"{{username}}\",\n  \"password\": \"{{password}}\",\n  \"role\": \"user\"\n}" },
+            "url": "{{baseUrl}}/users/register"
+          }
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"username\": \"{{username}}\",\n  \"password\": \"{{password}}\"\n}" },
+            "url": "{{baseUrl}}/users/login"
+          }
+        },
+        {
+          "name": "Get Profile",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/users/profile"
+          }
+        },
+        {
+          "name": "Update Profile",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"username\": \"{{username}}_updated\",\n  \"role\": \"user\"\n}" },
+            "url": "{{baseUrl}}/users/profile"
+          }
+        },
+        {
+          "name": "Change Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"currentPassword\": \"{{password}}\",\n  \"newPassword\": \"{{newPassword}}\"\n}" },
+            "url": "{{baseUrl}}/users/change-password"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Invitation Templates CRUD",
+      "item": [
+        { "name": "Create", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"id\": \"{{templateId}}\",\n  \"template_code\": \"temp_code_001\",\n  \"template_name\": \"Template 001\",\n  \"html_path\": \"templates/template-001/index.html\"\n}" }, "url": "{{baseUrl}}/invitation-templates" } },
+        { "name": "List", "request": { "method": "GET", "url": "{{baseUrl}}/invitation-templates" } },
+        { "name": "Get By ID", "request": { "method": "GET", "url": "{{baseUrl}}/invitation-templates/{{templateId}}" } },
+        { "name": "Update", "request": { "method": "PUT", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"template_name\": \"Template 001 Updated\"\n}" }, "url": "{{baseUrl}}/invitation-templates/{{templateId}}" } },
+        { "name": "Delete", "request": { "method": "DELETE", "url": "{{baseUrl}}/invitation-templates/{{templateId}}" } }
+      ]
+    },
+    {
+      "name": "Groom CRUD",
+      "item": [
+        { "name": "Create", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"id\": \"{{groomId}}\",\n  \"users_id\": \"11111111-1111-1111-1111-111111111111\",\n  \"name_groom\": \"Chú rể A\",\n  \"father_grom\": \"Ông A\",\n  \"mother_groom\": \"Bà A\",\n  \"province\": \"HCM\",\n  \"district\": \"Q1\",\n  \"commune\": \"P Bến Nghé\",\n  \"address\": \"12 Lê Lợi\",\n  \"bank_name\": \"VCB\",\n  \"bank_account_name\": \"CHU RE A\",\n  \"bank_account_number\": \"123456789\",\n  \"create_at\": \"2026-03-23T10:00:00.000Z\"\n}" }, "url": "{{baseUrl}}/grooms" } },
+        { "name": "List", "request": { "method": "GET", "url": "{{baseUrl}}/grooms" } },
+        { "name": "Get By ID", "request": { "method": "GET", "url": "{{baseUrl}}/grooms/{{groomId}}" } },
+        { "name": "Update", "request": { "method": "PUT", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"address\": \"34 Nguyễn Huệ\"\n}" }, "url": "{{baseUrl}}/grooms/{{groomId}}" } },
+        { "name": "Delete", "request": { "method": "DELETE", "url": "{{baseUrl}}/grooms/{{groomId}}" } }
+      ]
+    },
+    {
+      "name": "Bride CRUD",
+      "item": [
+        { "name": "Create", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"id\": \"{{brideId}}\",\n  \"users_id\": \"11111111-1111-1111-1111-111111111111\",\n  \"name_bride\": \"Cô dâu A\",\n  \"father_bride\": \"Ông B\",\n  \"mother_bride\": \"Bà B\",\n  \"province\": \"HCM\",\n  \"district\": \"Q7\",\n  \"commune\": \"P Tân Phú\",\n  \"address\": \"45 Nguyễn Văn Linh\",\n  \"bank_name\": \"MB\",\n  \"bank_account_name\": \"CO DAU A\",\n  \"bank_account_number\": \"987654321\",\n  \"created_at\": \"2026-03-23T10:00:00.000Z\",\n  \"updated_at\": \"2026-03-23T10:00:00.000Z\"\n}" }, "url": "{{baseUrl}}/brides" } },
+        { "name": "List", "request": { "method": "GET", "url": "{{baseUrl}}/brides" } },
+        { "name": "Get By ID", "request": { "method": "GET", "url": "{{baseUrl}}/brides/{{brideId}}" } },
+        { "name": "Update", "request": { "method": "PUT", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"address\": \"77 Nguyễn Hữu Thọ\"\n}" }, "url": "{{baseUrl}}/brides/{{brideId}}" } },
+        { "name": "Delete", "request": { "method": "DELETE", "url": "{{baseUrl}}/brides/{{brideId}}" } }
+      ]
+    },
+    {
+      "name": "Invitation CRUD",
+      "item": [
+        { "name": "Create", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"id\": \"{{invitationId}}\",\n  \"users_id\": \"11111111-1111-1111-1111-111111111111\",\n  \"template_id\": \"{{templateId}}\",\n  \"invitation_slug\": \"thiep-cuoi-001\",\n  \"title_vi\": \"Thiệp cưới\",\n  \"title_en\": \"Wedding Invitation\",\n  \"groom_id\": \"{{groomId}}\",\n  \"bride_id\": \"{{brideId}}\",\n  \"ceremony_date\": \"2026-12-20T08:00:00.000Z\",\n  \"ceremony_lunar_text\": \"Mùng 1 tháng 11\",\n  \"reception_date\": \"2026-12-20\",\n  \"reception_lunar_text\": \"Mùng 1 tháng 11\",\n  \"venue_address\": \"123 ABC\",\n  \"map_url\": \"https://maps.app\",\n  \"reception_venue_address\": \"456 XYZ\",\n  \"reception_map_url\": \"https://maps.app\",\n  \"thank_you_message\": \"Cảm ơn bạn\",\n  \"extra_notes\": \"Dress code: Formal\",\n  \"music_url\": \"https://example.com/song.mp3\"\n}" }, "url": "{{baseUrl}}/invitations" } },
+        { "name": "List", "request": { "method": "GET", "url": "{{baseUrl}}/invitations" } },
+        { "name": "Get By ID", "request": { "method": "GET", "url": "{{baseUrl}}/invitations/{{invitationId}}" } },
+        { "name": "Update", "request": { "method": "PUT", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"extra_notes\": \"No smoke area\"\n}" }, "url": "{{baseUrl}}/invitations/{{invitationId}}" } },
+        { "name": "Delete", "request": { "method": "DELETE", "url": "{{baseUrl}}/invitations/{{invitationId}}" } }
+      ]
+    },
+    {
+      "name": "Guest CRUD",
+      "item": [
+        { "name": "Create", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"id\": \"{{guestId}}\",\n  \"users_id\": \"11111111-1111-1111-1111-111111111111\",\n  \"name\": \"Khách mời A\",\n  \"description\": \"Bạn thân\"\n}" }, "url": "{{baseUrl}}/guests" } },
+        { "name": "List", "request": { "method": "GET", "url": "{{baseUrl}}/guests" } },
+        { "name": "Get By ID", "request": { "method": "GET", "url": "{{baseUrl}}/guests/{{guestId}}" } },
+        { "name": "Update", "request": { "method": "PUT", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"description\": \"Bạn đại học\"\n}" }, "url": "{{baseUrl}}/guests/{{guestId}}" } },
+        { "name": "Delete", "request": { "method": "DELETE", "url": "{{baseUrl}}/guests/{{guestId}}" } }
+      ]
+    },
+    {
+      "name": "Invitation Image CRUD",
+      "item": [
+        { "name": "Create", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"id\": \"{{invitationImageId}}\",\n  \"users_id\": \"11111111-1111-1111-1111-111111111111\",\n  \"invitation_id\": \"{{invitationId}}\",\n  \"image_url\": \"https://example.com/photo.jpg\",\n  \"image_alt\": \"Ảnh cưới\",\n  \"image_type\": \"gallery\",\n  \"sort_order\": 1,\n  \"is_cover\": true\n}" }, "url": "{{baseUrl}}/invitation-images" } },
+        { "name": "List", "request": { "method": "GET", "url": "{{baseUrl}}/invitation-images" } },
+        { "name": "Get By ID", "request": { "method": "GET", "url": "{{baseUrl}}/invitation-images/{{invitationImageId}}" } },
+        { "name": "Update", "request": { "method": "PUT", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"image_alt\": \"Ảnh cưới cập nhật\"\n}" }, "url": "{{baseUrl}}/invitation-images/{{invitationImageId}}" } },
+        { "name": "Delete", "request": { "method": "DELETE", "url": "{{baseUrl}}/invitation-images/{{invitationImageId}}" } }
+      ]
+    },
+    {
+      "name": "Private Invitation CRUD",
+      "item": [
+        { "name": "Create", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"id\": \"{{privateInvitationId}}\",\n  \"guest_id\": \"{{guestId}}\",\n  \"url\": \"https://wedding.example.com/private/1\",\n  \"invitationns_id\": \"{{invitationId}}\"\n}" }, "url": "{{baseUrl}}/private-invitations" } },
+        { "name": "List", "request": { "method": "GET", "url": "{{baseUrl}}/private-invitations" } },
+        { "name": "Get By ID", "request": { "method": "GET", "url": "{{baseUrl}}/private-invitations/{{privateInvitationId}}" } },
+        { "name": "Update", "request": { "method": "PUT", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"url\": \"https://wedding.example.com/private/updated\"\n}" }, "url": "{{baseUrl}}/private-invitations/{{privateInvitationId}}" } },
+        { "name": "Delete", "request": { "method": "DELETE", "url": "{{baseUrl}}/private-invitations/{{privateInvitationId}}" } }
+      ]
+    },
+    {
+      "name": "Message Checkin CRUD",
+      "item": [
+        { "name": "Create", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"id\": \"{{messageCheckinId}}\",\n  \"invitation_id\": \"{{invitationId}}\",\n  \"guest_id\": \"{{guestId}}\",\n  \"name_guest\": \"Khách mời A\",\n  \"messages\": \"Chúc mừng\",\n  \"confirm_attendance\": \"yes\",\n  \"number_of_attendees\": 2,\n  \"guests_type\": \"friend\"\n}" }, "url": "{{baseUrl}}/messages-checkins" } },
+        { "name": "List", "request": { "method": "GET", "url": "{{baseUrl}}/messages-checkins" } },
+        { "name": "Get By ID", "request": { "method": "GET", "url": "{{baseUrl}}/messages-checkins/{{messageCheckinId}}" } },
+        { "name": "Update", "request": { "method": "PUT", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"messages\": \"Sẽ đến đúng giờ\"\n}" }, "url": "{{baseUrl}}/messages-checkins/{{messageCheckinId}}" } },
+        { "name": "Delete", "request": { "method": "DELETE", "url": "{{baseUrl}}/messages-checkins/{{messageCheckinId}}" } }
+      ]
+    },
+    {
+      "name": "Media Upload CRUD",
+      "item": [
+        {
+          "name": "Create Media",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "file", "type": "file", "src": "" },
+                { "key": "resourceType", "value": "{{mediaResourceType}}", "type": "text" },
+                { "key": "folder", "value": "{{mediaFolder}}", "type": "text" },
+                { "key": "tags", "value": "wedding,api", "type": "text" }
+              ]
+            },
+            "url": "{{baseUrl}}/media-upload"
+          }
+        },
+        {
+          "name": "List Media",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/media-upload?resourceType={{mediaResourceType}}&maxResults=20&prefix={{mediaFolder}}"
+          }
+        },
+        {
+          "name": "Get Media By PublicId",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/media-upload/one?publicId={{mediaPublicId}}&resourceType={{mediaResourceType}}"
+          }
+        },
+        {
+          "name": "Update Media",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "file", "type": "file", "src": "" },
+                { "key": "resourceType", "value": "{{mediaResourceType}}", "type": "text" },
+                { "key": "folder", "value": "{{mediaFolder}}", "type": "text" },
+                { "key": "tags", "value": "wedding,updated", "type": "text" },
+                { "key": "newPublicId", "value": "wedding/media/sample_public_id_new", "type": "text" }
+              ]
+            },
+            "url": "{{baseUrl}}/media-upload/one?publicId={{mediaPublicId}}&resourceType={{mediaResourceType}}"
+          }
+        },
+        {
+          "name": "Delete Media",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/media-upload/one?publicId={{mediaPublicId}}&resourceType={{mediaResourceType}}"
+          }
+        }
+      ]
+    }
+  ]
+}

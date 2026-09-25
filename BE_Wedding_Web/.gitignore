@@ -1,0 +1,29 @@
+node_modules
+.env
+.env.local.test
+*.local.test
+.DS_Store
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+coverage
+.vscode
+.idea
+dist
+build
+
+# Runtime uploads của người dùng — KHÔNG commit.
+# Riêng uploads/templates/ là gói mẫu thiệp (sản phẩm) nên vẫn được version control.
+uploads/images/
+uploads/music/
+uploads/tmp/
+
+*.swp
+*.swo
+.npm
+
+# thiep-backup: bí mật, không commit
+scripts/backup/backup.env
+scripts/backup/rclone.conf
+scripts/backup/restic.pass
