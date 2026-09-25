@@ -1,21 +1,21 @@
 <#
 .SYNOPSIS
     Deploy va quan ly Wedding Web (thiepminh) len Home Server qua Git.
-    Tu dong dong bo ma nguon len GitHub, may chu keo ve va chay ./deploy.sh.
+    Tu dong dong bo ma nguon he thong chinh len GitHub, may chu keo ve va chay ./deploy.sh.
 
 .DESCRIPTION
     Quy trinh:
     1. May local: Kiem tra commit va push ma nguon he thong chinh len GitHub (branch main).
-       Cac thu muc khong lien quan (theme demo, LUAT_AGENT, .claude, config ca nhan)
-       da duoc .gitignore loai bo hoan toan.
+       Cac thu muc phu khong lien quan (theme demo, LUAT_AGENT, .claude, config ca nhan)
+       da duoc .gitignore loai bo hoan toan khoi Git.
     2. May chu (Home Server):
-       - Neu chua co ma nguon: git clone tu GitHub vao thu muc tren server.
+       - Neu chua co ma nguon tren server: Tu dong clone tu GitHub vao thu muc dich.
        - Neu da co ma nguon: git fetch & git reset --hard origin/main de cap nhat sach se.
-       - Goi ./deploy.sh de cai dat phu thuoc, chay migration, build FE va bat PM2.
+       - Chay ./deploy.sh tren server: tu dong cai dependencies, chay migration CSDL, build giao dien va bat PM2.
 
 .EXAMPLE
     .\deploy.ps1                      # Mac dinh: Push Git local -> Server keo ma -> chay deploy.sh update
-    .\deploy.ps1 up                   # Chay lan dau tren server moi (clone repo, tao .env, build, bat PM2)
+    .\deploy.ps1 up                   # Chay lan dau tren server moi (clone repo, tao .env, migrate, build, bat PM2)
     .\deploy.ps1 update -SkipPush     # Chi bao server keo ma moi tu Git (bo qua push o local)
     .\deploy.ps1 pull-only            # Chi keo ma tren server, khong build hay restart PM2
     .\deploy.ps1 restart              # Khoi dong lai PM2 tren server qua SSH
@@ -148,79 +148,33 @@ if ($Config.KeyFile -and (Test-Path $Config.KeyFile)) {
 
 $remoteUserHost = "$($Config.User)@$($Config.Host)"
 
-# Doan ma bash chuan hoa thu muc dich tren server
-$targetDirBash = "if [[ `"$($Config.RemotePath)`" = /* ]]; then TARGET_DIR=`"$($Config.RemotePath)`"; elif [[ `"$($Config.RemotePath)`" = ~* ]]; then TARGET_DIR=`$(eval echo `"$($Config.RemotePath)`"); else TARGET_DIR=`"`$HOME/$($Config.RemotePath)`"; fi"
-
-# Ham chay lenh bash tren server qua SSH login shell de nhan du bien moi truong
-function Invoke-RemoteBash([string]$bashCommands) {
-    $wrappedCommand = "bash -l -c `"$bashCommands`""
+# Ham gui va thuc thi bash script tren server qua stdin (tranh moi loi escaping dau nhay tren Windows)
+function Invoke-RemoteScript([string]$scriptText) {
     if ($DryRun) {
-        Write-Warn "[DryRun] SSH CMD: ssh $($sshArgs -join ' ') $remoteUserHost `"$wrappedCommand`""
+        Write-Warn "[DryRun] SSH Script to ${remoteUserHost}:"
+        Write-Host $scriptText -ForegroundColor DarkGray
         return 0
     }
-    & $sshCmd.Path @sshArgs $remoteUserHost $wrappedCommand
+    $scriptText | & $sshCmd.Path @sshArgs $remoteUserHost "bash -l"
     return $LASTEXITCODE
 }
 
 # ---------------------------------------------------------------------------
-# 2. Xu ly cac Action chi quan ly (khong can keo code)
+# 2. Xu ly Action "ssh" (mo terminal tuong tac truc tiep)
 # ---------------------------------------------------------------------------
-switch ($Action) {
-    "ssh" {
-        Write-Step "Mo terminal SSH truc tiep toi $remoteUserHost (thu muc: $($Config.RemotePath))..."
-        $interactiveCmd = "bash -l -c `"$targetDirBash && cd `"`$TARGET_DIR`" && exec bash -l`""
-        & $sshCmd.Path -t @sshArgs $remoteUserHost $interactiveCmd
-        exit $LASTEXITCODE
-    }
-    "logs" {
-        Write-Step "Xem log tren server qua ./deploy.sh logs $Target..."
-        Invoke-RemoteBash "$targetDirBash && cd `"`$TARGET_DIR`" && ./deploy.sh logs $Target"
-        exit $LASTEXITCODE
-    }
-    "ps" {
-        Write-Step "Trang thai tien trinh PM2 tren server:"
-        Invoke-RemoteBash "$targetDirBash && cd `"`$TARGET_DIR`" && ./deploy.sh ps"
-        exit $LASTEXITCODE
-    }
-    "doctor" {
-        Write-Step "Kiem tra tinh trang he thong qua ./deploy.sh doctor:"
-        Invoke-RemoteBash "$targetDirBash && cd `"`$TARGET_DIR`" && ./deploy.sh doctor"
-        exit $LASTEXITCODE
-    }
-    "restart" {
-        Write-Step "Khoi dong lai ung dung qua ./deploy.sh restart:"
-        Invoke-RemoteBash "$targetDirBash && cd `"`$TARGET_DIR`" && ./deploy.sh restart"
-        exit $LASTEXITCODE
-    }
-    "stop" {
-        Write-Step "Tam dung ung dung qua ./deploy.sh stop:"
-        Invoke-RemoteBash "$targetDirBash && cd `"`$TARGET_DIR`" && ./deploy.sh stop"
-        exit $LASTEXITCODE
-    }
-    "seed" {
-        Write-Step "Khoi tao tai khoan quan tri admin tren server qua ./deploy.sh seed:"
-        Invoke-RemoteBash "$targetDirBash && cd `"`$TARGET_DIR`" && ./deploy.sh seed"
-        exit $LASTEXITCODE
-    }
-    "backup" {
-        Write-Step "Sao luu CSDL va du lieu uploads tren server qua ./deploy.sh backup:"
-        Invoke-RemoteBash "$targetDirBash && cd `"`$TARGET_DIR`" && ./deploy.sh backup"
-        exit $LASTEXITCODE
-    }
+if ($Action -eq "ssh") {
+    Write-Step "Mo terminal SSH truc tiep toi $remoteUserHost (thu muc: $($Config.RemotePath))..."
+    $remoteDirInit = "if [[ `"$($Config.RemotePath)`" = /* ]]; then TARGET_DIR=`"$($Config.RemotePath)`"; elif [[ `"$($Config.RemotePath)`" = ~* ]]; then TARGET_DIR=`$(eval echo `"$($Config.RemotePath)`"); else TARGET_DIR=`"`$HOME/$($Config.RemotePath)`"; fi; cd `"`$TARGET_DIR`" 2>/dev/null; exec bash -l"
+    & $sshCmd.Path -t @sshArgs $remoteUserHost $remoteDirInit
+    exit $LASTEXITCODE
 }
 
 # ---------------------------------------------------------------------------
-# 3. Quy trinh Deploy: Dong bo Git Local -> Keo ve Server -> Chay deploy.sh
+# 3. Kiem tra va Day ma nguon tu Local len GitHub (neu action can deploy)
 # ---------------------------------------------------------------------------
-Write-Host ""
-Write-Step "Bat dau quy trinh deploy ($Action) qua Git len Home Server: $remoteUserHost"
-Write-Host "      Kho ma nguon : $($Config.RepoUrl)"
-Write-Host "      Nhanh git    : $($Config.Branch)"
-Write-Host "      Thu muc dich : $($Config.RemotePath)"
-Write-Host ""
+$needsGitSync = ($Action -in @("update", "up", "pull-only"))
 
-# 3.1. Kiem tra va Day ma tu Local len GitHub (tru khi bat -SkipPush)
-if (-not $SkipPush) {
+if ($needsGitSync -and -not $SkipPush) {
     Push-Location $SCRIPT_ROOT
     try {
         Write-Step "Kiem tra trang thai Git tai may local..."
@@ -231,7 +185,6 @@ if (-not $SkipPush) {
             & $gitCmd.Path commit -m "Auto commit truoc khi deploy ($(Get-Date -Format 'yyyy-MM-dd HH:mm:ss'))"
         }
 
-        # Kiem tra xem co commit can push len remote hay khong
         $statusDetailed = & $gitCmd.Path status
         if ($statusDetailed -match "ahead of") {
             Write-Step "Day ma moi len GitHub (git push origin $($Config.Branch))..."
@@ -251,52 +204,103 @@ if (-not $SkipPush) {
     } finally {
         Pop-Location
     }
-} else {
-    Write-Warn "Bo qua buoc kiem tra/push Git o local (-SkipPush duoc bat)."
 }
 
 if ($DryRun) {
-    Write-Success "[DryRun] Kiem tra hoan tat. Khong thuc hien lenh tren may chu."
+    Write-Success "[DryRun] Kiem tra hoan tat. Khong thuc thi tren server."
     exit 0
 }
 
-# 3.2. Dieu khien Server dong bo ma tu GitHub va kich hoat deploy.sh
-Write-Step "Ket noi Home Server de dong bo ma tu GitHub va trien khai..."
+# ---------------------------------------------------------------------------
+# 4. Thuc thi lenh tren Home Server qua SSH
+# ---------------------------------------------------------------------------
+Write-Host ""
+Write-Step "Thuc thi [$Action] tren Home Server: $remoteUserHost"
+Write-Host "      Thu muc server : $($Config.RemotePath)"
 
-$gitSyncBash = @"
-$targetDirBash
-if [ ! -d "`$TARGET_DIR/.git" ]; then
-    echo "==> Thu muc chua co Git. Dang clone tu GitHub..."
-    mkdir -p "`$(dirname "`$TARGET_DIR")"
-    git clone -b $($Config.Branch) $($Config.RepoUrl) "`$TARGET_DIR"
+# Xay dung bash script hoan chinh de truyen qua stdin cua SSH
+$remoteScript = @"
+REMOTE_PATH='$($Config.RemotePath)'
+REPO_URL='$($Config.RepoUrl)'
+BRANCH='$($Config.Branch)'
+ACTION='$Action'
+TARGET_PARAM='$Target'
+
+# Chuan hoa duong dan thu muc tren server
+if [[ "`$REMOTE_PATH" = /* ]]; then
+    TARGET_DIR="`$REMOTE_PATH"
+elif [[ "`$REMOTE_PATH" = ~* ]]; then
+    TARGET_DIR=`$(eval echo "`$REMOTE_PATH")
 else
-    echo "==> Cap nhat ma nguon tu GitHub (git fetch & reset)..."
-    cd "`$TARGET_DIR"
-    git fetch origin $($Config.Branch)
-    git reset --hard origin/$($Config.Branch)
+    TARGET_DIR="`$HOME/`$REMOTE_PATH"
 fi
+
+# Xu ly Git cho cac action can ma nguon (update, up, pull-only)
+if [[ "`$ACTION" == "update" || "`$ACTION" == "up" || "`$ACTION" == "pull-only" ]]; then
+    if [ ! -d "`$TARGET_DIR/.git" ]; then
+        echo "==> Thu muc chua co Git. Dang clone tu GitHub..."
+        mkdir -p "`$(dirname "`$TARGET_DIR")"
+        git clone -b "`$BRANCH" "`$REPO_URL" "`$TARGET_DIR"
+    else
+        echo "==> Cap nhat ma nguon tu GitHub (git fetch & reset)..."
+        cd "`$TARGET_DIR"
+        git fetch origin "`$BRANCH"
+        git reset --hard "origin/`$BRANCH"
+        git clean -fd
+    fi
+fi
+
+if [ ! -d "`$TARGET_DIR" ]; then
+    echo "xx Thu muc `$TARGET_DIR khong ton tai tren server." >&2
+    exit 1
+fi
+
 cd "`$TARGET_DIR"
-chmod +x deploy.sh
+[ -f "./deploy.sh" ] && chmod +x ./deploy.sh
+
+case "`$ACTION" in
+    update)
+        ./deploy.sh update
+        ;;
+    up)
+        ./deploy.sh up
+        ;;
+    pull-only)
+        echo " ok  Da cap nhat ma nguon tu Git tren server thanh cong."
+        ;;
+    restart)
+        ./deploy.sh restart
+        ;;
+    stop)
+        ./deploy.sh stop
+        ;;
+    logs)
+        ./deploy.sh logs "`$TARGET_PARAM"
+        ;;
+    ps)
+        ./deploy.sh ps
+        ;;
+    doctor)
+        ./deploy.sh doctor
+        ;;
+    seed)
+        ./deploy.sh seed
+        ;;
+    backup)
+        ./deploy.sh backup
+        ;;
+    *)
+        echo "xx Action khong hop le: `$ACTION" >&2
+        exit 1
+        ;;
+esac
 "@
 
-if ($Action -eq "pull-only") {
-    Invoke-RemoteBash "$gitSyncBash && echo ' ok  Da cap nhat ma nguon tu Git tren server.'"
-    exit $LASTEXITCODE
-}
-
-$deployShCommand = ""
-if ($Action -eq "up") {
-    $deployShCommand = "./deploy.sh up"
-} elseif ($Action -eq "update") {
-    $deployShCommand = "./deploy.sh update"
-}
-
-$fullRemoteDeployBash = "$gitSyncBash && $deployShCommand"
-Invoke-RemoteBash $fullRemoteDeployBash
+Invoke-RemoteScript $remoteScript
 
 if ($LASTEXITCODE -eq 0) {
     Write-Host ""
-    Write-Success "Trien khai hoan tat thanh cong!"
+    Write-Success "Thuc thi [$Action] hoan tat thanh cong!"
 } else {
     Write-Host ""
     Write-Warn "Qua trinh ket thuc voi ma loi $LASTEXITCODE. Xem log tren server: .\deploy.ps1 logs"
