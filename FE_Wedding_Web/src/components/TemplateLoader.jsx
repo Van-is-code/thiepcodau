@@ -72,10 +72,17 @@ const TemplateLoader = () => {
       const baseUrl = resolveTemplateUrl(invitation?.template?.html_path)
       if (!baseUrl) return
 
-      const nextUrl = new URL(event.data.file, baseUrl).href
-      loadTemplateHTML(nextUrl)
-        .then(setTemplateContent)
-        .catch((err) => console.error('Error navigating within template:', err))
+      try {
+        const fullBase = /^https?:\/\//i.test(baseUrl)
+          ? baseUrl
+          : (typeof window !== 'undefined' ? new URL(baseUrl, window.location.origin).href : baseUrl)
+        const nextUrl = new URL(event.data.file, fullBase).href
+        loadTemplateHTML(nextUrl)
+          .then(setTemplateContent)
+          .catch((err) => console.error('Error navigating within template:', err))
+      } catch (err) {
+        console.error('Error navigating within template:', err)
+      }
     }
 
     window.addEventListener('message', handleMessage)

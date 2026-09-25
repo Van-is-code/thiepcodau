@@ -18,7 +18,8 @@ export const resolveTemplateUrl = (htmlPath) => {
   if (!htmlPath) return null
   if (/^https?:\/\//i.test(htmlPath)) return htmlPath
   const normalizedPath = htmlPath.startsWith('/') ? htmlPath : `/${htmlPath}`
-  return `${API_BASE}${normalizedPath}`
+  const base = API_BASE || (typeof window !== 'undefined' ? window.location.origin : '')
+  return `${base}${normalizedPath}`
 }
 
 const VN_WEEKDAYS = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy']
@@ -37,7 +38,8 @@ const pad2 = (n) => String(n).padStart(2, '0')
 export const toAbsoluteMediaUrl = (url) => {
   if (!url || typeof url !== 'string') return url
   if (/^(https?:|data:|blob:)/i.test(url) || url.startsWith('//')) return url
-  return `${API_BASE}${url.startsWith('/') ? '' : '/'}${url}`
+  const base = API_BASE || (typeof window !== 'undefined' ? window.location.origin : '')
+  return `${base}${url.startsWith('/') ? '' : '/'}${url}`
 }
 
 // Chuẩn hoá 1 ảnh trước khi bơm vào iframe:
@@ -1144,7 +1146,17 @@ export const buildIframeDocument = (htmlContent, invitation, options = {}) => {
   const templateBaseUrl = resolveTemplateUrl(templateHtmlPath)
   // Base href để các đường dẫn tương đối (css/js/ảnh) trong mẫu tự resolve đúng về
   // thư mục chứa mẫu đó, bất kể mẫu đang được host ở đâu (BE static, CDN...).
-  const baseHref = templateBaseUrl ? new URL('.', templateBaseUrl).href : ''
+  let baseHref = ''
+  if (templateBaseUrl) {
+    try {
+      const fullUrl = /^https?:\/\//i.test(templateBaseUrl)
+        ? templateBaseUrl
+        : (typeof window !== 'undefined' ? new URL(templateBaseUrl, window.location.origin).href : templateBaseUrl)
+      baseHref = new URL('.', fullUrl).href
+    } catch (_e) {
+      baseHref = ''
+    }
+  }
 
   const mergedData = buildMergedData(invitation)
 

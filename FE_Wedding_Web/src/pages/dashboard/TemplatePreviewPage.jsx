@@ -58,8 +58,15 @@ export default function TemplatePreviewPage() {
       if (!event.data || event.data.type !== 'wedding-web:navigate' || !event.data.file || !template) return
       const baseUrl = resolveTemplateUrl(template.html_path)
       if (!baseUrl) return
-      const nextUrl = new URL(event.data.file, baseUrl).href
-      fetch(nextUrl).then((r) => r.text()).then(setHtml).catch((err) => console.error('Preview navigate failed:', err))
+      try {
+        const fullBase = /^https?:\/\//i.test(baseUrl)
+          ? baseUrl
+          : (typeof window !== 'undefined' ? new URL(baseUrl, window.location.origin).href : baseUrl)
+        const nextUrl = new URL(event.data.file, fullBase).href
+        fetch(nextUrl).then((r) => r.text()).then(setHtml).catch((err) => console.error('Preview navigate failed:', err))
+      } catch (err) {
+        console.error('Preview navigate failed:', err)
+      }
     }
 
     window.addEventListener('message', handleMessage)

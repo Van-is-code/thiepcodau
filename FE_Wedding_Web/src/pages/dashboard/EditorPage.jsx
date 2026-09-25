@@ -305,17 +305,24 @@ export default function EditorPage() {
       if (event.data.type === 'wedding-web:navigate' && event.data.file && invitation) {
         const baseUrl = resolveTemplateUrl(invitation.template?.html_path)
         if (!baseUrl) return
-        const nextUrl = new URL(event.data.file, baseUrl).href
-        fetch(nextUrl, { cache: 'default' })
-          .then((r) => r.text())
-          .then((html) =>
-            setIframeDoc(buildIframeDocument(html, mergedForIframe(invitation, pending), {
-              editMode: !locked,
-              editableFields: invitation?.template?.editable_fields ?? null,
-              imageSlotRules: invitation?.template?.image_slot_rules ?? null,
-            })),
-          )
-          .catch((err) => console.error('Editor navigate failed:', err))
+        try {
+          const fullBase = /^https?:\/\//i.test(baseUrl)
+            ? baseUrl
+            : (typeof window !== 'undefined' ? new URL(baseUrl, window.location.origin).href : baseUrl)
+          const nextUrl = new URL(event.data.file, fullBase).href
+          fetch(nextUrl, { cache: 'default' })
+            .then((r) => r.text())
+            .then((html) =>
+              setIframeDoc(buildIframeDocument(html, mergedForIframe(invitation, pending), {
+                editMode: !locked,
+                editableFields: invitation?.template?.editable_fields ?? null,
+                imageSlotRules: invitation?.template?.image_slot_rules ?? null,
+              }))
+            )
+            .catch((err) => console.error('Editor navigate failed:', err))
+        } catch (err) {
+          console.error('Editor navigate failed:', err)
+        }
       }
     }
     window.addEventListener('message', handleMessage)
