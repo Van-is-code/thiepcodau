@@ -39,7 +39,7 @@ Thumbs.db
 # Backup .git của repo BE_Wedding_Web tách riêng trước đây — xoá khi không cần nữa.
 _BE_Wedding_Web_git_backup/
 
-# Thư mục phụ, theme mẫu và tài liệu phát triển cục bộ (chỉ deploy hệ thống chính)
+# Thư mục phụ và tài nguyên phát triển cục bộ (chỉ deploy hệ thống chính)
 theme-to-template/
 theme_blue_botanical_masterpiece/
 theme_hydrangea_editorial/
