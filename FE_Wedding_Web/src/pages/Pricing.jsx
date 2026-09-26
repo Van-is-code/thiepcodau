@@ -90,12 +90,12 @@ const S = {
     marginBottom: 16,
   },
   title: {
-    fontFamily: "'Plus Jakarta Sans', sans-serif",
-    fontSize: 24,
+    fontFamily: "var(--font-sans)",
+    fontSize: 28,
     fontWeight: 700,
     margin: '8px 0 14px',
     color: '#1f1917',
-    lineHeight: 1.25,
+    lineHeight: 1.2,
   },
   lead: {
     fontSize: 14.5,

@@ -162,11 +162,11 @@ const S = {
     minWidth: 0,
   },
   title: {
-    fontFamily: "'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-    fontSize: 18,
+    fontFamily: "var(--font-sans)",
+    fontSize: 20,
     fontWeight: 700,
     color: '#1f1917',
-    lineHeight: 1.25,
+    lineHeight: 1.2,
   },
   closeBtn: {
     background: '#f6f1eb',

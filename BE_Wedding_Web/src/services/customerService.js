@@ -409,6 +409,23 @@ const unlockInvitationForCtv = async (invitationId, ctv, { extendDays } = {}) =>
   return p;
 };
 
+const resetCustomerPassword = async (customerId, ctv, newPassword, ctx = {}) => {
+  assertCtvActive(ctv);
+  const customer = await getCustomerOwnedByCtv(customerId, ctv);
+  if (!newPassword || newPassword.length < 6) {
+    const e = new Error('Mật khẩu phải từ 6 ký tự trở lên'); e.status = 400; throw e;
+  }
+  const hash = await bcrypt.hash(newPassword, BCRYPT_ROUNDS || 10);
+  await User.update({ password: hash, updated_at: new Date() }, { where: { id: customer.user_id } });
+  await auditService.log({
+    actorType: 'ctv', actorId: ctx.actorId || null,
+    action: 'customer.reset_password', entityType: 'customer', entityId: customer.id,
+    newValue: { username: customer.user?.username },
+    ip: ctx.ip || null
+  });
+  return { success: true };
+};
+
 module.exports = {
   resolveCtv,
   assertCtvActive,
@@ -423,5 +440,6 @@ module.exports = {
   listInvitationsForCtv,
   lockInvitationForCtv,
   unlockInvitationForCtv,
+  resetCustomerPassword,
   publicCustomer
 };

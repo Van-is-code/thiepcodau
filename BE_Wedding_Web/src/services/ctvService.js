@@ -1,5 +1,5 @@
 const { Op } = require('sequelize');
-const { sequelize, CtvProfile, Customer, Order, Wallet } = require('../models');
+const { sequelize, CtvProfile, Customer, Order, Wallet, User } = require('../models');
 const walletService = require('./walletService');
 const payoutService = require('./payoutService');
 const auditService = require('./auditService');
@@ -26,8 +26,27 @@ const publicProfile = (p) => ({
 });
 
 const resolveCtv = async (userId) => {
-  const ctv = await CtvProfile.findOne({ where: { user_id: userId } });
-  if (!ctv) { const e = new Error('Tài khoản chưa được thiết lập hồ sơ CTV'); e.status = 404; throw e; }
+  let ctv = await CtvProfile.findOne({ where: { user_id: userId } });
+  if (!ctv) {
+    const user = await User.findByPk(userId);
+    if (user && (user.role === 'ctv' || user.role === 'admin')) {
+      ctv = await CtvProfile.create({
+        user_id: user.id,
+        display_name: user.username || 'CTV',
+        email: user.email || null,
+        phone: user.phone || null,
+        status: 'active'
+      });
+      await Wallet.findOrCreate({
+        where: { ctv_id: ctv.id },
+        defaults: { ctv_id: ctv.id, balance: 0, pending_balance: 0, total_earned: 0, total_withdrawn: 0 }
+      });
+    } else {
+      const e = new Error('Tài khoản chưa được thiết lập hồ sơ CTV');
+      e.status = 404;
+      throw e;
+    }
+  }
   return ctv;
 };
 

@@ -860,7 +860,7 @@ const S = {
   },
   brand: {
     fontFamily: "'Plus Jakarta Sans', sans-serif",
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 700,
     color: '#1f1917',
   },
@@ -921,7 +921,7 @@ const S = {
   },
   h3: {
     fontFamily: "'Plus Jakarta Sans', sans-serif",
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 700,
     margin: '32px 0 14px',
     color: '#1f1917',
@@ -942,7 +942,7 @@ const S = {
     fontFamily: "'Plus Jakarta Sans', sans-serif",
     fontSize: 28,
     fontWeight: 700,
-    lineHeight: 1,
+    lineHeight: 1.1,
     marginTop: 4,
   },
   statKey: {

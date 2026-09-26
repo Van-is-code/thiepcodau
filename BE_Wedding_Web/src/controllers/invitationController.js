@@ -124,7 +124,12 @@ const remove = async (req, res) => {
 
 const createDraft = async (req, res) => {
 	try {
-		const data = await invitationService.createDraft(req.body.template_id, req.user?.id);
+		const isAdm = req.user?.role === 'admin';
+		const data = await invitationService.createDraft(req.body.template_id, req.user?.id, {
+			actor: req.user,
+			actorRole: req.user?.role,
+			chargeSlot: !isAdm
+		});
 		return res.status(201).json({ success: true, message: 'Create draft invitation successfully', data });
 	} catch (error) {
 		return res.status(error.status || 500).json({ success: false, message: error.message || 'Failed to create draft invitation' });

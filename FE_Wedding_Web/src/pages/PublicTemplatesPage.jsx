@@ -61,7 +61,7 @@ const css = `
   }
 
   .pub-brand-title {
-    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    font-family: 'Plus Jakarta Sans', sans-serif;
     font-size: 20px;
     font-weight: 700;
     color: #1f1917;
@@ -122,7 +122,7 @@ const css = `
   }
 
   .pub-hero-title {
-    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    font-family: 'Plus Jakarta Sans', sans-serif;
     font-size: clamp(32px, 5vw, 48px);
     font-weight: 700;
     color: #1f1917;
@@ -305,7 +305,7 @@ const css = `
   }
 
   .pub-mockup-names {
-    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    font-family: 'Plus Jakarta Sans', sans-serif;
     font-size: 19px;
     font-weight: 700;
     color: #2b221d;
@@ -508,7 +508,7 @@ const css = `
   }
 
   .pub-cta-text h3 {
-    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    font-family: 'Plus Jakarta Sans', sans-serif;
     font-size: 26px;
     font-weight: 700;
     margin-bottom: 8px;

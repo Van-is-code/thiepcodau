@@ -189,16 +189,8 @@ export const api = {
     createCustomer: (data) => apiClient.post('/api/ctv/customers', data),
     getCustomer: (id) => apiClient.get(`/api/ctv/customers/${id}`),
     updateCustomer: (id, data) => apiClient.patch(`/api/ctv/customers/${id}`, data),
-    deleteCustomer: (id) => apiClient.delete(`/api/ctv/customers/${id}`),
     customerOrders: (id, params = {}) => apiClient.get(`/api/ctv/customers/${id}/orders`, { params }),
     customerCards: (id) => apiClient.get(`/api/ctv/customers/${id}/cards`),
-    createCustomerInvitation: (id, templateId) =>
-      apiClient.post(`/api/ctv/customers/${id}/invitations`, { template_id: templateId }),
-
-    // Quản lý thiệp của khách thuộc CTV
-    listInvitations: (params = {}) => apiClient.get('/api/ctv/invitations', { params }),
-    lockInvitation: (id) => apiClient.post(`/api/ctv/invitations/${id}/lock`),
-    unlockInvitation: (id, data = {}) => apiClient.post(`/api/ctv/invitations/${id}/unlock`, data),
 
     createOrder: (customerId, productCode) =>
       apiClient.post('/api/ctv/orders', { customerId, productCode }),
@@ -206,6 +198,12 @@ export const api = {
     getOrder: (id) => apiClient.get(`/api/ctv/orders/${id}`),
     orderPayment: (id) => apiClient.get(`/api/ctv/orders/${id}/payment`),
     cancelOrder: (id) => apiClient.post(`/api/ctv/orders/${id}/cancel`),
+
+    listInvitations: (params = {}) => apiClient.get('/api/ctv/invitations', { params }),
+    createCustomerInvitation: (customerId, templateId) =>
+      apiClient.post(`/api/ctv/customers/${customerId}/invitations`, { templateId }),
+    resetCustomerPassword: (customerId, password) =>
+      apiClient.post(`/api/ctv/customers/${customerId}/reset-password`, { password }),
 
     wallet: (params = {}) => apiClient.get('/api/ctv/wallet', { params }),
     // Sổ thu hộ: nền tảng đã thu hộ bao nhiêu, đã chi lại bao nhiêu.
