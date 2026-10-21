@@ -106,6 +106,11 @@ const addDateParts = (target, isoValue, prefix) => {
   target[`${prefix}_year`] = `Năm ${d.getUTCFullYear()}`
   target[`${prefix}_weekday`] = VN_WEEKDAYS[d.getUTCDay()]
   target[`${prefix}_time_weekday`] = `${pad2(d.getUTCHours())}:${pad2(d.getUTCMinutes())}, ${VN_WEEKDAYS[d.getUTCDay()]}`
+  target[`${prefix}_month_num`] = pad2(d.getUTCMonth() + 1)
+  target[`${prefix}_year_num`] = String(d.getUTCFullYear())
+  target[`${prefix}_time`] = `${pad2(d.getUTCHours())}:${pad2(d.getUTCMinutes())}`
+  target[`${prefix}_weekday_date`] = `${VN_WEEKDAYS[d.getUTCDay()].toUpperCase()}, ${pad2(d.getUTCDate())}.${pad2(d.getUTCMonth() + 1)}.${d.getUTCFullYear()}`
+  target[`${prefix}_full_date`] = `${VN_WEEKDAYS[d.getUTCDay()]} · ${pad2(d.getUTCDate())} tháng ${pad2(d.getUTCMonth() + 1)} năm ${d.getUTCFullYear()}`
   target[`${prefix}_short`] = `${pad2(d.getUTCDate())}.${pad2(d.getUTCMonth() + 1)}.${d.getUTCFullYear()}`
 }
 
@@ -136,6 +141,13 @@ export const buildMergedData = (invitation) => {
   data.groom_initial = data.groom_short_name.charAt(0)
   data.bride_initial = data.bride_short_name.charAt(0)
 
+  if (!data.couple_names) {
+    data.couple_names = [data.groom_short_name, data.bride_short_name].filter(Boolean).join(' & ')
+  }
+  if (!data.couple_full_names) {
+    data.couple_full_names = [data.groom_name, data.bride_name].filter(Boolean).join(' & ')
+  }
+
   addDateParts(data, invitation?.ceremony_date, 'ceremony')
   addDateParts(data, invitation?.reception_date, 'reception')
 
@@ -151,11 +163,11 @@ const GROOM_NAME_ALIASES = new Set(['groom_name', 'groom_short_name', 'groom_ini
 const BRIDE_NAME_ALIASES = new Set(['bride_name', 'bride_short_name', 'bride_initial'])
 const CEREMONY_DATE_ALIASES = new Set([
   'ceremony_day', 'ceremony_month', 'ceremony_month_en', 'ceremony_year',
-  'ceremony_weekday', 'ceremony_time_weekday', 'ceremony_short',
+  'ceremony_weekday', 'ceremony_time_weekday', 'ceremony_short', 'ceremony_month_num', 'ceremony_year_num', 'ceremony_time', 'ceremony_weekday_date', 'ceremony_full_date',
 ])
 const RECEPTION_DATE_ALIASES = new Set([
   'reception_day', 'reception_month', 'reception_month_en', 'reception_year',
-  'reception_weekday', 'reception_time_weekday', 'reception_short',
+  'reception_weekday', 'reception_time_weekday', 'reception_short', 'reception_month_num', 'reception_year_num', 'reception_time', 'reception_weekday_date', 'reception_full_date',
 ])
 const INVITATION_TEXT_FIELDS = new Set([
   'title_vi', 'title_en', 'venue_address', 'map_url',
@@ -848,7 +860,7 @@ const EDIT_MODE_SCRIPT = `
     'reception_short','reception_weekday','reception_time_weekday','reception_time',
     'reception_day','reception_month','reception_year','reception_lunar_text',
     'reception_venue_address','reception_venue_name','reception_map_url',
-    'thank_you_message','title_vi','extra_notes'];
+    'thank_you_message','title_vi','extra_notes','ceremony_month_num','ceremony_year_num','ceremony_time','ceremony_weekday_date','ceremony_full_date','reception_month_num','reception_year_num','reception_time','reception_weekday_date','reception_full_date','welcome_quote','welcome_text','family_lead_text','ceremony_heartfelt_quote','story_quote','timeline_time_1','timeline_title_1','timeline_desc_1','timeline_time_2','timeline_title_2','timeline_desc_2','timeline_time_3','timeline_title_3','timeline_desc_3','timeline_time_4','timeline_title_4','timeline_desc_4','timeline_time_5','timeline_title_5','timeline_desc_5'];
 
   // Thông tin ngân hàng KHÔNG BAO GIỜ sửa tại chỗ — đi qua panel quét mã QR, vì
   // số tài khoản gõ tay sẽ lệch với mã QR đang hiện.

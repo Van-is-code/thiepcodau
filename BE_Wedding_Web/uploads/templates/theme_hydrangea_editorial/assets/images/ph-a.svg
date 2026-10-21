@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500">
+  <defs>
+    <linearGradient id="gA" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#F7F2FA"/>
+      <stop offset="55%" stop-color="#EEE3F4"/>
+      <stop offset="100%" stop-color="#EBF0E3"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="500" fill="url(#gA)"/>
+  <g fill="none" stroke="#B196CE" stroke-width="1.4" opacity="0.55">
+    <path d="M150 220 C150 195 175 185 200 205 C225 185 250 195 250 220 C250 250 200 285 200 285 C200 285 150 250 150 220 Z"/>
+  </g>
+  <text x="200" y="330" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-style="italic" font-size="15" fill="#9A7EBC" opacity="0.75">Ảnh cưới của hai bạn</text>
+</svg>

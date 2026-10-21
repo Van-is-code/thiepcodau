@@ -40,11 +40,11 @@ Thumbs.db
 _BE_Wedding_Web_git_backup/
 
 # Thư mục phụ và tài nguyên phát triển cục bộ (chỉ deploy hệ thống chính)
-theme-to-template/
-theme_blue_botanical_masterpiece/
-theme_hydrangea_editorial/
-LUAT_AGENT/
-.claude/
+/theme-to-template/
+/theme_blue_botanical_masterpiece/
+/theme_hydrangea_editorial/
+/LUAT_AGENT/
+/.claude/
 
 # Cấu hình deploy cá nhân
 deploy.config.json

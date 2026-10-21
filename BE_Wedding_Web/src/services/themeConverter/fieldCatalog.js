@@ -34,16 +34,25 @@ const DATE_FIELDS = {
   ceremony_short: { label: 'Ngày lễ (26.04.2025)', group: 'ceremony', kind: 'date' },
   ceremony_day: { label: 'Ngày lễ (số)', group: 'ceremony', kind: 'date' },
   ceremony_month: { label: 'Tháng lễ', group: 'ceremony', kind: 'date' },
+  ceremony_month_num: { label: 'Tháng lễ (số)', group: 'ceremony', kind: 'date' },
   ceremony_year: { label: 'Năm lễ', group: 'ceremony', kind: 'date' },
+  ceremony_year_num: { label: 'Năm lễ (số 4 chữ số)', group: 'ceremony', kind: 'date' },
   ceremony_weekday: { label: 'Thứ (lễ)', group: 'ceremony', kind: 'date' },
+  ceremony_time: { label: 'Giờ lễ', group: 'ceremony', kind: 'date' },
   ceremony_time_weekday: { label: 'Giờ + thứ (lễ)', group: 'ceremony', kind: 'date' },
+  ceremony_weekday_date: { label: 'Thứ, ngày tháng năm (lễ)', group: 'ceremony', kind: 'date' },
+  ceremony_full_date: { label: 'Ngày đầy đủ (lễ)', group: 'ceremony', kind: 'date' },
   ceremony_month_en: { label: 'Tháng tiếng Anh (lễ)', group: 'ceremony', kind: 'date' },
   reception_short: { label: 'Ngày tiệc', group: 'reception', kind: 'date' },
   reception_day: { label: 'Ngày tiệc (số)', group: 'reception', kind: 'date' },
   reception_month: { label: 'Tháng tiệc', group: 'reception', kind: 'date' },
+  reception_month_num: { label: 'Tháng tiệc (số)', group: 'reception', kind: 'date' },
   reception_year: { label: 'Năm tiệc', group: 'reception', kind: 'date' },
+  reception_year_num: { label: 'Năm tiệc (số 4 chữ số)', group: 'reception', kind: 'date' },
   reception_weekday: { label: 'Thứ (tiệc)', group: 'reception', kind: 'date' },
   reception_time_weekday: { label: 'Giờ + thứ (tiệc)', group: 'reception', kind: 'date' },
+  reception_weekday_date: { label: 'Thứ, ngày tháng năm (tiệc)', group: 'reception', kind: 'date' },
+  reception_full_date: { label: 'Ngày đầy đủ (tiệc)', group: 'reception', kind: 'date' },
   reception_month_en: { label: 'Tháng tiếng Anh (tiệc)', group: 'reception', kind: 'date' },
 };
 
@@ -68,6 +77,8 @@ const EXTRA_FIELDS = {
   // được thành 2 ô mà không đụng vào cấu trúc DOM của theme, nên cho chủ thiệp
   // nhập nguyên cụm — vẫn sửa được, vẫn hiện đúng.
   couple_names: { label: 'Tên đôi (ghép chung 1 ô)', group: 'couple' },
+  guest_name: { label: 'Tên khách mời', group: 'content' },
+  reception_venue_sub: { label: 'Sảnh / Tầng nhà hàng', group: 'reception' },
   wedding_tag: { label: 'Nhãn THE WEDDING OF', group: 'general' },
   venue_name: { label: 'Tên nơi làm lễ', group: 'ceremony' },
   reception_venue_name: { label: 'Tên nhà hàng', group: 'reception' },
@@ -140,11 +151,13 @@ const DEFAULT_EDITABLE = [
   'bride.father_bride', 'bride.mother_bride', 'bride.address',
   // Lễ
   'ceremony_short', 'ceremony_weekday', 'ceremony_time_weekday', 'ceremony_day',
-  'ceremony_month', 'ceremony_year', 'ceremony_lunar_text',
+  'ceremony_month', 'ceremony_month_num', 'ceremony_year', 'ceremony_year_num',
+  'ceremony_time', 'ceremony_weekday_date', 'ceremony_full_date', 'ceremony_lunar_text',
   'venue_address', 'venue_name', 'map_url',
   // Tiệc
   'reception_short', 'reception_weekday', 'reception_time_weekday', 'reception_time',
-  'reception_day', 'reception_month', 'reception_year', 'reception_lunar_text',
+  'reception_day', 'reception_month', 'reception_month_num', 'reception_year', 'reception_year_num',
+  'reception_weekday_date', 'reception_full_date', 'reception_lunar_text',
   'reception_venue_address', 'reception_venue_name', 'reception_map_url',
   // Nội dung
   'thank_you_message', 'title_vi', 'extra_notes',
