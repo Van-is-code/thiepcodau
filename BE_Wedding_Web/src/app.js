@@ -204,6 +204,8 @@ app.use('/api/invitations', invitationRoutes);
 app.use('/api/invitation', invitationRoutes);
 app.use('/api/invitation-templates', invitationTemplateRoutes);
 app.use('/api/invitation_templates', invitationTemplateRoutes);
+app.use('/api/templates', invitationTemplateRoutes);
+app.use('/api/template', invitationTemplateRoutes);
 app.use('/api/private-invitations', privateInvitationRoutes);
 app.use('/api/private_invitation', privateInvitationRoutes);
 app.use('/api/invitation-images', invitationImageRoutes);
