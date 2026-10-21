@@ -2,7 +2,7 @@ const { randomUUID } = require('crypto');
 const fs = require('fs');
 const path = require('path');
 const sequelize = require('../config/db');
-const { Invitation, InvitationTemplate, Groom, Bride, InvitationImage, User, Customer, CtvProfile } = require('../models');
+const { Invitation, InvitationTemplate, Groom, Bride, InvitationImage, MessageCheckin, User, Customer, CtvProfile } = require('../models');
 const { isUuid } = require('../utils/isUuid');
 const { computeEditDeadline, getLockState, lockMessage } = require('../utils/editLock');
 const entitlementService = require('./entitlementService');
@@ -216,6 +216,10 @@ const getBySlug = async (invitationSlug) => {
 					'id', 'image_url', 'image_alt', 'image_type', 'sort_order', 'is_cover',
 					'width', 'height', 'blur_data_url', 'dominant_color', 'variants'
 				]
+			},
+			{
+				model: MessageCheckin, as: 'messagesCheckins', required: false,
+				attributes: ['id', 'name_guest', 'messages', 'created_at', 'confirm_attendance']
 			}
 		],
 		order: [[{ model: InvitationImage, as: 'images' }, 'sort_order', 'ASC']]
@@ -227,7 +231,22 @@ const getBySlug = async (invitationSlug) => {
 		throw error;
 	}
 
-	return item;
+	const resObj = typeof item.toJSON === 'function' ? item.toJSON() : { ...item };
+	if (resObj.messagesCheckins) {
+		resObj.wishes = resObj.messagesCheckins
+			.filter((m) => m.messages && String(m.messages).trim())
+			.map((m) => ({
+				id: m.id,
+				name: m.name_guest,
+				message: m.messages,
+				attending: m.confirm_attendance,
+				date: m.created_at
+			}));
+	} else {
+		resObj.wishes = [];
+	}
+
+	return resObj;
 };
 
 const validateForeignKeys = async (payload, actor) => {
@@ -300,7 +319,8 @@ const getRandomDefaultMusicUrl = () => {
 // Nay: tạo thiệp và trừ lượt nằm chung 1 transaction, việc trừ dùng khoá dòng
 // (khách của CTV) hoặc UPDATE có điều kiện slot > 0 (tài khoản tự phục vụ). Hết lượt
 // -> ném lỗi -> transaction rollback -> thiệp vừa tạo cũng biến mất.
-const consumeSlot = async ({ customer, userId, invitationId }, transaction) => {
+const consumeSlot = async ({ customer, userId, userRole, invitationId }, transaction) => {
+	if (userRole === 'admin') return;
 	if (customer) {
 		await entitlementService.debitForCardCreation(
 			customer.id,
@@ -341,7 +361,7 @@ const create = async (payload, userId) => {
 	data.users_id = userId;
 	data.music_url = getRandomDefaultMusicUrl();
 
-	await validateForeignKeys(data, { id: userId, role: 'user' });
+	await validateForeignKeys(data, { id: userId, role: user.role || 'user' });
 
 	if (Invitation.rawAttributes.created_at) {
 		data.created_at = getNowValue(Invitation.rawAttributes.created_at);
@@ -352,7 +372,7 @@ const create = async (payload, userId) => {
 
 	return sequelize.transaction(async (transaction) => {
 		const invitation = await Invitation.create(data, { transaction });
-		await consumeSlot({ customer, userId, invitationId: invitation.id }, transaction);
+		await consumeSlot({ customer, userId, userRole: user.role, invitationId: invitation.id }, transaction);
 		return invitation;
 	});
 };

@@ -9,6 +9,9 @@ const router = express.Router();
 // publicWriteLimiter: chặn spam flood — endpoint này ai cũng gọi được.
 router.post('/', publicWriteLimiter, messageCheckinController.create);
 
+// Công khai: đọc danh sách lời chúc công khai theo thiệp
+router.get('/public/:invitation_id', messageCheckinController.getPublicWishes);
+
 // Từ đây trở xuống: cần đăng nhập + chỉ chủ thiệp (hoặc admin) mới xem/sửa được.
 router.use(authenticate);
 router.get('/', messageCheckinController.getAll);

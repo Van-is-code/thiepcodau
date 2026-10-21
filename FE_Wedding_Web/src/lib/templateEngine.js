@@ -151,6 +151,12 @@ export const buildMergedData = (invitation) => {
   addDateParts(data, invitation?.ceremony_date, 'ceremony')
   addDateParts(data, invitation?.reception_date, 'reception')
 
+  data.invitation_id = invitation?.id || ''
+  data.api_base = API_BASE || (typeof window !== 'undefined' ? window.location.origin : '')
+  if (Array.isArray(invitation?.wishes)) {
+    data.wishes = invitation.wishes
+  }
+
   return data
 }
 

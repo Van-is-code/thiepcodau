@@ -99,6 +99,33 @@ const getAllByInvitationId = async (invitationId, query = {}, actor = null) => {
 	return getAll({ ...query, invitation_id: invitationId }, null);
 };
 
+// Route CÔNG KHAI: lấy danh sách lời chúc của thiệp (không yêu cầu đăng nhập)
+// Chỉ trả về tên khách, lời chúc, trạng thái tham dự và ngày — không lộ số điện thoại hay thông tin nhạy cảm.
+const getPublicWishesByInvitationId = async (invitationId, query = {}) => {
+	if (!invitationId) {
+		const error = new Error('invitation_id là bắt buộc'); error.status = 400; throw error;
+	}
+	assertUuid(invitationId, 'Thiệp');
+	const { limit = 30, offset = 0 } = pagination(query);
+	const rows = await MessageCheckin.findAll({
+		where: {
+			invitation_id: invitationId,
+			messages: { [Op.and]: [{ [Op.ne]: null }, { [Op.ne]: '' }] }
+		},
+		attributes: ['id', 'name_guest', 'messages', 'created_at', 'confirm_attendance'],
+		order: [['created_at', 'DESC']],
+		limit: Math.min(Number(limit) || 30, 100),
+		offset: Number(offset) || 0
+	});
+	return rows.map((r) => ({
+		id: r.id,
+		name: r.name_guest,
+		message: r.messages,
+		attending: r.confirm_attendance,
+		date: r.created_at,
+	}));
+};
+
 const findRaw = async (id) => {
 	assertUuid(id, resourceName);
 	const item = await MessageCheckin.findByPk(id);
@@ -197,7 +224,7 @@ const remove = async (id, actor) => {
 };
 
 module.exports = {
-	getAll, getAllByInvitationId, getById, create, update, remove,
+	getAll, getAllByInvitationId, getPublicWishesByInvitationId, getById, create, update, remove,
 	publicCheckin, normalizeAttendance, normalizeGuestType,
 	MAX_CHECKINS_PER_INVITATION,
 };

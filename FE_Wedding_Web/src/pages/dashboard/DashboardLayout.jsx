@@ -53,8 +53,6 @@ export default function DashboardLayout({ onLogout }) {
       .then((r) => {
         const p = r.data?.data || r.data
         setProfile(p)
-        // CTV không dùng trang khách — chuyển thẳng sang bảng điều khiển CTV.
-        if (p?.role === 'ctv') navigate('/ctv', { replace: true })
       })
       .catch(() => setProfile(null))
   }, [navigate])

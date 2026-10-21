@@ -31,6 +31,25 @@ const getAllByInvitationId = async (req, res) => {
 	}
 };
 
+const getPublicWishes = async (req, res) => {
+	try {
+		const data = await messageCheckinService.getPublicWishesByInvitationId(
+			req.params.invitation_id,
+			req.query
+		);
+		return res.status(200).json({
+			success: true,
+			message: 'Get public wishes successfully',
+			data
+		});
+	} catch (error) {
+		return res.status(error.status || 500).json({
+			success: false,
+			message: error.message || 'Failed to get public wishes'
+		});
+	}
+};
+
 const getById = async (req, res) => {
 	try {
 		const data = await messageCheckinService.getById(req.params.id, actorOf(req));
@@ -67,4 +86,4 @@ const remove = async (req, res) => {
 	}
 };
 
-module.exports = { getAll, getAllByInvitationId, getById, create, update, remove };
+module.exports = { getAll, getAllByInvitationId, getPublicWishes, getById, create, update, remove };
