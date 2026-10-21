@@ -199,12 +199,6 @@ export const api = {
     orderPayment: (id) => apiClient.get(`/api/ctv/orders/${id}/payment`),
     cancelOrder: (id) => apiClient.post(`/api/ctv/orders/${id}/cancel`),
 
-    listInvitations: (params = {}) => apiClient.get('/api/ctv/invitations', { params }),
-    createCustomerInvitation: (customerId, templateId) =>
-      apiClient.post(`/api/ctv/customers/${customerId}/invitations`, { templateId }),
-    resetCustomerPassword: (customerId, password) =>
-      apiClient.post(`/api/ctv/customers/${customerId}/reset-password`, { password }),
-
     wallet: (params = {}) => apiClient.get('/api/ctv/wallet', { params }),
     // Sổ thu hộ: nền tảng đã thu hộ bao nhiêu, đã chi lại bao nhiêu.
     collections: (params = {}) => apiClient.get('/api/ctv/collections', { params }),

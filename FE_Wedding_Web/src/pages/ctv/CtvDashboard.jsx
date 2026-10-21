@@ -3,27 +3,9 @@ import { useNavigate } from 'react-router-dom'
 import { api } from '../../api'
 import { useModal } from '../../components/Modal'
 import {
-  IconSparkles,
-  IconUsers,
-  IconMail,
-  IconPalette,
-  IconCreditCard,
-  IconSettings,
-  IconChevronLeft,
-  IconPlus,
-  IconSearch,
-  IconQrCode,
-  IconRefreshCw,
-  IconCopy,
-  IconExternalLink,
-  IconCheckCircle,
-  IconAlertCircle,
-  IconEdit3,
-  IconX,
-  IconKey,
-  IconLock,
-  IconUnlock,
-  IconEye,
+  IconSparkles, IconUsers, IconMail, IconCreditCard, IconSettings,
+  IconChevronLeft, IconPlus, IconSearch, IconQrCode, IconRefreshCw, IconCopy,
+  IconExternalLink, IconCheckCircle, IconAlertCircle, IconEdit3, IconX,
 } from '../../components/Icons'
 
 const money = (v) => `${Number(v || 0).toLocaleString('vi-VN')} ₫`
@@ -31,24 +13,16 @@ const payUrl = (u) => (!u ? '' : /^https?:\/\//i.test(u) ? u : `${window.locatio
 const pct = (r) => `${Math.round((Number(r) || 0) * 10000) / 100}%`
 const WEEKDAYS = ['Chủ nhật', 'Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7']
 const STATUS_VI = {
-  pending: 'Chờ thanh toán',
-  paid: 'Đã thanh toán',
-  cancelled: 'Đã huỷ',
-  expired: 'Hết hạn',
-  refunded: 'Đã hoàn tiền',
-  pending_payment: 'Chờ kích hoạt',
-  active: 'Đang hoạt động',
-  locked: 'Bị khoá',
-  approved: 'Đã duyệt',
-  rejected: 'Từ chối',
+  pending: 'Chờ thanh toán', paid: 'Đã thanh toán', cancelled: 'Đã huỷ',
+  expired: 'Hết hạn', refunded: 'Đã hoàn tiền',
+  pending_payment: 'Chờ kích hoạt', active: 'Đang hoạt động', locked: 'Bị khoá',
+  approved: 'Đã duyệt', rejected: 'Từ chối',
 }
 
 const TABS = [
   { id: 'overview', label: 'Tổng Quan', Icon: IconSparkles },
-  { id: 'customers', label: 'Tài Khoản Khách', Icon: IconUsers },
-  { id: 'invitations', label: 'Quản Lý Thiệp', Icon: IconMail },
-  { id: 'templates', label: 'Kho Mẫu Thiệp', Icon: IconPalette },
-  { id: 'orders', label: 'Đơn Hàng', Icon: IconCreditCard },
+  { id: 'customers', label: 'Khách Hàng', Icon: IconUsers },
+  { id: 'orders', label: 'Đơn Hàng', Icon: IconMail },
   { id: 'wallet', label: 'Ví & Rút Tiền', Icon: IconCreditCard },
   { id: 'settings', label: 'Cấu Hình', Icon: IconSettings },
 ]
@@ -58,6 +32,7 @@ export default function CtvDashboard() {
   const [tab, setTab] = useState('overview')
   const [me, setMe] = useState(null)
   const [role, setRole] = useState(null)
+  const [detailId, setDetailId] = useState(null)
 
   useEffect(() => {
     api.getProfile()
@@ -66,36 +41,17 @@ export default function CtvDashboard() {
   }, [])
 
   const reloadMe = useCallback(() => {
-    api.ctv.me()
-      .then((r) => setMe(r.data?.data || r.data))
-      .catch(() => {})
+    api.ctv.me().then((r) => setMe(r.data?.data || r.data)).catch(() => {})
   }, [])
+  useEffect(() => { if (role === 'ctv') reloadMe() }, [role, reloadMe])
 
-  useEffect(() => {
-    if (role === 'ctv' || role === 'admin') reloadMe()
-  }, [role, reloadMe])
-
-  if (role === null) {
+  if (role === null) return <div style={S.center}><IconSparkles size={30} color="#d97757" /><p style={S.muted}>Đang tải…</p></div>
+  if (role !== 'ctv') {
     return (
       <div style={S.center}>
         <div style={S.centerCard}>
-          <IconSparkles size={32} color="#d97757" />
-          <p style={{ marginTop: 12, fontSize: 14, color: '#5c524c' }}>Đang xác thực thông tin CTV...</p>
-        </div>
-      </div>
-    )
-  }
-
-  if (role !== 'ctv' && role !== 'admin') {
-    return (
-      <div style={S.center}>
-        <div style={S.centerCard}>
-          <p style={{ color: '#c04938', fontWeight: 600, marginBottom: 14 }}>
-            Trang này chỉ dành cho cộng tác viên.
-          </p>
-          <button style={S.btnMain} onClick={() => navigate('/dashboard')}>
-            Về Trang Chính
-          </button>
+          <p style={{ color: '#c04938', fontWeight: 600, marginBottom: 14 }}>Trang này chỉ dành cho cộng tác viên.</p>
+          <button style={S.btnMain} onClick={() => navigate('/dashboard')}>Về trang chính</button>
         </div>
       </div>
     )
@@ -105,57 +61,41 @@ export default function CtvDashboard() {
     <div style={S.page}>
       <header style={S.header}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-          <div style={S.logoBadge}>
-            <IconUsers size={22} color="#fff" />
-          </div>
+          <div style={S.logo}><IconUsers size={22} color="#fff" /></div>
           <div>
-            <div style={S.brand}>CTV · {me?.profile?.display_name || 'Cộng Tác Viên'}</div>
+            <div style={S.brand}>CTV · {me?.profile?.display_name || 'Cộng tác viên'}</div>
             <div style={S.sub}>
-              Cấp tài khoản khách, tạo thiệp hộ & quản lý hoa hồng | Đơn giá: {money(me?.profile?.single_price)} · Combo: {money(me?.profile?.combo_price)} · HH: {pct(me?.profile?.commission_rate)}
+              Thiệp lẻ {money(me?.profile?.single_price)} · Combo {money(me?.profile?.combo_price)} · HH {pct(me?.profile?.commission_rate)}
             </div>
           </div>
         </div>
-        <button style={S.btnGhost} onClick={() => navigate('/dashboard')}>
-          <IconChevronLeft size={15} />
-          <span>Về Trang Khách</span>
-        </button>
+        <button style={S.btnGhost} onClick={() => navigate('/dashboard')}><IconChevronLeft size={15} /> Trang khách</button>
       </header>
 
       {me?.profile?.status === 'locked' && (
-        <div style={S.lockedBar}>
-          <IconAlertCircle size={16} /> Tài khoản CTV của bạn đang bị khoá. Bạn không thể tạo khách / tạo đơn / rút tiền. Vui lòng liên hệ quản trị viên.
-        </div>
+        <div style={S.lockedBar}><IconAlertCircle size={16} /> Tài khoản CTV của bạn đang bị khoá. Bạn không thể tạo khách / tạo đơn / rút tiền. Liên hệ quản trị viên.</div>
       )}
 
       <nav style={S.tabs}>
         {TABS.map((t) => {
-          const TabIcon = t.Icon
-          const isOn = tab === t.id
+          const On = t.Icon
+          const active = tab === t.id
           return (
-            <button
-              key={t.id}
-              style={{ ...S.tab, ...(isOn ? S.tabOn : {}) }}
-              onClick={() => setTab(t.id)}
-            >
-              <TabIcon size={16} />
-              <span>{t.label}</span>
+            <button key={t.id} style={{ ...S.tab, ...(active ? S.tabOn : {}) }}
+              onClick={() => { setTab(t.id); setDetailId(null) }}>
+              <On size={16} /> <span>{t.label}</span>
             </button>
           )
         })}
       </nav>
 
       <div style={S.body}>
-        {tab === 'overview' && <Overview me={me} onOpenTab={setTab} />}
-        {tab === 'customers' && (
-          <Customers me={me} locked={me?.profile?.status === 'locked'} onChanged={reloadMe} navigate={navigate} />
+        {tab === 'overview' && <Overview me={me} />}
+        {tab === 'customers' && !detailId && <Customers onOpen={setDetailId} locked={me?.profile?.status === 'locked'} />}
+        {tab === 'customers' && detailId && (
+          <CustomerDetail id={detailId} onBack={() => setDetailId(null)} me={me} onChanged={reloadMe} />
         )}
-        {tab === 'invitations' && (
-          <InvitationsTab me={me} navigate={navigate} onOpenCustomers={() => setTab('customers')} />
-        )}
-        {tab === 'templates' && (
-          <TemplatesTab me={me} navigate={navigate} onOpenCustomers={() => setTab('customers')} />
-        )}
-        {tab === 'orders' && <OrdersTab onOpenCustomer={() => setTab('customers')} />}
+        {tab === 'orders' && <Orders onOpenCustomer={(id) => { setTab('customers'); setDetailId(id) }} />}
         {tab === 'wallet' && <WalletTab me={me} onChanged={reloadMe} />}
         {tab === 'settings' && <SettingsTab me={me} onSaved={reloadMe} />}
       </div>
@@ -163,1597 +103,604 @@ export default function CtvDashboard() {
   )
 }
 
-/* =========================================================================
-   1. OVERVIEW TAB
-   ========================================================================= */
-function Overview({ me, onOpenTab }) {
+/* ------------------------- Tổng quan ------------------------- */
+function Overview({ me }) {
   const [d, setD] = useState(null)
-  const [recentInvs, setRecentInvs] = useState([])
   const [err, setErr] = useState('')
-
   useEffect(() => {
-    api.ctv.dashboard()
-      .then((r) => setD(r.data?.data || r.data))
-      .catch((e) => setErr(e?.response?.data?.message || e.message))
-
-    api.ctv.listInvitations({ limit: 5 })
-      .then((r) => setRecentInvs((r.data?.data || r.data).items || []))
-      .catch(() => {})
+    api.ctv.dashboard().then((r) => setD(r.data?.data || r.data)).catch((e) => setErr(e?.response?.data?.message || e.message))
   }, [])
-
   if (err) return <div style={S.err}>⚠️ {err}</div>
-  if (!d) return <div style={{ padding: 40, textAlign: 'center', color: '#6e625c' }}>Đang tải số liệu thống kê...</div>
+  if (!d) return <p style={S.muted}>Đang tải số liệu…</p>
 
   const cards = [
-    { label: 'Doanh thu tháng này', val: money(d.month.revenue), Icon: IconSparkles, color: '#d97757' },
-    { label: 'Hoa hồng tháng này', val: money(d.month.commission_earning), Icon: IconCreditCard, color: '#4f7e65' },
-    { label: 'Đơn đã thanh toán (tháng)', val: d.month.paid_orders, Icon: IconCheckCircle, color: '#c9a96e' },
-    { label: 'Khách hàng', val: `${d.customers.active}/${d.customers.total}`, sub: 'đang hoạt động / tổng', Icon: IconUsers, color: '#5b7bb2' },
-    { label: 'Đơn chờ thanh toán', val: d.orders.pending, Icon: IconAlertCircle, color: '#c9902f' },
+    { label: 'Doanh thu tháng này', val: money(d.month.revenue), c: '#d97757' },
+    { label: 'Hoa hồng tháng này', val: money(d.month.commission_earning), c: '#4f7e65' },
+    { label: 'Đơn đã thanh toán (tháng)', val: d.month.paid_orders, c: '#c9a96e' },
+    { label: 'Khách hàng', val: `${d.customers.active}/${d.customers.total}`, sub: 'đang hoạt động / tổng', c: '#7a6f68' },
+    { label: 'Đơn chờ thanh toán', val: d.orders.pending, c: '#c9902f' },
   ]
-
   return (
-    <div>
-      <div style={S.statGrid}>
-        {cards.map((c) => {
-          const CardIcon = c.Icon
-          return (
-            <div key={c.label} style={S.stat}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
-                <span style={S.statKey}>{c.label}</span>
-                <CardIcon size={18} color={c.color} />
-              </div>
-              <div style={{ ...S.statVal, color: c.color }}>{c.val}</div>
-              {c.sub && <div style={{ fontSize: 11.5, color: '#9e918a', marginTop: 4 }}>{c.sub}</div>}
-            </div>
-          )
-        })}
+    <>
+      <div style={S.cardGrid}>
+        {cards.map((c) => (
+          <div key={c.label} style={S.stat}>
+            <div style={{ ...S.statDot, background: c.c }} />
+            <div style={S.statVal}>{c.val}</div>
+            <div style={S.statLbl}>{c.label}</div>
+            {c.sub && <div style={S.tiny}>{c.sub}</div>}
+          </div>
+        ))}
       </div>
 
       <div style={S.walletBox}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-          <h3 style={{ ...S.h3, margin: 0 }}>Ví Hoa Hồng &amp; Thu Hộ</h3>
-          <button style={S.mini} onClick={() => onOpenTab('wallet')}>
-            Quản lý ví &amp; Rút tiền →
-          </button>
-        </div>
+        <h3 style={S.h3}>Ví của bạn</h3>
         <div style={S.walletRow}>
-          <WBlock label="Số dư khả dụng" val={money(d.wallet.balance)} strong color="#c96547" />
+          <WBlock label="Số dư khả dụng" val={money(d.wallet.balance)} strong />
           <WBlock label="Đang chờ rút" val={money(d.wallet.pending_balance)} />
           <WBlock label="Tổng đã nhận" val={money(d.wallet.total_earned)} />
           <WBlock label="Đã được chi trả" val={money(d.wallet.total_paid)} />
         </div>
         {!d.wallet.ledger_consistent && (
-          <p style={{ ...S.tiny, color: '#c04938', marginTop: 10 }}>⚠ Số dư lệch sổ cái — liên hệ quản trị viên.</p>
+          <p style={{ ...S.tiny, color: '#c04938' }}>⚠ Số dư lệch sổ cái — liên hệ quản trị viên.</p>
         )}
       </div>
 
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', margin: '24px 0 12px' }}>
-        <h3 style={{ ...S.h3, margin: 0 }}>Thiệp Của Khách Mới Tạo Gần Đây</h3>
-        <button style={S.mini} onClick={() => onOpenTab('invitations')}>
-          Xem tất cả thiệp →
-        </button>
+      <div style={S.tiny}>
+        Rút tự động: {me?.profile?.auto_payout_enabled
+          ? `BẬT — ${me.profile.auto_payout_weekday != null ? WEEKDAYS[me.profile.auto_payout_weekday] : 'theo mặc định hệ thống'}, ngưỡng ${money(me.profile.auto_payout_min_amount)}`
+          : 'TẮT (vào tab Cấu Hình để bật)'}
       </div>
-
-      <div style={S.tableWrap}>
-        <table style={S.table}>
-          <thead>
-            <tr>
-              <th style={S.th}>Tiêu Đề Thiệp</th>
-              <th style={S.th}>Đường Dẫn (Slug)</th>
-              <th style={S.th}>Khách Hàng</th>
-              <th style={S.th}>Trạng Thái</th>
-            </tr>
-          </thead>
-          <tbody>
-            {recentInvs.map((r) => (
-              <tr key={r.id}>
-                <td style={S.td}>
-                  <strong>{r.title_vi || 'Thiệp cưới'}</strong>
-                  <div style={{ fontSize: 11.5, color: '#6e625c' }}>
-                    {r.groom?.name_groom || 'Chú rể'} &amp; {r.bride?.name_bride || 'Cô dâu'}
-                  </div>
-                </td>
-                <td style={S.td}>
-                  <code style={S.code}>{r.invitation_slug}</code>
-                </td>
-                <td style={S.td}>
-                  <strong>{r.customer?.username || r.user?.username || '—'}</strong>
-                  {r.customer?.name && <div style={{ fontSize: 11.5, color: '#6e625c' }}>{r.customer.name}</div>}
-                </td>
-                <td style={S.td}>
-                  {r.lock_state?.locked ? (
-                    <span style={S.pillLock}><IconLock size={12} /> Khoá sửa</span>
-                  ) : (
-                    <span style={S.pillOk}><IconCheckCircle size={12} /> Đang mở</span>
-                  )}
-                </td>
-              </tr>
-            ))}
-            {!recentInvs.length && (
-              <tr>
-                <td colSpan={4} style={S.empty}>Chưa có thiệp nào được tạo.</td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
-    </div>
+    </>
   )
 }
-
-const WBlock = ({ label, val, strong, color }) => (
+const WBlock = ({ label, val, strong }) => (
   <div style={S.wBlock}>
-    <div style={{ ...S.wVal, ...(strong ? { color: color || '#c96547', fontSize: 20 } : {}) }}>{val}</div>
+    <div style={{ ...S.wVal, ...(strong ? { color: '#c96547', fontSize: 20 } : {}) }}>{val}</div>
     <div style={S.tiny}>{label}</div>
   </div>
 )
 
-/* =========================================================================
-   2. CUSTOMERS TAB (Tài Khoản Khách)
-   ========================================================================= */
-function Customers({ me, locked, onChanged, navigate }) {
+/* ------------------------- Khách hàng ------------------------- */
+function Customers({ onOpen, locked }) {
   const modal = useModal()
   const [rows, setRows] = useState([])
   const [q, setQ] = useState('')
   const [err, setErr] = useState('')
+  const [creating, setCreating] = useState(false)
+  const [form, setForm] = useState({ name: '', phone: '', email: '', username: '', password: '' })
   const [busy, setBusy] = useState(false)
-  const [form, setForm] = useState({ username: '', password: '', name: '', phone: '', email: '' })
-  const [expandedId, setExpandedId] = useState('')
-
-  // Order modal state
-  const [orderModalCustomer, setOrderModalCustomer] = useState(null)
-  const [orderProduct, setOrderProduct] = useState('single')
-  const [newOrder, setNewOrder] = useState(null)
-  const [orderBusy, setOrderBusy] = useState(false)
 
   const load = useCallback(() => {
     api.ctv.listCustomers({ search: q, limit: 100 })
       .then((r) => setRows((r.data?.data || r.data).items || []))
       .catch((e) => setErr(e?.response?.data?.message || e.message))
   }, [q])
+  useEffect(() => { load() }, [load])
 
-  useEffect(() => {
-    load()
-  }, [load])
-
-  const createCustomer = async () => {
-    if (!form.username || !form.password) {
-      await modal.alert({ title: 'Thiếu thông tin', message: 'Vui lòng nhập tên đăng nhập và mật khẩu cho khách.' })
-      return
-    }
+  const create = async () => {
     setBusy(true)
     try {
       const r = await api.ctv.createCustomer(form)
       const c = r.data?.data || r.data
-      setForm({ username: '', password: '', name: '', phone: '', email: '' })
+      setCreating(false)
+      setForm({ name: '', phone: '', email: '', username: '', password: '' })
       load()
-      onChanged?.()
       await modal.alert({
-        tone: 'success',
-        title: 'Đã tạo tài khoản khách thành công',
-        message: `Thông tin bàn giao cho khách:\n\n• Tên đăng nhập: ${c.username}\n• Mật khẩu: ${c.password}\n\nTrạng thái: "Chờ kích hoạt". Hãy bấm "Tạo đơn & QR" để gửi mã thanh toán cho khách hoặc "Quản lý thiệp" để tạo mẫu thiệp trước cho khách.`,
+        tone: 'success', title: 'Đã tạo tài khoản khách',
+        message: `Bàn giao cho khách:\n\nĐăng nhập: ${c.username}\nMật khẩu: ${c.password}\n\nKhách đang ở trạng thái "Chờ kích hoạt". Hãy tạo đơn & gửi mã thanh toán để kích hoạt.`,
       })
     } catch (e) {
       await modal.alert({ tone: 'danger', title: 'Lỗi', message: e?.response?.data?.message || e.message })
-    } finally {
-      setBusy(false)
-    }
-  }
-
-  const resetPassword = async (cust) => {
-    const v = window.prompt(`Nhập mật khẩu mới cho tài khoản "${cust.username}":`, '')
-    if (!v) return
-    try {
-      await api.ctv.resetCustomerPassword(cust.id, v)
-      await modal.alert({ tone: 'success', title: 'Thành công', message: `Đã đổi mật khẩu cho tài khoản "${cust.username}".` })
-      load()
-    } catch (e) {
-      await modal.alert({ tone: 'danger', title: 'Lỗi', message: e?.response?.data?.message || e.message })
-    }
-  }
-
-  const editInfo = async (cust) => {
-    const newName = window.prompt('Họ và tên khách hàng:', cust.name || '')
-    if (newName === null) return
-    const newPhone = window.prompt('Số điện thoại khách hàng:', cust.phone || '')
-    if (newPhone === null) return
-    const newEmail = window.prompt('Email khách hàng:', cust.email || '')
-    if (newEmail === null) return
-    try {
-      await api.ctv.updateCustomer(cust.id, { name: newName, phone: newPhone, email: newEmail })
-      load()
-    } catch (e) {
-      await modal.alert({ tone: 'danger', title: 'Lỗi', message: e?.response?.data?.message || e.message })
-    }
-  }
-
-  const openOrderModal = (cust) => {
-    setOrderModalCustomer(cust)
-    setOrderProduct('single')
-    setNewOrder(null)
-  }
-
-  const submitOrder = async () => {
-    if (!orderModalCustomer) return
-    setOrderBusy(true)
-    try {
-      const r = await api.ctv.createOrder(orderModalCustomer.id, orderProduct)
-      setNewOrder(r.data?.data || r.data)
-      load()
-      onChanged?.()
-    } catch (e) {
-      await modal.alert({ tone: 'danger', title: 'Không tạo được đơn', message: e?.response?.data?.message || e.message })
-    } finally {
-      setOrderBusy(false)
-    }
-  }
-
-  const copy = (txt) => {
-    navigator.clipboard?.writeText(txt)
-    alert('Đã sao chép vào bộ nhớ tạm!')
+    } finally { setBusy(false) }
   }
 
   return (
-    <div>
-      {/* Box tạo tài khoản khách */}
-      <div style={S.createBox}>
-        <div style={S.createTitle}>
-          <IconPlus size={16} color="#d97757" />
-          <span>Cấp Mới Tài Khoản Khách Hàng</span>
+    <>
+      <div style={S.toolbar}>
+        <div style={S.searchBox}>
+          <IconSearch size={15} color="#9a8f88" />
+          <input style={S.searchInput} placeholder="Tìm theo tên / SĐT / email"
+            value={q} onChange={(e) => setQ(e.target.value)} />
         </div>
-        <div style={S.createRow}>
-          <input
-            style={S.input}
-            placeholder="Tên đăng nhập (username) *"
-            value={form.username}
-            onChange={(e) => setForm({ ...form, username: e.target.value })}
-          />
-          <input
-            style={S.input}
-            placeholder="Mật khẩu *"
-            value={form.password}
-            onChange={(e) => setForm({ ...form, password: e.target.value })}
-          />
-          <input
-            style={S.input}
-            placeholder="Họ tên khách"
-            value={form.name}
-            onChange={(e) => setForm({ ...form, name: e.target.value })}
-          />
-          <input
-            style={S.input}
-            placeholder="Số điện thoại"
-            value={form.phone}
-            onChange={(e) => setForm({ ...form, phone: e.target.value })}
-          />
-          <input
-            style={S.input}
-            placeholder="Email"
-            value={form.email}
-            onChange={(e) => setForm({ ...form, email: e.target.value })}
-          />
-          <button style={S.btnMain} onClick={createCustomer} disabled={busy || locked}>
-            <IconPlus size={14} />
-            <span>{busy ? 'Đang tạo...' : 'Tạo Tài Khoản Khách'}</span>
-          </button>
-        </div>
+        <button style={S.btnMain} disabled={locked} onClick={() => setCreating((v) => !v)}>
+          <IconPlus size={14} /> Tạo khách
+        </button>
       </div>
 
-      {/* Tìm kiếm */}
-      <div style={{ position: 'relative', width: 320, margin: '6px 0 14px' }}>
-        <input
-          style={{ ...S.input, width: '100%', paddingLeft: 36 }}
-          placeholder="Tìm theo username, tên hoặc SĐT..."
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-        />
-        <span style={{ position: 'absolute', left: 11, top: '50%', transform: 'translateY(-50%)', color: '#9e918a', display: 'flex' }}>
-          <IconSearch size={15} />
-        </span>
-      </div>
-
-      {err && <div style={S.err}>⚠️ {err}</div>}
-
-      {/* Bảng khách hàng */}
-      <div style={S.tableWrap}>
-        <table style={S.table}>
-          <thead>
-            <tr>
-              <th style={S.th}>Tên Đăng Nhập &amp; Họ Tên</th>
-              <th style={S.th}>Liên Hệ</th>
-              <th style={S.th}>Lượt Tạo Thiệp</th>
-              <th style={S.th}>Trạng Thái</th>
-              <th style={{ ...S.th, textAlign: 'right' }}>Thao Tác</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((c) => (
-              <React.Fragment key={c.id}>
-                <tr>
-                  <td style={S.td}>
-                    <strong>{c.username}</strong>
-                    {c.name && <div style={{ fontSize: 12, color: '#6e625c' }}>{c.name}</div>}
-                  </td>
-                  <td style={S.td}>
-                    <div>{c.phone || '—'}</div>
-                    <div style={{ fontSize: 11.5, color: '#9e918a' }}>{c.email || 'Chưa có email'}</div>
-                  </td>
-                  <td style={S.td}>
-                    <strong style={{ color: '#d97757', fontSize: 14 }}>{c.cards_available ?? 0}</strong> lượt khả dụng
-                    <div style={{ fontSize: 11.5, color: '#9e918a' }}>
-                      (Đã mua: {c.cards_purchased} · Đã dùng: {c.cards_used})
-                    </div>
-                  </td>
-                  <td style={S.td}>
-                    <Badge s={c.status} />
-                  </td>
-                  <td style={S.td}>
-                    <div style={{ ...S.acts, justifyContent: 'flex-end' }}>
-                      <button
-                        style={{ ...S.mini, ...(expandedId === c.id ? S.miniActive : {}) }}
-                        onClick={() => setExpandedId((v) => (v === c.id ? '' : c.id))}
-                      >
-                        <IconMail size={12} /> {expandedId === c.id ? 'Đóng thiệp' : 'Quản lý thiệp'}
-                      </button>
-                      <button style={S.mini} onClick={() => openOrderModal(c)}>
-                        <IconQrCode size={12} /> Tạo đơn &amp; QR
-                      </button>
-                      <button style={S.mini} onClick={() => resetPassword(c)}>
-                        <IconKey size={12} /> Mật khẩu
-                      </button>
-                      <button style={S.mini} onClick={() => editInfo(c)}>
-                        <IconEdit3 size={12} /> Sửa
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-
-                {/* Panel mở rộng quản lý thiệp & tạo thiệp hộ khách */}
-                {expandedId === c.id && (
-                  <tr>
-                    <td colSpan={5} style={{ ...S.td, background: '#faf6f0', padding: 0 }}>
-                      <CustomerCardManager
-                        customer={c}
-                        navigate={navigate}
-                        modal={modal}
-                        locked={locked}
-                        onChanged={load}
-                      />
-                    </td>
-                  </tr>
-                )}
-              </React.Fragment>
-            ))}
-            {!rows.length && (
-              <tr>
-                <td colSpan={5} style={S.empty}>Chưa có tài khoản khách nào.</td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Modal Tạo đơn & QR thanh toán */}
-      {orderModalCustomer && (
-        <div style={S.modalOverlay}>
-          <div style={S.modalBox}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-              <h3 style={{ ...S.h3, margin: 0 }}>Tạo Đơn Thanh Toán Cho: {orderModalCustomer.username}</h3>
-              <button style={{ border: 'none', background: 'none', cursor: 'pointer' }} onClick={() => setOrderModalCustomer(null)}>
-                <IconX size={18} color="#6e625c" />
-              </button>
-            </div>
-
-            <div style={{ display: 'flex', gap: 16, marginBottom: 14 }}>
-              <label style={S.radio}>
-                <input
-                  type="radio"
-                  name="pm"
-                  checked={orderProduct === 'single'}
-                  onChange={() => setOrderProduct('single')}
-                />
-                1 thiệp lẻ ({money(me?.profile?.single_price)})
-              </label>
-              <label style={S.radio}>
-                <input
-                  type="radio"
-                  name="pm"
-                  checked={orderProduct === 'combo'}
-                  onChange={() => setOrderProduct('combo')}
-                />
-                Combo 2 thiệp ({money(me?.profile?.combo_price)})
-              </label>
-            </div>
-
-            <button
-              style={{ ...S.btnMain, width: '100%', justifyContent: 'center' }}
-              onClick={submitOrder}
-              disabled={orderBusy || locked}
-            >
-              <IconQrCode size={14} />
-              <span>{orderBusy ? 'Đang tạo đơn...' : 'Tạo Đơn & Lấy Mã QR'}</span>
-            </button>
-
-            {newOrder && (
-              <div style={{ ...S.qrCard, marginTop: 16 }}>
-                <img
-                  alt="QR Thanh Toán"
-                  width={180}
-                  height={180}
-                  style={S.qr}
-                  src={`https://api.qrserver.com/v1/create-qr-code/?size=220x220&margin=0&data=${encodeURIComponent(newOrder.checkout?.qr || newOrder.checkout?.checkoutUrl || '')}`}
-                />
-                <div style={{ flex: 1, minWidth: 200 }}>
-                  <div style={S.tiny}>Số tiền cần thanh toán</div>
-                  <div style={{ fontSize: 22, fontWeight: 700, color: '#c96547' }}>
-                    {money(newOrder.order?.amount)}
-                  </div>
-                  <div style={{ display: 'flex', gap: 8, marginTop: 10, flexWrap: 'wrap' }}>
-                    <a style={S.mini} href={newOrder.checkout?.checkoutUrl} target="_blank" rel="noreferrer">
-                      <IconExternalLink size={12} /> Mở cổng payOS
-                    </a>
-                    <button style={S.mini} onClick={() => copy(payUrl(newOrder.pay_page_url))}>
-                      <IconCopy size={12} /> Copy link cho khách
-                    </button>
-                  </div>
-                  <p style={{ ...S.tiny, marginTop: 8, wordBreak: 'break-all' }}>
-                    Link thanh toán: {payUrl(newOrder.pay_page_url)}
-                  </p>
-                </div>
-              </div>
-            )}
+      {creating && (
+        <div style={S.panel}>
+          <div style={S.formGrid}>
+            <Field label="Tên khách"><input style={S.input} value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></Field>
+            <Field label="Số điện thoại"><input style={S.input} value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} /></Field>
+            <Field label="Email"><input style={S.input} value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} /></Field>
+            <Field label="Tên đăng nhập *"><input style={S.input} value={form.username} onChange={(e) => setForm({ ...form, username: e.target.value })} /></Field>
+            <Field label="Mật khẩu * (≥ 6 ký tự)"><input style={S.input} value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} /></Field>
+          </div>
+          <div style={{ display: 'flex', gap: 8, marginTop: 10 }}>
+            <button style={S.btnMain} onClick={create} disabled={busy || !form.username || !form.password}>Tạo</button>
+            <button style={S.btnGhost} onClick={() => setCreating(false)}>Huỷ</button>
           </div>
         </div>
       )}
-    </div>
-  )
-}
-
-/* -------------------------------------------------------------------------
-   Panel quản lý thiệp & tạo thiệp hộ cho 1 khách hàng cụ thể
-   ------------------------------------------------------------------------- */
-function CustomerCardManager({ customer, navigate, modal, locked, onChanged }) {
-  const [cards, setCards] = useState(null)
-  const [templates, setTemplates] = useState([])
-  const [tplId, setTplId] = useState('')
-  const [busy, setBusy] = useState(false)
-  const [err, setErr] = useState('')
-
-  const load = useCallback(() => {
-    api.ctv.customerCards(customer.id)
-      .then((r) => setCards(r.data?.data || r.data))
-      .catch((e) => setErr(e?.response?.data?.message || e.message))
-  }, [customer.id])
-
-  useEffect(() => {
-    load()
-    api.getTemplates()
-      .then((r) => {
-        const list = (r.data?.data?.items || r.data?.data || r.data || []).filter(Boolean)
-        setTemplates(list)
-        if (list[0]) setTplId(list[0].id)
-      })
-      .catch(() => {})
-  }, [load])
-
-  const createInvitation = async () => {
-    if (!tplId) return
-    setBusy(true)
-    try {
-      const r = await api.ctv.createCustomerInvitation(customer.id, tplId)
-      const inv = r.data?.data || r.data
-      await modal.alert({
-        tone: 'success',
-        title: 'Đã tạo thiệp cho khách',
-        message: `Đã tạo thiệp thành công cho khách "${customer.username}".\nHệ thống sẽ mở trình chỉnh sửa thiệp ngay bây giờ.`,
-      })
-      navigate(`/editor/${inv.id}`)
-      load()
-      onChanged?.()
-    } catch (e) {
-      await modal.alert({ tone: 'danger', title: 'Lỗi tạo thiệp', message: e?.response?.data?.message || e.message })
-    } finally {
-      setBusy(false)
-    }
-  }
-
-  const copy = (txt) => {
-    navigator.clipboard?.writeText(txt)
-    alert('Đã copy đường dẫn thiệp!')
-  }
-
-  return (
-    <div style={{ padding: '16px 20px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10, marginBottom: 12 }}>
-        <div>
-          <div style={{ fontSize: 14, fontWeight: 700, color: '#1f1917' }}>
-            Thiệp cưới của khách: {customer.username} ({customer.name || 'Khách hàng'})
-          </div>
-          <div style={{ fontSize: 12, color: '#6e625c', marginTop: 2 }}>
-            Lượt khả dụng: <strong>{customer.cards_available ?? 0}</strong> lượt | Bạn có thể chọn mẫu và tạo thiệp hộ khách để bắt đầu chỉnh sửa.
-          </div>
-        </div>
-      </div>
-
-      {err && <div style={S.err}>⚠️ {err}</div>}
-
-      {/* Tạo thiệp hộ khách */}
-      <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap', marginBottom: 16, background: '#fff', padding: '10px 14px', borderRadius: 10, border: '1px solid #ede5db' }}>
-        <span style={{ fontSize: 13, fontWeight: 600, color: '#5c524c' }}>Chọn mẫu thiệp:</span>
-        <select
-          style={{ ...S.input, width: 'auto', minWidth: 220 }}
-          value={tplId}
-          onChange={(e) => setTplId(e.target.value)}
-        >
-          {templates.map((t) => (
-            <option key={t.id} value={t.id}>
-              {t.template_name || t.template_code}
-            </option>
-          ))}
-        </select>
-        <button style={S.btnMain} onClick={createInvitation} disabled={busy || locked || !tplId}>
-          <IconPlus size={14} />
-          <span>{busy ? 'Đang tạo...' : 'Tạo Thiệp Hộ Khách & Mở Trình Sửa'}</span>
-        </button>
-      </div>
-
-      {/* Danh sách thiệp */}
-      <div style={S.tableWrap}>
-        <table style={{ ...S.table, background: '#fff', borderRadius: 10, overflow: 'hidden', border: '1px solid #ede5db' }}>
-          <thead>
-            <tr>
-              <th style={S.th}>Tiêu Đề Thiệp</th>
-              <th style={S.th}>Cô Dâu &amp; Chú Rể</th>
-              <th style={S.th}>Đường Dẫn (Slug)</th>
-              <th style={{ ...S.th, textAlign: 'right' }}>Thao Tác</th>
-            </tr>
-          </thead>
-          <tbody>
-            {(cards?.invitations || []).map((i) => (
-              <tr key={i.id}>
-                <td style={S.td}>
-                  <strong>{i.title_vi || 'Thiệp cưới'}</strong>
-                </td>
-                <td style={S.td}>
-                  {i.groom || 'Chú rể'} &amp; {i.bride || 'Cô dâu'}
-                </td>
-                <td style={S.td}>
-                  <code style={S.code}>{i.slug}</code>
-                </td>
-                <td style={S.td}>
-                  <div style={{ ...S.acts, justifyContent: 'flex-end' }}>
-                    <button style={S.mini} onClick={() => navigate(`/editor/${i.id}`)}>
-                      <IconEdit3 size={12} /> Sửa thiệp
-                    </button>
-                    <a
-                      style={S.mini}
-                      href={`/${i.slug}`}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      <IconEye size={12} /> Xem thiệp
-                    </a>
-                    <button style={S.mini} onClick={() => copy(`${window.location.origin}/${i.slug}`)}>
-                      <IconCopy size={12} /> Copy link
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-            {(!cards?.invitations || !cards.invitations.length) && (
-              <tr>
-                <td colSpan={4} style={S.empty}>Khách hàng này chưa có thiệp nào. Hãy chọn mẫu ở trên để tạo thiệp ngay!</td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  )
-}
-
-/* =========================================================================
-   3. INVITATIONS TAB (Quản Lý Thiệp Toàn Bộ Khách Hàng)
-   ========================================================================= */
-function InvitationsTab({ me, navigate, onOpenCustomers }) {
-  const [rows, setRows] = useState([])
-  const [search, setSearch] = useState('')
-  const [err, setErr] = useState('')
-  const [busy, setBusy] = useState(false)
-
-  const load = useCallback(() => {
-    setBusy(true)
-    api.ctv.listInvitations({ search, limit: 100 })
-      .then((r) => setRows((r.data?.data || r.data).items || []))
-      .catch((e) => setErr(e?.response?.data?.message || e.message))
-      .finally(() => setBusy(false))
-  }, [search])
-
-  useEffect(() => {
-    load()
-  }, [load])
-
-  const copy = (txt) => {
-    navigator.clipboard?.writeText(txt)
-    alert('Đã copy đường dẫn thiệp!')
-  }
-
-  return (
-    <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10, marginBottom: 14 }}>
-        <div style={{ position: 'relative', width: 320 }}>
-          <input
-            style={{ ...S.input, width: '100%', paddingLeft: 36 }}
-            placeholder="Tìm theo tiêu đề, slug..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-          <span style={{ position: 'absolute', left: 11, top: '50%', transform: 'translateY(-50%)', color: '#9e918a', display: 'flex' }}>
-            <IconSearch size={15} />
-          </span>
-        </div>
-        <button style={S.btnMain} onClick={onOpenCustomers}>
-          <IconPlus size={14} />
-          <span>Tạo Thiệp Hộ Khách</span>
-        </button>
-      </div>
 
       {err && <div style={S.err}>⚠️ {err}</div>}
 
       <div style={S.tableWrap}>
         <table style={S.table}>
-          <thead>
-            <tr>
-              <th style={S.th}>Tiêu Đề Thiệp</th>
-              <th style={S.th}>Đường Dẫn (Slug)</th>
-              <th style={S.th}>Khách Hàng</th>
-              <th style={S.th}>Mẫu Thiệp</th>
-              <th style={S.th}>Trạng Thái</th>
-              <th style={{ ...S.th, textAlign: 'right' }}>Thao Tác</th>
-            </tr>
-          </thead>
+          <thead><tr>
+            <Th>Tên</Th><Th>SĐT</Th><Th>Trạng thái</Th><Th>Thiệp (còn/đã mua)</Th><Th>Tổng đã trả</Th><Th></Th>
+          </tr></thead>
           <tbody>
-            {rows.map((r) => (
-              <tr key={r.id}>
-                <td style={S.td}>
-                  <strong>{r.title_vi || 'Thiệp cưới'}</strong>
-                  <div style={{ fontSize: 11.5, color: '#6e625c' }}>
-                    {r.groom?.name_groom || 'Chú rể'} &amp; {r.bride?.name_bride || 'Cô dâu'}
-                  </div>
-                </td>
-                <td style={S.td}>
-                  <code style={S.code}>{r.invitation_slug}</code>
-                </td>
-                <td style={S.td}>
-                  <strong>{r.customer?.username || r.user?.username || '—'}</strong>
-                  {r.customer?.name && <div style={{ fontSize: 11.5, color: '#6e625c' }}>{r.customer.name}</div>}
-                </td>
-                <td style={S.td}>
-                  {r.template?.template_name || r.template?.template_code || '—'}
-                </td>
-                <td style={S.td}>
-                  {r.lock_state?.locked ? (
-                    <span style={S.pillLock}><IconLock size={12} /> Khoá sửa</span>
-                  ) : (
-                    <span style={S.pillOk}><IconCheckCircle size={12} /> Đang mở</span>
-                  )}
-                </td>
-                <td style={S.td}>
-                  <div style={{ ...S.acts, justifyContent: 'flex-end' }}>
-                    <button style={S.mini} onClick={() => navigate(`/editor/${r.id}`)}>
-                      <IconEdit3 size={12} /> Sửa thiệp
-                    </button>
-                    <a
-                      style={S.mini}
-                      href={`/${r.invitation_slug}`}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      <IconEye size={12} /> Xem
-                    </a>
-                    <button style={S.mini} onClick={() => copy(`${window.location.origin}/${r.invitation_slug}`)}>
-                      <IconCopy size={12} /> Copy link
-                    </button>
-                  </div>
-                </td>
+            {rows.map((c) => (
+              <tr key={c.id} style={S.tr}>
+                <Td><b>{c.name || c.username}</b><div style={S.tiny}>{c.username}</div></Td>
+                <Td>{c.phone || '—'}</Td>
+                <Td><Badge s={c.status} /></Td>
+                <Td>{c.cards_available} / {c.cards_purchased} <span style={S.tiny}>(đã dùng {c.cards_used})</span></Td>
+                <Td>{money(c.total_paid)}</Td>
+                <Td><button style={S.mini} onClick={() => onOpen(c.id)}>Chi tiết</button></Td>
               </tr>
             ))}
-            {!rows.length && !busy && (
-              <tr>
-                <td colSpan={6} style={S.empty}>Chưa có thiệp nào thuộc quyền quản lý của bạn.</td>
-              </tr>
-            )}
+            {!rows.length && <tr><td colSpan={6} style={S.empty}>Chưa có khách hàng nào.</td></tr>}
           </tbody>
         </table>
       </div>
-    </div>
+    </>
   )
 }
 
-/* =========================================================================
-   4. TEMPLATES TAB (Kho Mẫu Thiệp)
-   ========================================================================= */
-function TemplatesTab({ me, navigate, onOpenCustomers }) {
-  const [templates, setTemplates] = useState([])
-  const [loading, setLoading] = useState(true)
+/* --------------------- Chi tiết khách --------------------- */
+function CustomerDetail({ id, onBack, me, onChanged }) {
+  const modal = useModal()
+  const navigate = useNavigate()
+  const [d, setD] = useState(null)
+  const [cards, setCards] = useState(null)
+  const [err, setErr] = useState('')
+  const [product, setProduct] = useState('single')
+  const [newOrder, setNewOrder] = useState(null)
+  const [busy, setBusy] = useState(false)
+  const locked = me?.profile?.status === 'locked'
 
-  useEffect(() => {
-    api.getTemplates()
-      .then((r) => {
-        const list = (r.data?.data?.items || r.data?.data || r.data || []).filter(Boolean)
-        setTemplates(list)
-      })
-      .catch(() => {})
-      .finally(() => setLoading(false))
-  }, [])
+  const load = useCallback(() => {
+    api.ctv.getCustomer(id).then((r) => setD(r.data?.data || r.data)).catch((e) => setErr(e?.response?.data?.message || e.message))
+    api.ctv.customerCards(id).then((r) => setCards(r.data?.data || r.data)).catch(() => {})
+  }, [id])
+  useEffect(() => { load() }, [load])
+
+  const priceOf = (p) => (p === 'combo' ? me?.profile?.combo_price : me?.profile?.single_price)
+  const rate = Number(me?.profile?.commission_rate || 0)
+  const preview = useMemo(() => {
+    const sell = Number(priceOf(product) || 0)
+    const commission = Math.round(sell * rate)
+    return { sell, commission, earn: sell - commission }
+  }, [product, me])
+
+  const createOrder = async () => {
+    setBusy(true)
+    try {
+      const r = await api.ctv.createOrder(id, product)
+      setNewOrder(r.data?.data || r.data)
+      load(); onChanged?.()
+    } catch (e) {
+      await modal.alert({ tone: 'danger', title: 'Không tạo được đơn', message: e?.response?.data?.message || e.message })
+    } finally { setBusy(false) }
+  }
+
+  const copy = (txt) => { navigator.clipboard?.writeText(txt); }
+
+  if (err) return <><button style={S.btnGhost} onClick={onBack}><IconChevronLeft size={14} /> Quay lại</button><div style={S.err}>⚠️ {err}</div></>
+  if (!d) return <p style={S.muted}>Đang tải…</p>
+  const c = d.customer
 
   return (
-    <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
-        <div>
-          <h3 style={{ ...S.h3, margin: 0 }}>Kho Mẫu Thiệp Cưới Chuẩn Mobile 9:16</h3>
-          <p style={{ ...S.tiny, marginTop: 4 }}>Duyệt các mẫu thiệp có sẵn để tư vấn cho khách hàng hoặc bấm tạo thiệp ngay.</p>
+    <>
+      <button style={S.btnGhost} onClick={onBack}><IconChevronLeft size={14} /> Danh sách khách</button>
+
+      <div style={S.panel}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10 }}>
+          <div>
+            <h3 style={S.h3}>{c.name || c.username}</h3>
+            <div style={S.tiny}>{c.username} · {c.phone || 'chưa có SĐT'} · {c.email || 'chưa có email'}</div>
+          </div>
+          <Badge s={c.status} big />
         </div>
-        <button style={S.btnMain} onClick={onOpenCustomers}>
-          <IconPlus size={14} />
-          <span>Tạo Thiệp Cho Khách</span>
-        </button>
+        <div style={{ ...S.walletRow, marginTop: 12 }}>
+          <WBlock label="Đã mua (Purchased)" val={c.cards_purchased} />
+          <WBlock label="Đã dùng (Used)" val={c.cards_used} />
+          <WBlock label="Còn lại (Available)" val={c.cards_available} strong />
+        </div>
       </div>
 
-      {loading && <p style={S.muted}>Đang tải kho mẫu...</p>}
+      {/* Tạo đơn mới */}
+      <div style={S.panel}>
+        <h3 style={S.h3}>Tạo đơn mới</h3>
+        <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', alignItems: 'center' }}>
+          <label style={S.radio}>
+            <input type="radio" name="p" checked={product === 'single'} onChange={() => setProduct('single')} /> 1 thiệp — {money(priceOf('single'))}
+          </label>
+          <label style={S.radio}>
+            <input type="radio" name="p" checked={product === 'combo'} onChange={() => setProduct('combo')} /> Combo 2 thiệp — {money(priceOf('combo'))}
+          </label>
+        </div>
+        <div style={{ ...S.walletRow, marginTop: 10 }}>
+          <WBlock label="Khách phải trả" val={money(preview.sell)} strong />
+          <WBlock label="Hoa hồng nền tảng" val={money(preview.commission)} />
+          <WBlock label="CTV nhận" val={money(preview.earn)} />
+        </div>
+        <p style={S.tiny}>Giá &amp; hoa hồng do hệ thống chốt tại thời điểm tạo đơn (số trên chỉ để xem trước).</p>
+        <button style={S.btnMain} disabled={busy || locked} onClick={createOrder}>
+          <IconQrCode size={14} /> Tạo đơn &amp; mã thanh toán
+        </button>
 
-      <div style={S.templateGrid}>
-        {templates.map((tpl) => (
-          <div key={tpl.id} style={S.templateCard}>
-            <div style={S.templatePreviewBox}>
-              {tpl.thumbnail_url ? (
-                <img src={tpl.thumbnail_url} alt={tpl.template_name} style={S.templateThumb} />
-              ) : (
-                <div style={S.templateThumbPlaceholder}>
-                  <IconPalette size={32} color="#c9a96e" />
-                </div>
-              )}
-            </div>
-            <div style={{ padding: 14 }}>
-              <div style={{ fontSize: 14, fontWeight: 700, color: '#1f1917', marginBottom: 4 }}>
-                {tpl.template_name || tpl.template_code}
+        {newOrder && (
+          <div style={S.qrCard}>
+            <img alt="QR" width={180} height={180} style={S.qr}
+              src={`https://api.qrserver.com/v1/create-qr-code/?size=220x220&margin=0&data=${encodeURIComponent(newOrder.checkout?.qr || newOrder.checkout?.checkoutUrl || '')}`} />
+            <div style={{ flex: 1, minWidth: 200 }}>
+              <div style={S.tiny}>Số tiền</div>
+              <div style={{ fontSize: 20, fontWeight: 700, color: '#c96547' }}>{money(newOrder.order?.amount)}</div>
+              <div style={{ display: 'flex', gap: 8, marginTop: 10, flexWrap: 'wrap' }}>
+                <a style={S.mini} href={newOrder.checkout?.checkoutUrl} target="_blank" rel="noreferrer"><IconExternalLink size={12} /> Mở payOS</a>
+                <button style={S.mini} onClick={() => copy(payUrl(newOrder.pay_page_url))}><IconCopy size={12} /> Copy link cho khách</button>
               </div>
-              <div style={{ fontSize: 11.5, color: '#6e625c', marginBottom: 12 }}>
-                Thiết kế 9:16 tương thích mobile · Hộp nhạc &amp; RSVP
-              </div>
-              <div style={{ display: 'flex', gap: 6 }}>
-                <a
-                  style={{ ...S.mini, flex: 1, justifyContent: 'center' }}
-                  href={`/preview/${tpl.id}`}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  <IconEye size={12} /> Xem thử
-                </a>
-                <button
-                  style={{ ...S.btnMain, padding: '5px 12px', fontSize: 12 }}
-                  onClick={onOpenCustomers}
-                >
-                  Tạo cho khách
-                </button>
-              </div>
+              <p style={S.tiny}>{payUrl(newOrder.pay_page_url)}</p>
             </div>
           </div>
-        ))}
+        )}
       </div>
-    </div>
+
+      {/* Thiệp của khách */}
+      <div style={S.panel}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <h3 style={S.h3}>Thiệp của khách</h3>
+          {cards && <span style={S.tiny}>{cards.can_edit ? 'Có thể chỉnh sửa' : 'Chưa kích hoạt — không sửa được'}</span>}
+        </div>
+        {cards?.invitations?.length ? cards.invitations.map((i) => (
+          <div key={i.id} style={S.cardRow}>
+            <div><b>{i.title_vi || 'Thiệp cưới'}</b><div style={S.tiny}>{i.groom} &amp; {i.bride}</div></div>
+            <button style={S.mini} disabled={!cards.can_edit} onClick={() => navigate(`/editor/${i.id}`)}>
+              <IconEdit3 size={12} /> Sửa thiệp
+            </button>
+          </div>
+        )) : <p style={S.tiny}>Chưa có thiệp nào.</p>}
+      </div>
+
+      {/* Lịch sử đơn */}
+      <div style={S.panel}>
+        <h3 style={S.h3}>Lịch sử đơn</h3>
+        <div style={S.tableWrap}>
+          <table style={S.table}>
+            <thead><tr><Th>Sản phẩm</Th><Th>Số tiền</Th><Th>Trạng thái</Th><Th>Ngày</Th><Th></Th></tr></thead>
+            <tbody>
+              {d.orders.map((o) => (
+                <tr key={o.id} style={S.tr}>
+                  <Td>{o.product_code === 'combo' ? 'Combo 2 thiệp' : '1 thiệp'}</Td>
+                  <Td>{money(o.amount)}</Td>
+                  <Td><Badge s={o.status} /></Td>
+                  <Td>{new Date(o.created_at).toLocaleDateString('vi-VN')}</Td>
+                  <Td>{o.pay_page_url && o.status !== 'paid' && (
+                    <button style={S.mini} onClick={() => copy(payUrl(o.pay_page_url))}><IconCopy size={12} /> Link</button>
+                  )}</Td>
+                </tr>
+              ))}
+              {!d.orders.length && <tr><td colSpan={5} style={S.empty}>Chưa có đơn.</td></tr>}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </>
   )
 }
 
-/* =========================================================================
-   5. ORDERS TAB (Đơn Hàng)
-   ========================================================================= */
-function OrdersTab({ onOpenCustomer }) {
+/* ------------------------- Đơn hàng ------------------------- */
+function Orders({ onOpenCustomer }) {
   const [rows, setRows] = useState([])
   const [status, setStatus] = useState('')
   const [err, setErr] = useState('')
-
   useEffect(() => {
     api.ctv.listOrders({ status: status || undefined, limit: 100 })
       .then((r) => setRows((r.data?.data || r.data).items || []))
       .catch((e) => setErr(e?.response?.data?.message || e.message))
   }, [status])
-
-  const copy = (txt) => {
-    navigator.clipboard?.writeText(txt)
-    alert('Đã sao chép link thanh toán!')
-  }
-
   return (
-    <div>
+    <>
       <div style={S.toolbar}>
-        <select style={{ ...S.input, width: 'auto', minWidth: 180 }} value={status} onChange={(e) => setStatus(e.target.value)}>
+        <select style={S.input} value={status} onChange={(e) => setStatus(e.target.value)}>
           <option value="">Tất cả trạng thái</option>
-          <option value="pending">Chờ thanh toán</option>
-          <option value="paid">Đã thanh toán</option>
-          <option value="cancelled">Đã huỷ</option>
-          <option value="expired">Hết hạn</option>
+          {['pending', 'paid', 'cancelled', 'expired', 'refunded'].map((s) => <option key={s} value={s}>{STATUS_VI[s]}</option>)}
         </select>
       </div>
-
       {err && <div style={S.err}>⚠️ {err}</div>}
-
       <div style={S.tableWrap}>
         <table style={S.table}>
-          <thead>
-            <tr>
-              <th style={S.th}>Mã Đơn</th>
-              <th style={S.th}>Khách Hàng</th>
-              <th style={S.th}>Sản Phẩm</th>
-              <th style={S.th}>Số Tiền</th>
-              <th style={S.th}>Hoa Hồng CTV</th>
-              <th style={S.th}>Trạng Thái</th>
-              <th style={S.th}>Ngày Tạo</th>
-              <th style={{ ...S.th, textAlign: 'right' }}>Thao Tác</th>
-            </tr>
-          </thead>
+          <thead><tr><Th>Khách</Th><Th>Sản phẩm</Th><Th>Giá bán</Th><Th>HH nền tảng</Th><Th>CTV nhận</Th><Th>Trạng thái</Th><Th>Ngày</Th></tr></thead>
           <tbody>
             {rows.map((o) => (
-              <tr key={o.id}>
-                <td style={S.td}>
-                  <code style={S.code}>{String(o.id).slice(0, 8)}</code>
-                </td>
-                <td style={S.td}>
-                  <strong>{o.customer?.username || '—'}</strong>
-                  {o.customer?.name && <div style={{ fontSize: 11.5, color: '#6e625c' }}>{o.customer.name}</div>}
-                </td>
-                <td style={S.td}>
-                  {o.product_code === 'combo' ? 'Combo 2 thiệp' : '1 thiệp lẻ'}
-                </td>
-                <td style={S.td}>
-                  <strong>{money(o.amount)}</strong>
-                </td>
-                <td style={S.td}>
-                  <strong style={{ color: '#4f7e65' }}>{money(o.ctv_earning_amount)}</strong>
-                </td>
-                <td style={S.td}>
-                  <Badge s={o.status} />
-                </td>
-                <td style={S.td}>
-                  {new Date(o.created_at).toLocaleDateString('vi-VN')}
-                </td>
-                <td style={S.td}>
-                  <div style={{ ...S.acts, justifyContent: 'flex-end' }}>
-                    {o.pay_page_url && o.status !== 'paid' && (
-                      <button style={S.mini} onClick={() => copy(payUrl(o.pay_page_url))}>
-                        <IconCopy size={12} /> Link thanh toán
-                      </button>
-                    )}
-                  </div>
-                </td>
+              <tr key={o.id} style={S.tr}>
+                <Td><button style={S.linkBtn} onClick={() => o.customer_id && onOpenCustomer(o.customer_id)}>{o.customer?.name || '—'}</button></Td>
+                <Td>{o.product_code === 'combo' ? 'Combo' : '1 thiệp'}</Td>
+                <Td>{money(o.ctv_selling_price)}</Td>
+                <Td>{money(o.commission_amount)}</Td>
+                <Td><b>{money(o.ctv_earning_amount)}</b></Td>
+                <Td><Badge s={o.status} /></Td>
+                <Td>{new Date(o.created_at).toLocaleDateString('vi-VN')}</Td>
               </tr>
             ))}
-            {!rows.length && (
-              <tr>
-                <td colSpan={8} style={S.empty}>Không có đơn hàng nào.</td>
-              </tr>
-            )}
+            {!rows.length && <tr><td colSpan={7} style={S.empty}>Chưa có đơn nào.</td></tr>}
           </tbody>
         </table>
       </div>
-    </div>
+    </>
   )
 }
 
-/* =========================================================================
-   6. WALLET TAB (Ví & Rút Tiền)
-   ========================================================================= */
+/* ------------------------- Ví & Rút tiền ------------------------- */
 function WalletTab({ me, onChanged }) {
   const modal = useModal()
   const [w, setW] = useState(null)
-  const [col, setCol] = useState(null)
   const [payouts, setPayouts] = useState([])
   const [amount, setAmount] = useState('')
   const [note, setNote] = useState('')
   const [busy, setBusy] = useState(false)
   const [err, setErr] = useState('')
+  const locked = me?.profile?.status === 'locked'
 
   const load = useCallback(() => {
-    api.ctv.wallet().then((r) => setW(r.data?.data || r.data)).catch(() => {})
-    api.ctv.collections().then((r) => setCol(r.data?.data || r.data)).catch(() => {})
+    api.ctv.wallet({ limit: 50 }).then((r) => setW(r.data?.data || r.data)).catch((e) => setErr(e?.response?.data?.message || e.message))
     api.ctv.listPayouts({ limit: 50 }).then((r) => setPayouts((r.data?.data || r.data).items || [])).catch(() => {})
   }, [])
+  useEffect(() => { load() }, [load])
 
-  useEffect(() => {
-    load()
-  }, [load])
-
-  const requestPayout = async () => {
-    const num = Number(amount)
-    if (!num || num <= 0) {
-      await modal.alert({ title: 'Số tiền không hợp lệ', message: 'Vui lòng nhập số tiền lớn hơn 0.' })
-      return
-    }
-    const min = me?.payout_policy?.effective_min || 0
-    if (num < min) {
-      await modal.alert({ title: 'Dưới mức tối thiểu', message: `Số tiền rút tối thiểu là ${money(min)}.` })
-      return
-    }
+  const submit = async () => {
+    const v = Number(amount)
+    if (!v || v <= 0) return
     setBusy(true)
     try {
-      await api.ctv.createPayout(num, note)
-      await modal.alert({ tone: 'success', title: 'Đã gửi yêu cầu rút tiền', message: 'Yêu cầu của bạn đã được ghi nhận và đang chờ admin phê duyệt.' })
-      setAmount('')
-      setNote('')
-      load()
-      onChanged?.()
+      await api.ctv.createPayout(v, note)
+      setAmount(''); setNote(''); load(); onChanged?.()
+      await modal.alert({ tone: 'success', title: 'Đã gửi yêu cầu rút', message: 'Quản trị viên sẽ duyệt và chuyển khoản. Số tiền đã được tạm giữ khỏi số dư khả dụng.' })
     } catch (e) {
       await modal.alert({ tone: 'danger', title: 'Lỗi', message: e?.response?.data?.message || e.message })
-    } finally {
-      setBusy(false)
-    }
+    } finally { setBusy(false) }
   }
 
-  const cancelPayout = async (p) => {
-    const ok = await modal.confirm({
-      tone: 'danger',
-      title: 'Huỷ yêu cầu rút',
-      message: `Bạn có chắc muốn huỷ phiếu rút ${money(p.amount)}?`,
-    })
+  const cancel = async (id) => {
+    const ok = await modal.confirm({ tone: 'warn', title: 'Huỷ phiếu rút?', message: 'Số tiền sẽ được hoàn lại số dư khả dụng.' })
     if (!ok) return
-    try {
-      await api.ctv.cancelPayout(p.id)
-      load()
-      onChanged?.()
-    } catch (e) {
-      await modal.alert({ tone: 'danger', title: 'Lỗi', message: e?.response?.data?.message || e.message })
-    }
+    try { await api.ctv.cancelPayout(id); load(); onChanged?.() }
+    catch (e) { await modal.alert({ tone: 'danger', title: 'Lỗi', message: e?.response?.data?.message || e.message }) }
   }
+
+  if (err) return <div style={S.err}>⚠️ {err}</div>
+  if (!w) return <p style={S.muted}>Đang tải…</p>
+  const s = w.summary
 
   return (
-    <div>
+    <>
       <div style={S.walletBox}>
-        <h3 style={{ ...S.h3, margin: '0 0 14px' }}>Số Dư Ví CTV</h3>
         <div style={S.walletRow}>
-          <WBlock label="Số dư khả dụng" val={money(w?.wallet?.balance)} strong color="#c96547" />
-          <WBlock label="Đang chờ duyệt" val={money(w?.wallet?.pending_balance)} />
-          <WBlock label="Tổng hoa hồng đã nhận" val={money(w?.wallet?.total_earned)} />
-          <WBlock label="Tổng tiền đã chi trả" val={money(w?.wallet?.total_paid)} />
+          <WBlock label="Số dư khả dụng" val={money(s.balance)} strong />
+          <WBlock label="Đang chờ rút" val={money(s.pending_balance)} />
+          <WBlock label="Tổng đã nhận" val={money(s.total_earned)} />
+          <WBlock label="Đã được chi trả" val={money(s.total_paid)} />
         </div>
       </div>
 
-      {col && (
-        <div style={S.panel}>
-          <h3 style={S.h3}>Sổ Thu Hộ Nền Tảng</h3>
-          <div style={S.walletRow}>
-            <WBlock label="Tổng tiền khách đã thanh toán" val={money(col.total_collected)} />
-            <WBlock label="Số đơn đã hoàn tất" val={col.paid_orders_count || 0} />
-            <WBlock label="Hoa hồng được hưởng" val={money(col.total_commission)} color="#4f7e65" />
-          </div>
-        </div>
-      )}
-
-      {/* Tạo phiếu rút */}
       <div style={S.panel}>
-        <h3 style={S.h3}>Tạo Yêu Cầu Rút Tiền</h3>
-        <div style={{ ...S.formGrid, maxWidth: 600 }}>
-          <Field label={`Số tiền muốn rút (Tối thiểu ${money(me?.payout_policy?.effective_min || 0)})`}>
-            <input
-              style={S.input}
-              type="number"
-              placeholder="VD: 500000"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-            />
+        <h3 style={S.h3}>Tạo phiếu rút tiền</h3>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'flex-end' }}>
+          <Field label="Số tiền muốn rút (₫)">
+            <input style={S.input} type="number" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder={`Tối đa ${money(s.balance)}`} />
           </Field>
           <Field label="Ghi chú (tuỳ chọn)">
-            <input
-              style={S.input}
-              placeholder="Ghi chú kèm theo"
-              value={note}
-              onChange={(e) => setNote(e.target.value)}
-            />
+            <input style={S.input} value={note} onChange={(e) => setNote(e.target.value)} />
           </Field>
+          <button style={S.btnMain} disabled={busy || locked || !Number(amount)} onClick={submit}>Gửi yêu cầu</button>
+          <button style={S.btnGhost} onClick={() => setAmount(String(s.balance))}>Rút hết</button>
         </div>
-        <div style={{ marginTop: 14 }}>
-          <button style={S.btnMain} onClick={requestPayout} disabled={busy || me?.profile?.status === 'locked'}>
-            <IconCreditCard size={14} />
-            <span>{busy ? 'Đang gửi...' : 'Gửi Yêu Cầu Rút Tiền'}</span>
-          </button>
-        </div>
+        <p style={S.tiny}>Chỉ được có 1 phiếu chờ duyệt tại một thời điểm. Admin duyệt xong sẽ chuyển khoản theo thông tin ngân hàng ở tab Cấu Hình.</p>
       </div>
 
-      {/* Danh sách phiếu rút */}
       <div style={S.panel}>
-        <h3 style={S.h3}>Lịch Sử Phiếu Rút Tiền</h3>
+        <h3 style={S.h3}>Phiếu rút của bạn</h3>
         <div style={S.tableWrap}>
           <table style={S.table}>
-            <thead>
-              <tr>
-                <th style={S.th}>Số Tiền</th>
-                <th style={S.th}>Trạng Thái</th>
-                <th style={S.th}>Ghi Chú</th>
-                <th style={S.th}>Ngày Tạo</th>
-                <th style={{ ...S.th, textAlign: 'right' }}>Thao Tác</th>
-              </tr>
-            </thead>
+            <thead><tr><Th>Số tiền</Th><Th>Loại</Th><Th>Trạng thái</Th><Th>Ngày tạo</Th><Th>Mã CK</Th><Th></Th></tr></thead>
             <tbody>
               {payouts.map((p) => (
-                <tr key={p.id}>
-                  <td style={S.td}>
-                    <strong>{money(p.amount)}</strong>
-                  </td>
-                  <td style={S.td}>
-                    <Badge s={p.status} />
-                  </td>
-                  <td style={S.td}>{p.note || '—'}</td>
-                  <td style={S.td}>{new Date(p.created_at).toLocaleDateString('vi-VN')}</td>
-                  <td style={S.td}>
-                    <div style={{ ...S.acts, justifyContent: 'flex-end' }}>
-                      {p.status === 'pending' && (
-                        <button style={{ ...S.mini, color: '#c04938' }} onClick={() => cancelPayout(p)}>
-                          <IconX size={12} /> Huỷ phiếu
-                        </button>
-                      )}
-                    </div>
-                  </td>
+                <tr key={p.id} style={S.tr}>
+                  <Td><b>{money(p.amount)}</b></Td>
+                  <Td>{p.type === 'auto' ? 'Tự động' : 'Thủ công'}</Td>
+                  <Td><Badge s={p.status} /></Td>
+                  <Td>{new Date(p.created_at).toLocaleString('vi-VN')}</Td>
+                  <Td>{p.payment_reference || '—'}</Td>
+                  <Td>{p.status === 'pending' && <button style={S.mini} onClick={() => cancel(p.id)}>Huỷ</button>}</Td>
                 </tr>
               ))}
-              {!payouts.length && (
-                <tr>
-                  <td colSpan={5} style={S.empty}>Chưa có phiếu rút tiền nào.</td>
-                </tr>
-              )}
+              {!payouts.length && <tr><td colSpan={6} style={S.empty}>Chưa có phiếu rút.</td></tr>}
             </tbody>
           </table>
         </div>
       </div>
-    </div>
+
+      <div style={S.panel}>
+        <h3 style={S.h3}>Sổ cái ví (gần đây)</h3>
+        <div style={S.tableWrap}>
+          <table style={S.table}>
+            <thead><tr><Th>Thời gian</Th><Th>Loại</Th><Th>Biến động</Th><Th>Số dư sau</Th><Th>Ghi chú</Th></tr></thead>
+            <tbody>
+              {(w.ledger?.items || []).map((t) => (
+                <tr key={t.id} style={S.tr}>
+                  <Td>{new Date(t.created_at).toLocaleString('vi-VN')}</Td>
+                  <Td>{LEDGER_VI[t.type] || t.type}</Td>
+                  <Td style={{ color: Number(t.amount) < 0 ? '#c04938' : '#4f7e65', fontWeight: 600 }}>
+                    {Number(t.amount) > 0 ? '+' : ''}{money(t.amount)}
+                  </Td>
+                  <Td>{money(t.balance_after)}</Td>
+                  <Td style={S.tiny}>{t.note}</Td>
+                </tr>
+              ))}
+              {!(w.ledger?.items || []).length && <tr><td colSpan={5} style={S.empty}>Chưa có giao dịch.</td></tr>}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </>
   )
 }
+const LEDGER_VI = {
+  commission_credit: 'Hoa hồng', refund_debit: 'Đảo hoàn tiền',
+  payout_hold: 'Giữ tiền rút', payout_release: 'Nhả tiền rút', adjustment: 'Điều chỉnh',
+}
 
-/* =========================================================================
-   7. SETTINGS TAB (Cấu Hình)
-   ========================================================================= */
+/* ------------------------- Cấu hình ------------------------- */
 function SettingsTab({ me, onSaved }) {
   const modal = useModal()
   const p = me?.profile || {}
   const [f, setF] = useState({
-    bank_name: p.bank_name || '',
-    bank_account_number: p.bank_account_number || '',
-    bank_account_name: p.bank_account_name || '',
-    auto_payout_enabled: Boolean(p.auto_payout_enabled),
-    auto_payout_weekday: p.auto_payout_weekday == null ? '' : p.auto_payout_weekday,
-    auto_payout_min_amount: p.auto_payout_min_amount || 200000,
+    auto_payout_enabled: !!p.auto_payout_enabled,
+    auto_payout_weekday: p.auto_payout_weekday ?? '',
+    auto_payout_min_amount: p.auto_payout_min_amount ?? 0,
+    bank_name: p.bank_name || '', bank_account_number: p.bank_account_number || '', bank_account_name: p.bank_account_name || '',
   })
   const [busy, setBusy] = useState(false)
+  useEffect(() => {
+    setF({
+      auto_payout_enabled: !!p.auto_payout_enabled,
+      auto_payout_weekday: p.auto_payout_weekday ?? '',
+      auto_payout_min_amount: p.auto_payout_min_amount ?? 0,
+      bank_name: p.bank_name || '', bank_account_number: p.bank_account_number || '', bank_account_name: p.bank_account_name || '',
+    })
+  }, [me])
 
   const save = async () => {
     setBusy(true)
     try {
       await api.ctv.updatePayoutSettings({
-        bank_name: f.bank_name,
-        bank_account_number: f.bank_account_number,
-        bank_account_name: f.bank_account_name,
-        auto_payout_enabled: f.auto_payout_enabled,
+        ...f,
         auto_payout_weekday: f.auto_payout_weekday === '' ? null : Number(f.auto_payout_weekday),
         auto_payout_min_amount: Number(f.auto_payout_min_amount) || 0,
       })
-      await modal.alert({ tone: 'success', title: 'Đã lưu', message: 'Thông tin cấu hình rút tiền đã được cập nhật thành công.' })
       onSaved?.()
+      await modal.alert({ tone: 'success', title: 'Đã lưu', message: 'Cấu hình rút tiền đã được cập nhật.' })
     } catch (e) {
       await modal.alert({ tone: 'danger', title: 'Lỗi', message: e?.response?.data?.message || e.message })
-    } finally {
-      setBusy(false)
-    }
+    } finally { setBusy(false) }
   }
 
   return (
-    <div>
+    <>
       <div style={S.panel}>
-        <h3 style={S.h3}>Chính Sách &amp; Bảng Giá CTV Của Bạn</h3>
+        <h3 style={S.h3}>Bảng giá &amp; hoa hồng (do quản trị viên quy định)</h3>
         <div style={S.walletRow}>
-          <WBlock label="Giá bán 1 thiệp" val={money(p.single_price)} />
-          <WBlock label="Giá bán Combo 2 thiệp" val={money(p.combo_price)} />
-          <WBlock label="Tỷ lệ hoa hồng CTV" val={pct(p.commission_rate)} color="#4f7e65" strong />
+          <WBlock label="Giá thiệp lẻ" val={money(p.single_price)} />
+          <WBlock label="Giá combo 2 thiệp" val={money(p.combo_price)} />
+          <WBlock label="Tỉ lệ hoa hồng" val={pct(p.commission_rate)} />
         </div>
-        <p style={{ ...S.tiny, marginTop: 10 }}>Bảng giá và tỷ lệ hoa hồng do quản trị viên thiết lập. Hãy liên hệ admin nếu cần điều chỉnh.</p>
+        <p style={S.tiny}>Bạn không thể tự đổi các giá trị này. Liên hệ quản trị viên nếu cần điều chỉnh.</p>
       </div>
 
       <div style={S.panel}>
-        <h3 style={S.h3}>Tài Khoản Ngân Hàng Nhận Tiền</h3>
+        <h3 style={S.h3}>Thông tin nhận tiền</h3>
         <div style={S.formGrid}>
-          <Field label="Tên ngân hàng">
-            <input style={S.input} placeholder="VD: Vietcombank, MB Bank..." value={f.bank_name} onChange={(e) => setF({ ...f, bank_name: e.target.value })} />
-          </Field>
-          <Field label="Số tài khoản">
-            <input style={S.input} placeholder="Số tài khoản ngân hàng" value={f.bank_account_number} onChange={(e) => setF({ ...f, bank_account_number: e.target.value })} />
-          </Field>
-          <Field label="Tên chủ tài khoản">
-            <input style={S.input} placeholder="NGUYEN VAN A" value={f.bank_account_name} onChange={(e) => setF({ ...f, bank_account_name: e.target.value })} />
-          </Field>
+          <Field label="Ngân hàng"><input style={S.input} value={f.bank_name} onChange={(e) => setF({ ...f, bank_name: e.target.value })} /></Field>
+          <Field label="Số tài khoản"><input style={S.input} value={f.bank_account_number} onChange={(e) => setF({ ...f, bank_account_number: e.target.value })} /></Field>
+          <Field label="Chủ tài khoản"><input style={S.input} value={f.bank_account_name} onChange={(e) => setF({ ...f, bank_account_name: e.target.value })} /></Field>
         </div>
       </div>
 
       <div style={S.panel}>
-        <h3 style={S.h3}>Cấu Hình Rút Tiền Tự Động</h3>
+        <h3 style={S.h3}>Rút tiền tự động</h3>
         <label style={S.radio}>
           <input type="checkbox" checked={f.auto_payout_enabled} onChange={(e) => setF({ ...f, auto_payout_enabled: e.target.checked })} />
-          <span>Bật tạo phiếu rút tiền tự động hằng tuần</span>
+          Bật tạo phiếu rút tự động hằng tuần
         </label>
-        <div style={{ ...S.formGrid, marginTop: 12 }}>
+        <div style={{ ...S.formGrid, marginTop: 10 }}>
           <Field label="Ngày trong tuần">
             <select style={S.input} value={f.auto_payout_weekday} onChange={(e) => setF({ ...f, auto_payout_weekday: e.target.value })}>
               <option value="">Theo mặc định hệ thống</option>
-              {WEEKDAYS.map((w, i) => (
-                <option key={i} value={i}>{w}</option>
-              ))}
+              {WEEKDAYS.map((w, i) => <option key={i} value={i}>{w}</option>)}
             </select>
           </Field>
           <Field label="Ngưỡng tối thiểu (₫)">
-            <input
-              style={S.input}
-              type="number"
-              value={f.auto_payout_min_amount}
-              onChange={(e) => setF({ ...f, auto_payout_min_amount: e.target.value })}
-            />
+            <input style={S.input} type="number" value={f.auto_payout_min_amount}
+              onChange={(e) => setF({ ...f, auto_payout_min_amount: e.target.value })} />
           </Field>
         </div>
-        <p style={{ ...S.tiny, marginTop: 10 }}>Hằng tuần vào ngày đã chọn, nếu số dư khả dụng ≥ ngưỡng tối thiểu, hệ thống sẽ tự động tạo phiếu rút tiền.</p>
+        <p style={S.tiny}>Đến ngày đã chọn, nếu số dư khả dụng ≥ ngưỡng, hệ thống tự tạo 1 phiếu rút bằng đúng số dư. Admin vẫn duyệt &amp; chuyển khoản thủ công.</p>
       </div>
 
-      <button style={S.btnMain} disabled={busy} onClick={save}>
-        <span>{busy ? 'Đang lưu...' : 'Lưu Cấu Hình'}</span>
-      </button>
-    </div>
+      <button style={S.btnMain} disabled={busy} onClick={save}>Lưu cấu hình</button>
+    </>
   )
 }
 
-/* =========================================================================
-   UI HELPERS & BADGES
-   ========================================================================= */
+/* ------------------------- UI helpers ------------------------- */
 const Field = ({ label, children }) => (
-  <label style={{ display: 'flex', flexDirection: 'column', gap: 5, flex: '1 1 200px' }}>
-    <span style={{ fontSize: 12.5, fontWeight: 600, color: '#5c524c' }}>{label}</span>
-    {children}
+  <label style={{ display: 'flex', flexDirection: 'column', gap: 4, flex: '1 1 180px' }}>
+    <span style={S.tiny}>{label}</span>{children}
   </label>
 )
-
-const Badge = ({ s }) => {
+const Th = ({ children }) => <th style={S.th}>{children}</th>
+const Td = ({ children, style }) => <td style={{ ...S.td, ...style }}>{children}</td>
+const Badge = ({ s, big }) => {
   const map = {
-    paid: ['#4f7e65', 'rgba(79,126,101,.12)'],
-    active: ['#4f7e65', 'rgba(79,126,101,.12)'],
+    paid: ['#4f7e65', 'rgba(79,126,101,.12)'], active: ['#4f7e65', 'rgba(79,126,101,.12)'],
     approved: ['#4f7e65', 'rgba(79,126,101,.12)'],
-    pending: ['#c9902f', 'rgba(201,144,47,.14)'],
-    pending_payment: ['#c9902f', 'rgba(201,144,47,.14)'],
+    pending: ['#c9902f', 'rgba(201,144,47,.14)'], pending_payment: ['#c9902f', 'rgba(201,144,47,.14)'],
     expired: ['#8a7f78', 'rgba(138,127,120,.14)'],
-    cancelled: ['#c04938', 'rgba(192,73,56,.1)'],
-    rejected: ['#c04938', 'rgba(192,73,56,.1)'],
-    refunded: ['#c04938', 'rgba(192,73,56,.1)'],
-    locked: ['#c04938', 'rgba(192,73,56,.1)'],
+    cancelled: ['#c04938', 'rgba(192,73,56,.1)'], rejected: ['#c04938', 'rgba(192,73,56,.1)'],
+    refunded: ['#c04938', 'rgba(192,73,56,.1)'], locked: ['#c04938', 'rgba(192,73,56,.1)'],
   }
   const [c, bg] = map[s] || ['#6e625c', '#f0eae2']
-  return (
-    <span style={{ color: c, background: bg, padding: '3px 9px', borderRadius: 999, fontSize: 11.5, fontWeight: 600 }}>
-      {STATUS_VI[s] || s}
-    </span>
-  )
+  return <span style={{ color: c, background: bg, padding: big ? '5px 12px' : '3px 9px', borderRadius: 999, fontSize: big ? 12.5 : 11.5, fontWeight: 600 }}>{STATUS_VI[s] || s}</span>
 }
 
-/* =========================================================================
-   STYLES (Clean, modern sans-serif admin system)
-   ========================================================================= */
 const S = {
-  page: {
-    minHeight: '100vh',
-    background: '#fcfaf7',
-    fontFamily: "'Plus Jakarta Sans', sans-serif",
-    color: '#1f1917',
-  },
-  header: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: '20px 36px',
-    borderBottom: '1px solid #ede5db',
-    background: '#fff',
-    boxShadow: '0 2px 8px rgba(31,25,23,0.03)',
-  },
-  logoBadge: {
-    width: 40,
-    height: 40,
-    borderRadius: 12,
-    background: 'linear-gradient(135deg, #d97757 0%, #c96547 100%)',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    color: '#fff',
-    boxShadow: '0 4px 12px rgba(217,119,87,0.3)',
-    flexShrink: 0,
-  },
-  brand: {
-    fontSize: 20,
-    fontWeight: 700,
-    color: '#1f1917',
-  },
-  sub: {
-    fontSize: 12,
-    color: '#6e625c',
-    marginTop: 2,
-  },
-  tabs: {
-    display: 'flex',
-    gap: 6,
-    padding: '0 36px',
-    borderBottom: '1px solid #ede5db',
-    background: '#fff',
-    overflowX: 'auto',
-  },
-  tab: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    gap: 8,
-    padding: '14px 18px',
-    border: 'none',
-    background: 'transparent',
-    cursor: 'pointer',
-    fontSize: 13.5,
-    fontWeight: 500,
-    color: '#6e625c',
-    borderBottom: '2.5px solid transparent',
-    transition: 'all 0.2s ease',
-    whiteSpace: 'nowrap',
-  },
-  tabOn: {
-    color: '#d97757',
-    borderBottomColor: '#d97757',
-    fontWeight: 600,
-  },
-  body: {
-    padding: '32px 36px 64px',
-    maxWidth: 1200,
-    margin: '0 auto',
-  },
-  center: {
-    minHeight: '100vh',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    textAlign: 'center',
-    fontFamily: "'Plus Jakarta Sans', sans-serif",
-    padding: 20,
-  },
-  centerCard: {
-    background: '#fff',
-    border: '1px solid #ede5db',
-    borderRadius: 20,
-    padding: '40px 32px',
-    boxShadow: '0 10px 30px rgba(31,25,23,0.06)',
-    maxWidth: 420,
-  },
-  lockedBar: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: 8,
-    background: 'rgba(192,73,56,.08)',
-    color: '#c04938',
-    padding: '12px 36px',
-    fontSize: 13.5,
-    fontWeight: 500,
-    borderBottom: '1px solid rgba(192,73,56,.2)',
-  },
-  h3: {
-    fontSize: 18,
-    fontWeight: 700,
-    margin: '28px 0 14px',
-    color: '#1f1917',
-  },
-  statGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(190px, 1fr))',
-    gap: 16,
-    marginBottom: 20,
-  },
-  stat: {
-    background: '#fff',
-    border: '1px solid #ede5db',
-    borderRadius: 16,
-    padding: '20px 22px',
-    boxShadow: '0 2px 8px rgba(31,25,23,0.04)',
-  },
-  statVal: {
-    fontSize: 24,
-    fontWeight: 700,
-    lineHeight: 1.1,
-    marginTop: 4,
-  },
-  statKey: {
-    fontSize: 12,
-    fontWeight: 600,
-    color: '#6e625c',
-  },
-  walletBox: {
-    background: '#fff',
-    border: '1px solid #ede5db',
-    borderRadius: 16,
-    padding: '22px 24px',
-    boxShadow: '0 2px 8px rgba(31,25,23,0.04)',
-    marginBottom: 20,
-  },
-  walletRow: {
-    display: 'flex',
-    gap: 28,
-    flexWrap: 'wrap',
-  },
-  wBlock: {
-    minWidth: 130,
-  },
-  wVal: {
-    fontSize: 17,
-    fontWeight: 700,
-    color: '#1f1917',
-  },
-  panel: {
-    background: '#fff',
-    border: '1px solid #ede5db',
-    borderRadius: 16,
-    padding: '22px 24px',
-    boxShadow: '0 2px 8px rgba(31,25,23,0.04)',
-    marginBottom: 20,
-  },
-  formGrid: {
-    display: 'flex',
-    gap: 14,
-    flexWrap: 'wrap',
-  },
-  createBox: {
-    background: '#fff',
-    border: '1px solid #ede5db',
-    borderRadius: 16,
-    padding: '20px 22px',
-    marginBottom: 18,
-    boxShadow: '0 2px 8px rgba(31,25,23,0.04)',
-  },
-  createTitle: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: 8,
-    fontSize: 14,
-    fontWeight: 700,
-    color: '#1f1917',
-    marginBottom: 12,
-  },
-  createRow: {
-    display: 'flex',
-    gap: 10,
-    flexWrap: 'wrap',
-    alignItems: 'center',
-  },
-  input: {
-    padding: '9px 13px',
-    borderRadius: 10,
-    border: '1px solid #ede5db',
-    background: '#fff',
-    fontSize: 13.5,
-    fontFamily: 'inherit',
-    color: '#1f1917',
-    outline: 'none',
-  },
-  radio: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    gap: 8,
-    fontSize: 13.5,
-    fontWeight: 500,
-    cursor: 'pointer',
-  },
-  tableWrap: {
-    background: '#fff',
-    border: '1px solid #ede5db',
-    borderRadius: 16,
-    overflow: 'hidden',
-    boxShadow: '0 2px 8px rgba(31,25,23,0.04)',
-  },
-  table: {
-    width: '100%',
-    borderCollapse: 'collapse',
-    textAlign: 'left',
-    fontSize: 13,
-  },
-  th: {
-    background: '#fcfaf7',
-    padding: '12px 16px',
-    fontSize: 11.5,
-    fontWeight: 700,
-    color: '#6e625c',
-    textTransform: 'uppercase',
-    letterSpacing: '0.04em',
-    borderBottom: '1px solid #ede5db',
-    whiteSpace: 'nowrap',
-  },
-  td: {
-    padding: '14px 16px',
-    borderBottom: '1px solid #f6f1eb',
-    verticalAlign: 'middle',
-  },
-  acts: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: 6,
-    flexWrap: 'wrap',
-  },
-  btnMain: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    gap: 7,
-    padding: '9px 18px',
-    background: 'linear-gradient(135deg, #d97757 0%, #c96547 100%)',
-    color: '#fff',
-    border: 'none',
-    borderRadius: 9999,
-    fontSize: 13,
-    fontWeight: 600,
-    cursor: 'pointer',
-    boxShadow: '0 2px 6px rgba(217,119,87,0.25)',
-  },
-  btnGhost: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    gap: 6,
-    padding: '8px 16px',
-    background: '#fcfaf7',
-    color: '#6e625c',
-    border: '1px solid #ede5db',
-    borderRadius: 9999,
-    fontSize: 13,
-    fontWeight: 600,
-    cursor: 'pointer',
-  },
-  mini: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    gap: 5,
-    padding: '5px 10px',
-    background: '#fcfaf7',
-    color: '#5c524c',
-    border: '1px solid #ede5db',
-    borderRadius: 8,
-    fontSize: 12,
-    fontWeight: 600,
-    cursor: 'pointer',
-    textDecoration: 'none',
-  },
-  miniActive: {
-    background: '#d97757',
-    color: '#fff',
-    borderColor: '#d97757',
-  },
-  pillOk: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    gap: 4,
-    padding: '3px 8px',
-    borderRadius: 999,
-    background: 'rgba(79,126,101,0.12)',
-    color: '#4f7e65',
-    fontSize: 11.5,
-    fontWeight: 600,
-  },
-  pillLock: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    gap: 4,
-    padding: '3px 8px',
-    borderRadius: 999,
-    background: 'rgba(192,73,56,0.1)',
-    color: '#c04938',
-    fontSize: 11.5,
-    fontWeight: 600,
-  },
-  code: {
-    fontFamily: "'Courier New', monospace",
-    fontSize: 12,
-    background: '#f6f1eb',
-    padding: '2px 6px',
-    borderRadius: 6,
-    color: '#5c524c',
-  },
-  tiny: {
-    fontSize: 12,
-    color: '#9e918a',
-    lineHeight: 1.5,
-  },
-  muted: {
-    fontSize: 13.5,
-    color: '#6e625c',
-  },
-  empty: {
-    padding: 36,
-    textAlign: 'center',
-    color: '#9e918a',
-    fontSize: 13.5,
-  },
-  err: {
-    background: 'rgba(192,73,56,0.08)',
-    border: '1px solid rgba(192,73,56,0.2)',
-    color: '#c04938',
-    padding: '12px 16px',
-    borderRadius: 12,
-    fontSize: 13.5,
-    marginBottom: 16,
-  },
-  toolbar: {
-    display: 'flex',
-    gap: 10,
-    marginBottom: 16,
-    alignItems: 'center',
-    flexWrap: 'wrap',
-  },
-  templateGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
-    gap: 18,
-  },
-  templateCard: {
-    background: '#fff',
-    border: '1px solid #ede5db',
-    borderRadius: 16,
-    overflow: 'hidden',
-    boxShadow: '0 2px 8px rgba(31,25,23,0.04)',
-  },
-  templatePreviewBox: {
-    width: '100%',
-    height: 320,
-    background: '#f6f1eb',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    overflow: 'hidden',
-  },
-  templateThumb: {
-    width: '100%',
-    height: '100%',
-    objectFit: 'cover',
-  },
-  templateThumbPlaceholder: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '100%',
-    height: '100%',
-    background: 'linear-gradient(135deg, #fcfaf7 0%, #ede5db 100%)',
-  },
-  modalOverlay: {
-    position: 'fixed',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    background: 'rgba(31,25,23,0.45)',
-    backdropFilter: 'blur(3px)',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    zIndex: 9999,
-    padding: 16,
-  },
-  modalBox: {
-    background: '#fff',
-    borderRadius: 20,
-    padding: 28,
-    width: '100%',
-    maxWidth: 520,
-    boxShadow: '0 20px 50px rgba(31,25,23,0.2)',
-  },
-  qrCard: {
-    display: 'flex',
-    gap: 16,
-    flexWrap: 'wrap',
-    alignItems: 'center',
-    padding: 16,
-    background: '#faf6f0',
-    borderRadius: 14,
-    border: '1px solid #ede5db',
-  },
-  qr: {
-    borderRadius: 10,
-    border: '1px solid #ede5db',
-    background: '#fff',
-  },
+  page: { maxWidth: 1080, margin: '0 auto', padding: '20px 18px 60px', fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif", color: '#1f1917' },
+  center: { minHeight: '60vh', display: 'grid', placeItems: 'center', textAlign: 'center', gap: 10 },
+  centerCard: { background: '#fff', border: '1px solid #ede5db', borderRadius: 16, padding: 30 },
+  header: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12, marginBottom: 16 },
+  logo: { width: 40, height: 40, borderRadius: 12, background: 'linear-gradient(135deg,#e58d6f,#c96547)', display: 'grid', placeItems: 'center' },
+  brand: { fontWeight: 700, fontSize: 16 },
+  sub: { fontSize: 12, color: '#7a6f68' },
+  lockedBar: { display: 'flex', alignItems: 'center', gap: 8, background: 'rgba(192,73,56,.08)', color: '#c04938', padding: '10px 14px', borderRadius: 10, fontSize: 13, marginBottom: 12 },
+  tabs: { display: 'flex', gap: 6, flexWrap: 'wrap', borderBottom: '1px solid #ede5db', marginBottom: 18 },
+  tab: { display: 'flex', alignItems: 'center', gap: 7, padding: '9px 14px', border: 'none', background: 'none', color: '#7a6f68', fontSize: 13.5, fontWeight: 600, cursor: 'pointer', borderBottom: '2px solid transparent' },
+  tabOn: { color: '#c96547', borderBottomColor: '#c96547' },
+  body: { minHeight: 200 },
+  cardGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(180px,1fr))', gap: 12, marginBottom: 16 },
+  stat: { background: '#fff', border: '1px solid #ede5db', borderRadius: 14, padding: 16, position: 'relative' },
+  statDot: { width: 30, height: 4, borderRadius: 4, marginBottom: 10 },
+  statVal: { fontSize: 20, fontWeight: 700 },
+  statLbl: { fontSize: 12.5, color: '#7a6f68', marginTop: 2 },
+  walletBox: { background: '#fff', border: '1px solid #ede5db', borderRadius: 14, padding: 18, marginBottom: 16 },
+  walletRow: { display: 'flex', gap: 22, flexWrap: 'wrap' },
+  wBlock: { minWidth: 120 },
+  wVal: { fontSize: 16, fontWeight: 700 },
+  h3: { fontSize: 15, fontWeight: 700, margin: '0 0 10px' },
+  tiny: { fontSize: 11.5, color: '#9a8f88', lineHeight: 1.5 },
+  muted: { fontSize: 13.5, color: '#6e625c' },
+  err: { background: 'rgba(192,73,56,.08)', color: '#c04938', padding: '10px 14px', borderRadius: 10, fontSize: 13, margin: '10px 0' },
+  toolbar: { display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center', marginBottom: 12 },
+  searchBox: { display: 'flex', alignItems: 'center', gap: 8, background: '#fff', border: '1px solid #ede5db', borderRadius: 10, padding: '7px 12px', flex: '1 1 220px' },
+  searchInput: { border: 'none', outline: 'none', fontSize: 13.5, flex: 1, background: 'none' },
+  panel: { background: '#fff', border: '1px solid #ede5db', borderRadius: 14, padding: 18, marginBottom: 14 },
+  formGrid: { display: 'flex', gap: 12, flexWrap: 'wrap' },
+  input: { border: '1px solid #e0d7cc', borderRadius: 9, padding: '8px 11px', fontSize: 13.5, outline: 'none', width: '100%', background: '#fff', fontFamily: 'inherit' },
+  radio: { display: 'flex', alignItems: 'center', gap: 7, fontSize: 13.5, cursor: 'pointer' },
+  tableWrap: { overflowX: 'auto' },
+  table: { width: '100%', borderCollapse: 'collapse', fontSize: 13 },
+  th: { textAlign: 'left', padding: '8px 10px', color: '#9a8f88', fontWeight: 600, fontSize: 11.5, textTransform: 'uppercase', letterSpacing: '.03em', borderBottom: '1px solid #ede5db', whiteSpace: 'nowrap' },
+  td: { padding: '10px', borderBottom: '1px solid #f2ece3', verticalAlign: 'top' },
+  tr: {},
+  empty: { padding: 24, textAlign: 'center', color: '#9a8f88', fontSize: 13 },
+  cardRow: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', borderBottom: '1px solid #f2ece3' },
+  qrCard: { display: 'flex', gap: 16, flexWrap: 'wrap', alignItems: 'center', marginTop: 14, padding: 14, background: '#faf6f0', borderRadius: 12, border: '1px solid #ede5db' },
+  qr: { borderRadius: 10, border: '1px solid #ede5db', background: '#fff' },
+  btnMain: { display: 'inline-flex', alignItems: 'center', gap: 7, padding: '9px 18px', background: 'linear-gradient(135deg,#e58d6f,#c96547)', color: '#fff', border: 'none', borderRadius: 9999, fontSize: 13, fontWeight: 600, cursor: 'pointer' },
+  btnGhost: { display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 14px', background: '#f6f1eb', color: '#5c524c', border: '1px solid #ede5db', borderRadius: 9999, fontSize: 12.5, fontWeight: 600, cursor: 'pointer', marginBottom: 10 },
+  mini: { display: 'inline-flex', alignItems: 'center', gap: 5, padding: '5px 10px', background: '#f6f1eb', color: '#5c524c', border: '1px solid #ede5db', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer', textDecoration: 'none' },
+  linkBtn: { background: 'none', border: 'none', color: '#c96547', fontWeight: 600, cursor: 'pointer', padding: 0, fontSize: 13 },
 }

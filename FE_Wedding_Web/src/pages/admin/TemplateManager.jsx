@@ -630,7 +630,7 @@ function DetailDialog({ id, onClose, onChanged }) {
           onChange={(e) => setGrant({ ...grant, grantee_type: e.target.value })}>
           {Object.entries(GRANTEE).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
         </select>
-        <input style={{ ...S.search, flex: 1 }} placeholder="Dán ID (CTV / khách hàng / tài khoản)"
+        <input style={{ ...S.search, flex: 1 }} placeholder="Nhập tên đăng nhập (username), tên hoặc dán ID..."
           value={grant.grantee_id} onChange={(e) => setGrant({ ...grant, grantee_id: e.target.value })} />
         <button style={S.primary} onClick={addGrant}>Cấp quyền</button>
       </div>

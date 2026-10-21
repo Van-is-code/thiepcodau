@@ -167,34 +167,6 @@ const cancelPayout = async (req, res) => {
   catch (e) { fail(res, e); }
 };
 
-// ---- Thiệp & thao tác khách ----
-const listInvitations = async (req, res) => {
-  try {
-    const { search } = req.query;
-    const page = Number.parseInt(req.query.page, 10) || 1;
-    const limit = Number.parseInt(req.query.limit, 10) || 30;
-    ok(res, await customerService.listInvitationsForCtv(req.ctv, { search, page, limit }), 'Danh sách thiệp của khách');
-  } catch (e) { fail(res, e); }
-};
-
-const createCustomerInvitation = async (req, res) => {
-  try {
-    const { templateId, template_id } = req.body || {};
-    const tId = templateId || template_id;
-    if (!tId) return res.status(400).json({ success: false, message: 'Thiếu templateId' });
-    const data = await customerService.createInvitationForCustomer(req.params.id, req.ctv, tId, req.user);
-    ok(res, data, 'Đã tạo thiệp cho khách', 201);
-  } catch (e) { fail(res, e); }
-};
-
-const resetCustomerPassword = async (req, res) => {
-  try {
-    const { password } = req.body || {};
-    await customerService.resetCustomerPassword(req.params.id, req.ctv, password, ctxOf(req));
-    ok(res, { success: true }, 'Đã đổi mật khẩu cho khách');
-  } catch (e) { fail(res, e); }
-};
-
 module.exports = {
   loadCtv,
   getMe,
@@ -206,9 +178,6 @@ module.exports = {
   updateCustomer,
   getCustomerOrders,
   getCustomerCards,
-  listInvitations,
-  createCustomerInvitation,
-  resetCustomerPassword,
   createOrder,
   listOrders,
   getOrder,

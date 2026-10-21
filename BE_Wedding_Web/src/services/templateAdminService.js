@@ -309,20 +309,54 @@ const GRANTEE_MODEL = { ctv: CtvProfile, customer: Customer, user: User };
 const grantAccess = async (templateId, { granteeType, granteeId, note }, { adminUserId, ip } = {}) => {
   if (!isUuid(templateId)) throw bad('template_id không hợp lệ', 404);
   if (!access.GRANTEE_TYPES.includes(granteeType)) throw bad('Loại đối tượng chỉ nhận ctv, customer hoặc user');
-  if (!isUuid(String(granteeId || ''))) throw bad('Chưa chọn đối tượng được cấp quyền');
+  
+  const rawId = String(granteeId || '').trim();
+  if (!rawId) throw bad('Chưa chọn đối tượng được cấp quyền');
 
   const t = await InvitationTemplate.findByPk(templateId);
   if (!t) throw bad('Không tìm thấy mẫu', 404);
 
-  // Đối tượng phải có thật — tránh cấp quyền cho UUID gõ nhầm rồi tưởng đã cấp.
-  const exists = await GRANTEE_MODEL[granteeType].findByPk(granteeId);
-  if (!exists) throw bad('Không tìm thấy đối tượng được cấp quyền', 404);
+  let targetId = rawId;
+  let exists = null;
+
+  if (isUuid(rawId)) {
+    exists = await GRANTEE_MODEL[granteeType].findByPk(rawId);
+  } else {
+    // Tìm theo username / name / email nếu admin gõ username
+    if (granteeType === 'user') {
+      exists = await User.findOne({
+        where: { [Op.or]: [{ username: rawId }, { email: rawId }] }
+      });
+    } else if (granteeType === 'ctv') {
+      exists = await CtvProfile.findOne({
+        where: { [Op.or]: [{ display_name: rawId }, { email: rawId }, { phone: rawId }] }
+      });
+      if (!exists) {
+        const u = await User.findOne({ where: { username: rawId } });
+        if (u) exists = await CtvProfile.findOne({ where: { user_id: u.id } });
+      }
+    } else if (granteeType === 'customer') {
+      exists = await Customer.findOne({
+        where: { [Op.or]: [{ name: rawId }, { email: rawId }, { phone: rawId }] }
+      });
+      if (!exists) {
+        const u = await User.findOne({ where: { username: rawId } });
+        if (u) exists = await Customer.findOne({ where: { user_id: u.id } });
+      }
+    }
+  }
+
+  if (!exists) {
+    throw bad(`Không tìm thấy ${granteeType === 'user' ? 'tài khoản' : granteeType === 'ctv' ? 'CTV' : 'khách hàng'} với thông tin: "${rawId}"`, 404);
+  }
+
+  targetId = exists.id;
 
   const [row, created] = await TemplatePermission.findOrCreate({
-    where: { template_id: templateId, grantee_type: granteeType, grantee_id: granteeId },
+    where: { template_id: templateId, grantee_type: granteeType, grantee_id: targetId },
     defaults: {
       id: randomUUID(),
-      template_id: templateId, grantee_type: granteeType, grantee_id: granteeId,
+      template_id: templateId, grantee_type: granteeType, grantee_id: targetId,
       enabled: true, note: note ? String(note).slice(0, 500) : null,
       granted_by: adminUserId || null,
       created_at: new Date(), updated_at: new Date(),
@@ -336,7 +370,7 @@ const grantAccess = async (templateId, { granteeType, granteeId, note }, { admin
   await auditService.log({
     actorType: 'admin', actorId: adminUserId || null,
     action: 'template.grant', entityType: 'invitation_template', entityId: templateId,
-    newValue: { grantee_type: granteeType, grantee_id: granteeId }, ip: ip || null,
+    newValue: { grantee_type: granteeType, grantee_id: targetId, grantee_name: exists.username || exists.name || exists.display_name }, ip: ip || null,
   });
 
   return { id: row.id, granted: true, reactivated: !created };
