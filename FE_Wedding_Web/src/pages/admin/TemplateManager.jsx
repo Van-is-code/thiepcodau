@@ -46,12 +46,6 @@ export default function TemplateManager() {
 
   useEffect(() => { load() }, [load])
 
-  useEffect(() => {
-    api.admin.getEligibleGrantees()
-      .then((r) => setGrantees(r.data?.data || []))
-      .catch(() => {})
-  }, [])
-
   // Bật/tắt mẫu: 'published' = khách chọn được, 'draft' = ẩn khỏi mọi người trừ admin.
   const toggleStatus = async (t) => {
     const next = t.status === 'published' ? 'draft' : 'published'
@@ -509,6 +503,7 @@ function DetailDialog({ id, onClose, onChanged }) {
   const [err, setErr] = useState('')
   const [grant, setGrant] = useState({ grantee_type: 'user', grantee_id: '', note: '' })
   const [grantees, setGrantees] = useState([])
+  const [loadingGrantees, setLoadingGrantees] = useState(false)
   const [selectedKey, setSelectedKey] = useState('')
   const [grantNote, setGrantNote] = useState('')
   const [grantBusy, setGrantBusy] = useState(false)
@@ -527,7 +522,24 @@ function DetailDialog({ id, onClose, onChanged }) {
     } catch (e) { setErr(errText(e)) }
   }, [id])
 
-  useEffect(() => { load() }, [load])
+  const loadGrantees = useCallback(async () => {
+    setLoadingGrantees(true)
+    try {
+      const r = await api.admin.getEligibleGrantees()
+      const raw = r.data?.data || r.data || []
+      const list = Array.isArray(raw) ? raw : (raw.items || [])
+      setGrantees(list)
+    } catch (e) {
+      console.error('Lỗi tải danh sách tài khoản:', e)
+    } finally {
+      setLoadingGrantees(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    load()
+    loadGrantees()
+  }, [load, loadGrantees])
 
   const changeVisibility = async (visibility) => {
     let owner = t.owner_customer_id
@@ -688,8 +700,16 @@ function DetailDialog({ id, onClose, onChanged }) {
 
       {/* Form cấp quyền với ô Chọn tài khoản */}
       <div style={{ background: '#fcfaf7', border: '1px solid #ede5db', borderRadius: 10, padding: 14, marginBottom: 16 }}>
-        <div style={{ fontSize: 12.5, fontWeight: 600, color: '#1f1917', marginBottom: 8 }}>
-          Chọn tài khoản được cấp quyền:
+        <div style={{ fontSize: 12.5, fontWeight: 600, color: '#1f1917', marginBottom: 8, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span>Chọn tài khoản được cấp quyền:</span>
+          <button
+            type="button"
+            onClick={loadGrantees}
+            disabled={loadingGrantees}
+            style={{ background: 'transparent', border: 'none', color: '#6366f1', cursor: 'pointer', fontSize: 12, padding: '2px 6px' }}
+          >
+            {loadingGrantees ? '⏳ Đang tải...' : '🔄 Làm mới danh sách'}
+          </button>
         </div>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap', marginBottom: 8 }}>
           <select
@@ -700,32 +720,47 @@ function DetailDialog({ id, onClose, onChanged }) {
               if (e.target.value) setGrant({ ...grant, grantee_id: '' })
             }}
           >
-            <option value="">-- Bấm để chọn tài khoản từ hệ thống --</option>
+            <option value="">
+              {loadingGrantees
+                ? '⏳ Đang tải danh sách tài khoản...'
+                : grantees.length === 0
+                ? '-- Chưa tìm thấy tài khoản nào trong hệ thống --'
+                : `-- Bấm để chọn tài khoản từ hệ thống (${grantees.length} tài khoản) --`}
+            </option>
             {grantees.filter((g) => g.grantee_type === 'user').length > 0 && (
               <optgroup label="👤 Tài khoản người dùng (User Accounts)">
-                {grantees.filter((g) => g.grantee_type === 'user').map((g) => (
-                  <option key={`user:${g.grantee_id}`} value={`user:${g.grantee_id}`}>
-                    {g.label}
-                  </option>
-                ))}
+                {grantees.filter((g) => g.grantee_type === 'user').map((g) => {
+                  const isGranted = t.permissions?.some((p) => p.grantee_type === g.grantee_type && String(p.grantee_id) === String(g.grantee_id))
+                  return (
+                    <option key={`user:${g.grantee_id}`} value={`user:${g.grantee_id}`} disabled={isGranted}>
+                      {g.label} {isGranted ? '✓ (Đã có quyền)' : ''}
+                    </option>
+                  )
+                })}
               </optgroup>
             )}
             {grantees.filter((g) => g.grantee_type === 'ctv').length > 0 && (
               <optgroup label="💼 Cộng tác viên (CTV)">
-                {grantees.filter((g) => g.grantee_type === 'ctv').map((g) => (
-                  <option key={`ctv:${g.grantee_id}`} value={`ctv:${g.grantee_id}`}>
-                    {g.label}
-                  </option>
-                ))}
+                {grantees.filter((g) => g.grantee_type === 'ctv').map((g) => {
+                  const isGranted = t.permissions?.some((p) => p.grantee_type === g.grantee_type && String(p.grantee_id) === String(g.grantee_id))
+                  return (
+                    <option key={`ctv:${g.grantee_id}`} value={`ctv:${g.grantee_id}`} disabled={isGranted}>
+                      {g.label} {isGranted ? '✓ (Đã có quyền)' : ''}
+                    </option>
+                  )
+                })}
               </optgroup>
             )}
             {grantees.filter((g) => g.grantee_type === 'customer').length > 0 && (
               <optgroup label="💍 Khách hàng của CTV (Customers)">
-                {grantees.filter((g) => g.grantee_type === 'customer').map((g) => (
-                  <option key={`customer:${g.grantee_id}`} value={`customer:${g.grantee_id}`}>
-                    {g.label}
-                  </option>
-                ))}
+                {grantees.filter((g) => g.grantee_type === 'customer').map((g) => {
+                  const isGranted = t.permissions?.some((p) => p.grantee_type === g.grantee_type && String(p.grantee_id) === String(g.grantee_id))
+                  return (
+                    <option key={`customer:${g.grantee_id}`} value={`customer:${g.grantee_id}`} disabled={isGranted}>
+                      {g.label} {isGranted ? '✓ (Đã có quyền)' : ''}
+                    </option>
+                  )
+                })}
               </optgroup>
             )}
           </select>
