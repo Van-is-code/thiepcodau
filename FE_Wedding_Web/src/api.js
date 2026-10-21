@@ -247,6 +247,7 @@ export const api = {
     deleteManagedTemplate: (id) => apiClient.delete(`/api/admin/templates/manage/${id}`),
 
     // Cấp quyền dùng mẫu: grantee_type = 'ctv' | 'customer' | 'user'
+    getEligibleGrantees: (params = {}) => apiClient.get('/api/admin/templates/manage/grantees', { params }),
     grantTemplate: (id, data) => apiClient.post(`/api/admin/templates/manage/${id}/grants`, data),
     toggleTemplateGrant: (permissionId, enabled) =>
       apiClient.patch(`/api/admin/templates/grants/${permissionId}`, { enabled }),

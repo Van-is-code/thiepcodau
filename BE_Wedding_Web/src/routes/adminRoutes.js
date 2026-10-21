@@ -85,6 +85,7 @@ router.post('/templates/import', themeZip.single('theme'), verifyUpload('zip', {
 router.delete('/templates/preview/:token', templateAdmin.discardPreview);
 
 router.get('/templates/manage', templateAdmin.list);
+router.get('/templates/manage/grantees', templateAdmin.listEligibleGrantees);
 router.get('/templates/manage/:id', templateAdmin.detail);
 router.patch('/templates/manage/:id', templateAdmin.update);
 // Chỉ xoá được khi chưa có thiệp nào dùng — xem ghi chú trong templateAdminService.

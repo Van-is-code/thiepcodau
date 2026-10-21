@@ -220,25 +220,127 @@ const enrichGrantees = async (perms) => {
   for (const p of perms) if (byType[p.grantee_type]) byType[p.grantee_type].push(p.grantee_id);
 
   const [ctvs, customers, users] = await Promise.all([
-    byType.ctv.length ? CtvProfile.findAll({ where: { id: { [Op.in]: byType.ctv } }, attributes: ['id', 'display_name'] }) : [],
-    byType.customer.length ? Customer.findAll({ where: { id: { [Op.in]: byType.customer } }, attributes: ['id', 'name'] }) : [],
-    byType.user.length ? User.findAll({ where: { id: { [Op.in]: byType.user } }, attributes: ['id', 'username'] }) : [],
+    byType.ctv.length ? CtvProfile.findAll({
+      where: { id: { [Op.in]: byType.ctv } },
+      attributes: ['id', 'display_name', 'phone'],
+      include: [{ model: User, as: 'user', attributes: ['id', 'username'] }]
+    }) : [],
+    byType.customer.length ? Customer.findAll({
+      where: { id: { [Op.in]: byType.customer } },
+      attributes: ['id', 'name', 'phone'],
+      include: [{ model: User, as: 'user', attributes: ['id', 'username'] }]
+    }) : [],
+    byType.user.length ? User.findAll({
+      where: { id: { [Op.in]: byType.user } },
+      attributes: ['id', 'username', 'role']
+    }) : [],
   ]);
-  const name = {
-    ctv: Object.fromEntries(ctvs.map((c) => [String(c.id), c.display_name])),
-    customer: Object.fromEntries(customers.map((c) => [String(c.id), c.name])),
-    user: Object.fromEntries(users.map((u) => [String(u.id), u.username])),
+
+  const info = {
+    ctv: Object.fromEntries(ctvs.map((c) => [String(c.id), {
+      name: c.display_name,
+      username: c.user ? c.user.username : null,
+      phone: c.phone || null,
+      role: 'ctv'
+    }])),
+    customer: Object.fromEntries(customers.map((c) => [String(c.id), {
+      name: c.name,
+      username: c.user ? c.user.username : null,
+      phone: c.phone || null,
+      role: 'customer'
+    }])),
+    user: Object.fromEntries(users.map((u) => [String(u.id), {
+      name: u.username,
+      username: u.username,
+      phone: null,
+      role: u.role
+    }])),
   };
 
-  return perms.map((p) => ({
-    id: p.id,
-    grantee_type: p.grantee_type,
-    grantee_id: p.grantee_id,
-    grantee_name: (name[p.grantee_type] || {})[String(p.grantee_id)] || null,
-    enabled: p.enabled,
-    note: p.note,
-    created_at: p.created_at,
-  }));
+  return perms.map((p) => {
+    const meta = (info[p.grantee_type] || {})[String(p.grantee_id)] || {};
+    return {
+      id: p.id,
+      grantee_type: p.grantee_type,
+      grantee_id: p.grantee_id,
+      grantee_name: meta.name || meta.username || p.grantee_id,
+      username: meta.username || null,
+      role: meta.role || p.grantee_type,
+      phone: meta.phone || null,
+      enabled: p.enabled,
+      note: p.note,
+      created_at: p.created_at,
+    };
+  });
+};
+
+const listEligibleGrantees = async ({ search = '' } = {}) => {
+  const [users, ctvs, customers] = await Promise.all([
+    User.findAll({
+      attributes: ['id', 'username', 'role', 'created_at'],
+      order: [['created_at', 'DESC']]
+    }),
+    CtvProfile.findAll({
+      attributes: ['id', 'user_id', 'display_name', 'phone', 'status'],
+      include: [{ model: User, as: 'user', attributes: ['id', 'username'] }]
+    }),
+    Customer.findAll({
+      attributes: ['id', 'user_id', 'name', 'phone', 'status'],
+      include: [{ model: User, as: 'user', attributes: ['id', 'username'] }]
+    })
+  ]);
+
+  const items = [];
+
+  // 1. Users
+  for (const u of users) {
+    items.push({
+      grantee_type: 'user',
+      grantee_id: u.id,
+      username: u.username,
+      display_name: u.username,
+      role: u.role,
+      type_label: u.role === 'admin' ? 'Quản trị viên' : u.role === 'ctv' ? 'Tài khoản CTV' : 'Tài khoản người dùng',
+      label: `[Tài khoản] ${u.username} (${u.role.toUpperCase()})`,
+    });
+  }
+
+  // 2. CTVs
+  for (const c of ctvs) {
+    items.push({
+      grantee_type: 'ctv',
+      grantee_id: c.id,
+      username: c.user?.username || null,
+      display_name: c.display_name,
+      role: 'ctv',
+      type_label: 'Cộng tác viên (CTV)',
+      label: `[CTV] ${c.display_name} (@${c.user?.username || 'ctv'})`,
+    });
+  }
+
+  // 3. Customers
+  for (const cu of customers) {
+    items.push({
+      grantee_type: 'customer',
+      grantee_id: cu.id,
+      username: cu.user?.username || null,
+      display_name: cu.name,
+      role: 'customer',
+      type_label: 'Khách hàng của CTV',
+      label: `[Khách hàng] ${cu.name} (@${cu.user?.username || 'khach'})`,
+    });
+  }
+
+  if (search) {
+    const q = search.toLowerCase();
+    return items.filter(x =>
+      x.label.toLowerCase().includes(q) ||
+      (x.username && x.username.toLowerCase().includes(q)) ||
+      (x.display_name && x.display_name.toLowerCase().includes(q))
+    );
+  }
+
+  return items;
 };
 
 module.exports.listForAdmin = listForAdmin;
@@ -308,7 +410,6 @@ const GRANTEE_MODEL = { ctv: CtvProfile, customer: Customer, user: User };
 
 const grantAccess = async (templateId, { granteeType, granteeId, note }, { adminUserId, ip } = {}) => {
   if (!isUuid(templateId)) throw bad('template_id không hợp lệ', 404);
-  if (!access.GRANTEE_TYPES.includes(granteeType)) throw bad('Loại đối tượng chỉ nhận ctv, customer hoặc user');
   
   const rawId = String(granteeId || '').trim();
   if (!rawId) throw bad('Chưa chọn đối tượng được cấp quyền');
@@ -316,85 +417,136 @@ const grantAccess = async (templateId, { granteeType, granteeId, note }, { admin
   const t = await InvitationTemplate.findByPk(templateId);
   if (!t) throw bad('Không tìm thấy mẫu', 404);
 
+  let targetType = granteeType || 'user';
   let targetId = rawId;
   let exists = null;
 
   if (isUuid(rawId)) {
-    exists = await GRANTEE_MODEL[granteeType].findByPk(rawId);
+    if (targetType && GRANTEE_MODEL[targetType]) {
+      exists = await GRANTEE_MODEL[targetType].findByPk(rawId);
+    }
+    if (!exists) {
+      exists = await User.findByPk(rawId);
+      if (exists) targetType = 'user';
+    }
+    if (!exists) {
+      exists = await Customer.findByPk(rawId);
+      if (exists) targetType = 'customer';
+    }
+    if (!exists) {
+      exists = await CtvProfile.findByPk(rawId);
+      if (exists) targetType = 'ctv';
+    }
   } else {
-    // Tìm theo username / name / email nếu admin gõ username
-    if (granteeType === 'user') {
-      exists = await User.findOne({
-        where: { [Op.or]: [{ username: rawId }, { email: rawId }] }
-      });
-    } else if (granteeType === 'ctv') {
-      exists = await CtvProfile.findOne({
-        where: { [Op.or]: [{ display_name: rawId }, { email: rawId }, { phone: rawId }] }
-      });
-      if (!exists) {
-        const u = await User.findOne({ where: { username: rawId } });
-        if (u) exists = await CtvProfile.findOne({ where: { user_id: u.id } });
+    // 1. Tìm theo username trong bảng User (chú ý: bảng User KHÔNG có cột email)
+    const userFound = await User.findOne({ where: { username: rawId } });
+    if (userFound) {
+      if (targetType === 'ctv') {
+        const ctvFound = await CtvProfile.findOne({ where: { user_id: userFound.id } });
+        if (ctvFound) {
+          exists = ctvFound;
+          targetType = 'ctv';
+        } else {
+          exists = userFound;
+          targetType = 'user';
+        }
+      } else if (targetType === 'customer') {
+        const custFound = await Customer.findOne({ where: { user_id: userFound.id } });
+        if (custFound) {
+          exists = custFound;
+          targetType = 'customer';
+        } else {
+          // Tài khoản người dùng không gắn Customer -> tự động cấp thẳng theo User
+          exists = userFound;
+          targetType = 'user';
+        }
+      } else {
+        exists = userFound;
+        targetType = 'user';
       }
-    } else if (granteeType === 'customer') {
+    }
+
+    // 2. Tìm theo Customer (name hoặc phone)
+    if (!exists) {
       exists = await Customer.findOne({
-        where: { [Op.or]: [{ name: rawId }, { email: rawId }, { phone: rawId }] }
+        where: { [Op.or]: [{ name: rawId }, { phone: rawId }] }
       });
-      if (!exists) {
-        const u = await User.findOne({ where: { username: rawId } });
-        if (u) exists = await Customer.findOne({ where: { user_id: u.id } });
-      }
+      if (exists) targetType = 'customer';
+    }
+
+    // 3. Tìm theo CtvProfile (display_name hoặc phone)
+    if (!exists) {
+      exists = await CtvProfile.findOne({
+        where: { [Op.or]: [{ display_name: rawId }, { phone: rawId }] }
+      });
+      if (exists) targetType = 'ctv';
     }
   }
 
   if (!exists) {
-    throw bad(`Không tìm thấy ${granteeType === 'user' ? 'tài khoản' : granteeType === 'ctv' ? 'CTV' : 'khách hàng'} với thông tin: "${rawId}"`, 404);
+    throw bad(`Không tìm thấy tài khoản / đối tượng với thông tin: "${rawId}"`, 404);
   }
 
   targetId = exists.id;
 
   const [row, created] = await TemplatePermission.findOrCreate({
-    where: { template_id: templateId, grantee_type: granteeType, grantee_id: targetId },
+    where: { template_id: templateId, grantee_type: targetType, grantee_id: targetId },
     defaults: {
       id: randomUUID(),
-      template_id: templateId, grantee_type: granteeType, grantee_id: targetId,
-      enabled: true, note: note ? String(note).slice(0, 500) : null,
+      template_id: templateId,
+      grantee_type: targetType,
+      grantee_id: targetId,
+      enabled: true,
+      note: note ? String(note).slice(0, 500) : null,
       granted_by: adminUserId || null,
-      created_at: new Date(), updated_at: new Date(),
-    },
+      created_at: new Date(),
+      updated_at: new Date(),
+    }
   });
-  // Đã có dòng nhưng đang tắt -> bật lại thay vì báo trùng.
+
   if (!created && !row.enabled) {
-    await row.update({ enabled: true, updated_at: new Date() });
+    await row.update({ enabled: true, note: note ? String(note).slice(0, 500) : row.note, updated_at: new Date() });
   }
 
   await auditService.log({
-    actorType: 'admin', actorId: adminUserId || null,
-    action: 'template.grant', entityType: 'invitation_template', entityId: templateId,
-    newValue: { grantee_type: granteeType, grantee_id: targetId, grantee_name: exists.username || exists.name || exists.display_name }, ip: ip || null,
+    actorType: 'admin',
+    actorId: adminUserId || null,
+    action: 'template.grant',
+    entityType: 'invitation_template',
+    entityId: templateId,
+    newValue: {
+      grantee_type: targetType,
+      grantee_id: targetId,
+      grantee_name: exists.username || exists.name || exists.display_name
+    },
+    ip: ip || null,
   });
 
-  return { id: row.id, granted: true, reactivated: !created };
+  return { id: row.id, granted: true, reactivated: !created, grantee_type: targetType, grantee_id: targetId };
 };
 
 // Bật/tắt 1 quyền đã cấp (không xoá -> giữ lịch sử).
 const setAccessEnabled = async (permissionId, enabled, { adminUserId, ip } = {}) => {
-  if (!isUuid(permissionId)) throw bad('id không hợp lệ', 404);
+  if (!isUuid(permissionId)) throw bad('permissionId không hợp lệ', 404);
   const row = await TemplatePermission.findByPk(permissionId);
-  if (!row) throw bad('Không tìm thấy quyền đã cấp', 404);
+  if (!row) throw bad('Không tìm thấy bản ghi cấp quyền', 404);
+
   await row.update({ enabled: Boolean(enabled), updated_at: new Date() });
   await auditService.log({
     actorType: 'admin', actorId: adminUserId || null,
     action: enabled ? 'template.grant.enable' : 'template.grant.disable',
     entityType: 'invitation_template', entityId: row.template_id,
-    newValue: { permission_id: row.id, enabled: Boolean(enabled) }, ip: ip || null,
+    newValue: { permission_id: row.id, enabled: row.enabled }, ip: ip || null,
   });
   return { id: row.id, enabled: row.enabled };
 };
 
+// Thu hồi (xoá hẳn) 1 quyền đã cấp.
 const revokeAccess = async (permissionId, { adminUserId, ip } = {}) => {
-  if (!isUuid(permissionId)) throw bad('id không hợp lệ', 404);
+  if (!isUuid(permissionId)) throw bad('permissionId không hợp lệ', 404);
   const row = await TemplatePermission.findByPk(permissionId);
-  if (!row) throw bad('Không tìm thấy quyền đã cấp', 404);
+  if (!row) throw bad('Không tìm thấy bản ghi cấp quyền', 404);
+
   const snapshot = { template_id: row.template_id, grantee_type: row.grantee_type, grantee_id: row.grantee_id };
   await row.destroy();
   await auditService.log({
@@ -409,6 +561,7 @@ module.exports.updateTemplate = updateTemplate;
 module.exports.grantAccess = grantAccess;
 module.exports.setAccessEnabled = setAccessEnabled;
 module.exports.revokeAccess = revokeAccess;
+module.exports.listEligibleGrantees = listEligibleGrantees;
 
 // ---------------- Xoá mẫu ----------------
 //

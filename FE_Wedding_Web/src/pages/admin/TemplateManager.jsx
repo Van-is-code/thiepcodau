@@ -46,6 +46,12 @@ export default function TemplateManager() {
 
   useEffect(() => { load() }, [load])
 
+  useEffect(() => {
+    api.admin.getEligibleGrantees()
+      .then((r) => setGrantees(r.data?.data || []))
+      .catch(() => {})
+  }, [])
+
   // Bật/tắt mẫu: 'published' = khách chọn được, 'draft' = ẩn khỏi mọi người trừ admin.
   const toggleStatus = async (t) => {
     const next = t.status === 'published' ? 'draft' : 'published'
@@ -501,7 +507,11 @@ function DetailDialog({ id, onClose, onChanged }) {
   const modal = useModal()
   const [t, setT] = useState(null)
   const [err, setErr] = useState('')
-  const [grant, setGrant] = useState({ grantee_type: 'ctv', grantee_id: '', note: '' })
+  const [grant, setGrant] = useState({ grantee_type: 'user', grantee_id: '', note: '' })
+  const [grantees, setGrantees] = useState([])
+  const [selectedKey, setSelectedKey] = useState('')
+  const [grantNote, setGrantNote] = useState('')
+  const [grantBusy, setGrantBusy] = useState(false)
   // Bản nháp quyền sửa: chỉ ghi xuống khi bấm Lưu, để admin tích thoải mái rồi
   // xem lại trước khi áp lên các thiệp đang dùng mẫu.
   const [draft, setDraft] = useState(null)
@@ -532,12 +542,49 @@ function DetailDialog({ id, onClose, onChanged }) {
   }
 
   const addGrant = async () => {
-    if (!grant.grantee_id.trim()) return
+    let payload = null
+    if (selectedKey) {
+      const found = grantees.find((g) => `${g.grantee_type}:${g.grantee_id}` === selectedKey)
+      if (found) {
+        payload = {
+          grantee_type: found.grantee_type,
+          grantee_id: found.grantee_id,
+          note: grantNote.trim() || undefined
+        }
+      }
+    } else if (grant.grantee_id.trim()) {
+      payload = {
+        grantee_type: grant.grantee_type || 'user',
+        grantee_id: grant.grantee_id.trim(),
+        note: grantNote.trim() || undefined
+      }
+    }
+    if (!payload) {
+      await modal.alert({
+        tone: 'danger',
+        title: 'Chưa chọn tài khoản',
+        message: 'Vui lòng chọn một tài khoản từ danh sách hoặc nhập tên đăng nhập để cấp quyền.'
+      })
+      return
+    }
+    setGrantBusy(true)
     try {
-      await api.admin.grantTemplate(id, grant)
+      await api.admin.grantTemplate(id, payload)
+      setSelectedKey('')
       setGrant({ ...grant, grantee_id: '', note: '' })
-      await load(); onChanged()
-    } catch (e) { await modal.alert({ tone: 'danger', title: 'Lỗi', message: errText(e) }) }
+      setGrantNote('')
+      await load()
+      onChanged()
+      await modal.alert({
+        tone: 'success',
+        title: 'Cấp quyền thành công',
+        message: 'Đã cấp quyền sử dụng mẫu thiệp cho tài khoản được chọn.'
+      })
+    } catch (e) {
+      await modal.alert({ tone: 'danger', title: 'Lỗi', message: errText(e) })
+    } finally {
+      setGrantBusy(false)
+    }
   }
 
   const toggleGrant = async (p) => {
@@ -624,31 +671,175 @@ function DetailDialog({ id, onClose, onChanged }) {
         </>
       )}
 
-      <div style={S.sectionTitle}>Cấp quyền riêng ({t.permissions.length})</div>
-      <div style={S.row}>
-        <select style={S.select} value={grant.grantee_type}
-          onChange={(e) => setGrant({ ...grant, grantee_type: e.target.value })}>
-          {Object.entries(GRANTEE).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
-        </select>
-        <input style={{ ...S.search, flex: 1 }} placeholder="Nhập tên đăng nhập (username), tên hoặc dán ID..."
-          value={grant.grantee_id} onChange={(e) => setGrant({ ...grant, grantee_id: e.target.value })} />
-        <button style={S.primary} onClick={addGrant}>Cấp quyền</button>
-      </div>
-      <div style={S.muted}>
-        Cấp cho một CTV thì <strong>mọi khách của CTV đó</strong> cũng dùng được mẫu này.
+      <div style={S.sectionTitle}>
+        Cấp quyền sử dụng mẫu thiệp ({t.permissions.length} tài khoản)
       </div>
 
-      <div style={S.grantList}>
-        {t.permissions.length === 0 && <div style={S.muted}>Chưa cấp cho ai.</div>}
-        {t.permissions.map((p) => (
-          <div key={p.id} style={{ ...S.grantRow, opacity: p.enabled ? 1 : 0.55 }}>
-            <span style={S.grantType}>{GRANTEE[p.grantee_type] || p.grantee_type}</span>
-            <span style={S.grantName}>{p.grantee_name || p.grantee_id}</span>
-            <button style={S.mini} onClick={() => toggleGrant(p)}>{p.enabled ? 'Tắt' : 'Bật'}</button>
-            <button style={{ ...S.mini, ...S.miniDanger }} onClick={() => revoke(p)}>Thu hồi</button>
-          </div>
-        ))}
+      {t.visibility === 'public' && (
+        <div style={{ padding: '10px 14px', background: '#ecfdf5', border: '1px solid #a7f3d0', borderRadius: 8, color: '#065f46', fontSize: 13, marginBottom: 12 }}>
+          🟢 <strong>Mẫu đang Công khai (Public):</strong> Toàn bộ khách hàng &amp; CTV đều có thể chọn và sử dụng mẫu này. Cấp quyền riêng dưới đây sẽ có hiệu lực ngay khi bạn chuyển mẫu sang chế độ <strong>Giới hạn</strong> hoặc <strong>Độc quyền</strong>.
+        </div>
+      )}
+      {t.visibility === 'restricted' && (
+        <div style={{ padding: '10px 14px', background: '#fffbeb', border: '1px solid #fde68a', borderRadius: 8, color: '#92400e', fontSize: 13, marginBottom: 12 }}>
+          🔒 <strong>Mẫu Giới hạn (Restricted):</strong> Chỉ các tài khoản có trong bảng theo dõi dưới đây mới có quyền nhìn thấy và sử dụng mẫu này.
+        </div>
+      )}
+
+      {/* Form cấp quyền với ô Chọn tài khoản */}
+      <div style={{ background: '#fcfaf7', border: '1px solid #ede5db', borderRadius: 10, padding: 14, marginBottom: 16 }}>
+        <div style={{ fontSize: 12.5, fontWeight: 600, color: '#1f1917', marginBottom: 8 }}>
+          Chọn tài khoản được cấp quyền:
+        </div>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap', marginBottom: 8 }}>
+          <select
+            style={{ ...S.select, flex: 2, minWidth: 260, height: 40 }}
+            value={selectedKey}
+            onChange={(e) => {
+              setSelectedKey(e.target.value)
+              if (e.target.value) setGrant({ ...grant, grantee_id: '' })
+            }}
+          >
+            <option value="">-- Bấm để chọn tài khoản từ hệ thống --</option>
+            {grantees.filter((g) => g.grantee_type === 'user').length > 0 && (
+              <optgroup label="👤 Tài khoản người dùng (User Accounts)">
+                {grantees.filter((g) => g.grantee_type === 'user').map((g) => (
+                  <option key={`user:${g.grantee_id}`} value={`user:${g.grantee_id}`}>
+                    {g.label}
+                  </option>
+                ))}
+              </optgroup>
+            )}
+            {grantees.filter((g) => g.grantee_type === 'ctv').length > 0 && (
+              <optgroup label="💼 Cộng tác viên (CTV)">
+                {grantees.filter((g) => g.grantee_type === 'ctv').map((g) => (
+                  <option key={`ctv:${g.grantee_id}`} value={`ctv:${g.grantee_id}`}>
+                    {g.label}
+                  </option>
+                ))}
+              </optgroup>
+            )}
+            {grantees.filter((g) => g.grantee_type === 'customer').length > 0 && (
+              <optgroup label="💍 Khách hàng của CTV (Customers)">
+                {grantees.filter((g) => g.grantee_type === 'customer').map((g) => (
+                  <option key={`customer:${g.grantee_id}`} value={`customer:${g.grantee_id}`}>
+                    {g.label}
+                  </option>
+                ))}
+              </optgroup>
+            )}
+          </select>
+
+          <input
+            style={{ ...S.search, flex: 1, minWidth: 160, height: 40 }}
+            placeholder="Ghi chú (không bắt buộc)..."
+            value={grantNote}
+            onChange={(e) => setGrantNote(e.target.value)}
+          />
+
+          <button
+            style={{ ...S.primary, height: 40, padding: '0 20px', whiteSpace: 'nowrap' }}
+            disabled={grantBusy || (!selectedKey && !grant.grantee_id.trim())}
+            onClick={addGrant}
+          >
+            {grantBusy ? 'Đang cấp...' : '+ Cấp quyền ngay'}
+          </button>
+        </div>
+
+        <div style={{ fontSize: 11.5, color: '#8a7a6f', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 6 }}>
+          <span>💡 Hoặc nhập trực tiếp tên đăng nhập (nếu không chọn từ danh sách):</span>
+          <input
+            style={{ ...S.search, width: 220, height: 28, fontSize: 12, padding: '0 8px' }}
+            placeholder="Nhập username (VD: chienhang)..."
+            value={grant.grantee_id}
+            onChange={(e) => {
+              setGrant({ ...grant, grantee_id: e.target.value })
+              if (e.target.value) setSelectedKey('')
+            }}
+          />
+        </div>
       </div>
+
+      {/* Bảng theo dõi tài khoản được sử dụng thiệp */}
+      <div style={{ fontSize: 13, fontWeight: 700, color: '#1f1917', marginBottom: 6 }}>
+        Bảng theo dõi tài khoản được sử dụng thiệp ({t.permissions.length})
+      </div>
+
+      {t.permissions.length === 0 ? (
+        <div style={{ ...S.muted, padding: '24px 16px', textAlign: 'center', background: '#fdfcfb', border: '1px dashed #ede5db', borderRadius: 10, marginBottom: 16 }}>
+          Chưa cấp quyền riêng cho tài khoản nào. Hãy chọn tài khoản ở trên và bấm <strong>"+ Cấp quyền ngay"</strong>.
+        </div>
+      ) : (
+        <div style={{ overflowX: 'auto', border: '1px solid #ede5db', borderRadius: 10, background: '#fff', boxShadow: '0 1px 3px rgba(0,0,0,0.03)', marginBottom: 16 }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, textAlign: 'left' }}>
+            <thead>
+              <tr style={{ background: '#fbf9f6', borderBottom: '1px solid #ede5db', color: '#6e625c', fontSize: 12 }}>
+                <th style={{ padding: '10px 14px' }}>Tài khoản / Người dùng</th>
+                <th style={{ padding: '10px 14px' }}>Loại đối tượng</th>
+                <th style={{ padding: '10px 14px' }}>Ngày cấp quyền</th>
+                <th style={{ padding: '10px 14px' }}>Trạng thái</th>
+                <th style={{ padding: '10px 14px', textAlign: 'right' }}>Thao tác</th>
+              </tr>
+            </thead>
+            <tbody>
+              {t.permissions.map((p) => {
+                const typeBadge = {
+                  user: { label: 'Tài khoản người dùng', color: '#1d4ed8', bg: '#eff6ff', border: '#bfdbfe' },
+                  ctv: { label: 'Cộng tác viên (CTV)', color: '#6d28d9', bg: '#f5f3ff', border: '#ddd6fe' },
+                  customer: { label: 'Khách hàng của CTV', color: '#047857', bg: '#ecfdf5', border: '#a7f3d0' },
+                }[p.grantee_type] || { label: p.grantee_type, color: '#4b5563', bg: '#f3f4f6', border: '#e5e7eb' }
+
+                return (
+                  <tr key={p.id} style={{ borderBottom: '1px solid #f6f1eb', opacity: p.enabled ? 1 : 0.65, background: p.enabled ? '#fff' : '#faf9f8' }}>
+                    <td style={{ padding: '10px 14px' }}>
+                      <div style={{ fontWeight: 600, color: '#1f1917' }}>
+                        {p.username ? `@${p.username}` : p.grantee_name || p.grantee_id}
+                      </div>
+                      {p.grantee_name && p.grantee_name !== p.username && (
+                        <div style={{ fontSize: 11.5, color: '#8a7a6f' }}>Tên: {p.grantee_name}</div>
+                      )}
+                      {p.note && (
+                        <div style={{ fontSize: 11, color: '#9a8f88', fontStyle: 'italic', marginTop: 2 }}>
+                          Ghi chú: {p.note}
+                        </div>
+                      )}
+                    </td>
+                    <td style={{ padding: '10px 14px' }}>
+                      <span style={{ display: 'inline-block', padding: '3px 8px', borderRadius: 6, fontSize: 11.5, fontWeight: 600, color: typeBadge.color, background: typeBadge.bg, border: `1px solid ${typeBadge.border}` }}>
+                        {typeBadge.label}
+                      </span>
+                    </td>
+                    <td style={{ padding: '10px 14px', color: '#6e625c', fontSize: 12 }}>
+                      {p.created_at ? new Date(p.created_at).toLocaleDateString('vi-VN', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit', year: 'numeric' }) : '—'}
+                    </td>
+                    <td style={{ padding: '10px 14px' }}>
+                      {p.enabled ? (
+                        <span style={{ color: '#059669', fontWeight: 600, fontSize: 12, display: 'inline-flex', alignItems: 'center', gap: 5 }}>
+                          <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#10b981', display: 'inline-block' }}></span>
+                          Đang cho phép
+                        </span>
+                      ) : (
+                        <span style={{ color: '#9ca3af', fontSize: 12, display: 'inline-flex', alignItems: 'center', gap: 5 }}>
+                          <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#d1d5db', display: 'inline-block' }}></span>
+                          Đã tạm tắt
+                        </span>
+                      )}
+                    </td>
+                    <td style={{ padding: '10px 14px', textAlign: 'right', whiteSpace: 'nowrap' }}>
+                      <button style={{ ...S.mini, marginRight: 6 }} onClick={() => toggleGrant(p)}>
+                        {p.enabled ? 'Tạm tắt' : 'Kích hoạt'}
+                      </button>
+                      <button style={{ ...S.mini, ...S.miniDanger }} onClick={() => revoke(p)}>
+                        Thu hồi quyền
+                      </button>
+                    </td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
 
       {t.manifest && (
         <>

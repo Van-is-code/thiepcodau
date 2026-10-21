@@ -154,4 +154,11 @@ const revoke = async (req, res) => {
   catch (e) { return fail(res, e); }
 };
 
-module.exports = { previewTheme, discardPreview, importTheme, list, detail, update, remove, grant, toggleGrant, revoke };
+const listEligibleGrantees = async (req, res) => {
+  try {
+    const data = await templateAdminService.listEligibleGrantees(req.query);
+    return ok(res, data, 'Danh sách đối tượng có thể cấp quyền');
+  } catch (e) { return fail(res, e); }
+};
+
+module.exports = { previewTheme, discardPreview, importTheme, list, detail, update, remove, grant, toggleGrant, revoke, listEligibleGrantees };
