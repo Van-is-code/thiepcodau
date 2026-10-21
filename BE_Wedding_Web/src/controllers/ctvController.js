@@ -82,6 +82,19 @@ const getCustomerCards = async (req, res) => {
   catch (e) { fail(res, e); }
 };
 
+const createCustomerInvitation = async (req, res) => {
+  try {
+    const data = await customerService.createCustomerInvitation(req.params.id, req.ctv, req.body || {}, ctxOf(req));
+    ok(res, data, 'Đã tạo thiệp cho khách', 201);
+  } catch (e) { fail(res, e); }
+};
+
+const deleteCustomerInvitation = async (req, res) => {
+  try {
+    ok(res, await customerService.deleteCustomerInvitation(req.params.id, req.params.invitationId, req.ctv, ctxOf(req)), 'Đã xoá thiệp');
+  } catch (e) { fail(res, e); }
+};
+
 // ---- Đơn hàng ----
 const createOrder = async (req, res) => {
   try {
@@ -178,6 +191,8 @@ module.exports = {
   updateCustomer,
   getCustomerOrders,
   getCustomerCards,
+  createCustomerInvitation,
+  deleteCustomerInvitation,
   createOrder,
   listOrders,
   getOrder,

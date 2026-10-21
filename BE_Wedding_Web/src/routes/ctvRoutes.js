@@ -18,6 +18,8 @@ router.get('/customers/:id', ctv.getCustomer);
 router.patch('/customers/:id', ctv.updateCustomer);
 router.get('/customers/:id/orders', ctv.getCustomerOrders);
 router.get('/customers/:id/cards', ctv.getCustomerCards);
+router.post('/customers/:id/invitations', ctv.createCustomerInvitation);
+router.delete('/customers/:id/invitations/:invitationId', ctv.deleteCustomerInvitation);
 
 // Đơn hàng
 router.post('/orders', ctv.createOrder);

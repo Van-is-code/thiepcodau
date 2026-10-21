@@ -5,7 +5,7 @@ import { useModal } from '../../components/Modal'
 import {
   IconSparkles, IconUsers, IconMail, IconCreditCard, IconSettings,
   IconChevronLeft, IconPlus, IconSearch, IconQrCode, IconRefreshCw, IconCopy,
-  IconExternalLink, IconCheckCircle, IconAlertCircle, IconEdit3, IconX,
+  IconExternalLink, IconCheckCircle, IconAlertCircle, IconEdit3, IconX, IconTrash2, IconKey, IconLock,
 } from '../../components/Icons'
 
 const money = (v) => `${Number(v || 0).toLocaleString('vi-VN')} ₫`
@@ -260,13 +260,26 @@ function CustomerDetail({ id, onBack, me, onChanged }) {
   const [product, setProduct] = useState('single')
   const [newOrder, setNewOrder] = useState(null)
   const [busy, setBusy] = useState(false)
+  const [templates, setTemplates] = useState([])
+  const [tplId, setTplId] = useState('')
+  const [creatingCard, setCreatingCard] = useState(false)
   const locked = me?.profile?.status === 'locked'
 
   const load = useCallback(() => {
     api.ctv.getCustomer(id).then((r) => setD(r.data?.data || r.data)).catch((e) => setErr(e?.response?.data?.message || e.message))
     api.ctv.customerCards(id).then((r) => setCards(r.data?.data || r.data)).catch(() => {})
   }, [id])
-  useEffect(() => { load() }, [load])
+
+  useEffect(() => {
+    load()
+    api.getTemplates()
+      .then((r) => {
+        const list = (r.data?.data?.items || r.data?.data || r.data || []).filter(Boolean)
+        setTemplates(list)
+        if (list[0]) setTplId(list[0].id)
+      })
+      .catch(() => {})
+  }, [load])
 
   const priceOf = (p) => (p === 'combo' ? me?.profile?.combo_price : me?.profile?.single_price)
   const rate = Number(me?.profile?.commission_rate || 0)
@@ -287,6 +300,85 @@ function CustomerDetail({ id, onBack, me, onChanged }) {
     } finally { setBusy(false) }
   }
 
+  const createCardForCustomer = async () => {
+    if (!tplId) return
+    setCreatingCard(true)
+    try {
+      const r = await api.ctv.createCustomerInvitation(id, tplId)
+      const inv = r.data?.data || r.data
+      await modal.alert({
+        tone: 'success',
+        title: 'Đã tạo thiệp cho khách',
+        message: 'Đã tạo thiệp mới cho khách ' + (d?.customer?.name || d?.customer?.username) + '.\nChuyển sang trình sửa để thiết kế thiệp ngay?',
+        confirmText: 'Mở trình sửa ngay',
+      })
+      navigate('/editor/' + inv.id)
+      load()
+      onChanged?.()
+    } catch (e) {
+      await modal.alert({ tone: 'danger', title: 'Lỗi tạo thiệp', message: e?.response?.data?.message || e.message })
+    } finally {
+      setCreatingCard(false)
+    }
+  }
+
+  const deleteCard = async (inv) => {
+    const ok = await modal.confirm({
+      tone: 'danger',
+      title: 'Xoá thiệp',
+      confirmText: 'Xoá vĩnh viễn',
+      message: 'Bạn có chắc muốn xoá thiệp "' + (inv.title_vi || 'Thiệp cưới') + '" của khách này? Mọi dữ liệu hình ảnh, lời chúc đi kèm sẽ bị xoá.',
+    })
+    if (!ok) return
+    try {
+      await api.ctv.deleteCustomerInvitation(id, inv.id)
+      load()
+      onChanged?.()
+    } catch (e) {
+      await modal.alert({ tone: 'danger', title: 'Lỗi', message: e?.response?.data?.message || e.message })
+    }
+  }
+
+  const resetPassword = async () => {
+    const pwd = await modal.prompt({
+      title: 'Đổi mật khẩu cho khách',
+      message: 'Nhập mật khẩu mới cho tài khoản "' + (d?.customer?.username) + '":',
+      placeholder: 'Mật khẩu mới (tối thiểu 6 ký tự)',
+      confirmText: 'Lưu mật khẩu',
+    })
+    if (!pwd) return
+    if (pwd.length < 6) {
+      await modal.alert({ tone: 'danger', title: 'Lỗi', message: 'Mật khẩu phải từ 6 ký tự trở lên' })
+      return
+    }
+    try {
+      await api.ctv.updateCustomer(id, { password: pwd })
+      await modal.alert({ tone: 'success', title: 'Thành công', message: 'Đã cập nhật mật khẩu cho khách "' + d?.customer?.username + '". Mật khẩu mới: ' + pwd })
+      load()
+    } catch (e) {
+      await modal.alert({ tone: 'danger', title: 'Lỗi', message: e?.response?.data?.message || e.message })
+    }
+  }
+
+  const activateCustomer = async () => {
+    const nextStatus = d?.customer?.status === 'active' ? 'pending_payment' : 'active'
+    try {
+      await api.ctv.updateCustomer(id, {
+        status: nextStatus,
+        cards_available: nextStatus === 'active' ? Math.max(1, d?.customer?.cards_available || 0) : d?.customer?.cards_available
+      })
+      await modal.alert({
+        tone: 'success',
+        title: 'Cập nhật trạng thái',
+        message: 'Tài khoản khách hiện là: ' + (nextStatus === 'active' ? 'Đang hoạt động (Active)' : 'Chờ kích hoạt')
+      })
+      load()
+      onChanged?.()
+    } catch (e) {
+      await modal.alert({ tone: 'danger', title: 'Lỗi', message: e?.response?.data?.message || e.message })
+    }
+  }
+
   const copy = (txt) => { navigator.clipboard?.writeText(txt); }
 
   if (err) return <><button style={S.btnGhost} onClick={onBack}><IconChevronLeft size={14} /> Quay lại</button><div style={S.err}>⚠️ {err}</div></>
@@ -295,13 +387,22 @@ function CustomerDetail({ id, onBack, me, onChanged }) {
 
   return (
     <>
-      <button style={S.btnGhost} onClick={onBack}><IconChevronLeft size={14} /> Danh sách khách</button>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+        <button style={S.btnGhost} onClick={onBack}><IconChevronLeft size={14} /> Danh sách khách</button>
+        <div style={{ display: 'flex', gap: 8 }}>
+          <button style={S.btnGhost} onClick={resetPassword}><IconKey size={14} /> Đổi mật khẩu</button>
+          <button style={S.btnGhost} onClick={activateCustomer}>
+            <IconCheckCircle size={14} color={c.status === 'active' ? '#4f7e65' : '#6e625c'} />
+            {c.status === 'active' ? 'Khoá tạm thời' : 'Kích hoạt ngay'}
+          </button>
+        </div>
+      </div>
 
       <div style={S.panel}>
         <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10 }}>
           <div>
             <h3 style={S.h3}>{c.name || c.username}</h3>
-            <div style={S.tiny}>{c.username} · {c.phone || 'chưa có SĐT'} · {c.email || 'chưa có email'}</div>
+            <div style={S.tiny}>Tên đăng nhập: <b>{c.username}</b> · {c.phone || 'chưa có SĐT'} · {c.email || 'chưa có email'}</div>
           </div>
           <Badge s={c.status} big />
         </div>
@@ -312,9 +413,59 @@ function CustomerDetail({ id, onBack, me, onChanged }) {
         </div>
       </div>
 
-      {/* Tạo đơn mới */}
+      {/* Tạo thiệp hộ khách - Tính năng quản trị thiệp */}
       <div style={S.panel}>
-        <h3 style={S.h3}>Tạo đơn mới</h3>
+        <h3 style={S.h3}>Tạo thiệp cho khách này</h3>
+        <p style={{ ...S.tiny, marginBottom: 12 }}>
+          CTV có thể chọn bất kỳ mẫu thiệp nào dưới đây để khởi tạo thiệp và vào thẳng trình sửa để thiết kế hộ khách hàng.
+        </p>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+          <select style={{ ...S.input, minWidth: 220 }} value={tplId} onChange={(e) => setTplId(e.target.value)}>
+            {templates.length === 0 && <option value="">(chưa có mẫu)</option>}
+            {templates.map((t) => (
+              <option key={t.id} value={t.id}>{t.template_name || t.template_code}</option>
+            ))}
+          </select>
+          <button style={S.btnMain} onClick={createCardForCustomer} disabled={creatingCard || !tplId || locked}>
+            <IconPlus size={14} />
+            <span>{creatingCard ? 'Đang tạo...' : 'Tạo thiệp cho khách này'}</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Thiệp của khách */}
+      <div style={S.panel}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+          <h3 style={S.h3}>Danh sách thiệp của khách</h3>
+          <span style={S.tiny}>{cards?.invitations?.length || 0} thiệp</span>
+        </div>
+        {cards?.invitations?.length ? cards.invitations.map((i) => (
+          <div key={i.id} style={{ ...S.cardRow, display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 14px', border: '1px solid #ede5db', borderRadius: 10, marginBottom: 8, background: '#fdfcfb' }}>
+            <div style={{ flex: 1, minWidth: 0, marginRight: 12 }}>
+              <div style={{ fontWeight: 600, fontSize: 14 }}>{i.title_vi || 'Thiệp cưới'}</div>
+              <div style={S.tiny}>{i.groom || 'Chú rể'} &amp; {i.bride || 'Cô dâu'} · Slug: {i.slug}</div>
+            </div>
+            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+              <button style={S.mini} onClick={() => window.open('/invitation/' + i.slug, '_blank')}>
+                <IconExternalLink size={12} /> Xem thiệp
+              </button>
+              <button style={{ ...S.mini, background: '#d97757', color: '#fff', border: 'none' }} onClick={() => navigate('/editor/' + i.id)}>
+                <IconEdit3 size={12} /> Sửa thiệp
+              </button>
+              <button style={{ ...S.mini, color: '#c04938', borderColor: '#f0c8c0' }} onClick={() => deleteCard(i)}>
+                <IconTrash2 size={12} /> Xoá
+              </button>
+            </div>
+          </div>
+        )) : <p style={S.tiny}>Khách chưa có thiệp nào. Bấm nút "Tạo thiệp cho khách này" ở trên để tạo thiệp mới.</p>}
+      </div>
+
+      {/* Tạo đơn mới & mã QR */}
+      <div style={S.panel}>
+        <h3 style={S.h3}>Tạo đơn thanh toán payOS cho khách</h3>
+        <p style={{ ...S.tiny, marginBottom: 12 }}>
+          Nếu khách tự thanh toán quét mã QR qua ngân hàng, tạo đơn tại đây để lấy mã thanh toán gửi cho khách.
+        </p>
         <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', alignItems: 'center' }}>
           <label style={S.radio}>
             <input type="radio" name="p" checked={product === 'single'} onChange={() => setProduct('single')} /> 1 thiệp — {money(priceOf('single'))}
@@ -328,15 +479,16 @@ function CustomerDetail({ id, onBack, me, onChanged }) {
           <WBlock label="Hoa hồng nền tảng" val={money(preview.commission)} />
           <WBlock label="CTV nhận" val={money(preview.earn)} />
         </div>
-        <p style={S.tiny}>Giá &amp; hoa hồng do hệ thống chốt tại thời điểm tạo đơn (số trên chỉ để xem trước).</p>
-        <button style={S.btnMain} disabled={busy || locked} onClick={createOrder}>
-          <IconQrCode size={14} /> Tạo đơn &amp; mã thanh toán
-        </button>
+        <div style={{ marginTop: 12 }}>
+          <button style={S.btnMain} disabled={busy || locked} onClick={createOrder}>
+            <IconQrCode size={14} /> Tạo đơn &amp; mã thanh toán
+          </button>
+        </div>
 
         {newOrder && (
           <div style={S.qrCard}>
             <img alt="QR" width={180} height={180} style={S.qr}
-              src={`https://api.qrserver.com/v1/create-qr-code/?size=220x220&margin=0&data=${encodeURIComponent(newOrder.checkout?.qr || newOrder.checkout?.checkoutUrl || '')}`} />
+              src={'https://api.qrserver.com/v1/create-qr-code/?size=220x220&margin=0&data=' + encodeURIComponent(newOrder.checkout?.qr || newOrder.checkout?.checkoutUrl || '')} />
             <div style={{ flex: 1, minWidth: 200 }}>
               <div style={S.tiny}>Số tiền</div>
               <div style={{ fontSize: 20, fontWeight: 700, color: '#c96547' }}>{money(newOrder.order?.amount)}</div>
@@ -348,22 +500,6 @@ function CustomerDetail({ id, onBack, me, onChanged }) {
             </div>
           </div>
         )}
-      </div>
-
-      {/* Thiệp của khách */}
-      <div style={S.panel}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <h3 style={S.h3}>Thiệp của khách</h3>
-          {cards && <span style={S.tiny}>{cards.can_edit ? 'Có thể chỉnh sửa' : 'Chưa kích hoạt — không sửa được'}</span>}
-        </div>
-        {cards?.invitations?.length ? cards.invitations.map((i) => (
-          <div key={i.id} style={S.cardRow}>
-            <div><b>{i.title_vi || 'Thiệp cưới'}</b><div style={S.tiny}>{i.groom} &amp; {i.bride}</div></div>
-            <button style={S.mini} disabled={!cards.can_edit} onClick={() => navigate(`/editor/${i.id}`)}>
-              <IconEdit3 size={12} /> Sửa thiệp
-            </button>
-          </div>
-        )) : <p style={S.tiny}>Chưa có thiệp nào.</p>}
       </div>
 
       {/* Lịch sử đơn */}

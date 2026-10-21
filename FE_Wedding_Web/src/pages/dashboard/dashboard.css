@@ -55,7 +55,7 @@
 }
 
 .sb-mark {
-  font-family: var(--font-serif);
+  font-family: var(--font-sans);
   font-size: 22px;
   font-weight: 600;
   color: var(--text-main);
@@ -275,7 +275,7 @@
 }
 
 .ph-t {
-  font-family: var(--font-serif);
+  font-family: var(--font-sans);
   font-size: 34px;
   font-weight: 600;
   color: var(--text-main);

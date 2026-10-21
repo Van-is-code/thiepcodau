@@ -191,6 +191,10 @@ export const api = {
     updateCustomer: (id, data) => apiClient.patch(`/api/ctv/customers/${id}`, data),
     customerOrders: (id, params = {}) => apiClient.get(`/api/ctv/customers/${id}/orders`, { params }),
     customerCards: (id) => apiClient.get(`/api/ctv/customers/${id}/cards`),
+    createCustomerInvitation: (customerId, templateId) =>
+      apiClient.post(`/api/ctv/customers/${customerId}/invitations`, { template_id: templateId }),
+    deleteCustomerInvitation: (customerId, invitationId) =>
+      apiClient.delete(`/api/ctv/customers/${customerId}/invitations/${invitationId}`),
 
     createOrder: (customerId, productCode) =>
       apiClient.post('/api/ctv/orders', { customerId, productCode }),

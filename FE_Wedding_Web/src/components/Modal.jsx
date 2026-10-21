@@ -162,7 +162,7 @@ const S = {
     minWidth: 0,
   },
   title: {
-    fontFamily: "'Cormorant Garamond', Georgia, serif",
+    fontFamily: "'Plus Jakarta Sans', sans-serif",
     fontSize: 22,
     fontWeight: 600,
     color: '#1f1917',

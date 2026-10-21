@@ -90,7 +90,7 @@ const S = {
     marginBottom: 16,
   },
   title: {
-    fontFamily: "'Cormorant Garamond', serif",
+    fontFamily: "'Plus Jakarta Sans', sans-serif",
     fontSize: 32,
     fontWeight: 600,
     margin: '8px 0 14px',

@@ -160,22 +160,112 @@ const getCustomerDetail = async (customerId, ctv) => {
   };
 };
 
-const updateCustomer = async (customerId, ctv, { name, email, phone }, ctx = {}) => {
+const updateCustomer = async (customerId, ctv, { name, email, phone, password, status, cards_available }, ctx = {}) => {
   assertCtvActive(ctv);
   const customer = await getCustomerOwnedByCtv(customerId, ctv);
-  const before = { name: customer.name, email: customer.email, phone: customer.phone };
+  const before = { name: customer.name, email: customer.email, phone: customer.phone, status: customer.status };
   if (name !== undefined) customer.name = String(name).trim();
   if (email !== undefined) customer.email = email ? String(email).trim() : null;
   if (phone !== undefined) customer.phone = phone ? String(phone).trim() : null;
+  if (status !== undefined && ['pending_payment', 'active', 'locked'].includes(status)) {
+    customer.status = status;
+    if (status === 'active' && !customer.activated_at) customer.activated_at = new Date();
+  }
+  if (cards_available !== undefined && Number.isInteger(Number(cards_available))) {
+    const newAvail = Math.max(0, Number(cards_available));
+    customer.cards_purchased = customer.cards_used + newAvail;
+    customer.cards_available = newAvail;
+  }
   customer.updated_at = new Date();
   await customer.save();
+
+  if (password) {
+    const user = await User.findByPk(customer.user_id);
+    if (user) {
+      user.password = await bcrypt.hash(password, BCRYPT_ROUNDS);
+      user.updated_at = new Date();
+      await user.save();
+    }
+  }
+  if (cards_available !== undefined) {
+    await User.update({ slot: customer.cards_available, updated_at: new Date() }, { where: { id: customer.user_id } });
+  }
+
   await auditService.log({
     actorType: 'ctv', actorId: ctx.actorId || null,
     action: 'customer.update', entityType: 'customer', entityId: customer.id,
-    oldValue: before, newValue: { name: customer.name, email: customer.email, phone: customer.phone },
+    oldValue: before, newValue: { name: customer.name, email: customer.email, phone: customer.phone, status: customer.status },
     ip: ctx.ip || null
   });
   return publicCustomer(customer);
+};
+
+const createCustomerInvitation = async (customerId, ctv, { template_id }, ctx = {}) => {
+  assertCtvActive(ctv);
+  if (!template_id) {
+    const e = new Error('Vui lòng chọn mẫu thiệp (template_id)');
+    e.status = 400;
+    throw e;
+  }
+  const customer = await getCustomerOwnedByCtv(customerId, ctv);
+  if (customer.status !== 'active') {
+    customer.status = 'active';
+    customer.activated_at = new Date();
+  }
+
+  const invitationService = require('./invitationService');
+  const inv = await invitationService.createDraft(template_id, customer.user_id, {
+    chargeSlot: false,
+    actor: { id: ctv.user_id, role: 'ctv' }
+  });
+
+  customer.cards_purchased = Math.max(Number(customer.cards_purchased) || 0, (Number(customer.cards_used) || 0) + 1);
+  customer.cards_used = (Number(customer.cards_used) || 0) + 1;
+  customer.cards_available = Math.max(customer.cards_purchased - customer.cards_used, 0);
+  customer.updated_at = new Date();
+  await customer.save();
+
+  await User.update({ slot: customer.cards_available, updated_at: new Date() }, { where: { id: customer.user_id } });
+
+  await auditService.log({
+    actorType: 'ctv', actorId: ctx.actorId || null,
+    action: 'customer.create_invitation', entityType: 'invitation', entityId: inv.id,
+    newValue: { customer_id: customer.id, template_id, invitation_id: inv.id },
+    ip: ctx.ip || null
+  });
+
+  return inv;
+};
+
+const deleteCustomerInvitation = async (customerId, invitationId, ctv, ctx = {}) => {
+  assertCtvActive(ctv);
+  const customer = await getCustomerOwnedByCtv(customerId, ctv);
+  const invitation = await Invitation.findOne({
+    where: { id: invitationId, users_id: customer.user_id }
+  });
+  if (!invitation) {
+    const e = new Error('Không tìm thấy thiệp của khách này');
+    e.status = 404;
+    throw e;
+  }
+  await invitation.destroy();
+
+  if (customer.cards_used > 0) {
+    customer.cards_used = Math.max(0, customer.cards_used - 1);
+    customer.cards_available = Math.max(customer.cards_purchased - customer.cards_used, 0);
+    customer.updated_at = new Date();
+    await customer.save();
+    await User.update({ slot: customer.cards_available, updated_at: new Date() }, { where: { id: customer.user_id } });
+  }
+
+  await auditService.log({
+    actorType: 'ctv', actorId: ctx.actorId || null,
+    action: 'customer.delete_invitation', entityType: 'invitation', entityId: invitationId,
+    newValue: { customer_id: customer.id, invitation_id: invitationId },
+    ip: ctx.ip || null
+  });
+
+  return true;
 };
 
 const getCustomerCards = async (customerId, ctv) => {
@@ -216,6 +306,8 @@ module.exports = {
   getCustomerOwnedByCtv,
   getCustomerDetail,
   updateCustomer,
+  createCustomerInvitation,
+  deleteCustomerInvitation,
   getCustomerCards,
   publicCustomer
 };
