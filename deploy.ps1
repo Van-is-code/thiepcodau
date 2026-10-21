@@ -249,7 +249,7 @@ if [[ "`$ACTION" == "update" || "`$ACTION" == "up" || "`$ACTION" == "pull-only" 
         cd "`$TARGET_DIR"
         git fetch origin "`$BRANCH"
         git reset --hard "origin/`$BRANCH"
-        git clean -fd
+        git clean -fd -e BE_Wedding_Web/uploads/ -e uploads/
     fi
 fi
 

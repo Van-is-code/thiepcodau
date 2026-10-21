@@ -590,13 +590,13 @@ const buildDomInjectScript = (editMode) => `
         imgEl.style.removeProperty('background-color');
         if (IMG) { IMG.applyImg(imgEl, item, isPriority); }
         else { imgEl.src = item.image_url; }
-      } else if (IMG) {
-        IMG.applyBackground(bgTarget, item, isPriority);
       } else {
-        // Mẫu kiểu Ladipage vẽ ảnh bằng CSS background-image trên .ladi-image-background
-        // hoặc .ladi-box (không phải <img>) — dò theo thứ tự, phần tử gốc là fallback cuối.
+        // Gán thẳng URL ảnh thật vào background-image, không dùng ảnh mờ hay placeholder
         bgTarget.style.removeProperty('background-size');
         bgTarget.style.removeProperty('background-color');
+        bgTarget.style.setProperty('filter', 'none', 'important');
+        bgTarget.style.setProperty('background-size', 'cover', 'important');
+        bgTarget.style.setProperty('background-position', 'center', 'important');
         bgTarget.style.setProperty('background-image', 'url("' + item.image_url + '")', 'important');
       }
       imgEl.classList.add('ww-img-loaded');

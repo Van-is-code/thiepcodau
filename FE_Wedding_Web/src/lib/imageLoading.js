@@ -171,13 +171,7 @@ export const buildImageLoadingScript = () => `
     }
 
     // Nền là ảnh nhoè (hoặc màu chủ đạo) trong lúc chờ -> không còn ô trắng.
-    if (item.blur_data_url) {
-      el.style.setProperty('background-image', 'url("' + item.blur_data_url + '")');
-      el.style.setProperty('background-size', 'cover');
-      el.style.setProperty('background-position', 'center');
-    } else if (item.dominant_color) {
-      el.style.setProperty('background-color', item.dominant_color);
-    }
+    el.style.removeProperty("background-image");
     el.addEventListener('load', function () {
       el.style.removeProperty('background-image');
       el.classList.add('ww-img-loaded');
