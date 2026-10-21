@@ -583,7 +583,7 @@ const buildDomInjectScript = (editMode) => `
       imgEl.classList.remove('ww-img-empty');
       // Ảnh đầu tiên (ảnh bìa / sort_order nhỏ nhất) là ảnh quyết định điểm LCP —
       // tải ngay với độ ưu tiên cao. Các ảnh còn lại lazy-load. Xem lib/imageLoading.js.
-      var isPriority = (k === 0) || item.is_cover === true;
+      var isPriority = (k === 0) || item.is_cover === true || EDIT_MODE;
       var IMG = window.__weddingWebImage;
       if (imgEl.tagName === 'IMG') {
         imgEl.style.removeProperty('object-fit');
@@ -599,6 +599,9 @@ const buildDomInjectScript = (editMode) => `
         bgTarget.style.removeProperty('background-color');
         bgTarget.style.setProperty('background-image', 'url("' + item.image_url + '")', 'important');
       }
+      imgEl.classList.add('ww-img-loaded');
+      bgTarget.classList.add('ww-img-loaded');
+      if (imgEl.parentElement) imgEl.parentElement.classList.add('ww-img-loaded');
     }
 
     try { renderCeremonyCalendar(data); } catch (e) {}
@@ -1265,10 +1268,8 @@ export const buildIframeDocument = (htmlContent, invitation, options = {}) => {
   const imageStyleTag = `<style>
     [data-image] { background-repeat: no-repeat; background-position: center; }
     img[data-image] { transition: filter .35s ease, opacity .35s ease; }
-    img[data-image]:not(.ww-img-loaded) { filter: blur(6px); }
-    img[data-image].ww-img-loaded { filter: none; }
-    [data-image]:not(img):not(.ww-img-loaded) { filter: blur(4px); transition: filter .35s ease; }
-    [data-image].ww-img-loaded { filter: none; }
+    [data-image] { filter: none !important; }
+    img[data-image] { filter: none !important; opacity: 1; }
   </style>`
 
   const imageScriptTag = `<script>${buildImageLoadingScript()}</script>`

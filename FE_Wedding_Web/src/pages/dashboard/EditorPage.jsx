@@ -637,8 +637,6 @@ export default function EditorPage() {
             if (cropQueue) { advanceQueue(croppedFile); return }
             setCropTask(null)
             const inv = await saveImage(t.field, t.index, croppedFile)
-            // Album carousel của LadiPage cần init lại sạch sau khi đổi ảnh.
-            if (t.field === 'gallery' && inv) rebuildIframe(inv, pending)
           }}
         />
       )}

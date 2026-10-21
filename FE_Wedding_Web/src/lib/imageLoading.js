@@ -127,12 +127,9 @@ export const buildImageLoadingScript = () => `
           var u = t.getAttribute('data-bg-src');
           if (u) {
             // Tải trước vào bộ nhớ rồi mới gán -> không thấy cảnh ảnh vẽ dở từ trên xuống.
-            var pre = new Image();
-            pre.onload = function () {
-              t.style.setProperty('background-image', 'url("' + u + '")', 'important');
-              t.classList.add('ww-img-loaded');
-            };
-            pre.src = u;
+            t.style.setProperty('background-image', 'url("' + u + '")', 'important');
+            t.classList.add('ww-img-loaded');
+            if (t.parentElement) t.parentElement.classList.add('ww-img-loaded');
             t.removeAttribute('data-bg-src');
           }
           bgObserver.unobserve(t);
@@ -152,6 +149,8 @@ export const buildImageLoadingScript = () => `
       el.setAttribute('sizes', SIZES);
     }
     el.src = item.image_url;
+    el.classList.add('ww-img-loaded');
+    if (el.parentElement) el.parentElement.classList.add('ww-img-loaded');
 
     // width/height thật -> trình duyệt chừa sẵn đúng chỗ, ảnh tải xong không đẩy
     // nội dung bên dưới nhảy xuống (Cumulative Layout Shift).
@@ -200,6 +199,7 @@ export const buildImageLoadingScript = () => `
     if (priority) {
       el.style.setProperty('background-image', 'url("' + url + '")', 'important');
       el.classList.add('ww-img-loaded');
+      if (el.parentElement) el.parentElement.classList.add('ww-img-loaded');
     } else {
       observeBackground(el, url);
     }
