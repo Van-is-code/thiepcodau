@@ -41,18 +41,18 @@ const TemplateLoader = () => {
           throw new Error(`Không tìm thấy thiệp cưới với đường dẫn: ${slug}`)
         }
 
-        // Đọc thông tin khách mời từ link riêng (guest_name mã hoá, hoặc ?guest=, ?to=...)
+        // Đọc thông tin khách mời từ link riêng (link ngắn ?to=..., ?guest=..., mã ?g=..., hoặc token cũ ?guest_name=...)
         const searchParams = new URLSearchParams(window.location.search)
-        const guestNameParam = searchParams.get('guest_name') || searchParams.get('guest') || searchParams.get('gname') || searchParams.get('to') || ''
-        const guestIdParam = searchParams.get('gid') || searchParams.get('guest_id') || ''
+        const guestNameParam = searchParams.get('to') || searchParams.get('guest') || searchParams.get('guest_name') || searchParams.get('gname') || ''
+        const guestCodeParam = searchParams.get('g') || searchParams.get('gid') || searchParams.get('guest_id') || ''
 
         let resolvedGuestName = ''
-        let resolvedGuestId = guestIdParam
+        let resolvedGuestId = guestCodeParam
         let resolvedGuestNote = ''
 
         if (guestNameParam) {
           let tokenSuccess = false
-          // Chuỗi token mã hoá từ BE PrivateInvitation có độ dài >= 30
+          // Chuỗi token mã hoá từ BE PrivateInvitation cũ có độ dài >= 30
           if (guestNameParam.length >= 30) {
             try {
               const guestRes = await api.getPublicGuest(guestNameParam)
@@ -74,6 +74,18 @@ const TemplateLoader = () => {
               resolvedGuestName = guestNameParam.replace(/-/g, ' ').trim()
             }
           }
+        }
+
+        if (guestCodeParam && (!resolvedGuestName || !resolvedGuestNote)) {
+          try {
+            const guestRes = await api.getPublicGuest(guestCodeParam)
+            const gData = guestRes.data?.data || guestRes.data
+            if (gData && gData.name) {
+              if (!resolvedGuestName) resolvedGuestName = gData.name
+              resolvedGuestId = gData.id || resolvedGuestId
+              if (gData.description) resolvedGuestNote = gData.description
+            }
+          } catch (_e) {}
         }
 
         const enrichedInvitation = {

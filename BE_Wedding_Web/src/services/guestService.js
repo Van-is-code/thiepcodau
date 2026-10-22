@@ -1,5 +1,6 @@
 const { randomUUID } = require('crypto');
 const crypto = require('crypto');
+const { Op } = require('sequelize');
 const { sequelize, Guest, Invitation, PrivateInvitation } = require('../models');
 const {
 	pickFilters, pagination, assertUuid, isAdmin, forbidden, unauthorized, notFound,
@@ -140,22 +141,39 @@ const getById = async (id, actor = undefined) => {
 	return item;
 };
 
-// Dùng cho trang thiệp công khai: khách mời mở link riêng có tham số guest_name đã mã hoá.
-//
-// TRƯỚC ĐÂY: GET /api/guests/:id là route CÔNG KHAI và trả về bản ghi đầy đủ chỉ với
-// id -> ai cũng duyệt được toàn bộ danh sách khách mời của mọi đám cưới. Nay muốn đọc
-// tên khách thì phải xuất trình đúng chuỗi đã mã hoá nằm trong link riêng của khách đó.
+// Dùng cho trang thiệp công khai: khách mời mở link riêng có tham số tên và mã ngắn (?to=...&g=...) hoặc token mã hoá cũ
 const getPublicByToken = async (token) => {
-	const payload = decodeGuestToken(token);
-	const item = await Guest.findByPk(payload.id, { attributes: ['id', 'name', 'description'] });
-	if (!item) throw notFound(resourceName);
-	// Chỉ trả đúng phần thiệp cần để chào tên khách, không lộ gì thêm.
-	return {
-		id: item.id,
-		name: item.name,
-		description: item.description || null,
-		invitation_id: payload.invitation_id || null,
-	};
+	if (!token) throw notFound(resourceName);
+	const clean = String(token).trim();
+
+	// Hỗ trợ mã ngắn 8 ký tự hoặc UUID
+	if (clean.length === 8 || clean.length === 36) {
+		const item = await Guest.findOne({
+			where: clean.length === 36 ? { id: clean } : sequelize.where(sequelize.cast(sequelize.col('Guest.id'), 'text'), { [Op.like]: `${clean}%` }),
+			attributes: ['id', 'name', 'description']
+		});
+		if (item) {
+			return {
+				id: item.id,
+				name: item.name,
+				description: item.description || null,
+			};
+		}
+	}
+
+	try {
+		const payload = decodeGuestToken(token);
+		const item = await Guest.findByPk(payload.id, { attributes: ['id', 'name', 'description'] });
+		if (!item) throw notFound(resourceName);
+		return {
+			id: item.id,
+			name: item.name,
+			description: item.description || null,
+			invitation_id: payload.invitation_id || null,
+		};
+	} catch (_err) {
+		throw notFound(resourceName);
+	}
 };
 
 const create = async (payload, actor) => {
@@ -184,14 +202,14 @@ const create = async (payload, actor) => {
 
 	return sequelize.transaction(async (transaction) => {
 		const guest = await Guest.create(data, { transaction });
-		const encryptedGuestValue = buildGuestEncryptedQueryValue(guest, invitationId);
+		const shortCode = guest.id.replace(/-/g, '').slice(0, 8);
 
 		const pInv = await PrivateInvitation.create(
 			{
 				id: randomUUID(),
 				guest_id: guest.id,
 				invitationns_id: invitationId,
-				url: `/${invitation.invitation_slug}?guest_name=${encodeURIComponent(encryptedGuestValue)}`,
+				url: `/${invitation.invitation_slug}?to=${encodeURIComponent(guest.name)}&g=${shortCode}`,
 				created_at: getNowValue(PrivateInvitation.rawAttributes.created_at),
 				updated_at: getNowValue(PrivateInvitation.rawAttributes.updated_at)
 			},

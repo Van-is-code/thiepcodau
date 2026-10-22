@@ -513,6 +513,12 @@ const buildDomInjectScript = (editMode) => `
         rEl.textContent = guestNameUpper;
       }
 
+      // Khớp tên khách ở bìa ngoài phong bì (vobe2.html / #HEADLINE3)
+      var h3 = document.querySelector('#HEADLINE3 .ladi-headline') || document.querySelector('#HEADLINE3');
+      if (h3) {
+        h3.textContent = guestName;
+      }
+
       // Khớp lời mời cụ thể ở phong bì / thiệp LadiPage (#HEADLINE43)
       var h43 = document.querySelector('#HEADLINE43 .ladi-headline');
       if (h43 && !h43.__wwCustomized) {

@@ -99,7 +99,7 @@ export default function GuestsPage() {
     }
     if (g?.url) return g.url
     const base = invitation ? invitationPublicUrl(invitation) : ''
-    return `${base}?guest=${encodeURIComponent(g?.name || '')}`
+    return `${base}?to=${encodeURIComponent(g?.name || '')}`
   }
 
   const openShare = (url, name) => {

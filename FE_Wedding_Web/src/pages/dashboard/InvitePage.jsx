@@ -72,7 +72,7 @@ export default function InvitePage() {
 
   const guestUrl = useMemo(() => {
     if (!publicUrl || !guestName.trim()) return ''
-    return `${publicUrl}?guest=${encodeURIComponent(guestName.trim())}`
+    return `${publicUrl}?to=${encodeURIComponent(guestName.trim())}`
   }, [publicUrl, guestName])
 
   const activeGuestUrl = createdUrl || guestUrl
@@ -128,14 +128,14 @@ export default function InvitePage() {
       if (gData?.privateInvitation?.url) {
         finalUrl = `${window.location.origin}${gData.privateInvitation.url}`
       } else if (publicUrl) {
-        finalUrl = `${publicUrl}?guest=${encodeURIComponent(trimmed)}`
+        finalUrl = `${publicUrl}?to=${encodeURIComponent(trimmed)}`
       }
       setCreatedUrl(finalUrl)
       setGuestLinkVisible(true)
       setGuestSaveSuccess(true)
     } catch (err) {
       console.error('Lỗi khi lưu khách mời:', err)
-      const fallbackUrl = `${publicUrl}?guest=${encodeURIComponent(trimmed)}`
+      const fallbackUrl = `${publicUrl}?to=${encodeURIComponent(trimmed)}`
       setCreatedUrl(fallbackUrl)
       setGuestLinkVisible(true)
     } finally {

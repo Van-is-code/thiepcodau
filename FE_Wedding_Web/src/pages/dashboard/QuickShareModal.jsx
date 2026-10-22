@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { createPortal } from 'react-dom'
 import { IconCopy, IconCheck, IconX, IconRing } from '../../components/Icons'
 
 export default function QuickShareModal({ isOpen, onClose, url, recipientName }) {
@@ -36,9 +37,37 @@ export default function QuickShareModal({ isOpen, onClose, url, recipientName })
     window.open('https://m.me', '_blank', 'noopener,noreferrer')
   }
 
-  return (
-    <div className="share-ov show" onClick={(e) => e.target === e.currentTarget && onClose()}>
-      <div className="share-box">
+  const modalNode = (
+    <div
+      className="share-ov show"
+      style={{
+        position: 'fixed',
+        inset: 0,
+        backgroundColor: 'rgba(31, 25, 23, 0.55)',
+        backdropFilter: 'blur(6px)',
+        WebkitBackdropFilter: 'blur(6px)',
+        zIndex: 99999,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 20,
+      }}
+      onClick={(e) => e.target === e.currentTarget && onClose()}
+    >
+      <div
+        className="share-box"
+        style={{
+          position: 'relative',
+          zIndex: 100000,
+          background: '#ffffff',
+          borderRadius: 20,
+          maxWidth: 400,
+          width: '100%',
+          boxShadow: '0 25px 60px rgba(0, 0, 0, 0.3)',
+          overflow: 'hidden',
+          border: '1px solid #ede5db',
+        }}
+      >
         <div className="share-hd">
           <button type="button" className="share-x" onClick={onClose} aria-label="Đóng">
             <IconX size={16} />
@@ -105,5 +134,6 @@ export default function QuickShareModal({ isOpen, onClose, url, recipientName })
       </div>
     </div>
   )
-}
 
+  return typeof document !== 'undefined' ? createPortal(modalNode, document.body) : modalNode
+}

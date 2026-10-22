@@ -1,10 +1,16 @@
 (function () {
   function readGuestContext() {
-    const params = new URLSearchParams(window.location.search);
+    let params;
+    try {
+      params = new URLSearchParams(window.location.search || (window.parent && window.parent.location.search) || '');
+    } catch (_e) {
+      params = new URLSearchParams(window.location.search);
+    }
+    const invData = window.invitationData || {};
 
-    const guestId = params.get('gid') || localStorage.getItem('guest_id') || '';
-    const guestName = params.get('gname') || localStorage.getItem('guest_name') || '';
-    const invitationSlug = params.get('inv') || localStorage.getItem('invitation_slug') || '';
+    const guestId = params.get('gid') || params.get('guest_id') || invData.guest_id || localStorage.getItem('guest_id') || '';
+    const guestName = params.get('to') || params.get('guest') || params.get('guest_name') || params.get('gname') || invData.guest_name || localStorage.getItem('guest_name') || '';
+    const invitationSlug = params.get('inv') || invData.invitation_slug || invData.slug || localStorage.getItem('invitation_slug') || '';
 
     if (guestId) localStorage.setItem('guest_id', guestId);
     if (guestName) localStorage.setItem('guest_name', guestName);
@@ -14,10 +20,10 @@
   }
 
   function updateInvitationText(guestName) {
-    const guestHeadline = document.querySelector('#HEADLINE3 .ladi-headline');
+    const guestHeadline = document.querySelector('#HEADLINE3 .ladi-headline') || document.querySelector('#HEADLINE3');
     if (!guestHeadline) return;
 
-    const finalGuestName = String(guestName || '').trim() || 'Quý khách';
+    const finalGuestName = String(guestName || (window.invitationData && window.invitationData.guest_name) || '').trim() || 'Quý khách';
     guestHeadline.textContent = ` ${finalGuestName}`;
   }
 

@@ -5,7 +5,7 @@
 
     const context = {
       guestId: params.get('gid') || params.get('guest_id') || invData.guest_id || localStorage.getItem('guest_id') || '',
-      guestName: params.get('gname') || params.get('guest') || params.get('guest_name') || invData.guest_name || localStorage.getItem('guest_name') || '',
+      guestName: params.get('to') || params.get('gname') || params.get('guest') || params.get('guest_name') || invData.guest_name || localStorage.getItem('guest_name') || '',
       invitationSlug: params.get('inv') || invData.invitation_slug || invData.slug || localStorage.getItem('invitation_slug') || '',
       invitationId: invData.id || invData.invitation_id || '',
     };
