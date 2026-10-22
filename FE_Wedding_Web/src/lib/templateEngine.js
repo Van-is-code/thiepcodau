@@ -685,14 +685,9 @@ const buildDomInjectScript = (editMode) => `
       window.MUSIC_PLAYLIST = [data.music_url];
     }
 
-    // Đấu nối nút bấm điều khiển nhạc (#BUTTON4, #GROUP43, #toggle-music)
+    // Đấu nối nút bấm điều khiển nhạc (#BUTTON4, #toggle-music)
     if (audioEl && !audioEl.__wwWiredButtons) {
       audioEl.__wwWiredButtons = true;
-      var musicToggles = [
-        document.getElementById('toggle-music'),
-        document.getElementById('BUTTON4'),
-        document.getElementById('GROUP43')
-      ].filter(Boolean);
 
       var updateMusicUi = function() {
         var isPlaying = !audioEl.paused;
@@ -720,28 +715,45 @@ const buildDomInjectScript = (editMode) => `
       };
 
       var toggleAudio = function(e) {
-        if (e && e.preventDefault) e.preventDefault();
+        if (e) {
+          if (e.preventDefault) e.preventDefault();
+          if (e.stopPropagation) e.stopPropagation();
+        }
         if (audioEl.paused) {
-          audioEl.play().then(updateMusicUi).catch(function() {});
+          window.__wwUserPaused = false;
+          audioEl.play().catch(function() {});
         } else {
+          window.__wwUserPaused = true;
           audioEl.pause();
-          updateMusicUi();
         }
       };
 
-      for (var bIdx = 0; bIdx < musicToggles.length; bIdx++) {
-        var bEl = musicToggles[bIdx];
-        bEl.style.cursor = 'pointer';
-        bEl.addEventListener('click', toggleAudio);
+      // Đấu nối nút #toggle-music nếu chưa được gắn (tránh gắn trùng lặp làm lật trạng thái 2 lần)
+      var tBtn = document.getElementById('toggle-music');
+      if (tBtn && !tBtn.__wwControlled) {
+        tBtn.__wwControlled = true;
+        tBtn.addEventListener('click', toggleAudio);
+      }
+
+      // Đấu nối nút #BUTTON4 (chỉ #BUTTON4, KHÔNG gắn vào #GROUP43 để tránh bubble gọi 2 lần)
+      var btn4 = document.getElementById('BUTTON4');
+      if (btn4 && !btn4.__wwControlled) {
+        btn4.__wwControlled = true;
+        btn4.style.cursor = 'pointer';
+        btn4.addEventListener('click', toggleAudio);
       }
 
       audioEl.addEventListener('play', updateMusicUi);
       audioEl.addEventListener('pause', updateMusicUi);
 
-      // Thử phát tự động sau tương tác đầu tiên của khách
-      var tryAutoPlay = function() {
+      // Thử phát tự động sau tương tác đầu tiên của khách (chỉ khi khách chưa bấm tắt)
+      var tryAutoPlay = function(e) {
+        if (window.__wwUserPaused) return;
+        if (e && e.target && e.target.closest && (e.target.closest('#toggle-music') || e.target.closest('#BUTTON4') || e.target.closest('#GROUP43'))) {
+          return;
+        }
         if (audioEl && audioEl.paused) {
-          audioEl.play().then(updateMusicUi).catch(function() {});
+          audioEl.play().catch(function() {});
         }
       };
       window.addEventListener('scroll', tryAutoPlay, { once: true });
