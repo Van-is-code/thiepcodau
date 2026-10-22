@@ -1721,3 +1721,58 @@
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
+
+.share-grid-3 {
+  grid-template-columns: repeat(3, 1fr) !important;
+  gap: 16px;
+  margin-bottom: 22px;
+}
+
+.share-circle-copy.copied-active {
+  background: #e8f5e9 !important;
+  border-color: #81c784 !important;
+}
+
+.btn-quick-invite {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: linear-gradient(135deg, #d97757, #c05d3d);
+  color: #fff !important;
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 8px 18px;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(217, 119, 87, 0.25);
+  transition: all 0.2s ease;
+}
+
+.btn-quick-invite:hover {
+  background: linear-gradient(135deg, #c05d3d, #aa4b2d);
+  box-shadow: 0 4px 12px rgba(217, 119, 87, 0.35);
+  transform: translateY(-1px);
+}
+
+.btn-quick-invite-sm {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: #ebf5ff;
+  color: #0068ff !important;
+  border: 1px solid #b3d7ff;
+  border-radius: 8px;
+  padding: 5px 11px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-quick-invite-sm:hover {
+  background: #0068ff;
+  color: #fff !important;
+  border-color: #0068ff;
+}

@@ -33,8 +33,40 @@ export const invitationPublicUrl = (inv) => {
 }
 
 export const normalizeCheckinStatus = (item) => {
-  const raw = String(item?.attending_status || item?.attend || item?.status || "").toLowerCase()
-  if (["yes", "attending", "join", "tham_du", "tham du"].includes(raw)) return "yes"
-  if (["no", "absent", "reject", "khong_tham_du", "khong tham du"].includes(raw)) return "no"
+  const raw = String(item?.attending_status || item?.confirm_attendance || item?.attend || item?.status || "").toLowerCase().trim()
+  if (!raw) return "maybe"
+
+  if (
+    ["no", "false", "0", "absent", "reject", "khong", "không", "khong_tham_du", "khong tham du"].includes(raw) ||
+    raw.includes("không") ||
+    raw.includes("khong") ||
+    raw.includes("tiếc") ||
+    raw.includes("tiec") ||
+    raw.includes("bận") ||
+    raw.includes("ban") ||
+    raw.includes("vắng") ||
+    raw.includes("vang") ||
+    raw.includes("từ chối") ||
+    raw.includes("tu choi")
+  ) {
+    return "no"
+  }
+
+  if (
+    ["yes", "true", "1", "attending", "join", "co", "có", "tham_du", "tham du", "tham dự"].includes(raw) ||
+    raw.includes("tham dự") ||
+    raw.includes("tham du") ||
+    raw.includes("sẽ đến") ||
+    raw.includes("se den") ||
+    raw.includes("có mặt") ||
+    raw.includes("co mat") ||
+    raw.includes("đồng ý") ||
+    raw.includes("dong y") ||
+    raw.includes("chắc chắn") ||
+    raw.includes("tham gia")
+  ) {
+    return "yes"
+  }
+
   return "maybe"
 }

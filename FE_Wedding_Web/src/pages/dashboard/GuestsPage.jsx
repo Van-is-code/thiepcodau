@@ -2,18 +2,15 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { api } from '../../api'
 import InvitationSelector from './InvitationSelector'
 import { invitationName, invitationPublicUrl, toArray } from './helpers'
+import QuickShareModal from './QuickShareModal'
 import {
   IconUsers,
   IconSearch,
-  IconCopy,
-  IconCheck,
-  IconSend,
   IconExternalLink,
-  IconSparkles,
   IconPlus,
   IconTrash2,
-  IconShare2,
   IconX,
+  IconSend,
 } from '../../components/Icons'
 
 export default function GuestsPage() {
@@ -23,7 +20,7 @@ export default function GuestsPage() {
   const [search, setSearch] = useState('')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  const [copiedId, setCopiedId] = useState('')
+  const [sharePayload, setSharePayload] = useState(null)
 
   // Modal thêm khách mới
   const [showAddModal, setShowAddModal] = useState(false)
@@ -50,21 +47,34 @@ export default function GuestsPage() {
     loadInvitations()
   }, [])
 
-  const reloadGuests = async () => {
+  const reloadGuests = async (silent = false) => {
     if (!selectedId) {
       setGuests([])
       return
     }
     try {
+      if (!silent) setLoading(true)
       const res = await api.getGuests(selectedId)
       setGuests(toArray(res.data))
     } catch {
-      setGuests([])
+      if (!silent) setGuests([])
+    } finally {
+      if (!silent) setLoading(false)
     }
   }
 
+  // Tải danh sách khách và kích hoạt auto-refresh ngầm (polling mỗi 6s không load lại trang)
   useEffect(() => {
-    reloadGuests()
+    reloadGuests(false)
+    if (!selectedId) return
+
+    const intervalId = setInterval(() => {
+      if (document.visibilityState === 'visible') {
+        reloadGuests(true)
+      }
+    }, 6000)
+
+    return () => clearInterval(intervalId)
   }, [selectedId])
 
   const invitation = useMemo(
@@ -92,42 +102,12 @@ export default function GuestsPage() {
     return `${base}?guest=${encodeURIComponent(g?.name || '')}`
   }
 
-  const handleCopyUrl = (url, id) => {
+  const openShare = (url, name) => {
     if (!url) return
-    navigator.clipboard.writeText(url)
-    setCopiedId(id)
-    setTimeout(() => setCopiedId(''), 1800)
+    setSharePayload({ url, name: name || '' })
   }
 
-  const handleShare = async (platform, g) => {
-    const pUrl = getPersonalUrl(g)
-    const msg = `💍 Trân trọng kính mời ${g.name || 'bạn'} đến tham dự lễ cưới của chúng tôi!\n\nXem thiệp mời tại: ${pUrl}`
-
-    if (platform === 'zalo') {
-      window.open(`https://zalo.me/share?text=${encodeURIComponent(msg)}`, '_blank', 'noopener,noreferrer')
-      return
-    }
-
-    if (platform === 'fb') {
-      window.open(
-        `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(pUrl)}`,
-        '_blank',
-        'noopener,noreferrer',
-      )
-      return
-    }
-
-    if (platform === 'msg') {
-      if (navigator.share) {
-        try {
-          await navigator.share({ title: 'Thiệp cưới', text: msg, url: pUrl })
-          return
-        } catch (_e) {}
-      }
-      navigator.clipboard.writeText(msg)
-      window.open('https://m.me', '_blank', 'noopener,noreferrer')
-    }
-  }
+  const closeShare = () => setSharePayload(null)
 
   const handleDeleteGuest = async (id, name) => {
     if (!window.confirm(`Bạn có chắc chắn muốn xoá khách mời "${name || 'này'}" không?`)) return
@@ -198,7 +178,7 @@ export default function GuestsPage() {
             Danh Sách Khách Mời
           </p>
           <h1 className="ph-t">Quản Lý Khách Mời</h1>
-          <p className="ph-d">Theo dõi danh sách khách mời cá nhân hoá và gửi link mời nhanh qua Zalo, Messenger, Facebook.</p>
+          <p className="ph-d">Theo dõi danh sách khách mời cá nhân hoá và gửi link mời nhanh qua Messenger, Zalo.</p>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <div className="quota-badge">
@@ -264,7 +244,7 @@ export default function GuestsPage() {
           <div className="gt-th">Tên Khách Mời</div>
           <div className="gt-th">Ghi Chú / Vai Trò</div>
           <div className="gt-th">Link Thiệp Cá Nhân Hoá</div>
-          <div className="gt-th" style={{ textAlign: 'right', minWidth: 260 }}>Mời Nhanh & Thao Tác</div>
+          <div className="gt-th" style={{ textAlign: 'right', minWidth: 220 }}>Mời Nhanh & Thao Tác</div>
         </div>
         <div id="guest-table-body">
           {filtered.length === 0 ? (
@@ -282,7 +262,6 @@ export default function GuestsPage() {
           ) : (
             filtered.map((g) => {
               const personalUrl = getPersonalUrl(g)
-              const isCopied = copiedId === String(g.id)
               const noteText = g.description || g.note || ''
 
               return (
@@ -325,82 +304,16 @@ export default function GuestsPage() {
                   </div>
 
                   <div className="gt-td" style={{ textAlign: 'right' }}>
-                    <div className="gt-acts" style={{ justifyContent: 'flex-end', gap: 5, flexWrap: 'wrap' }}>
-                      {/* Nút gửi nhanh Zalo */}
+                    <div className="gt-acts" style={{ justifyContent: 'flex-end', gap: 6, flexWrap: 'wrap' }}>
+                      {/* Nút Mời Nhanh -> mở popup Messenger, Zalo, Copy Link */}
                       <button
                         type="button"
-                        style={{
-                          padding: '4px 8px',
-                          borderRadius: 8,
-                          border: '1px solid #b3d7ff',
-                          background: '#ebf5ff',
-                          color: '#0068ff',
-                          fontSize: 11.5,
-                          fontWeight: 700,
-                          cursor: 'pointer',
-                        }}
-                        onClick={() => handleShare('zalo', g)}
-                        title="Mời nhanh qua Zalo"
+                        className="btn-quick-invite-sm"
+                        onClick={() => openShare(personalUrl, g.name)}
+                        title="Mời nhanh qua Messenger, Zalo hoặc Copy link"
                       >
-                        Zalo
-                      </button>
-
-                      {/* Nút gửi nhanh Messenger */}
-                      <button
-                        type="button"
-                        style={{
-                          padding: '4px 8px',
-                          borderRadius: 8,
-                          border: '1px solid #dfc7ff',
-                          background: '#f5edff',
-                          color: '#7828c8',
-                          fontSize: 11.5,
-                          fontWeight: 700,
-                          cursor: 'pointer',
-                        }}
-                        onClick={() => handleShare('msg', g)}
-                        title="Mời nhanh qua Messenger"
-                      >
-                        Messenger
-                      </button>
-
-                      {/* Nút chia sẻ Facebook */}
-                      <button
-                        type="button"
-                        style={{
-                          padding: '4px 8px',
-                          borderRadius: 8,
-                          border: '1px solid #cce0ff',
-                          background: '#eaf2ff',
-                          color: '#1877f2',
-                          fontSize: 11.5,
-                          fontWeight: 700,
-                          cursor: 'pointer',
-                        }}
-                        onClick={() => handleShare('fb', g)}
-                        title="Chia sẻ lên Facebook"
-                      >
-                        FB
-                      </button>
-
-                      {/* Copy Link */}
-                      <button
-                        type="button"
-                        className="btn-sm ghost"
-                        onClick={() => handleCopyUrl(personalUrl, String(g.id))}
-                        title="Sao chép link mời"
-                      >
-                        {isCopied ? (
-                          <>
-                            <IconCheck size={13} color="#4f7e65" />
-                            <span style={{ color: '#4f7e65' }}>Đã copy</span>
-                          </>
-                        ) : (
-                          <>
-                            <IconCopy size={13} />
-                            <span>Copy</span>
-                          </>
-                        )}
+                        <IconSend size={13} />
+                        <span>Mời Nhanh</span>
                       </button>
 
                       {/* Mở Thiệp */}
@@ -408,7 +321,7 @@ export default function GuestsPage() {
                         type="button"
                         className="btn-sm rose"
                         onClick={() => window.open(personalUrl, '_blank', 'noopener,noreferrer')}
-                        title="Mở xem thiệp"
+                        title="Mở xem thiệp riêng của khách này"
                       >
                         <IconExternalLink size={13} />
                         <span>Mở</span>
@@ -442,6 +355,14 @@ export default function GuestsPage() {
           )}
         </div>
       </div>
+
+      {/* Modal Mời Nhanh */}
+      <QuickShareModal
+        isOpen={!!sharePayload}
+        onClose={closeShare}
+        url={sharePayload?.url}
+        recipientName={sharePayload?.name}
+      />
 
       {/* Modal Thêm Khách Mời Nhanh */}
       {showAddModal && (

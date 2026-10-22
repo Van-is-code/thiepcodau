@@ -191,7 +191,7 @@ const create = async (payload, actor) => {
 				id: randomUUID(),
 				guest_id: guest.id,
 				invitationns_id: invitationId,
-				url: `/invitation/${invitation.invitation_slug}?guest_name=${encodeURIComponent(encryptedGuestValue)}`,
+				url: `/${invitation.invitation_slug}?guest_name=${encodeURIComponent(encryptedGuestValue)}`,
 				created_at: getNowValue(PrivateInvitation.rawAttributes.created_at),
 				updated_at: getNowValue(PrivateInvitation.rawAttributes.updated_at)
 			},

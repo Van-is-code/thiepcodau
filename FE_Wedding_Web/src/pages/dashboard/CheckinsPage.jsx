@@ -54,17 +54,37 @@ export default function CheckinsPage() {
     loadInvitations()
   }, [])
 
-  useEffect(() => {
-    const loadCheckins = async () => {
-      if (!selectedId) {
-        setCheckins([])
-        return
-      }
+  const loadCheckins = async (silent = false) => {
+    if (!selectedId) {
+      setCheckins([])
+      return
+    }
+    try {
+      if (!silent) setLoading(true)
       const res = await api.getCheckins(selectedId)
       setCheckins(toArray(res.data))
+    } catch (err) {
+      if (!silent) {
+        setError(err?.response?.data?.message || err.message || 'Không tải được danh sách phản hồi')
+        setCheckins([])
+      }
+    } finally {
+      if (!silent) setLoading(false)
     }
+  }
 
-    loadCheckins().catch(() => setCheckins([]))
+  // Tải phản hồi và tự động refresh ngầm (mỗi 5s khi tab active, không reload trang)
+  useEffect(() => {
+    loadCheckins(false)
+    if (!selectedId) return
+
+    const intervalId = setInterval(() => {
+      if (document.visibilityState === 'visible') {
+        loadCheckins(true)
+      }
+    }, 5000)
+
+    return () => clearInterval(intervalId)
   }, [selectedId])
 
   const filtered = useMemo(() => {
@@ -108,31 +128,30 @@ export default function CheckinsPage() {
       item.guests_type || '',
       item.date || '',
     ])
-    const csv = [headers, ...rows]
-      .map((row) => row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(','))
-      .join('\n')
+    const csvContent =
+      'data:text/csv;charset=utf-8,\uFEFF' +
+      [headers.join(','), ...rows.map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(','))].join('\n')
+    const encoded = encodeURI(csvContent)
     const link = document.createElement('a')
-    link.href = URL.createObjectURL(new Blob([`\uFEFF${csv}`], { type: 'text/csv;charset=utf-8;' }))
-    link.download = `checkin-${String(
-      invitationName(invitations.find((item) => String(item.id) === String(selectedId))) || 'wedding',
-    )
-      .replace(/\s+/g, '-')
-      .toLowerCase()}.csv`
+    link.setAttribute('href', encoded)
+    link.setAttribute('download', `danh-sach-phan-hoi-${selectedId || 'all'}.csv`)
+    document.body.appendChild(link)
     link.click()
+    document.body.removeChild(link)
   }
 
-  if (loading) {
+  if (loading && invitations.length === 0) {
     return (
       <div className="empty" style={{ margin: '40px auto', maxWidth: 600 }}>
         <div className="empty-ico">
           <IconCheckSquare size={32} color="#d97757" />
         </div>
-        <p className="empty-txt">Đang tải danh sách xác nhận tham dự...</p>
+        <p className="empty-txt">Đang tải danh sách phản hồi...</p>
       </div>
     )
   }
 
-  if (error) {
+  if (error && invitations.length === 0) {
     return (
       <div className="empty" style={{ margin: '40px auto', maxWidth: 600, borderColor: 'rgba(192,73,56,0.3)' }}>
         <p className="empty-txt" style={{ color: '#c04938' }}>Lỗi: {error}</p>
@@ -142,61 +161,73 @@ export default function CheckinsPage() {
 
   return (
     <div className="pg">
-      <div className="ph-row">
+      <div className="ph-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 14 }}>
         <div>
           <p className="ph-ew">
             <IconCheckSquare size={14} />
-            Xác Nhận & Lời Chúc
+            Theo Dõi Khách Mời
           </p>
-          <h1 className="ph-t">Danh Sách Xác Nhận (RSVP)</h1>
-          <p className="ph-d">Thống kê số lượng khách tham dự, lời chúc phúc và danh sách phản hồi.</p>
+          <h1 className="ph-t">Phản Hồi & Điểm Danh</h1>
+          <p className="ph-d">
+            Cập nhật thời gian thực khi khách gửi lời chúc hoặc xác nhận tham dự. Tự động đồng bộ liên tục.
+          </p>
         </div>
-        <button type="button" className="btn-ghost" onClick={exportCSV} disabled={!visible.length}>
-          <IconDownload size={15} />
-          <span>Xuất File CSV</span>
-        </button>
+        <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+          <button
+            type="button"
+            className="btn-main"
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 16px', fontSize: 13.5 }}
+            onClick={exportCSV}
+            disabled={visible.length === 0}
+          >
+            <IconDownload size={14} />
+            <span>Xuất Danh Sách CSV</span>
+          </button>
+        </div>
       </div>
 
       <InvitationSelector invitations={invitations} selectedId={selectedId} onChange={setSelectedId} />
 
-      {/* 4 Bento Metrics Cards */}
+      {/* Metric Cards */}
       <div className="ci-stats">
-        <div className="ci-stat tot">
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 8, color: 'var(--text-subtle)' }}>
-            <IconUsers size={20} />
+        <div className="ci-sc total">
+          <div className="ci-sc-h">
+            <span className="ci-sc-lbl">Tổng Phản Hồi</span>
+            <span className="ci-sc-i"><IconUsers size={16} /></span>
           </div>
-          <div className="ci-val">{stats.total}</div>
-          <div className="ci-lbl">Tổng Phản Hồi</div>
+          <div className="ci-sc-v">{stats.total}</div>
+          <div className="ci-sc-s">Lời chúc & xác nhận</div>
         </div>
 
-        <div className="ci-stat yes">
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 8, color: 'var(--sage)' }}>
-            <IconCheckCircle size={20} />
+        <div className="ci-sc yes">
+          <div className="ci-sc-h">
+            <span className="ci-sc-lbl">Sẽ Đến Tham Dự</span>
+            <span className="ci-sc-i"><IconCheckCircle size={16} /></span>
           </div>
-          <div className="ci-val" style={{ color: 'var(--sage)' }}>
-            {stats.yes}
+          <div className="ci-sc-v">{stats.yes}</div>
+          <div className="ci-sc-s">
+            {stats.total > 0 ? `${Math.round((stats.yes / stats.total) * 100)}% tổng số` : 'Chưa có'}
           </div>
-          <div className="ci-lbl">Sẽ Đến Tham Dự</div>
         </div>
 
-        <div className="ci-stat no">
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 8, color: '#c04938' }}>
-            <IconX size={20} />
+        <div className="ci-sc no">
+          <div className="ci-sc-h">
+            <span className="ci-sc-lbl">Không Thể Đến</span>
+            <span className="ci-sc-i"><IconX size={16} /></span>
           </div>
-          <div className="ci-val" style={{ color: '#c04938' }}>
-            {stats.no}
+          <div className="ci-sc-v">{stats.no}</div>
+          <div className="ci-sc-s">
+            {stats.total > 0 ? `${Math.round((stats.no / stats.total) * 100)}% tổng số` : 'Chưa có'}
           </div>
-          <div className="ci-lbl">Không Thể Đến</div>
         </div>
 
-        <div className="ci-stat mb">
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 8, color: 'var(--gold-dark)' }}>
-            <IconHelpCircle size={20} />
+        <div className="ci-sc maybe">
+          <div className="ci-sc-h">
+            <span className="ci-sc-lbl">Chưa Xác Nhận Rõ</span>
+            <span className="ci-sc-i"><IconHelpCircle size={16} /></span>
           </div>
-          <div className="ci-val" style={{ color: 'var(--gold-dark)' }}>
-            {stats.maybe}
-          </div>
-          <div className="ci-lbl">Chưa Xác Định</div>
+          <div className="ci-sc-v">{stats.maybe}</div>
+          <div className="ci-sc-s">Cần liên hệ lại</div>
         </div>
       </div>
 
@@ -238,152 +269,140 @@ export default function CheckinsPage() {
           </div>
 
           <div className="ci-ff">
-            <label>Từ Ngày</label>
+            <label>Từ ngày</label>
             <input type="date" value={fromDate} onChange={(e) => setFromDate(e.target.value)} />
           </div>
 
           <div className="ci-ff">
-            <label>Đến Ngày</label>
+            <label>Đến ngày</label>
             <input type="date" value={toDate} onChange={(e) => setToDate(e.target.value)} />
           </div>
 
-          <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginLeft: 'auto' }}>
+          <div style={{ display: 'flex', alignItems: 'flex-end', gap: 6 }}>
             <button
               type="button"
-              className="btn-ghost"
-              style={{ padding: '8px 14px', fontSize: 12, borderRadius: 'var(--radius-md)' }}
+              className="btn-sm ghost"
+              style={{ height: 38 }}
               onClick={() => {
                 setSearch('')
                 setStatusFilter('all')
                 setFromDate('')
                 setToDate('')
+                loadCheckins(false)
               }}
+              title="Đặt lại bộ lọc và tải lại danh sách"
             >
               <IconRefreshCw size={13} />
-              <span>Đặt lại</span>
+              <span>Làm mới</span>
             </button>
           </div>
         </div>
       </div>
 
-      <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-subtle)', marginBottom: 12 }}>
-        Hiển thị {visible.length} phản hồi
+      <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-subtle)', marginBottom: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <span>Hiển thị {visible.length} phản hồi</span>
+        <span style={{ fontSize: 11.5, color: '#4f7e65', display: 'flex', alignItems: 'center', gap: 5 }}>
+          <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#4f7e65', display: 'inline-block' }} />
+          Tự động đồng bộ ngầm
+        </span>
       </div>
 
       {/* Checkins Data Table */}
       <div className="ci-twrap">
         <div className="ci-thead">
-          <div className="ci-th">Tên Khách Mời</div>
-          <div className="ci-th">Trạng Thái</div>
-          <div className="ci-th">Lời Chúc Phúc</div>
-          <div className="ci-th">Số Người</div>
-          <div className="ci-th">Ngày Gửi</div>
+          <div className="ci-th">Khách Mời</div>
+          <div className="ci-th">Xác Nhận Tham Dự</div>
+          <div className="ci-th">Lời Chúc Mừng</div>
+          <div className="ci-th">Đi Kèm</div>
+          <div className="ci-th" style={{ textAlign: 'right' }}>Thời Gian</div>
         </div>
-        <div id="ci-table-body">
+
+        <div id="checkins-table-body">
           {visible.length === 0 ? (
             <div className="empty" style={{ borderRadius: 0, border: 'none', padding: '48px 24px' }}>
               <div className="empty-ico">
                 <IconMessageCircle size={36} color="#9e918a" />
               </div>
               <p className="empty-txt" style={{ fontWeight: 500, color: 'var(--text-main)' }}>
-                Chưa có phản hồi hoặc lời chúc nào
+                {search || statusFilter !== 'all' ? 'Không tìm thấy phản hồi phù hợp bộ lọc' : 'Chưa có phản hồi nào từ khách mời'}
               </p>
               <p className="empty-txt" style={{ fontSize: 12.5, marginTop: 4 }}>
-                Khi khách mời xác nhận qua thiệp, thông tin sẽ tự động hiển thị tại đây.
+                Khi khách mở thiệp cưới và gửi lời chúc hoặc chọn xác nhận tham dự, thông tin sẽ lập tức xuất hiện ở đây.
               </p>
             </div>
           ) : (
             visible.map((item) => {
-              const status = normalizeCheckinStatus(item)
-              const cfg = STATUS_CFG[status]
-              const StatusIcon = cfg.Icon
+              const statusKey = normalizeCheckinStatus(item)
+              const cfg = STATUS_CFG[statusKey] || STATUS_CFG.maybe
+              const Icon = cfg.Icon
+
+              const guestName = item.name || item.name_guest || item.guest_name || 'Khách mời'
+              const message = item.content || item.message || item.messages || ''
+              const guestCount = item.count || item.number_of_attendees || item.guests || 1
+              const timeDisplay = item.date || item.created_at ? new Date(item.date || item.created_at).toLocaleDateString('vi-VN', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit' }) : '—'
 
               return (
-                <div key={item.id} className="ci-row" onClick={() => setActiveRow(item)} role="button" tabIndex={0}>
+                <div
+                  key={item.id}
+                  className={`ci-row${activeRow === item.id ? ' active' : ''}`}
+                  onClick={() => setActiveRow(activeRow === item.id ? null : item.id)}
+                >
                   <div className="ci-td">
-                    <span className="ci-name">{item.name || 'Khách ẩn danh'}</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                      <div
+                        style={{
+                          width: 32,
+                          height: 32,
+                          borderRadius: '50%',
+                          background: 'var(--primary-light)',
+                          color: 'var(--primary)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: 12.5,
+                          fontWeight: 700,
+                          flexShrink: 0,
+                        }}
+                      >
+                        {guestName.charAt(0).toUpperCase()}
+                      </div>
+                      <div>
+                        <div style={{ fontWeight: 600, color: 'var(--text-main)', fontSize: 13.5 }}>{guestName}</div>
+                        {item.guest_type && item.guest_type !== 'ca_hai' && (
+                          <div style={{ fontSize: 11, color: 'var(--text-subtle)' }}>
+                            {item.guest_type === 'nha_trai' ? 'Khách nhà trai' : 'Khách nhà gái'}
+                          </div>
+                        )}
+                      </div>
+                    </div>
                   </div>
+
                   <div className="ci-td">
                     <span className={`ci-badge ${cfg.cls}`}>
-                      <StatusIcon size={12} />
+                      <Icon size={13} />
                       <span>{cfg.label}</span>
                     </span>
                   </div>
+
                   <div className="ci-td">
-                    <span className="ci-msg">{item.content || item.message || '—'}</span>
+                    <div className="ci-msg" title={message}>
+                      {message || <span style={{ color: 'var(--text-placeholder)', fontStyle: 'italic' }}>Không để lại lời nhắn</span>}
+                    </div>
                   </div>
-                  <div className="ci-td" style={{ fontSize: 13, color: 'var(--text-muted)', fontWeight: 500 }}>
-                    {item.count || item.guests || 0} người
+
+                  <div className="ci-td">
+                    <span style={{ fontSize: 13, color: 'var(--text-main)', fontWeight: 500 }}>
+                      {statusKey === 'no' ? '0 người' : `${guestCount} người`}
+                    </span>
                   </div>
-                  <div className="ci-td" style={{ fontSize: 12, color: 'var(--text-subtle)' }}>
-                    {item.date || '—'}
+
+                  <div className="ci-td" style={{ textAlign: 'right', fontSize: 12, color: 'var(--text-subtle)' }}>
+                    {timeDisplay}
                   </div>
                 </div>
               )
             })
           )}
-        </div>
-      </div>
-
-      {/* Details Modal */}
-      <div
-        className={`ci-modal-ov${activeRow ? ' show' : ''}`}
-        onClick={(event) => event.target === event.currentTarget && setActiveRow(null)}
-      >
-        <div className="ci-modal-box">
-          <div className="ci-modal-top" />
-          <div className="ci-modal-hd">
-            <div>
-              <div className="ci-modal-name">{activeRow?.name || 'Khách mời'}</div>
-              <div style={{ marginTop: 8 }}>
-                {activeRow && (
-                  <span className={`ci-badge ${STATUS_CFG[normalizeCheckinStatus(activeRow)].cls}`}>
-                    {React.createElement(STATUS_CFG[normalizeCheckinStatus(activeRow)].Icon, { size: 13 })}
-                    <span>{STATUS_CFG[normalizeCheckinStatus(activeRow)].label}</span>
-                  </span>
-                )}
-              </div>
-            </div>
-            <button className="ci-modal-x" onClick={() => setActiveRow(null)} aria-label="Đóng">
-              <IconX size={15} />
-            </button>
-          </div>
-
-          <div className="ci-modal-bd">
-            <div className="ci-mrow">
-              <div className="ci-mlbl">
-                <IconMessageCircle size={12} /> Lời Chúc Phúc
-              </div>
-              <div className={`ci-mval${activeRow?.content || activeRow?.message ? '' : ' empty'}`}>
-                {activeRow?.content || activeRow?.message || 'Khách không để lại lời nhắn'}
-              </div>
-            </div>
-
-            <div className="ci-mval2g">
-              <div className="ci-mrow">
-                <div className="ci-mlbl">
-                  <IconUsers size={12} /> Số Người Tham Dự
-                </div>
-                <div className="ci-mval">{activeRow?.count || activeRow?.guests || 0} người</div>
-              </div>
-
-              <div className="ci-mrow">
-                <div className="ci-mlbl">
-                  <IconUser size={12} /> Khách Mời Của
-                </div>
-                <div className={`ci-mval${activeRow?.guests_type ? '' : ' empty'}`}>
-                  {activeRow?.guests_type || 'Nhà trai & Nhà gái'}
-                </div>
-              </div>
-            </div>
-
-            <div className="ci-mrow" style={{ marginTop: 4 }}>
-              <div className="ci-mlbl">
-                <IconCalendar size={12} /> Thời Gian Gửi
-              </div>
-              <div className="ci-mval">{activeRow?.date || '—'}</div>
-            </div>
-          </div>
         </div>
       </div>
     </div>

@@ -1,20 +1,14 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { api } from '../../api'
 import { invitationName, invitationPublicUrl, toArray } from './helpers'
+import QuickShareModal from './QuickShareModal'
 import {
   IconSend,
   IconSparkles,
-  IconMail,
   IconUsers,
-  IconUser,
-  IconEdit3,
   IconCopy,
   IconCheck,
-  IconShare2,
   IconChevronDown,
-  IconX,
-  IconRing,
-  IconExternalLink,
 } from '../../components/Icons'
 
 export default function InvitePage() {
@@ -33,17 +27,17 @@ export default function InvitePage() {
   const [sharePayload, setSharePayload] = useState(null)
 
   useEffect(() => {
-    const run = async () => {
-      const res = await api.getInvitations()
-      const data = toArray(res.data)
-      setInvitations(data)
-      if (data[0]?.id) setSelectedId(String(data[0].id))
+    const loadInvitations = async () => {
+      try {
+        const res = await api.getInvitations()
+        const data = toArray(res.data)
+        setInvitations(data)
+        if (data[0]?.id) setSelectedId(String(data[0].id))
+      } catch (_err) {
+        setInvitations([])
+      }
     }
-
-    run().catch(() => {
-      setInvitations([])
-      setSelectedId('')
-    })
+    loadInvitations()
   }, [])
 
   useEffect(() => {
@@ -82,7 +76,6 @@ export default function InvitePage() {
   }, [publicUrl, guestName])
 
   const activeGuestUrl = createdUrl || guestUrl
-
   const guestNoteText = guestNote.trim()
 
   const copyText = async (text) => {
@@ -110,47 +103,6 @@ export default function InvitePage() {
   }
 
   const closeShare = () => setSharePayload(null)
-
-  const doShareDirect = async (platform, targetUrl, recipientName) => {
-    if (!targetUrl) return
-    const nameStr = recipientName ? ` ${recipientName}` : ''
-    const message = `💍 Trân trọng kính mời${nameStr} đến tham dự lễ cưới của chúng tôi!\n\nXem thiệp mời tại: ${targetUrl}`
-
-    if (platform === 'copy') {
-      await handleCopy(targetUrl, targetUrl)
-      return
-    }
-
-    if (platform === 'zalo') {
-      window.open(`https://zalo.me/share?text=${encodeURIComponent(message)}`, '_blank', 'noopener,noreferrer')
-      return
-    }
-
-    if (platform === 'fb') {
-      window.open(
-        `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(targetUrl)}`,
-        '_blank',
-        'noopener,noreferrer',
-      )
-      return
-    }
-
-    if (platform === 'msg') {
-      if (navigator.share) {
-        try {
-          await navigator.share({ title: 'Thiệp cưới', text: message, url: targetUrl })
-          return
-        } catch (_e) {}
-      }
-      await handleCopy(message, 'copied-msg')
-      window.open('https://m.me', '_blank', 'noopener,noreferrer')
-    }
-  }
-
-  const doShare = async (platform) => {
-    if (!sharePayload?.url) return
-    await doShareDirect(platform, sharePayload.url, sharePayload.name)
-  }
 
   const generateGuestUrl = async () => {
     const trimmed = guestName.trim()
@@ -218,45 +170,36 @@ export default function InvitePage() {
               <IconChevronDown size={14} />
             </span>
           </button>
-          <div className={`inv-sel-menu${selectorOpen ? ' show' : ''}`}>
-            {invitations.map((inv) => {
-              const isChosen = String(inv.id) === String(selectedId)
-              return (
+          {selectorOpen ? (
+            <div className="isd-menu">
+              {invitations.map((inv) => (
                 <button
-                  key={inv.id}
                   type="button"
-                  className={`inv-sel-opt${isChosen ? ' chosen' : ''}`}
+                  key={inv.id}
+                  className={`isd-opt${String(inv.id) === String(selectedId) ? ' active' : ''}`}
                   onClick={() => {
                     setSelectedId(String(inv.id))
                     setSelectorOpen(false)
                   }}
                 >
-                  <span className="iso-dot" />
-                  <span className="iso-body">
-                    <span className="iso-name">{invitationName(inv)}</span>
-                    <span className="iso-date">/{inv.slug || inv.invitation_slug || ''}</span>
-                  </span>
-                  {isChosen && (
-                    <span className="iso-check">
-                      <IconCheck size={14} />
-                    </span>
-                  )}
+                  <span className="isd-opt-name">{invitationName(inv)}</span>
+                  <span className="isd-opt-slug">/{inv.invitation_slug || inv.slug || ''}</span>
                 </button>
-              )
-            })}
-          </div>
+              ))}
+            </div>
+          ) : null}
         </div>
       </div>
 
-      <div className="inv-layout">
+      <div className="inv-grid">
         {/* Panel 1: Link thiệp chung */}
         <section className="inv-panel">
           <div className="inv-ph">
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <IconMail size={18} color="#d97757" />
+              <IconSend size={18} color="#d97757" />
               <div className="inv-pt">Link Thiệp Chung</div>
             </div>
-            <div className="inv-ps">{displayName ? `${displayName} — URL xem công khai` : 'URL xem công khai'}</div>
+            <div className="inv-ps">Dùng để gửi chung vào nhóm chat hoặc đăng lên mạng xã hội</div>
           </div>
           <div className="inv-pb">
             <div className="url-disp">
@@ -265,6 +208,7 @@ export default function InvitePage() {
                 type="button"
                 className={`btn-copy${copiedKey === 'public' ? ' ok' : ''}`}
                 onClick={() => handleCopy(publicUrl, 'public')}
+                disabled={!publicUrl}
               >
                 {copiedKey === 'public' ? (
                   <>
@@ -279,19 +223,34 @@ export default function InvitePage() {
                 )}
               </button>
             </div>
-            <div className="share-btns">
-              <button type="button" className="shr-btn zalo" onClick={() => doShareDirect('zalo', publicUrl, displayName)}>
-                <span>Zalo</span>
+            <div style={{ marginTop: 14, display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
+              <button
+                type="button"
+                className="btn-quick-invite"
+                onClick={() => openShare(publicUrl, displayName)}
+                disabled={!publicUrl}
+              >
+                <IconSend size={15} />
+                <span>Mời Nhanh</span>
               </button>
-              <button type="button" className="shr-btn msg" onClick={() => doShareDirect('msg', publicUrl, displayName)}>
-                <span>Messenger</span>
-              </button>
-              <button type="button" className="shr-btn fb" onClick={() => doShareDirect('fb', publicUrl, displayName)}>
-                <span>Facebook</span>
-              </button>
-              <button type="button" className="shr-btn cp" onClick={() => handleCopy(publicUrl, 'public-link')}>
-                <IconShare2 size={13} />
-                <span>Copy Link Chia Sẻ</span>
+              <button
+                type="button"
+                className="btn-sm ghost"
+                style={{ padding: '8px 14px' }}
+                onClick={() => handleCopy(publicUrl, 'public-link')}
+                disabled={!publicUrl}
+              >
+                {copiedKey === 'public-link' ? (
+                  <>
+                    <IconCheck size={14} color="#4f7e65" />
+                    <span style={{ color: '#4f7e65' }}>Đã copy</span>
+                  </>
+                ) : (
+                  <>
+                    <IconCopy size={14} />
+                    <span>Sao chép Link</span>
+                  </>
+                )}
               </button>
             </div>
           </div>
@@ -354,97 +313,48 @@ export default function InvitePage() {
                 </div>
               )}
               <div className="gen-url">{activeGuestUrl || 'Link sẽ xuất hiện ở đây sau khi tạo.'}</div>
-              <div className="share-btns">
-                <button type="button" className="shr-btn zalo" onClick={() => doShareDirect('zalo', activeGuestUrl, guestName)}>
-                  <span>Gửi Zalo</span>
-                </button>
-                <button type="button" className="shr-btn msg" onClick={() => doShareDirect('msg', activeGuestUrl, guestName)}>
-                  <span>Messenger</span>
-                </button>
-                <button type="button" className="shr-btn fb" onClick={() => doShareDirect('fb', activeGuestUrl, guestName)}>
-                  <span>Gửi Facebook</span>
-                </button>
-                <button
-                  type="button"
-                  className={`shr-btn cp${copiedKey === 'guest' ? ' ok' : ''}`}
-                  onClick={() => handleCopy(activeGuestUrl, 'guest')}
-                >
-                  {copiedKey === 'guest' ? (
-                    <>
-                      <IconCheck size={13} />
-                      <span>Đã copy ✓</span>
-                    </>
-                  ) : (
-                    <>
-                      <IconCopy size={13} />
-                      <span>Copy Link</span>
-                    </>
-                  )}
-                </button>
-              </div>
+              {guestLinkVisible && activeGuestUrl && (
+                <div style={{ marginTop: 14, display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
+                  <button
+                    type="button"
+                    className="btn-quick-invite"
+                    onClick={() => openShare(activeGuestUrl, guestName)}
+                  >
+                    <IconSend size={15} />
+                    <span>Mời Nhanh</span>
+                  </button>
+                  <button
+                    type="button"
+                    className="btn-sm ghost"
+                    style={{ padding: '8px 14px' }}
+                    onClick={() => handleCopy(activeGuestUrl, 'guest')}
+                  >
+                    {copiedKey === 'guest' ? (
+                      <>
+                        <IconCheck size={14} color="#4f7e65" />
+                        <span style={{ color: '#4f7e65' }}>Đã copy ✓</span>
+                      </>
+                    ) : (
+                      <>
+                        <IconCopy size={14} />
+                        <span>Sao chép Link</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </section>
       </div>
 
       {/* Share Modal Popup */}
-      <div
-        className={`share-ov${sharePayload ? ' show' : ''}`}
-        onClick={(event) => event.target === event.currentTarget && closeShare()}
-      >
-        <div className="share-box">
-          <div className="share-hd">
-            <button type="button" className="share-x" onClick={closeShare} aria-label="Đóng">
-              <IconX size={16} />
-            </button>
-            <div className="share-ring">
-              <IconRing size={28} color="#fff" />
-            </div>
-            <div className="share-ttl">
-              Chia sẻ <em>Thiệp Cưới</em>
-            </div>
-            <div className="share-guest">{sharePayload?.name ? `— Kính gửi: ${sharePayload.name} —` : ''}</div>
-          </div>
-          <div className="share-bd">
-            <div className="share-grid">
-              <button type="button" className="share-item" onClick={() => doShare('zalo')}>
-                <div className="share-circle" style={{ background: '#0068ff' }}>
-                  Z
-                </div>
-                <span className="share-lbl">Zalo</span>
-              </button>
-              <button type="button" className="share-item" onClick={() => doShare('fb')}>
-                <div className="share-circle" style={{ background: '#1877f2' }}>
-                  f
-                </div>
-                <span className="share-lbl">Facebook</span>
-              </button>
-              <button type="button" className="share-item" onClick={() => doShare('msg')}>
-                <div className="share-circle" style={{ background: 'linear-gradient(135deg,#0099ff,#a033ff)' }}>
-                  M
-                </div>
-                <span className="share-lbl">Messenger</span>
-              </button>
-              <button type="button" className="share-item" onClick={() => doShare('copy')}>
-                <div className="share-circle share-circle-copy">
-                  <IconCopy size={18} />
-                </div>
-                <span className="share-lbl">Copy</span>
-              </button>
-            </div>
-            <div className="share-copy-row">
-              <span className="share-copy-url">{sharePayload?.url || ''}</span>
-              <button
-                type="button"
-                className={`share-copy-btn${copiedKey === 'share' ? ' ok' : ''}`}
-                onClick={() => doShare('copy')}
-              >
-                {copiedKey === 'share' ? 'Đã copy ✓' : 'Copy'}
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+      <QuickShareModal
+        isOpen={!!sharePayload}
+        onClose={closeShare}
+        url={sharePayload?.url}
+        recipientName={sharePayload?.name}
+      />
     </div>
   )
 }

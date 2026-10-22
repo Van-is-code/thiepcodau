@@ -20,8 +20,42 @@ const MAX_CHECKINS_PER_INVITATION = Number.parseInt(process.env.MAX_CHECKINS_PER
 const ATTENDANCE = new Set(['yes', 'no', 'maybe']);
 const normalizeAttendance = (value) => {
 	const raw = String(value ?? '').trim().toLowerCase();
-	if (['yes', 'true', '1', 'attending', 'join', 'co', 'có', 'tham_du', 'tham du'].includes(raw)) return 'yes';
-	if (['no', 'false', '0', 'absent', 'reject', 'khong', 'không', 'khong_tham_du'].includes(raw)) return 'no';
+	if (!raw) return 'maybe';
+
+	// Kiểm tra trường hợp từ chối / không tham dự trước (để "không tham dự" không bị ăn vào "tham dự")
+	if (
+		['no', 'false', '0', 'absent', 'reject', 'khong', 'không', 'khong_tham_du', 'khong tham du'].includes(raw) ||
+		raw.includes('không') ||
+		raw.includes('khong') ||
+		raw.includes('tiếc') ||
+		raw.includes('tiec') ||
+		raw.includes('bận') ||
+		raw.includes('ban') ||
+		raw.includes('vắng') ||
+		raw.includes('vang') ||
+		raw.includes('từ chối') ||
+		raw.includes('tu choi')
+	) {
+		return 'no';
+	}
+
+	// Kiểm tra trường hợp đồng ý / tham dự
+	if (
+		['yes', 'true', '1', 'attending', 'join', 'co', 'có', 'tham_du', 'tham du', 'tham dự'].includes(raw) ||
+		raw.includes('tham dự') ||
+		raw.includes('tham du') ||
+		raw.includes('sẽ đến') ||
+		raw.includes('se den') ||
+		raw.includes('có mặt') ||
+		raw.includes('co mat') ||
+		raw.includes('đồng ý') ||
+		raw.includes('dong y') ||
+		raw.includes('chắc chắn') ||
+		raw.includes('tham gia')
+	) {
+		return 'yes';
+	}
+
 	if (ATTENDANCE.has(raw)) return raw;
 	return 'maybe';
 };

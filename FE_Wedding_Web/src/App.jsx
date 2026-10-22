@@ -54,7 +54,8 @@ function App() {
         <Route path="/mau-thiep" element={<PublicTemplatesPage />} />
         <Route path="/preview/:templateId" element={<TemplatePreviewPage />} />
 
-        {/* Public template route - no auth required */}
+        {/* Public template route - no auth required (hỗ trợ cả link trực tiếp /:slug và link cũ /invitation/:slug) */}
+        <Route path="/invitation/:slug" element={<TemplateLoader />} />
         <Route path="/:slug" element={<TemplateLoader />} />
 
         {/* Auth routes */}
