@@ -461,10 +461,14 @@ export default function EditorPage() {
     setMusicPanel(false)
     const nextInv = {
       ...invitation,
-      music_url: data?.music_url || invitation.music_url,
+      ...(data || {}),
+      music_url: data?.music_url !== undefined ? data.music_url : (invitation?.music_url || ''),
       extra_data: {
-        ...(invitation.extra_data || {}),
-        music_playlist: data?.extra_data?.music_playlist || [],
+        ...(invitation?.extra_data || {}),
+        ...(data?.extra_data || {}),
+        music_playlist: data?.extra_data?.music_playlist !== undefined
+          ? data.extra_data.music_playlist
+          : (data?.music_playlist || invitation?.extra_data?.music_playlist || []),
         music_settings: data?.extra_data?.music_settings || invitation?.extra_data?.music_settings,
       },
     }

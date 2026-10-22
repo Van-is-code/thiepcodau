@@ -545,19 +545,31 @@ const setMusic = async (id, body, actor) => {
 	ensureNotLocked(item, actor);
 
 	// Nhận cả dạng payload phẳng lẫn payload lồng nhau do client truyền
-	const rawPayload = (body?.music_playlist && typeof body.music_playlist === 'object' && !Array.isArray(body.music_playlist))
-		? { ...body.music_playlist, ...body }
-		: (body || {});
+	const nested = (body?.music_playlist && typeof body.music_playlist === 'object' && !Array.isArray(body.music_playlist))
+		? body.music_playlist
+		: null;
+	const rawPayload = nested ? { ...body, ...nested } : (body || {});
+
+	let rawList = null;
+	if (Array.isArray(rawPayload.music_playlist)) {
+		rawList = rawPayload.music_playlist;
+	} else if (Array.isArray(rawPayload.playlist)) {
+		rawList = rawPayload.playlist;
+	} else if (Array.isArray(body?.music_playlist)) {
+		rawList = body.music_playlist;
+	} else if (Array.isArray(body?.playlist)) {
+		rawList = body.playlist;
+	}
 
 	let playlist = [];
-	if (Array.isArray(rawPayload.music_playlist)) {
-		playlist = rawPayload.music_playlist;
-	} else if (Array.isArray(rawPayload.playlist)) {
-		playlist = rawPayload.playlist;
+	if (rawList !== null) {
+		playlist = rawList
+			.map((u) => String(u || '').trim())
+			.filter((u) => /^(https?:\/\/|\/media\/|\/uploads\/)/i.test(u));
+	} else {
+		const currentPlaylist = Array.isArray(item.extra_data?.music_playlist) ? item.extra_data.music_playlist : [];
+		playlist = currentPlaylist.length ? currentPlaylist : (item.music_url ? [item.music_url] : []);
 	}
-	playlist = playlist
-		.map((u) => String(u || '').trim())
-		.filter((u) => /^(https?:\/\/|\/media\/|\/uploads\/)/i.test(u));
 
 	assertOwnMusic(playlist, item.users_id);
 
@@ -569,13 +581,14 @@ const setMusic = async (id, body, actor) => {
 		? (mau.has_music_box != null ? Boolean(mau.has_music_box) : Boolean(mau.manifest && mau.manifest.has_music_box))
 		: true;
 
-	// Giữ nguyên bài nhạc đang có nếu playlist chưa chọn bài mới, tránh bị null
-	let primary = playlist[0] || item.music_url || null;
-	if (!primary && coHopNhac) {
+	let primary = '';
+	if (playlist.length > 0) {
+		primary = playlist[0];
+	} else if (rawList === null) {
+		primary = item.music_url || '';
+	} else if (coHopNhac) {
 		try { primary = getRandomDefaultMusicUrl(); } catch (_e) { primary = ''; }
-	}
-	if (!primary) {
-		primary = '';
+		if (primary) playlist = [primary];
 	}
 
 	let voiceUrl = rawPayload.voice_url !== undefined

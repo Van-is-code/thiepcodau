@@ -87,7 +87,18 @@ export default function MusicPanel({ invitation, onSaved, onClose, inline = fals
   useEffect(() => {
     api
       .listMusicLibrary()
-      .then((r) => setLib(r.data?.data || r.data || []))
+      .then((r) => {
+        const items = r.data?.data || r.data || []
+        setLib(items)
+        if (items.length) {
+          setList((prev) =>
+            prev.map((track) => {
+              const matched = items.find((x) => x.url === track.url)
+              return matched ? { ...track, title: matched.title || track.title } : track
+            })
+          )
+        }
+      })
       .catch(() => {})
   }, [])
 
@@ -432,6 +443,15 @@ export default function MusicPanel({ invitation, onSaved, onClose, inline = fals
       const res = await api.setInvitationMusic(invitation.id, payload)
       const data = res.data?.data || res.data
       setStatus('saved')
+      if (Array.isArray(data?.extra_data?.music_playlist) && data.extra_data.music_playlist.length > 0) {
+        setList(data.extra_data.music_playlist.map((u) => {
+          const matched = lib.find((x) => x.url === u)
+          return { url: u, title: matched?.title || fileName(u) }
+        }))
+      } else if (data?.music_url) {
+        const matched = lib.find((x) => x.url === data.music_url)
+        setList([{ url: data.music_url, title: matched?.title || fileName(data.music_url) }])
+      }
       onSaved && onSaved(data)
       setTimeout(() => setStatus('idle'), 3000)
     } catch (e) {

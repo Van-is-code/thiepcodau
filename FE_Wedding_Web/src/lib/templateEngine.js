@@ -684,11 +684,19 @@ const buildDomInjectScript = (editMode) => `
         childSource.src = data.music_url;
       }
       if (audioEl.src !== data.music_url) {
+        var wasPlaying = !audioEl.paused;
         audioEl.src = data.music_url;
+        try { audioEl.load(); } catch (e) {}
+        if (wasPlaying) {
+          audioEl.play().catch(function() {});
+        }
       }
-      try { audioEl.load(); } catch (e) {}
       audioEl.volume = mVol;
       window.MUSIC_PLAYLIST = [data.music_url];
+    } else if (audioEl) {
+      try { audioEl.pause(); } catch (e) {}
+      audioEl.src = '';
+      window.MUSIC_PLAYLIST = [];
     }
 
     // Đấu nối nút bấm điều khiển nhạc (#BUTTON4, #toggle-music)
