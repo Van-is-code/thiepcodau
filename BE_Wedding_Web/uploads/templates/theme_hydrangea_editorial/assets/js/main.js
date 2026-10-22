@@ -36,7 +36,7 @@
   function initCountdown() {
     var el = document.querySelector('[data-countdown]');
     if (!el) return;
-    var targetAttr = (window.invitationData && (window.invitationData.ceremony_date || window.invitationData.reception_date)) || el.getAttribute('data-countdown');
+    var targetAttr = el.getAttribute('data-countdown');
     var targetDate = new Date(targetAttr).getTime();
     var daysSpan = el.querySelector('[data-unit="days"]');
     var hoursSpan = el.querySelector('[data-unit="hours"]');
@@ -226,25 +226,6 @@
       }
     };
 
-    var inv = window.invitationData;
-    if (inv) {
-      if (inv.bride) {
-        if (inv.bride.bank_name) accounts.bride.bank = inv.bride.bank_name;
-        if (inv.bride.bank_account_number) accounts.bride.acc = inv.bride.bank_account_number;
-        if (inv.bride.bank_account_name) accounts.bride.name = inv.bride.bank_account_name;
-      }
-      if (inv.groom) {
-        if (inv.groom.bank_name) accounts.groom.bank = inv.groom.bank_name;
-        if (inv.groom.bank_account_number) accounts.groom.acc = inv.groom.bank_account_number;
-        if (inv.groom.bank_account_name) accounts.groom.name = inv.groom.bank_account_name;
-      }
-      var imgs = inv.images || inv.invitation_images || [];
-      var bQr = imgs.find(function(img) { return img.image_type === 'bank_qr' && (!img.sort_order || img.sort_order === 0); });
-      var gQr = imgs.find(function(img) { return img.image_type === 'bank_qr' && img.sort_order === 1; }) || bQr;
-      if (bQr && bQr.image_url) accounts.bride.qr = bQr.image_url;
-      if (gQr && gQr.image_url) accounts.groom.qr = gQr.image_url;
-    }
-
     function switchRecipient(key) {
       var data = accounts[key];
       if (!data) return;
@@ -406,11 +387,21 @@
     });
 
     if (form) {
+      var isSubmitting = false;
       form.addEventListener('submit', function (e) {
         e.preventDefault();
+        if (isSubmitting) return;
+        var now = Date.now();
+        if (form._lastSubmit && (now - form._lastSubmit < 3000)) return;
+
         var name = nameInput ? nameInput.value.trim() : '';
         var msg = msgInput ? msgInput.value.trim() : '';
         if (!name || !msg) return;
+
+        isSubmitting = true;
+        form._lastSubmit = now;
+        var submitBtn = form.querySelector('button[type="submit"]');
+        if (submitBtn) submitBtn.disabled = true;
 
         var attendingRadio = form.querySelector('input[name="attending"]:checked');
         var attending = attendingRadio ? attendingRadio.value : 'yes';
@@ -438,7 +429,18 @@
           })
           .catch(function (err) {
             console.warn('Could not post checkin:', err);
+          })
+          .finally(function() {
+            setTimeout(function() {
+              isSubmitting = false;
+              if (submitBtn) submitBtn.disabled = false;
+            }, 1500);
           });
+        } else {
+          setTimeout(function() {
+            isSubmitting = false;
+            if (submitBtn) submitBtn.disabled = false;
+          }, 1500);
         }
 
         // Prepend to current entries and update UI
@@ -494,7 +496,6 @@
     if (!btn || !audio) return;
 
     var isPlaying = false;
-    if (window.invitationData && window.invitationData.music_url) { audio.src = window.invitationData.music_url; }
 
     function play() {
       isPlaying = true;

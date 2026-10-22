@@ -228,6 +228,23 @@ const create = async (payload) => {
 		if (guest) data.guest_id = guest.id;
 	}
 
+	// Chống gửi trùng lặp (debounce / idempotency trong 15 giây):
+	// Nếu cùng 1 thiệp nhận được phản hồi có cùng tên khách và nội dung trong 15s qua,
+	// trả lại bản ghi cũ thay vì tạo thêm 1 dòng y hệt trong CSDL.
+	const fifteenSecAgo = new Date(Date.now() - 15 * 1000);
+	const existingRecent = await MessageCheckin.findOne({
+		where: {
+			invitation_id: invitationId,
+			name_guest: data.name_guest,
+			messages: data.messages || '',
+			created_at: { [Op.gte]: fifteenSecAgo }
+		},
+		order: [['created_at', 'DESC']]
+	});
+	if (existingRecent) {
+		return publicCheckin(existingRecent);
+	}
+
 	return publicCheckin(await MessageCheckin.create(data));
 };
 

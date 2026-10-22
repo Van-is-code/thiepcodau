@@ -801,6 +801,16 @@ const buildDomInjectScript = (editMode) => `
     for (var wfIdx = 0; wfIdx < wishForms.length; wfIdx++) {
       (function(fEl) {
         if (fEl.__wwWishWired) return;
+        // Bỏ qua nếu form đã có logic gửi riêng của template (ví dụ data-unified-form, .unified-blessing-form...)
+        if (
+          fEl.hasAttribute('data-unified-form') ||
+          (fEl.matches && fEl.matches('[data-unified-form]')) ||
+          (fEl.classList && fEl.classList.contains('unified-blessing-form'))
+        ) {
+          fEl.__wwWishWired = true;
+          return;
+        }
+
         var msgBox = fEl.querySelector ? (fEl.querySelector('textarea[name="message"]') || fEl.querySelector('textarea[name="messages"]') || fEl.querySelector('textarea') || fEl.querySelector('input[name="message"]')) : null;
         if (!msgBox) return;
         fEl.__wwWishWired = true;
@@ -811,6 +821,8 @@ const buildDomInjectScript = (editMode) => `
         var submitWishHandler = function(ev) {
           if (ev && ev.preventDefault) ev.preventDefault();
           if (isSubmittingWish) return;
+          var now = Date.now();
+          if (window.__wwLastWishSubmit && (now - window.__wwLastWishSubmit < 3000)) return;
 
           var nInp = fEl.querySelector('input[name="name"]') || fEl.querySelector('input[name="name_guest"]') || document.querySelector('input[name="name"]');
           var guestName = (nInp && nInp.value ? nInp.value.trim() : '') || data.guest_name || '';
@@ -839,6 +851,7 @@ const buildDomInjectScript = (editMode) => `
           };
 
           isSubmittingWish = true;
+          window.__wwLastWishSubmit = now;
           var targetUrl = (apiBase ? apiBase : '') + '/api/messages-checkins';
           fetch(targetUrl, {
             method: 'POST',
@@ -860,14 +873,13 @@ const buildDomInjectScript = (editMode) => `
           }).catch(function(err) {
             alert(err.message || 'Không thể gửi lời chúc lúc này. Vui lòng thử lại sau.');
           }).finally(function() {
-            isSubmittingWish = false;
+            setTimeout(function() { isSubmittingWish = false; }, 1500);
           });
         };
 
         if (fEl.tagName === 'FORM') {
           fEl.addEventListener('submit', submitWishHandler);
-        }
-        if (triggerBtn) {
+        } else if (triggerBtn) {
           triggerBtn.style.cursor = 'pointer';
           triggerBtn.addEventListener('click', submitWishHandler);
         }

@@ -293,7 +293,10 @@
     var attendingRadios = document.querySelectorAll('input[name="attending"]');
     if (!list) return;
 
-    var storageKey = 'hydrangea_editorial_wishes';
+    var inv = window.invitationData || {};
+    var invId = inv.id || inv.invitation_id || '';
+    var apiBase = inv.api_base || '';
+    var storageKey = 'hydrangea_editorial_wishes_' + (invId || 'default');
 
     var sampleWishes = [
       'Chúc hai bạn trăm năm tình viên mãn, bạc đầu nghĩa phu thê! Mãi yêu thương và thấu hiểu nhau.',
@@ -309,37 +312,70 @@
       { name: 'Gia đình Bác Kiên', message: 'Chúc hai cháu luôn yêu thương, hòa thuận và cùng nhau xây đắp tương lai rực rỡ!', time: '18/01' }
     ];
 
-    function loadWishes() {
+    function formatTime(d) {
+      if (!d) return 'Vừa xong';
       try {
-        var data = localStorage.getItem(storageKey);
-        return data ? JSON.parse(data) : defaultEntries;
+        var dt = new Date(d);
+        if (isNaN(dt.getTime())) return String(d);
+        var now = new Date();
+        var diffSec = Math.floor((now - dt) / 1000);
+        if (diffSec < 60) return 'Vừa xong';
+        if (diffSec < 3600) return Math.floor(diffSec / 60) + ' phút trước';
+        if (diffSec < 86400) return Math.floor(diffSec / 3600) + ' giờ trước';
+        return dt.toLocaleDateString('vi-VN');
       } catch (e) {
-        return defaultEntries;
+        return 'Vừa xong';
       }
     }
 
-    function saveWishes(arr) {
-      try {
-        localStorage.setItem(storageKey, JSON.stringify(arr));
-      } catch (e) {
-        console.error(e);
-      }
-    }
-
-    function renderWishes() {
-      var wishes = loadWishes();
+    function renderEntries(entries) {
       list.innerHTML = '';
-      wishes.forEach(function (item) {
+      if (!entries || !entries.length) {
+        list.innerHTML = '<p style="text-align:center;font-style:italic;color:#7e6c94;font-size:13px;padding:12px 0;">Hãy là người đầu tiên gửi lời chúc tới đôi uyên ương!</p>';
+        return;
+      }
+      entries.forEach(function (item) {
         var card = document.createElement('div');
         card.className = 'wish-entry';
         card.innerHTML =
           '<div class="wish-author">' +
-            '<span>' + escapeHTML(item.name) + '</span>' +
-            '<span class="wish-time">' + escapeHTML(item.time) + '</span>' +
+            '<span>' + escapeHTML(item.name || item.name_guest || '') + '</span>' +
+            '<span class="wish-time">' + escapeHTML(item.time || formatTime(item.date || item.created_at)) + '</span>' +
           '</div>' +
-          '<p class="wish-text">“' + escapeHTML(item.message) + '”</p>';
+          '<p class="wish-text">“' + escapeHTML(item.message || item.messages || '') + '”</p>';
         list.appendChild(card);
       });
+    }
+
+    function loadWishes() {
+      // 1. Initial display from invitationData preloaded wishes or localStorage
+      if (Array.isArray(inv.wishes) && inv.wishes.length > 0) {
+        renderEntries(inv.wishes);
+      } else {
+        try {
+          var local = localStorage.getItem(storageKey);
+          if (local) {
+            renderEntries(JSON.parse(local));
+          } else {
+            renderEntries(defaultEntries);
+          }
+        } catch (e) {
+          renderEntries(defaultEntries);
+        }
+      }
+
+      // 2. Fetch live wishes from backend API if invId exists
+      if (invId) {
+        fetch(apiBase + '/api/messages-checkins/public/' + invId)
+          .then(function (r) { return r.json(); })
+          .then(function (json) {
+            if (json && json.success && Array.isArray(json.data) && json.data.length > 0) {
+              renderEntries(json.data);
+              try { localStorage.setItem(storageKey, JSON.stringify(json.data)); } catch (e) {}
+            }
+          })
+          .catch(function () {});
+      }
     }
 
     attendingRadios.forEach(function (r) {
@@ -351,22 +387,73 @@
     });
 
     if (form) {
+      var isSubmitting = false;
       form.addEventListener('submit', function (e) {
         e.preventDefault();
+        if (isSubmitting) return;
+        var now = Date.now();
+        if (form._lastSubmit && (now - form._lastSubmit < 3000)) return;
+
         var name = nameInput ? nameInput.value.trim() : '';
         var msg = msgInput ? msgInput.value.trim() : '';
         if (!name || !msg) return;
 
+        isSubmitting = true;
+        form._lastSubmit = now;
+        var submitBtn = form.querySelector('button[type="submit"]');
+        if (submitBtn) submitBtn.disabled = true;
+
         var attendingRadio = form.querySelector('input[name="attending"]:checked');
         var attending = attendingRadio ? attendingRadio.value : 'yes';
         var guestsEl = form.querySelector('#blessing-guests');
-        var guests = (guestsEl && attending === 'yes') ? guestsEl.value : '1';
+        var guests = (guestsEl && attending === 'yes') ? (parseInt(guestsEl.value, 10) || 1) : 0;
 
-        // Prepend to live wishes journal
-        var wishes = loadWishes();
-        wishes.unshift({ name: name, message: msg, time: 'Vừa xong' });
-        saveWishes(wishes);
-        renderWishes();
+        var newEntry = { name: name, message: msg, time: 'Vừa xong' };
+
+        // Post to backend database
+        if (invId) {
+          fetch(apiBase + '/api/messages-checkins', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              invitation_id: invId,
+              name: name,
+              message: msg,
+              attending: attending,
+              count: guests
+            })
+          })
+          .then(function (r) { return r.json(); })
+          .then(function (res) {
+            console.log('Checkin saved to database:', res);
+          })
+          .catch(function (err) {
+            console.warn('Could not post checkin:', err);
+          })
+          .finally(function() {
+            setTimeout(function() {
+              isSubmitting = false;
+              if (submitBtn) submitBtn.disabled = false;
+            }, 1500);
+          });
+        } else {
+          setTimeout(function() {
+            isSubmitting = false;
+            if (submitBtn) submitBtn.disabled = false;
+          }, 1500);
+        }
+
+        // Prepend to current entries and update UI
+        var currentEntries = [];
+        try {
+          var saved = localStorage.getItem(storageKey);
+          currentEntries = saved ? JSON.parse(saved) : (Array.isArray(inv.wishes) && inv.wishes.length ? inv.wishes.slice() : defaultEntries.slice());
+        } catch (e) {
+          currentEntries = defaultEntries.slice();
+        }
+        currentEntries.unshift(newEntry);
+        try { localStorage.setItem(storageKey, JSON.stringify(currentEntries)); } catch (e) {}
+        renderEntries(currentEntries);
 
         // Personalized feedback notice
         if (feedback) {

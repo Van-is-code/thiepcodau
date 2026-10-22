@@ -106,3 +106,4 @@ export default function QuickShareModal({ isOpen, onClose, url, recipientName })
     </div>
   )
 }
+
