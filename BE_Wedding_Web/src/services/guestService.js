@@ -148,8 +148,9 @@ const getPublicByToken = async (token) => {
 
 	// Hỗ trợ mã ngắn 8 ký tự hoặc UUID
 	if (clean.length === 8 || clean.length === 36) {
+		const normalizedCode = clean.toLowerCase();
 		const item = await Guest.findOne({
-			where: clean.length === 36 ? { id: clean } : sequelize.where(sequelize.cast(sequelize.col('Guest.id'), 'text'), { [Op.like]: `${clean}%` }),
+			where: clean.length === 36 ? { id: normalizedCode } : sequelize.where(sequelize.cast(sequelize.col('Guest.id'), 'text'), { [Op.like]: `${normalizedCode}%` }),
 			attributes: ['id', 'name', 'description']
 		});
 		if (item) {

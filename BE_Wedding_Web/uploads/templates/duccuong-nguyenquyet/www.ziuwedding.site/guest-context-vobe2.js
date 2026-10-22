@@ -8,12 +8,29 @@
     }
     const invData = window.invitationData || {};
 
+    let rawGuest = params.get('to') || params.get('guest') || params.get('guest_name') || params.get('gname') || '';
+    if (!rawGuest && invData.guest_name) rawGuest = invData.guest_name;
+    if (!rawGuest) {
+      const stored = localStorage.getItem('guest_name');
+      if (stored && stored !== 'Quý khách' && stored !== 'QUÝ KHÁCH') rawGuest = stored;
+    }
+
+    let guestName = '';
+    if (rawGuest) {
+      try {
+        guestName = decodeURIComponent(rawGuest.replace(/\+/g, ' ')).trim();
+      } catch (_e) {
+        guestName = rawGuest.replace(/\+/g, ' ').trim();
+      }
+    }
+
     const guestId = params.get('gid') || params.get('guest_id') || invData.guest_id || localStorage.getItem('guest_id') || '';
-    const guestName = params.get('to') || params.get('guest') || params.get('guest_name') || params.get('gname') || invData.guest_name || localStorage.getItem('guest_name') || '';
     const invitationSlug = params.get('inv') || invData.invitation_slug || invData.slug || localStorage.getItem('invitation_slug') || '';
 
     if (guestId) localStorage.setItem('guest_id', guestId);
-    if (guestName) localStorage.setItem('guest_name', guestName);
+    if (guestName && guestName !== 'Quý khách' && guestName !== 'QUÝ KHÁCH') {
+      localStorage.setItem('guest_name', guestName);
+    }
     if (invitationSlug) localStorage.setItem('invitation_slug', invitationSlug);
 
     return { guestId, guestName, invitationSlug };
@@ -23,7 +40,18 @@
     const guestHeadline = document.querySelector('#HEADLINE3 .ladi-headline') || document.querySelector('#HEADLINE3');
     if (!guestHeadline) return;
 
-    const finalGuestName = String(guestName || (window.invitationData && window.invitationData.guest_name) || '').trim() || 'Quý khách';
+    let name = (guestName || (window.invitationData && window.invitationData.guest_name) || '').trim();
+    if (!name || name === 'Quý khách' || name === 'QUÝ KHÁCH') {
+      try {
+        const p = new URLSearchParams(window.location.search || (window.parent && window.parent.location.search) || '');
+        const qTo = p.get('to') || p.get('guest') || p.get('guest_name') || p.get('gname');
+        if (qTo) {
+          name = decodeURIComponent(qTo.replace(/\+/g, ' ')).trim();
+        }
+      } catch (_e) {}
+    }
+
+    const finalGuestName = name || 'Quý khách';
     guestHeadline.textContent = ` ${finalGuestName}`;
   }
 
@@ -31,26 +59,21 @@
     const envelope = document.getElementById('GROUP1');
     if (!envelope) return;
 
-    // Mở phong bì = chuyển sang phongbibe2.html trong CÙNG gói mẫu. Ưu tiên báo cho
-    // React host (window.parent) qua postMessage để nó tự fetch + bơm lại
-    // window.invitationData vào file mới — nếu điều hướng thẳng bằng
-    // window.location.href thì trình duyệt tải file gốc không có dữ liệu đã cá nhân
-    // hoá. Giữ href tương đối + fallback location.href để trang vẫn chạy được khi mở
-    // trực tiếp ngoài React app (vd. xem thử tĩnh).
     const targetFile = 'phongbibe2.html';
     envelope.setAttribute('href', targetFile);
     envelope.setAttribute('target', '_self');
 
-    envelope.addEventListener('click', function (event) {
-      event.preventDefault();
-      // Trong iframe của React app -> báo qua postMessage để giữ được dữ liệu đã bơm.
-      // Mở trực tiếp file này (không qua React app) -> điều hướng thẳng như bình thường.
-      if (window.parent && window.parent !== window) {
-        window.parent.postMessage({ type: 'wedding-web:navigate', file: targetFile }, '*');
-      } else {
-        window.location.href = targetFile;
-      }
-    });
+    if (!envelope.__wwWired) {
+      envelope.__wwWired = true;
+      envelope.addEventListener('click', function (event) {
+        event.preventDefault();
+        if (window.parent && window.parent !== window) {
+          window.parent.postMessage({ type: 'wedding-web:navigate', file: targetFile }, '*');
+        } else {
+          window.location.href = targetFile;
+        }
+      });
+    }
   }
 
   function conditionallyHideDecorationElements(context) {
@@ -61,10 +84,39 @@
     if (headline3) headline3.style.display = 'block';
   }
 
-  document.addEventListener('DOMContentLoaded', function () {
+  function init() {
     const context = readGuestContext();
     updateInvitationText(context.guestName);
     wireEnvelopeClick(context);
     conditionallyHideDecorationElements(context);
-  });
+
+    // Re-apply in case LadiPageScript.run overwrote it
+    [60, 200, 600, 1500].forEach(function(delay) {
+      setTimeout(function() {
+        updateInvitationText(context.guestName);
+      }, delay);
+    });
+
+    try {
+      const h3El = document.querySelector('#HEADLINE3 .ladi-headline') || document.querySelector('#HEADLINE3');
+      if (h3El && window.MutationObserver && context.guestName && context.guestName !== 'Quý khách') {
+        if (!h3El.__wwObserved) {
+          h3El.__wwObserved = true;
+          const obs = new MutationObserver(function() {
+            if (h3El.textContent.trim() !== context.guestName) {
+              h3El.textContent = ` ${context.guestName}`;
+            }
+          });
+          obs.observe(h3El, { childList: true, characterData: true, subtree: true });
+        }
+      }
+    } catch (_e) {}
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+  window.addEventListener('load', init);
 })();

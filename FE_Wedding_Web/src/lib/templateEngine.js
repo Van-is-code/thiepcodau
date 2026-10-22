@@ -500,9 +500,20 @@ const buildDomInjectScript = (editMode) => `
       }
     }
 
-    // --- Cá nhân hoá tên khách mời (nếu có guest_name trong dữ liệu) ---
-    if (data.guest_name) {
-      var guestName = String(data.guest_name).trim();
+    // --- Cá nhân hoá tên khách mời (nếu có guest_name trong dữ liệu hoặc query string) ---
+    var effectiveGuestName = (data && data.guest_name ? String(data.guest_name).trim() : '');
+    if (!effectiveGuestName) {
+      try {
+        var qParams = new URLSearchParams(window.location.search || (window.parent && window.parent.location.search) || '');
+        var qTo = qParams.get('to') || qParams.get('guest') || qParams.get('guest_name') || qParams.get('gname');
+        if (qTo) {
+          effectiveGuestName = decodeURIComponent(qTo.replace(/\+/g, ' ')).trim();
+        }
+      } catch (_e) {}
+    }
+
+    if (effectiveGuestName && effectiveGuestName !== 'Quý khách' && effectiveGuestName !== 'QUÝ KHÁCH') {
+      var guestName = effectiveGuestName;
       var guestNameUpper = guestName.toUpperCase();
 
       // Gán vào các element đại diện cho tên khách
@@ -514,10 +525,30 @@ const buildDomInjectScript = (editMode) => `
       }
 
       // Khớp tên khách ở bìa ngoài phong bì (vobe2.html / #HEADLINE3)
-      var h3 = document.querySelector('#HEADLINE3 .ladi-headline') || document.querySelector('#HEADLINE3');
-      if (h3) {
-        h3.textContent = guestName;
-      }
+      var updateHeadline3 = function() {
+        var h3 = document.querySelector('#HEADLINE3 .ladi-headline') || document.querySelector('#HEADLINE3');
+        if (h3 && h3.textContent.trim() !== guestName) {
+          h3.textContent = guestName;
+        }
+      };
+      updateHeadline3();
+      setTimeout(updateHeadline3, 80);
+      setTimeout(updateHeadline3, 300);
+      setTimeout(updateHeadline3, 800);
+      setTimeout(updateHeadline3, 1600);
+
+      try {
+        var targetH3 = document.querySelector('#HEADLINE3 .ladi-headline') || document.querySelector('#HEADLINE3');
+        if (targetH3 && window.MutationObserver && !targetH3.__wwObserved) {
+          targetH3.__wwObserved = true;
+          var obs = new MutationObserver(function() {
+            if (targetH3.textContent.trim() !== guestName) {
+              targetH3.textContent = guestName;
+            }
+          });
+          obs.observe(targetH3, { childList: true, characterData: true, subtree: true });
+        }
+      } catch (_e) {}
 
       // Khớp lời mời cụ thể ở phong bì / thiệp LadiPage (#HEADLINE43)
       var h43 = document.querySelector('#HEADLINE43 .ladi-headline');

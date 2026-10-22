@@ -1,17 +1,36 @@
 (function () {
   function readContext() {
-    const params = new URLSearchParams(window.location.search);
+    let params;
+    try {
+      params = new URLSearchParams(window.location.search || (window.parent && window.parent.location.search) || '');
+    } catch (_e) {
+      params = new URLSearchParams(window.location.search);
+    }
     const invData = window.invitationData || {};
+
+    let rawGuest = params.get('to') || params.get('gname') || params.get('guest') || params.get('guest_name') || invData.guest_name || '';
+    if (!rawGuest) {
+      const stored = localStorage.getItem('guest_name');
+      if (stored && stored !== 'Quý khách' && stored !== 'QUÝ KHÁCH') rawGuest = stored;
+    }
+    let parsedGuest = '';
+    if (rawGuest) {
+      try {
+        parsedGuest = decodeURIComponent(rawGuest.replace(/\+/g, ' ')).trim();
+      } catch (_e) {
+        parsedGuest = rawGuest.replace(/\+/g, ' ').trim();
+      }
+    }
 
     const context = {
       guestId: params.get('gid') || params.get('guest_id') || invData.guest_id || localStorage.getItem('guest_id') || '',
-      guestName: params.get('to') || params.get('gname') || params.get('guest') || params.get('guest_name') || invData.guest_name || localStorage.getItem('guest_name') || '',
+      guestName: parsedGuest,
       invitationSlug: params.get('inv') || invData.invitation_slug || invData.slug || localStorage.getItem('invitation_slug') || '',
       invitationId: invData.id || invData.invitation_id || '',
     };
 
     if (context.guestId) localStorage.setItem('guest_id', context.guestId);
-    if (context.guestName) localStorage.setItem('guest_name', context.guestName);
+    if (context.guestName && context.guestName !== 'Quý khách') localStorage.setItem('guest_name', context.guestName);
     if (context.invitationSlug) localStorage.setItem('invitation_slug', context.invitationSlug);
 
     return context;

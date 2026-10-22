@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, useLocation } from 'react-router-dom'
 import { api } from '../api'
 import { buildIframeDocument, resolveTemplateUrl } from '../lib/templateEngine'
 import { IconHeart, IconSparkles, IconAlertCircle, IconRefreshCw, IconChevronLeft } from './Icons'
 
 const TemplateLoader = () => {
   const { slug } = useParams()
+  const location = useLocation()
   const [invitation, setInvitation] = useState(null)
   const [templateContent, setTemplateContent] = useState('')
   const [loading, setLoading] = useState(true)
@@ -42,7 +43,8 @@ const TemplateLoader = () => {
         }
 
         // Đọc thông tin khách mời từ link riêng (link ngắn ?to=..., ?guest=..., mã ?g=..., hoặc token cũ ?guest_name=...)
-        const searchParams = new URLSearchParams(window.location.search)
+        const currentSearch = (typeof window !== 'undefined' ? window.location.search : '') || location.search || ''
+        const searchParams = new URLSearchParams(currentSearch)
         const guestNameParam = searchParams.get('to') || searchParams.get('guest') || searchParams.get('guest_name') || searchParams.get('gname') || ''
         const guestCodeParam = searchParams.get('g') || searchParams.get('gid') || searchParams.get('guest_id') || ''
 
@@ -69,19 +71,19 @@ const TemplateLoader = () => {
           }
           if (!tokenSuccess) {
             try {
-              resolvedGuestName = decodeURIComponent(guestNameParam).replace(/-/g, ' ').trim()
+              resolvedGuestName = decodeURIComponent(guestNameParam.replace(/\+/g, ' ')).trim()
             } catch (_e) {
-              resolvedGuestName = guestNameParam.replace(/-/g, ' ').trim()
+              resolvedGuestName = guestNameParam.replace(/\+/g, ' ').trim()
             }
           }
         }
 
-        if (guestCodeParam && (!resolvedGuestName || !resolvedGuestNote)) {
+        if (guestCodeParam && !resolvedGuestName) {
           try {
             const guestRes = await api.getPublicGuest(guestCodeParam)
             const gData = guestRes.data?.data || guestRes.data
             if (gData && gData.name) {
-              if (!resolvedGuestName) resolvedGuestName = gData.name
+              resolvedGuestName = gData.name
               resolvedGuestId = gData.id || resolvedGuestId
               if (gData.description) resolvedGuestNote = gData.description
             }
@@ -116,7 +118,7 @@ const TemplateLoader = () => {
     if (slug) {
       loadInvitation()
     }
-  }, [slug])
+  }, [slug, location.search])
 
   // Điều hướng nội bộ giữa các file tĩnh trong cùng gói mẫu
   useEffect(() => {
