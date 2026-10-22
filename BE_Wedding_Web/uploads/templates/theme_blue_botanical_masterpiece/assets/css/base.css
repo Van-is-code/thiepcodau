@@ -1,0 +1,289 @@
+/**
+ * ============================================================
+ * BASE & PAPER SYSTEM — BLUE BOTANICAL WATERCOLOR
+ * ============================================================
+ */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+}
+
+body {
+  min-height: 100vh;
+  line-height: 1.65;
+  background-color: var(--color-bg);
+  /* Organic fine cotton paper grain overlay */
+  background-image: radial-gradient(circle at 50% 40%, rgba(255, 253, 248, 0.75) 0%, rgba(245, 241, 232, 0.96) 100%),
+                    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.038'/%3E%3C/svg%3E");
+  background-attachment: fixed;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* Typography Defaults */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-serif);
+  font-weight: 500;
+  line-height: 1.25;
+  color: var(--color-deep-blue-grey);
+  letter-spacing: 0.04em;
+}
+
+p {
+  color: var(--color-text);
+  font-size: 0.95rem;
+  font-weight: 400;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button, input, textarea, select {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+  outline: none;
+}
+
+input, textarea {
+  border: 1px solid var(--color-border-subtle);
+  background-color: var(--color-paper-tint);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  font-family: var(--font-sans);
+  font-size: 0.88rem;
+  color: var(--color-text);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+input:focus, textarea:focus {
+  border-color: var(--color-dusty-blue);
+  box-shadow: 0 0 0 2px rgba(168, 195, 211, 0.25);
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* ============================================================
+   STATIONERY SHELL & DESKTOP ARCHITECTURE
+   ============================================================ */
+.stationery-wrapper {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 0;
+  position: relative;
+}
+
+/* Mobile: full width seamless invitation card */
+/* Desktop: centered luxury invitation booklet (max-width 480px) */
+.wedding-stationery-card {
+  width: 100%;
+  max-width: 480px;
+  min-height: 100vh;
+  background-color: var(--color-paper);
+  position: relative;
+  box-shadow: var(--shadow-paper);
+  border-left: 1px solid var(--color-border-subtle);
+  border-right: 1px solid var(--color-border-subtle);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: opacity 0.5s ease;
+}
+
+@media (min-width: 541px) {
+  .stationery-wrapper {
+    padding: 36px 20px;
+  }
+
+  .wedding-stationery-card {
+    border-radius: var(--radius-md);
+    border-top: 1px solid var(--color-border-subtle);
+    border-bottom: 1px solid var(--color-border-subtle);
+    margin-bottom: 40px;
+  }
+}
+
+/* ============================================================
+   SIGNATURE DOUBLE-LINE STATIONERY BORDER
+   From Art Direction Reference Image
+   ============================================================ */
+.stationery-double-frame {
+  position: absolute;
+  top: 14px;
+  bottom: 14px;
+  left: 14px;
+  right: 14px;
+  pointer-events: none;
+  z-index: 12;
+}
+
+.stationery-double-frame::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border: 1px solid var(--color-border-outer);
+  border-radius: 2px;
+}
+
+.stationery-double-frame::after {
+  content: "";
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  right: 4px;
+  bottom: 4px;
+  border: 0.75px solid var(--color-border-inner);
+  border-radius: 1px;
+}
+
+/* ============================================================
+   DECORATIVE ORNAMENTAL DIVIDERS
+   From Reference: Slender line with center floral motif
+   ============================================================ */
+.ornamental-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: var(--space-md) auto;
+  width: 100%;
+  max-width: 220px;
+  opacity: 0.85;
+}
+
+.ornamental-divider::before,
+.ornamental-divider::after {
+  content: "";
+  flex: 1;
+  height: 0.8px;
+  background-color: var(--color-dusty-blue);
+}
+
+.ornamental-divider svg {
+  width: 28px;
+  height: 12px;
+  stroke: var(--color-deep-blue-grey);
+  fill: none;
+}
+
+/* ============================================================
+   BOTANICAL MICRO-ANIMATIONS (60 FPS, Sub-degree sway)
+   ============================================================ */
+.subtle-sway {
+  transform-origin: bottom center;
+  animation: gentleSway 7s ease-in-out infinite alternate;
+}
+
+@keyframes gentleSway {
+  0% { transform: rotate(-1deg); }
+  100% { transform: rotate(1.2deg); }
+}
+
+/* Blue Butterfly Flutter */
+.butterfly-element {
+  position: absolute;
+  pointer-events: none;
+  z-index: 15;
+  filter: drop-shadow(0 2px 4px rgba(82, 111, 125, 0.18));
+  animation: butterflyFloat 6s ease-in-out infinite alternate;
+}
+
+@keyframes butterflyFloat {
+  0% { transform: translate(0, 0) rotate(0deg) scale(1); }
+  50% { transform: translate(4px, -6px) rotate(3deg) scale(1.02); }
+  100% { transform: translate(-3px, -10px) rotate(-2deg) scale(0.98); }
+}
+
+/* Petal Drift */
+.drifting-petal {
+  position: absolute;
+  pointer-events: none;
+  z-index: 14;
+  animation: petalSway 8s ease-in-out infinite alternate;
+}
+
+@keyframes petalSway {
+  0% { transform: translate(0, 0) rotate(0deg); }
+  100% { transform: translate(6px, 8px) rotate(8deg); }
+}
+
+/* ============================================================
+   MUSIC FLOATING CONTROLLER
+   ============================================================ */
+.music-toggle-btn {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--color-paper);
+  border: 1px solid var(--color-dusty-blue);
+  box-shadow: 0 4px 14px rgba(82, 111, 125, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.music-toggle-btn:hover {
+  transform: scale(1.06);
+  box-shadow: 0 6px 18px rgba(82, 111, 125, 0.25);
+}
+
+.music-toggle-btn svg {
+  width: 18px;
+  height: 18px;
+  stroke: var(--color-deep-blue-grey);
+  fill: none;
+  stroke-width: 1.5;
+}
+
+.music-toggle-btn.playing {
+  animation: musicSpin 8s linear infinite;
+}
+
+.music-toggle-btn.playing svg {
+  stroke: var(--color-dusty-blue);
+}
+
+@keyframes musicSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* ============================================================
+   ACCESSIBILITY: REDUCED MOTION (Softened for Wedding Experience)
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+

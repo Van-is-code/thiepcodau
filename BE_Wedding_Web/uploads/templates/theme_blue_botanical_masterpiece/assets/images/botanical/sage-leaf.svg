@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 100" fill="none" width="100%" height="100%">
+  <defs>
+    <linearGradient id="slGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#C2D3C2" />
+      <stop offset="50%" stop-color="#9BAF9B" />
+      <stop offset="100%" stop-color="#7B937B" />
+    </linearGradient>
+  </defs>
+
+  <g id="sage-leaf-sprig">
+    <!-- Main stem -->
+    <path d="M30 95 C 28 65 32 35 30 5" stroke="#7B937B" stroke-width="1.1" stroke-linecap="round" />
+    
+    <!-- Top Leaf -->
+    <path d="M30 5 C 20 -2 40 -2 30 18 Z" fill="url(#slGrad)" stroke="#587487" stroke-width="0.5" />
+
+    <!-- Left Leaf -->
+    <path d="M29 35 C 10 25 12 5 29 25 Z" fill="url(#slGrad)" stroke="#587487" stroke-width="0.5" opacity="0.9" />
+
+    <!-- Right Leaf -->
+    <path d="M31 45 C 50 35 48 15 31 35 Z" fill="url(#slGrad)" stroke="#587487" stroke-width="0.5" opacity="0.9" />
+
+    <!-- Left Lower Leaf -->
+    <path d="M29 68 C 6 58 10 38 29 55 Z" fill="url(#slGrad)" stroke="#587487" stroke-width="0.5" opacity="0.85" />
+
+    <!-- Right Lower Leaf -->
+    <path d="M31 78 C 55 68 50 48 31 65 Z" fill="url(#slGrad)" stroke="#587487" stroke-width="0.5" opacity="0.85" />
+  </g>
+</svg>
+

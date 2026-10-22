@@ -1,0 +1,157 @@
+/**
+ * ============================================================
+ * INTERACTIVE POLAROID GALLERY STACK STYLESHEET
+ * Luxury Fine-Art Wedding Polaroid Album
+ * ============================================================
+ */
+
+.polaroid-interactive-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 14px auto 26px auto;
+  width: 100%;
+  max-width: 480px;
+}
+
+.polaroid-stack-stage {
+  position: relative;
+  width: 275px;
+  height: 350px;
+  margin: 6px auto 12px auto;
+  perspective: 1200px;
+  transform: translateY(-8px);
+}
+
+.polaroid-item {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #FFFDF8;
+  padding: 12px 12px 26px 12px;
+  box-sizing: border-box;
+  box-shadow: 
+    0 16px 36px rgba(82, 111, 125, 0.22),
+    0 2px 8px rgba(0, 0, 0, 0.06),
+    0 0 0 1px rgba(168, 195, 211, 0.35);
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  cursor: grab;
+  user-select: none;
+  transition: transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.35s ease, box-shadow 0.3s ease;
+  will-change: transform, opacity;
+}
+
+.polaroid-item:active {
+  cursor: grabbing;
+}
+
+.polaroid-img-box {
+  width: 100%;
+  height: 250px;
+  overflow: hidden;
+  border-radius: 2px;
+  background: #F5F1E8;
+  box-shadow: inset 0 0 4px rgba(0,0,0,0.08);
+}
+
+.polaroid-img-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  transition: transform 0.4s ease;
+}
+
+.polaroid-caption {
+  font-family: var(--font-script);
+  font-size: 1.4rem;
+  color: #46545A;
+  text-align: center;
+  margin-top: 10px;
+  letter-spacing: 0.02em;
+}
+
+/* Natural Stacked Rotations */
+.polaroid-item:nth-child(1) { transform: rotate(-3.5deg); z-index: 5; }
+.polaroid-item:nth-child(2) { transform: rotate(4.2deg) translate(5px, 6px); z-index: 4; }
+.polaroid-item:nth-child(3) { transform: rotate(-2.2deg) translate(-6px, 12px); z-index: 3; }
+.polaroid-item:nth-child(4) { transform: rotate(3.2deg) translate(6px, 16px); z-index: 2; }
+.polaroid-item:nth-child(5) { transform: rotate(-1.5deg) translate(-3px, 20px); z-index: 1; }
+
+.polaroid-item.dismissed-left {
+  transform: translate(-145%, -25px) rotate(-26deg) !important;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.polaroid-item.dismissed-right {
+  transform: translate(145%, -25px) rotate(26deg) !important;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Fan Out Mode */
+.polaroid-stack-stage.fan-out .polaroid-item:nth-child(1) { transform: translate(-80px, 4px) rotate(-16deg); z-index: 5; }
+.polaroid-stack-stage.fan-out .polaroid-item:nth-child(2) { transform: translate(-40px, -8px) rotate(-8deg); z-index: 4; }
+.polaroid-stack-stage.fan-out .polaroid-item:nth-child(3) { transform: translate(0, -14px) rotate(0deg); z-index: 3; }
+.polaroid-stack-stage.fan-out .polaroid-item:nth-child(4) { transform: translate(40px, -8px) rotate(8deg); z-index: 2; }
+.polaroid-stack-stage.fan-out .polaroid-item:nth-child(5) { transform: translate(80px, 4px) rotate(16deg); z-index: 1; }
+
+.polaroid-action-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+.polaroid-btn {
+  padding: 7px 18px;
+  border-radius: 999px;
+  background: rgba(168, 195, 211, 0.22);
+  border: 1px solid var(--color-border-outer, rgba(168, 195, 211, 0.5));
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--color-deep-blue-grey, #526F7D);
+  cursor: pointer;
+  transition: all 0.22s ease;
+  box-shadow: 0 2px 6px rgba(82, 111, 125, 0.08);
+}
+
+.polaroid-btn:hover {
+  background: var(--color-deep-blue-grey, #526F7D);
+  color: #FFFDF8;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(82, 111, 125, 0.22);
+}
+
+/* Subtle, Compact Photo Counter */
+.polaroid-counter {
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--color-deep-blue-grey, #526F7D);
+  letter-spacing: 0.08em;
+  padding: 3px 12px;
+  background: rgba(168, 195, 211, 0.18);
+  border: 0.5px solid rgba(168, 195, 211, 0.35);
+  border-radius: 999px;
+  margin-top: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.polaroid-hint-cue {
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  color: var(--color-text-muted, #7A8991);
+  margin-top: 6px;
+  text-align: center;
+}

@@ -135,6 +135,14 @@ app.use('/media', express.static(path.join(process.cwd(), 'media'), STATIC_MEDIA
 // Gói mẫu thiệp (html/css/js/ảnh) được upload qua /api/invitation-templates/upload
 // và phục vụ tĩnh tại đây. Thêm mẫu mới = upload + insert DB, không cần rebuild FE.
 // KHÔNG cache lâu: file mẫu (html/css) có thể được sửa & phục vụ lại tại chỗ.
+app.use('/templates', (req, res, next) => {
+  // Chuẩn hoá nếu đường dẫn bị lặp thư mục do giải nén gói zip cũ (vd: /templates/abc/abc/index.html)
+  const match = req.url.match(/^\/([^/]+)\/\1(\/.*)?$/);
+  if (match) {
+    req.url = `/${match[1]}${match[2] || ''}`;
+  }
+  next();
+});
 app.use('/templates', express.static(path.join(process.cwd(), 'uploads', 'templates'), {
   etag: true,
   setHeaders: function (res, filePath) {

@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 90" fill="none" width="100%" height="100%">
+  <defs>
+    <linearGradient id="sbSage" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#BED0BA"/>
+      <stop offset="50%" stop-color="#9EAE98"/>
+      <stop offset="100%" stop-color="#718A78"/>
+    </linearGradient>
+    <linearGradient id="sbBlueBud" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#D5E4EA"/>
+      <stop offset="100%" stop-color="#A9C4D3"/>
+    </linearGradient>
+  </defs>
+
+  <g id="sage-branch-art">
+    <!-- Gentle S-Curved Main Stem -->
+    <path d="M10 75 Q 60 70 100 45 T 150 15" stroke="#718A78" stroke-width="1.1" stroke-linecap="round"/>
+
+    <!-- Alternating Eucalyptus/Olive Leaves -->
+    <!-- Leaf 1 (Left low) -->
+    <path d="M25 72 C 15 55 35 48 45 60 C 48 64 35 72 25 72 Z" fill="url(#sbSage)" stroke="#536F7C" stroke-width="0.45" opacity="0.85"/>
+    <!-- Leaf 2 (Mid lower) -->
+    <path d="M55 64 C 52 82 72 85 78 70 C 80 66 65 62 55 64 Z" fill="url(#sbSage)" stroke="#536F7C" stroke-width="0.45" opacity="0.88"/>
+    <!-- Leaf 3 (Center upper) -->
+    <path d="M75 52 C 68 32 92 28 100 42 C 102 46 88 52 75 52 Z" fill="url(#sbSage)" stroke="#536F7C" stroke-width="0.45" opacity="0.9"/>
+    <!-- Leaf 4 (Upper right) -->
+    <path d="M108 42 C 112 60 132 58 130 40 C 128 35 118 38 108 42 Z" fill="url(#sbSage)" stroke="#536F7C" stroke-width="0.45" opacity="0.88"/>
+    <!-- Leaf 5 (Tip) -->
+    <path d="M135 25 C 130 10 152 6 150 20 C 148 24 140 24 135 25 Z" fill="url(#sbSage)" stroke="#536F7C" stroke-width="0.45" opacity="0.9"/>
+
+    <!-- Small Pale Blue Wildflower Buds -->
+    <circle cx="90" cy="35" r="2.2" fill="url(#sbBlueBud)"/>
+    <circle cx="120" cy="22" r="1.8" fill="url(#sbBlueBud)"/>
+    <circle cx="48" cy="58" r="2" fill="url(#sbBlueBud)"/>
+  </g>
+</svg>
+

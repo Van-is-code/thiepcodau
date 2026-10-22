@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 30" fill="none" width="100%" height="100%">
+  <defs>
+    <linearGradient id="divStem" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#9BAF9B" stop-opacity="0" />
+      <stop offset="25%" stop-color="#9BAF9B" stop-opacity="0.8" />
+      <stop offset="50%" stop-color="#587487" />
+      <stop offset="75%" stop-color="#9BAF9B" stop-opacity="0.8" />
+      <stop offset="100%" stop-color="#9BAF9B" stop-opacity="0" />
+    </linearGradient>
+  </defs>
+
+  <g id="divider-sprig">
+    <!-- Horizontal slender stem -->
+    <path d="M10 15 L 105 15 M 135 15 L 230 15" stroke="url(#divStem)" stroke-width="0.8" stroke-linecap="round" />
+
+    <!-- Left delicate leaves -->
+    <path d="M85 15 C 80 9 70 12 75 15 Z" fill="#9BAF9B" opacity="0.85" />
+    <path d="M98 15 C 92 19 82 17 88 15 Z" fill="#9BAF9B" opacity="0.85" />
+    <circle cx="65" cy="15" r="1.5" fill="#A9C5D8" />
+
+    <!-- Right delicate leaves -->
+    <path d="M155 15 C 160 9 170 12 165 15 Z" fill="#9BAF9B" opacity="0.85" />
+    <path d="M142 15 C 148 19 158 17 152 15 Z" fill="#9BAF9B" opacity="0.85" />
+    <circle cx="175" cy="15" r="1.5" fill="#A9C5D8" />
+
+    <!-- Center Blossom -->
+    <g transform="translate(120, 15)">
+      <circle cx="0" cy="0" r="4.2" fill="#FFFDF8" stroke="#587487" stroke-width="0.8" />
+      <circle cx="0" cy="0" r="2" fill="#A9C5D8" />
+      <!-- 4 mini petals -->
+      <ellipse cx="0" cy="-5.5" rx="1.8" ry="2.5" fill="#C9DDE8" opacity="0.8" />
+      <ellipse cx="0" cy="5.5" rx="1.8" ry="2.5" fill="#C9DDE8" opacity="0.8" />
+      <ellipse cx="-5.5" cy="0" rx="2.5" ry="1.8" fill="#C9DDE8" opacity="0.8" />
+      <ellipse cx="5.5" cy="0" rx="2.5" ry="1.8" fill="#C9DDE8" opacity="0.8" />
+    </g>
+  </g>
+</svg>
+

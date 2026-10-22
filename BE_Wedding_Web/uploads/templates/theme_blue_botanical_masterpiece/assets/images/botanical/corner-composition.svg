@@ -1,0 +1,104 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 240" fill="none" width="100%" height="100%">
+  <!-- Defs for botanical gradients & soft watercolor shading -->
+  <defs>
+    <linearGradient id="dustyBluePetal" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#C9DDE8" stop-opacity="0.95" />
+      <stop offset="60%" stop-color="#A9C5D8" stop-opacity="0.9" />
+      <stop offset="100%" stop-color="#8CAABF" stop-opacity="0.8" />
+    </linearGradient>
+    <linearGradient id="powderBluePetal" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#E2EEF5" stop-opacity="0.95" />
+      <stop offset="100%" stop-color="#BFD6E4" stop-opacity="0.85" />
+    </linearGradient>
+    <linearGradient id="sageLeafGrad" x1="20%" y1="0%" x2="80%" y2="100%">
+      <stop offset="0%" stop-color="#B8CBB8" stop-opacity="0.9" />
+      <stop offset="50%" stop-color="#9BAF9B" stop-opacity="0.85" />
+      <stop offset="100%" stop-color="#849C84" stop-opacity="0.8" />
+    </linearGradient>
+    <linearGradient id="stemGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#7B937B" />
+      <stop offset="100%" stop-color="#587487" />
+    </linearGradient>
+  </defs>
+
+  <g id="corner-botanical-group">
+    <!-- Sage Foliage Branches (Background Layer) -->
+    <path d="M10 10 Q 70 40 140 30 T 230 45" stroke="url(#stemGrad)" stroke-width="1.2" stroke-linecap="round" fill="none" />
+    <path d="M10 10 Q 35 80 45 150 T 60 220" stroke="url(#stemGrad)" stroke-width="1.2" stroke-linecap="round" fill="none" />
+    
+    <!-- Secondary delicate tendrils -->
+    <path d="M70 40 Q 100 80 130 95" stroke="url(#stemGrad)" stroke-width="0.8" stroke-linecap="round" stroke-dasharray="0.5 2" fill="none" opacity="0.6" />
+    <path d="M35 80 Q 80 110 95 140" stroke="url(#stemGrad)" stroke-width="0.8" stroke-linecap="round" fill="none" opacity="0.6" />
+
+    <!-- Sage Leaves (Eucalyptus style rounded & oblong) -->
+    <!-- Top branch leaves -->
+    <path d="M55 25 C 45 15 65 5 75 18 C 85 30 65 35 55 25 Z" fill="url(#sageLeafGrad)" stroke="#587487" stroke-width="0.5" opacity="0.85" />
+    <path d="M95 32 C 88 18 112 12 120 25 C 128 38 102 45 95 32 Z" fill="url(#sageLeafGrad)" stroke="#587487" stroke-width="0.5" opacity="0.9" />
+    <path d="M140 28 C 135 14 160 10 168 22 C 176 34 148 40 140 28 Z" fill="url(#sageLeafGrad)" stroke="#587487" stroke-width="0.5" opacity="0.8" />
+    <path d="M185 36 C 180 25 205 20 212 32 C 219 44 192 48 185 36 Z" fill="url(#sageLeafGrad)" stroke="#587487" stroke-width="0.5" opacity="0.75" />
+    
+    <!-- Left branch leaves -->
+    <path d="M22 55 C 10 48 12 72 24 78 C 36 84 34 60 22 55 Z" fill="url(#sageLeafGrad)" stroke="#587487" stroke-width="0.5" opacity="0.85" />
+    <path d="M30 98 C 15 92 18 118 32 122 C 45 126 42 102 30 98 Z" fill="url(#sageLeafGrad)" stroke="#587487" stroke-width="0.5" opacity="0.9" />
+    <path d="M38 145 C 22 142 28 168 42 170 C 54 172 50 148 38 145 Z" fill="url(#sageLeafGrad)" stroke="#587487" stroke-width="0.5" opacity="0.8" />
+    <path d="M48 188 C 35 186 42 210 54 210 C 66 210 60 188 48 188 Z" fill="url(#sageLeafGrad)" stroke="#587487" stroke-width="0.5" opacity="0.75" />
+
+    <!-- Leaf Veins -->
+    <path d="M60 22 L 70 20" stroke="#46545A" stroke-width="0.4" opacity="0.5" />
+    <path d="M102 27 L 112 26" stroke="#46545A" stroke-width="0.4" opacity="0.5" />
+    <path d="M148 24 L 158 24" stroke="#46545A" stroke-width="0.4" opacity="0.5" />
+    <path d="M22 64 L 25 72" stroke="#46545A" stroke-width="0.4" opacity="0.5" />
+    <path d="M28 107 L 34 114" stroke="#46545A" stroke-width="0.4" opacity="0.5" />
+
+    <!-- Blue Flower Blossoms (Corner Focal Point) -->
+    <!-- Large Main Bloom at Corner (Center around 60, 65) -->
+    <g transform="translate(62, 68)">
+      <!-- Petal 1 (Top) -->
+      <path d="M0 0 C -18 -32 18 -32 0 0 Z" fill="url(#dustyBluePetal)" stroke="#587487" stroke-width="0.6" />
+      <!-- Petal 2 (Top Right) -->
+      <path d="M0 0 C 26 -22 36 12 0 0 Z" fill="url(#powderBluePetal)" stroke="#587487" stroke-width="0.6" />
+      <!-- Petal 3 (Bottom Right) -->
+      <path d="M0 0 C 30 15 15 35 0 0 Z" fill="url(#dustyBluePetal)" stroke="#587487" stroke-width="0.6" />
+      <!-- Petal 4 (Bottom Left) -->
+      <path d="M0 0 C -12 35 -30 15 0 0 Z" fill="url(#powderBluePetal)" stroke="#587487" stroke-width="0.6" />
+      <!-- Petal 5 (Top Left) -->
+      <path d="M0 0 C -35 8 -25 -25 0 0 Z" fill="url(#dustyBluePetal)" stroke="#587487" stroke-width="0.6" />
+      
+      <!-- Flower Center Pistils & Stamens -->
+      <circle cx="0" cy="0" r="4.5" fill="#FFFDF8" stroke="#587487" stroke-width="0.7" />
+      <circle cx="-1.5" cy="-1" r="1.2" fill="#587487" />
+      <circle cx="1.5" cy="-1.5" r="1.2" fill="#587487" />
+      <circle cx="0" cy="1.8" r="1.2" fill="#587487" />
+      <circle cx="-1.8" cy="1.2" r="0.9" fill="#9BAF9B" />
+      <circle cx="1.8" cy="1.2" r="0.9" fill="#9BAF9B" />
+    </g>
+
+    <!-- Medium Secondary Bloom (Offset around 115, 60) -->
+    <g transform="translate(115, 58) scale(0.72) rotate(22)">
+      <path d="M0 0 C -16 -28 16 -28 0 0 Z" fill="url(#powderBluePetal)" stroke="#587487" stroke-width="0.6" />
+      <path d="M0 0 C 24 -18 30 10 0 0 Z" fill="url(#dustyBluePetal)" stroke="#587487" stroke-width="0.6" />
+      <path d="M0 0 C 25 14 12 30 0 0 Z" fill="url(#powderBluePetal)" stroke="#587487" stroke-width="0.6" />
+      <path d="M0 0 C -10 30 -26 12 0 0 Z" fill="url(#dustyBluePetal)" stroke="#587487" stroke-width="0.6" />
+      <path d="M0 0 C -30 6 -20 -20 0 0 Z" fill="url(#powderBluePetal)" stroke="#587487" stroke-width="0.6" />
+      <circle cx="0" cy="0" r="3.8" fill="#FFFDF8" stroke="#587487" stroke-width="0.6" />
+      <circle cx="0" cy="0" r="1.5" fill="#587487" />
+    </g>
+
+    <!-- Small Budding Bloom (Offset around 56, 118) -->
+    <g transform="translate(58, 120) scale(0.6) rotate(-35)">
+      <path d="M0 0 C -14 -24 14 -24 0 0 Z" fill="url(#dustyBluePetal)" stroke="#587487" stroke-width="0.6" />
+      <path d="M0 0 C 20 -15 25 8 0 0 Z" fill="url(#powderBluePetal)" stroke="#587487" stroke-width="0.6" />
+      <path d="M0 0 C 20 12 10 25 0 0 Z" fill="url(#dustyBluePetal)" stroke="#587487" stroke-width="0.6" />
+      <path d="M0 0 C -8 25 -22 10 0 0 Z" fill="url(#powderBluePetal)" stroke="#587487" stroke-width="0.6" />
+      <circle cx="0" cy="0" r="3.2" fill="#FFFDF8" stroke="#587487" stroke-width="0.6" />
+      <circle cx="0" cy="0" r="1.2" fill="#587487" />
+    </g>
+
+    <!-- Floating Delicate Seed / Berry dots -->
+    <circle cx="165" cy="55" r="2.2" fill="#A9C5D8" opacity="0.8" />
+    <circle cx="178" cy="62" r="1.8" fill="#9BAF9B" opacity="0.75" />
+    <circle cx="85" cy="155" r="2.2" fill="#A9C5D8" opacity="0.8" />
+    <circle cx="92" cy="168" r="1.8" fill="#9BAF9B" opacity="0.75" />
+  </g>
+</svg>
+

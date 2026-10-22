@@ -1,0 +1,964 @@
+/**
+ * ============================================================
+ * THE ENVELOPE SCENE & 3D OPENING SEQUENCE
+ * Pure Vector & CSS Realization (No reference crops)
+ * ============================================================
+ */
+
+/* Main Stage for Envelope Scene */
+.envelope-stage {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: var(--color-bg);
+  background-image: radial-gradient(circle at 50% 45%, rgba(255, 253, 248, 0.75) 0%, rgba(245, 241, 232, 0.96) 100%),
+                    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.038'/%3E%3C/svg%3E");
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(18px, 4vh, 36px);
+  padding: clamp(24px, 5vh, 48px) 16px clamp(16px, 3.5vh, 28px);
+  overflow: hidden;
+  transition: opacity 0.85s cubic-bezier(0.33, 1, 0.68, 1), transform 0.85s cubic-bezier(0.33, 1, 0.68, 1), visibility 0.85s;
+  will-change: opacity, transform;
+}
+
+.envelope-stage.stage-hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  display: none !important;
+}
+
+/* ============================================================
+   FLIGHT ARENA: TWO WATERCOLOR DOVES & CARRIER RIG
+   ============================================================ */
+.flight-arena {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 10;
+  overflow: hidden;
+}
+
+/* Carrier Rig holding Doves as a flight unit */
+.carrier-rig {
+  position: absolute;
+  top: 14%;
+  left: 50%;
+  width: 320px;
+  height: 220px;
+  margin-left: -160px;
+  will-change: transform, opacity;
+  pointer-events: none;
+  animation: doveFlySequence 3.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* Individual Doves */
+.dove {
+  position: absolute;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.dove-left {
+  top: 10px;
+  left: -15px;
+  width: 142px;
+  height: 167px;
+  z-index: 6;
+  transform-origin: 65% 70%;
+}
+
+.dove-right {
+  top: 0;
+  right: -15px;
+  width: 122px;
+  height: 198px;
+  z-index: 6;
+  transform-origin: 35% 65%;
+}
+
+/* Articulated Dove Layers */
+.dove-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.dove-layer img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  filter: drop-shadow(0 6px 14px rgba(83, 111, 124, 0.16));
+}
+
+.dove-wing-back { z-index: 1; }
+.dove-body-part { z-index: 2; }
+.dove-wing-front { z-index: 3; }
+
+/* Left Dove Flapping (2.8 cycles/second) */
+.dove-wing-front-left {
+  transform-origin: 68.7% 66.1%;
+  animation: flapLeftWingFront 0.36s ease-in-out infinite alternate;
+}
+
+.dove-wing-back-left {
+  transform-origin: 61.7% 44.0%;
+  animation: flapLeftWingBack 0.36s ease-in-out infinite alternate;
+}
+
+.dove-body-left {
+  animation: bobLeftBody 0.36s ease-in-out infinite alternate;
+}
+
+@keyframes flapLeftWingFront {
+  0%   { transform: rotate(-9deg) scaleY(0.96); }
+  100% { transform: rotate(11deg) scaleY(1.02); }
+}
+
+@keyframes flapLeftWingBack {
+  0%   { transform: rotate(7deg); }
+  100% { transform: rotate(-8deg); }
+}
+
+@keyframes bobLeftBody {
+  0%   { transform: translateY(-2px) rotate(-1deg); }
+  100% { transform: translateY(2px) rotate(1.5deg); }
+}
+
+/* Right Dove Flapping (2.4 cycles/second, phase shifted) */
+.dove-wing-front-right {
+  transform-origin: 48.3% 65.0%;
+  animation: flapRightWingFront 0.40s ease-in-out 0.18s infinite alternate;
+}
+
+.dove-wing-back-right {
+  transform-origin: 39.1% 45.2%;
+  animation: flapRightWingBack 0.40s ease-in-out 0.18s infinite alternate;
+}
+
+.dove-body-right {
+  animation: bobRightBody 0.40s ease-in-out 0.18s infinite alternate 0.18s;
+}
+
+@keyframes flapRightWingFront {
+  0%   { transform: rotate(9deg) scaleY(0.96); }
+  100% { transform: rotate(-11deg) scaleY(1.02); }
+}
+
+@keyframes flapRightWingBack {
+  0%   { transform: rotate(-7deg); }
+  100% { transform: rotate(8deg); }
+}
+
+@keyframes bobRightBody {
+  0%   { transform: translateY(-2px) rotate(1deg); }
+  100% { transform: translateY(2px) rotate(-1.5deg); }
+}
+
+/* Master Flight Animation for Doves */
+@keyframes doveFlySequence {
+  0% {
+    opacity: 0;
+    transform: translate3d(-180px, -140px, 0) scale(0.75) rotate(-12deg);
+  }
+  25% {
+    opacity: 1;
+    transform: translate3d(-40px, -30px, 0) scale(0.92) rotate(-4deg);
+  }
+  50% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
+  }
+  70% {
+    opacity: 1;
+    transform: translate3d(15px, -15px, 0) scale(0.96) rotate(2deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(100px, -240px, 0) scale(0.7) rotate(-8deg);
+  }
+}
+
+/* Envelope Settle Keyframe */
+@keyframes introEnvelopeSettle {
+  0% {
+    opacity: 0;
+    transform: translateY(-26px) scale(0.92);
+  }
+  40% {
+    opacity: 0.8;
+    transform: translateY(-6px) scale(0.97);
+  }
+  75% {
+    opacity: 1;
+    transform: translateY(2px) scale(1.01);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* 1. Romantic Garden Framing Accents (Bốn góc khu vườn màu nước) */
+.stage-garden-corner {
+  position: absolute;
+  pointer-events: none;
+  z-index: 2;
+  filter: drop-shadow(0 6px 16px rgba(82, 111, 125, 0.12));
+}
+
+.stage-garden-tl {
+  top: -15px;
+  left: -15px;
+  width: clamp(120px, 34vw, 175px);
+  height: auto;
+  animation: gardenSwayTL 9s ease-in-out infinite alternate;
+}
+
+.stage-garden-tr {
+  top: -15px;
+  right: -15px;
+  width: clamp(120px, 34vw, 175px);
+  height: auto;
+  opacity: 0.95;
+  filter: drop-shadow(0 6px 16px rgba(82, 111, 125, 0.12));
+  animation: gardenSwayTR 11s 1s ease-in-out infinite alternate;
+}
+
+.stage-garden-br {
+  bottom: -20px;
+  right: -20px;
+  width: clamp(135px, 36vw, 190px);
+  height: auto;
+  animation: gardenSwayBR 10s 0.5s ease-in-out infinite alternate;
+}
+
+.stage-garden-bl {
+  bottom: -15px;
+  left: -15px;
+  width: clamp(90px, 25vw, 130px);
+  height: auto;
+  transform: rotate(35deg);
+  opacity: 0.85;
+  animation: gardenSwayBL 12s 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes gardenSwayTL {
+  0%   { transform: rotate(0deg) scale(1); }
+  100% { transform: rotate(2.5deg) scale(1.02); }
+}
+@keyframes gardenSwayTR {
+  0%   { transform: rotate(0deg) scale(1); }
+  100% { transform: rotate(-2.5deg) scale(1.02) translateY(3px); }
+}
+@keyframes gardenSwayBR {
+  0%   { transform: rotate(0deg) scale(1); }
+  100% { transform: rotate(-3deg) scale(1.02); }
+}
+@keyframes gardenSwayBL {
+  0%   { transform: rotate(35deg); }
+  100% { transform: rotate(38deg) translateY(-3px); }
+}
+
+/* Bướm 1: Bay lượn mềm mại trên góc trời (GPU Accelerated, siêu mượt) */
+.stage-sky-butterfly-wrapper {
+  position: absolute;
+  top: clamp(65px, 12vh, 120px);
+  left: calc(50% + clamp(75px, 24vw, 140px));
+  width: clamp(44px, 11vw, 54px);
+  height: clamp(44px, 11vw, 54px);
+  pointer-events: none;
+  z-index: 12;
+  animation: skyButterflyFlight 7s ease-in-out infinite;
+  will-change: transform;
+}
+
+.sky-butterfly {
+  width: 100%;
+  height: 100%;
+  transform-origin: center center;
+}
+
+.sky-butterfly-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transform-origin: 35% 80%;
+  filter: drop-shadow(0 4px 10px rgba(82, 111, 125, 0.3));
+  animation: activeWingFlap 0.28s cubic-bezier(0.42, 0, 0.58, 1) infinite alternate;
+  will-change: transform;
+}
+
+@keyframes skyButterflyFlight {
+  0%   { transform: translate3d(0, 0, 0) rotate(-4deg); }
+  25%  { transform: translate3d(-18px, 14px, 0) rotate(6deg); }
+  50%  { transform: translate3d(-26px, -8px, 0) rotate(-4deg); }
+  75%  { transform: translate3d(10px, -18px, 0) rotate(8deg); }
+  100% { transform: translate3d(0, 0, 0) rotate(-4deg); }
+}
+
+@keyframes activeWingFlap {
+  0%   { transform: rotate(2deg) scaleX(1) scaleY(1); }
+  100% { transform: rotate(-22deg) scaleX(0.24) scaleY(0.88); }
+}
+
+/* 2. Top Content & Recipient Banner (Đã mở rộng sang trọng, vừa vặn không gian trên) */
+.stage-top-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  z-index: 10;
+  animation: introFadeDown 0.8s var(--ease-out-smooth);
+  transition: opacity 0.45s ease, transform 0.45s ease;
+}
+
+.envelope-stage.opening-stage .stage-top-content {
+  opacity: 0 !important;
+  transform: translateY(-28px) scale(0.96) !important;
+  transition: opacity 0.35s ease, transform 0.35s ease;
+  pointer-events: none;
+}
+
+.stage-top-sprig {
+  width: clamp(140px, 36vw, 185px);
+  height: auto;
+  opacity: 0.92;
+  filter: drop-shadow(0 2px 6px rgba(83, 111, 124, 0.12));
+}
+
+.stage-wedding-tag {
+  font-family: var(--font-serif);
+  font-size: clamp(0.8rem, 2.4vw, 0.95rem);
+  letter-spacing: 0.38em;
+  color: var(--color-deep-blue-grey);
+  text-transform: uppercase;
+  margin-top: 8px;
+  font-weight: 500;
+}
+
+.stage-recipient-banner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 14px;
+}
+
+.recipient-prefix {
+  font-family: var(--font-sans);
+  font-size: clamp(0.76rem, 2.2vw, 0.88rem);
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.recipient-name {
+  font-family: var(--font-serif);
+  font-size: clamp(1.85rem, 6.2vw, 2.45rem);
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  color: var(--color-text);
+  margin-bottom: 4px;
+  line-height: 1.15;
+}
+
+.recipient-subtext {
+  font-family: var(--font-serif);
+  font-size: clamp(0.98rem, 3vw, 1.16rem);
+  font-style: italic;
+  color: var(--color-text-muted);
+  letter-spacing: 0.04em;
+  margin-bottom: 6px;
+}
+
+.recipient-date {
+  font-family: var(--font-sans);
+  font-size: clamp(0.85rem, 2.5vw, 1.0rem);
+  letter-spacing: 0.26em;
+  color: var(--color-deep-blue-grey);
+  font-weight: 600;
+}
+
+/* Ambient Loose Hydrangea Petals on Envelope Stage (from reference image) */
+.stage-scattered-petals {
+  position: absolute;
+  bottom: 85px;
+  right: 8vw;
+  width: 70px;
+  height: auto;
+  opacity: 0.85;
+  pointer-events: none;
+  z-index: 2;
+  filter: drop-shadow(0 2px 4px rgba(82, 111, 125, 0.1));
+  animation: petalSway 8s ease-in-out infinite alternate;
+}
+
+.stage-scattered-petals-tl {
+  position: absolute;
+  top: 70px;
+  left: 8vw;
+  width: 55px;
+  height: auto;
+  opacity: 0.75;
+  pointer-events: none;
+  z-index: 2;
+  filter: drop-shadow(0 2px 4px rgba(82, 111, 125, 0.08));
+  animation: petalSway 10s 1s ease-in-out infinite alternate-reverse;
+}
+
+/* 2. Center 3D Envelope Container */
+.envelope-container {
+  perspective: 1400px;
+  perspective-origin: center center;
+  position: relative;
+  width: 324px;
+  height: 220px;
+  max-width: 88vw;
+  margin: 6px auto;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  opacity: 1;
+  animation: introEnvelopeSettle 2.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+/* Envelope Physical Box */
+.physical-envelope {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.4s var(--ease-out-smooth);
+}
+
+.envelope-container:hover .physical-envelope {
+  transform: translateY(-4px);
+}
+
+/* Layer 1: Envelope Back Pocket Lining */
+.envelope-back-pocket {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(145deg, #8EAEC0 0%, #7E9EB0 100%);
+  border-radius: 4px;
+  box-shadow: var(--shadow-envelope);
+  z-index: 1;
+  overflow: hidden;
+  border: 1px solid rgba(83, 111, 124, 0.25);
+}
+
+.envelope-back-pocket::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at 50% 40%, rgba(217, 231, 237, 0.22) 0%, rgba(83, 111, 124, 0.25) 100%);
+  pointer-events: none;
+}
+
+/* Layer 2: Inner Stationery Letter Paper */
+.inner-stationery-card {
+  position: absolute;
+  top: 6px;
+  left: 10px;
+  width: calc(100% - 20px);
+  height: calc(100% - 10px);
+  background-color: var(--color-paper);
+  border-radius: 3px;
+  z-index: 2;
+  box-shadow: 0 4px 18px rgba(83, 111, 124, 0.16);
+  border: 1px solid var(--color-border-outer);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  text-align: center;
+  padding: 10px 14px;
+  transform: translateY(0);
+  transition: transform 0.72s cubic-bezier(0.16, 1, 0.3, 1) 0.48s, box-shadow 0.72s ease 0.48s;
+  user-select: none;
+  overflow: hidden;
+}
+
+.inner-card-double-line {
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  right: 5px;
+  bottom: 5px;
+  border: 0.75px solid rgba(168, 195, 211, 0.5);
+  pointer-events: none;
+}
+
+.inner-card-top-hydrangea {
+  position: absolute;
+  top: -5px;
+  left: -5px;
+  width: 60px;
+  height: auto;
+  opacity: 0.9;
+  pointer-events: none;
+  filter: drop-shadow(0 2px 5px rgba(83, 111, 124, 0.1));
+}
+
+.inner-card-butterfly {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  width: 22px;
+  height: auto;
+  opacity: 0.92;
+  filter: drop-shadow(0 2px 4px rgba(83, 111, 124, 0.15));
+}
+
+.inner-card-body {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin-top: 4px;
+}
+
+.inner-card-monogram {
+  font-family: var(--font-serif);
+  font-size: 0.75rem;
+  letter-spacing: 0.35em;
+  color: var(--color-dusty-blue);
+  font-weight: 600;
+  margin-bottom: 3px;
+  user-select: none;
+}
+
+.inner-card-tag {
+  font-family: var(--font-serif);
+  font-size: 0.54rem;
+  letter-spacing: 0.28em;
+  color: var(--color-deep-blue-grey);
+  text-transform: uppercase;
+  margin-bottom: 5px;
+  font-weight: 500;
+}
+
+.inner-card-names-stacked {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1.15;
+  margin: 0;
+}
+
+.inner-card-names-stacked .card-name {
+  font-family: var(--font-serif);
+  font-size: 1.16rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  color: var(--color-text);
+  white-space: nowrap;
+}
+
+.inner-card-names-stacked .card-and {
+  font-family: var(--font-script);
+  font-size: 1.28rem;
+  color: var(--color-deep-blue-grey);
+  margin: -2px 0;
+  user-select: none;
+}
+
+.inner-card-ornament {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 70px;
+  margin: 5px 0 4px 0;
+}
+
+.inner-card-ornament .orn-line {
+  flex: 1;
+  height: 0.75px;
+  background: linear-gradient(90deg, transparent, rgba(168, 195, 211, 0.7), transparent);
+}
+
+.inner-card-ornament .orn-star {
+  font-size: 0.45rem;
+  color: var(--color-dusty-blue);
+}
+
+.inner-card-date {
+  font-family: var(--font-serif);
+  font-size: 0.75rem;
+  letter-spacing: 0.16em;
+  color: var(--color-text);
+  font-weight: 500;
+}
+
+/* Layer 3: Envelope Body / Front Folded Pocket */
+.envelope-front-pocket {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.envelope-front-pocket svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+
+
+/* Layer 5: Envelope Triangular Top Flap */
+.envelope-flap {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 118px;
+  transform-origin: top center;
+  transform: rotateX(0deg);
+  transition: transform 0.48s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 5;
+  filter: drop-shadow(0 4px 8px rgba(83, 111, 124, 0.22));
+}
+
+.envelope-flap svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.envelope-flap-pattern {
+  position: absolute;
+  inset: 0;
+  background-image: url('../images/botanical/envelope-lining-pattern.webp');
+  background-size: 260px auto;
+  background-position: center bottom;
+  opacity: 0.16;
+  mix-blend-mode: color-burn;
+  pointer-events: none;
+  clip-path: polygon(0 0, 50% 95%, 100% 0);
+  z-index: 1;
+}
+
+/* Layer 6: Cream Botanical Wax Seal & Resting Butterfly (Bướm 2) */
+.wax-seal-wrapper {
+  position: absolute;
+  top: 84px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 68px;
+  height: 68px;
+  z-index: 6;
+  cursor: pointer;
+  filter: drop-shadow(0 4px 10px rgba(50, 70, 80, 0.24));
+  transition: transform 0.35s var(--ease-out-smooth), opacity 0.45s ease;
+}
+
+.wax-seal-wrapper:hover {
+  transform: translateX(-50%) scale(1.08);
+}
+
+.wax-seal-stamp-img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+  position: relative;
+  z-index: 2;
+}
+
+/* Ripple Wave under Wax Seal */
+.seal-ripple-wave {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(142, 197, 224, 0.65);
+  pointer-events: none;
+  z-index: 0;
+  animation: sealRipplePulse 2.8s cubic-bezier(0.2, 0.8, 0.2, 1) infinite;
+}
+
+@keyframes sealRipplePulse {
+  0%   { transform: translate(-50%, -50%) scale(0.9); opacity: 0.85; }
+  65%  { transform: translate(-50%, -50%) scale(1.5); opacity: 0; }
+  100% { transform: translate(-50%, -50%) scale(1.5); opacity: 0; }
+}
+
+/* Bướm 2: Đậu trên con dấu sáp (Tự nhiên, mềm mại, đập cánh êm) */
+.seal-resting-butterfly {
+  position: absolute;
+  top: -20px;
+  left: 50%;
+  transform: translateX(-50%) rotate(8deg);
+  width: 48px;
+  height: 48px;
+  pointer-events: none;
+  z-index: 14;
+  filter: drop-shadow(0 0 8px rgba(142, 197, 224, 0.85)) drop-shadow(0 3px 6px rgba(82, 111, 125, 0.28));
+  animation: sealButterflyRestHover 3.2s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+.seal-butterfly-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transform-origin: 35% 80%;
+  animation: sealButterflyRestFlap 2.8s cubic-bezier(0.25, 0.1, 0.25, 1) infinite;
+  will-change: transform;
+}
+
+@keyframes sealButterflyRestHover {
+  0%   { transform: translateX(-50%) translateY(0) rotate(8deg); }
+  50%  { transform: translateX(-50%) translateY(-2px) rotate(6deg); }
+  100% { transform: translateX(-50%) translateY(1px) rotate(9deg); }
+}
+
+@keyframes sealButterflyRestFlap {
+  /* Nghỉ ngơi yên ả */
+  0%, 40% {
+    transform: rotate(0deg) scale(1);
+    filter: brightness(1);
+  }
+  /* Nhịp vỗ 1 */
+  46% {
+    transform: rotate(-20deg) scaleX(0.25) scaleY(0.88);
+  }
+  52% {
+    transform: rotate(2deg) scale(1.02);
+  }
+  /* Nhịp vỗ 2 */
+  58% {
+    transform: rotate(-18deg) scaleX(0.28) scaleY(0.9);
+  }
+  64% {
+    transform: rotate(0deg) scale(1);
+  }
+  /* Nhịp vỗ 3 */
+  70% {
+    transform: rotate(-16deg) scaleX(0.32) scaleY(0.92);
+  }
+  76% {
+    transform: rotate(0deg) scale(1);
+    filter: brightness(1.12) drop-shadow(0 0 4px rgba(142, 197, 224, 0.8));
+  }
+  /* Quay lại nghỉ ngơi */
+  84%, 100% {
+    transform: rotate(0deg) scale(1);
+    filter: brightness(1);
+  }
+}
+
+/* Fairy Stardust Burst Particles */
+.seal-stardust-burst {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 1px;
+  height: 1px;
+  pointer-events: none;
+  z-index: 15;
+  display: none;
+}
+
+.envelope-container.opening .seal-stardust-burst {
+  display: block;
+}
+
+.stardust-sparkle {
+  position: absolute;
+  font-size: 14px;
+  color: #e2f1fa;
+  text-shadow: 0 0 8px #90caf9, 0 0 14px #ffffff;
+  opacity: 0;
+  animation: stardustExplode 0.9s cubic-bezier(0.1, 0.8, 0.2, 1) forwards;
+}
+
+.stardust-sparkle.p1 { animation-delay: 0.05s; --tx: -45px; --ty: -55px; }
+.stardust-sparkle.p2 { animation-delay: 0.1s;  --tx: 35px;  --ty: -70px; }
+.stardust-sparkle.p3 { animation-delay: 0.15s; --tx: 65px;  --ty: -40px; }
+.stardust-sparkle.p4 { animation-delay: 0.08s; --tx: -30px; --ty: -85px; }
+.stardust-sparkle.p5 { animation-delay: 0.18s; --tx: 15px;  --ty: -110px; }
+.stardust-sparkle.p6 { animation-delay: 0.22s; --tx: 90px;  --ty: -95px; }
+
+@keyframes stardustExplode {
+  0% {
+    transform: translate(0, 0) scale(0.3) rotate(0deg);
+    opacity: 1;
+  }
+  70% {
+    opacity: 0.85;
+  }
+  100% {
+    transform: translate(var(--tx), var(--ty)) scale(1.4) rotate(180deg);
+    opacity: 0;
+  }
+}
+
+/* Tucked Botanical Sprig Beside Seal */
+.envelope-seal-sprig {
+  position: absolute;
+  top: -24px;
+  right: -20px;
+  width: 48px;
+  height: auto;
+  pointer-events: none;
+  transform: rotate(18deg);
+  z-index: 1;
+  opacity: 0.98;
+  filter: drop-shadow(0 2px 4px rgba(60, 80, 90, 0.12));
+}
+
+/* Tap Invitation Cue */
+.envelope-tap-cue {
+  position: absolute;
+  bottom: -34px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-deep-blue-grey);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  opacity: 0.85;
+  animation: cuePulse 2.2s infinite ease-in-out;
+}
+
+.envelope-tap-cue svg {
+  width: 13px;
+  height: 13px;
+  stroke: var(--color-deep-blue-grey);
+}
+
+/* ============================================================
+   OPENING ANIMATION STATES
+   ============================================================ */
+
+/* Step 1: Flap Unseals & Flips Open in 3D + Butterfly Flies Away */
+.envelope-container.opening .wax-seal-wrapper {
+  pointer-events: none;
+}
+
+.envelope-container.opening .wax-seal-stamp-img,
+.envelope-container.opening .seal-ripple-wave,
+.envelope-container.opening .envelope-seal-sprig {
+  opacity: 0;
+  transform: scale(0.65);
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+
+.envelope-container.opening .seal-resting-butterfly {
+  animation: butterflySoarAway 1.35s cubic-bezier(0.25, 1, 0.5, 1) forwards !important;
+}
+
+.envelope-container.opening .seal-resting-butterfly .seal-butterfly-img {
+  animation: fastWingBeat 0.13s ease-in-out infinite alternate !important;
+}
+
+@keyframes fastWingBeat {
+  0%   { transform: rotate(4deg) scaleX(1); }
+  100% { transform: rotate(-24deg) scaleX(0.2) scaleY(0.86); }
+}
+
+@keyframes butterflySoarAway {
+  0% {
+    transform: translateX(-50%) translate3d(0, 0, 0) scale(1) rotate(8deg);
+    opacity: 1;
+  }
+  20% {
+    transform: translateX(-50%) translate3d(18px, -24px, 0) scale(0.96) rotate(16deg);
+    opacity: 1;
+  }
+  50% {
+    transform: translateX(-50%) translate3d(58px, -110px, 0) scale(0.85) rotate(26deg);
+    opacity: 0.95;
+  }
+  75% {
+    transform: translateX(-50%) translate3d(105px, -210px, 0) scale(0.7) rotate(32deg);
+    opacity: 0.75;
+  }
+  100% {
+    transform: translateX(-50%) translate3d(150px, -330px, 0) scale(0.5) rotate(36deg);
+    opacity: 0;
+  }
+}
+
+.envelope-container.opening .envelope-flap {
+  transform: rotateX(180deg);
+  z-index: 1; /* Drops cleanly behind inner paper */
+  transition: transform 0.48s cubic-bezier(0.4, 0, 0.2, 1), z-index 0s 0.24s;
+}
+
+/* Step 2: Inner Card Slides Out Smoothly from Pocket strictly after flap is open */
+.envelope-container.opening .inner-stationery-card {
+  transform: translateY(-125px);
+  box-shadow: 0 20px 42px rgba(83, 111, 124, 0.28);
+  transition: transform 0.72s cubic-bezier(0.16, 1, 0.3, 1) 0.48s, box-shadow 0.72s ease 0.48s;
+}
+
+.envelope-container.opening .envelope-tap-cue {
+  opacity: 0 !important;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+/* Step 3: Seamless Cinematic Cross-Dissolve into Main Wedding Stationery */
+.envelope-stage.expanding {
+  opacity: 0 !important;
+  transform: scale(1.025);
+  pointer-events: none;
+  transition: opacity 0.85s cubic-bezier(0.33, 1, 0.68, 1), transform 0.85s cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+/* Keyframes */
+@keyframes introFadeDown {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes introFadeUp {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes introEnvelopePop {
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes cuePulse {
+  0%, 100% { opacity: 0.6; transform: translateX(-50%) translateY(0); }
+  50% { opacity: 1; transform: translateX(-50%) translateY(-3px); }
+}

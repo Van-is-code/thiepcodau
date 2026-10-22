@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" fill="none" width="100%" height="100%">
+  <defs>
+    <linearGradient id="sfDustyBlue" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#D5E5EE" />
+      <stop offset="50%" stop-color="#A9C5D8" />
+      <stop offset="100%" stop-color="#8FAEC2" />
+    </linearGradient>
+    <linearGradient id="sfPowderBlue" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#E8F1F6" />
+      <stop offset="100%" stop-color="#C9DDE8" />
+    </linearGradient>
+  </defs>
+
+  <g id="single-flower" transform="translate(40, 40)">
+    <!-- 5 Petals -->
+    <path d="M0 0 C -18 -32 18 -32 0 0 Z" fill="url(#sfDustyBlue)" stroke="#587487" stroke-width="0.6" />
+    <path d="M0 0 C 30 -18 34 14 0 0 Z" fill="url(#sfPowderBlue)" stroke="#587487" stroke-width="0.6" />
+    <path d="M0 0 C 26 22 10 34 0 0 Z" fill="url(#sfDustyBlue)" stroke="#587487" stroke-width="0.6" />
+    <path d="M0 0 C -14 34 -28 18 0 0 Z" fill="url(#sfPowderBlue)" stroke="#587487" stroke-width="0.6" />
+    <path d="M0 0 C -34 10 -26 -20 0 0 Z" fill="url(#sfDustyBlue)" stroke="#587487" stroke-width="0.6" />
+
+    <!-- Delicate Vein Lines on Petals -->
+    <path d="M0 -6 L 0 -22" stroke="#587487" stroke-width="0.4" opacity="0.4" />
+    <path d="M5 -3 L 19 -10" stroke="#587487" stroke-width="0.4" opacity="0.4" />
+    <path d="M4 4 L 16 18" stroke="#587487" stroke-width="0.4" opacity="0.4" />
+    <path d="M-4 4 L -16 18" stroke="#587487" stroke-width="0.4" opacity="0.4" />
+    <path d="M-5 -3 L -19 -10" stroke="#587487" stroke-width="0.4" opacity="0.4" />
+
+    <!-- Center Blossom Disc -->
+    <circle cx="0" cy="0" r="4.5" fill="#FFFDF8" stroke="#587487" stroke-width="0.7" />
+    <circle cx="-1.5" cy="-1.5" r="1.2" fill="#587487" />
+    <circle cx="1.5" cy="-1" r="1.2" fill="#587487" />
+    <circle cx="0" cy="1.8" r="1.2" fill="#587487" />
+    <circle cx="-1.5" cy="1" r="0.8" fill="#9BAF9B" />
+    <circle cx="1.5" cy="1" r="0.8" fill="#9BAF9B" />
+  </g>
+</svg>
+

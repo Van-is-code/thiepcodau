@@ -1,0 +1,135 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 220" fill="none" width="100%" height="100%">
+  <defs>
+    <!-- Petal Watercolor Gradients -->
+    <radialGradient id="petGrad1" cx="40%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#E8F1F6" stop-opacity="0.95"/>
+      <stop offset="55%" stop-color="#C4D9E5" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#9CB8CA" stop-opacity="0.82"/>
+    </radialGradient>
+    <radialGradient id="petGrad2" cx="35%" cy="40%" r="70%">
+      <stop offset="0%" stop-color="#DCE9F0" stop-opacity="0.95"/>
+      <stop offset="60%" stop-color="#A9C4D3" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#7B9FB5" stop-opacity="0.85"/>
+    </radialGradient>
+    <radialGradient id="petGradDeep" cx="45%" cy="40%" r="60%">
+      <stop offset="0%" stop-color="#BED7E5" stop-opacity="0.95"/>
+      <stop offset="70%" stop-color="#88AABF" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#5B7E93" stop-opacity="0.85"/>
+    </radialGradient>
+
+    <!-- White Flower Petal Gradient -->
+    <radialGradient id="whitePetGrad" cx="35%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.98"/>
+      <stop offset="65%" stop-color="#FAF5EB" stop-opacity="0.95"/>
+      <stop offset="100%" stop-color="#E4DCD0" stop-opacity="0.85"/>
+    </radialGradient>
+
+    <!-- Sage Foliage Gradients -->
+    <linearGradient id="sageGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#B6C7B2" stop-opacity="0.95"/>
+      <stop offset="50%" stop-color="#9EAE98" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#6F8874" stop-opacity="0.85"/>
+    </linearGradient>
+    <linearGradient id="sageDeep" x1="20%" y1="0%" x2="80%" y2="100%">
+      <stop offset="0%" stop-color="#95A68F" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#546E5A" stop-opacity="0.85"/>
+    </linearGradient>
+
+    <!-- Stem Gradient -->
+    <linearGradient id="stemGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#849C87"/>
+      <stop offset="100%" stop-color="#536F7C"/>
+    </linearGradient>
+  </defs>
+
+  <g id="hydrangea-botanical-art">
+    <!-- 1. Background Sage Foliage (Eucalyptus Leaves) -->
+    <!-- Leaf Top Right -->
+    <path d="M120 70 C 145 40 185 45 195 72 C 205 98 160 110 135 88 Z" fill="url(#sageGrad)" stroke="#536F7C" stroke-width="0.5" opacity="0.9"/>
+    <path d="M130 75 Q 160 68 185 75" stroke="#546E5A" stroke-width="0.5" stroke-linecap="round" opacity="0.5"/>
+
+    <!-- Leaf Far Right -->
+    <path d="M140 110 C 175 95 210 115 215 140 C 220 165 180 170 150 145 Z" fill="url(#sageDeep)" stroke="#536F7C" stroke-width="0.5" opacity="0.85"/>
+    <path d="M152 118 Q 182 124 204 142" stroke="#46545A" stroke-width="0.4" opacity="0.45"/>
+
+    <!-- Leaf Bottom Left -->
+    <path d="M75 140 C 50 165 25 155 18 130 C 10 105 50 100 80 120 Z" fill="url(#sageGrad)" stroke="#536F7C" stroke-width="0.5" opacity="0.9"/>
+    <path d="M70 135 Q 45 140 25 132" stroke="#546E5A" stroke-width="0.5" opacity="0.5"/>
+
+    <!-- Delicate curved stems -->
+    <path d="M100 170 Q 115 130 110 90" stroke="url(#stemGrad)" stroke-width="1.2" stroke-linecap="round"/>
+    <path d="M110 115 Q 145 105 170 115" stroke="url(#stemGrad)" stroke-width="0.9" stroke-linecap="round"/>
+    <path d="M105 135 Q 70 130 45 125" stroke="url(#stemGrad)" stroke-width="0.8" stroke-linecap="round"/>
+
+    <!-- 2. Blue Hydrangea Florets (Layered 4-petal blossoms) -->
+    <!-- Floret 1 (Top Center: 110, 45) -->
+    <g transform="translate(108, 48) scale(0.95)">
+      <ellipse cx="0" cy="-14" rx="7.5" ry="11" fill="url(#petGrad1)" stroke="#536F7C" stroke-width="0.45"/>
+      <ellipse cx="14" cy="0" rx="11" ry="7.5" fill="url(#petGrad2)" stroke="#536F7C" stroke-width="0.45"/>
+      <ellipse cx="0" cy="14" rx="7.5" ry="11" fill="url(#petGrad1)" stroke="#536F7C" stroke-width="0.45"/>
+      <ellipse cx="-14" cy="0" rx="11" ry="7.5" fill="url(#petGrad2)" stroke="#536F7C" stroke-width="0.45"/>
+      <circle cx="0" cy="0" r="2.2" fill="#536F7C" opacity="0.75"/>
+    </g>
+
+    <!-- Floret 2 (Top Left: 75, 65) -->
+    <g transform="translate(74, 66) scale(0.88) rotate(-18)">
+      <ellipse cx="0" cy="-13" rx="7" ry="10" fill="url(#petGrad2)" stroke="#536F7C" stroke-width="0.45"/>
+      <ellipse cx="13" cy="0" rx="10" ry="7" fill="url(#petGradDeep)" stroke="#536F7C" stroke-width="0.45"/>
+      <ellipse cx="0" cy="13" rx="7" ry="10" fill="url(#petGrad1)" stroke="#536F7C" stroke-width="0.45"/>
+      <ellipse cx="-13" cy="0" rx="10" ry="7" fill="url(#petGrad2)" stroke="#536F7C" stroke-width="0.45"/>
+      <circle cx="0" cy="0" r="2" fill="#536F7C" opacity="0.8"/>
+    </g>
+
+    <!-- Floret 3 (Center Deep: 95, 90) -->
+    <g transform="translate(94, 92) scale(1.05) rotate(12)">
+      <ellipse cx="0" cy="-15" rx="8" ry="12" fill="url(#petGradDeep)" stroke="#536F7C" stroke-width="0.5"/>
+      <ellipse cx="15" cy="0" rx="12" ry="8" fill="url(#petGrad2)" stroke="#536F7C" stroke-width="0.5"/>
+      <ellipse cx="0" cy="15" rx="8" ry="12" fill="url(#petGradDeep)" stroke="#536F7C" stroke-width="0.5"/>
+      <ellipse cx="-15" cy="0" rx="12" ry="8" fill="url(#petGrad1)" stroke="#536F7C" stroke-width="0.5"/>
+      <circle cx="0" cy="0" r="2.5" fill="#46545A"/>
+    </g>
+
+    <!-- Floret 4 (Right Center: 135, 85) -->
+    <g transform="translate(136, 84) scale(0.85) rotate(32)">
+      <ellipse cx="0" cy="-13" rx="7" ry="10" fill="url(#petGrad1)" stroke="#536F7C" stroke-width="0.45"/>
+      <ellipse cx="13" cy="0" rx="10" ry="7" fill="url(#petGrad2)" stroke="#536F7C" stroke-width="0.45"/>
+      <ellipse cx="0" cy="13" rx="7" ry="10" fill="url(#petGrad1)" stroke="#536F7C" stroke-width="0.45"/>
+      <ellipse cx="-13" cy="0" rx="10" ry="7" fill="url(#petGradDeep)" stroke="#536F7C" stroke-width="0.45"/>
+      <circle cx="0" cy="0" r="2" fill="#536F7C" opacity="0.8"/>
+    </g>
+
+    <!-- Floret 5 (Bottom Right: 125, 125) -->
+    <g transform="translate(126, 126) scale(0.9) rotate(-10)">
+      <ellipse cx="0" cy="-14" rx="7.5" ry="11" fill="url(#petGrad2)" stroke="#536F7C" stroke-width="0.45"/>
+      <ellipse cx="14" cy="0" rx="11" ry="7.5" fill="url(#petGradDeep)" stroke="#536F7C" stroke-width="0.45"/>
+      <ellipse cx="0" cy="14" rx="7.5" ry="11" fill="url(#petGrad1)" stroke="#536F7C" stroke-width="0.45"/>
+      <ellipse cx="-14" cy="0" rx="11" ry="7.5" fill="url(#petGrad2)" stroke="#536F7C" stroke-width="0.45"/>
+      <circle cx="0" cy="0" r="2.2" fill="#46545A"/>
+    </g>
+
+    <!-- 3. Accent White Blossom (Front Layer: 68, 115) -->
+    <g transform="translate(68, 118) scale(1.15)">
+      <!-- 5 Rounded White Petals -->
+      <path d="M0 0 C -12 -22 12 -22 0 0 Z" fill="url(#whitePetGrad)" stroke="#536F7C" stroke-width="0.45"/>
+      <path d="M0 0 C 22 -14 24 10 0 0 Z" fill="url(#whitePetGrad)" stroke="#536F7C" stroke-width="0.45"/>
+      <path d="M0 0 C 18 18 4 25 0 0 Z" fill="url(#whitePetGrad)" stroke="#536F7C" stroke-width="0.45"/>
+      <path d="M0 0 C -12 24 -22 12 0 0 Z" fill="url(#whitePetGrad)" stroke="#536F7C" stroke-width="0.45"/>
+      <path d="M0 0 C -24 4 -18 -16 0 0 Z" fill="url(#whitePetGrad)" stroke="#536F7C" stroke-width="0.45"/>
+      
+      <!-- Golden Pistil & Stamens -->
+      <circle cx="0" cy="0" r="3.6" fill="#EDE4D3" stroke="#536F7C" stroke-width="0.5"/>
+      <circle cx="-1" cy="-1" r="1.1" fill="#C29F52"/>
+      <circle cx="1.2" cy="-0.8" r="1.1" fill="#C29F52"/>
+      <circle cx="0" cy="1.2" r="1.1" fill="#C29F52"/>
+      <circle cx="-1.2" cy="0.9" r="0.8" fill="#9EAE98"/>
+      <circle cx="1.2" cy="0.9" r="0.8" fill="#9EAE98"/>
+    </g>
+
+    <!-- Small Budding Dots / Berries -->
+    <circle cx="160" cy="55" r="2.2" fill="#A9C4D3" opacity="0.85"/>
+    <circle cx="172" cy="62" r="1.8" fill="#9EAE98" opacity="0.8"/>
+    <circle cx="48" cy="85" r="2.2" fill="#A9C4D3" opacity="0.85"/>
+    <circle cx="42" cy="98" r="1.8" fill="#9EAE98" opacity="0.8"/>
+  </g>
+</svg>
+

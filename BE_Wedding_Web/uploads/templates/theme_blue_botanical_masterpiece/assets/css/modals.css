@@ -1,0 +1,650 @@
+/**
+ * ============================================================
+ * STATIONERY MODALS & LIGHTBOX — BLUE BOTANICAL WEDDING
+ * ============================================================
+ */
+
+/* Modal Backdrop */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(70, 84, 90, 0.45);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s var(--ease-out-smooth), visibility 0.3s;
+}
+
+.modal-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Modal Paper Card */
+.modal-stationery-card {
+  width: 100%;
+  max-width: 420px;
+  max-height: 90vh;
+  background-color: var(--color-paper);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border-subtle);
+  box-shadow: var(--shadow-modal);
+  position: relative;
+  overflow-y: auto;
+  padding: var(--space-xl) var(--space-lg);
+  transform: translateY(20px) scale(0.97);
+  transition: transform 0.35s var(--ease-out-smooth);
+}
+
+.modal-overlay.active .modal-stationery-card {
+  transform: translateY(0) scale(1);
+}
+
+/* Modal Header */
+.modal-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  position: relative;
+  margin-bottom: var(--space-lg);
+}
+
+.modal-close-btn {
+  position: absolute;
+  top: -12px;
+  right: -6px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-deep-blue);
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.modal-close-btn:hover {
+  background-color: rgba(169, 197, 216, 0.2);
+  transform: scale(1.05);
+}
+
+.modal-close-btn svg {
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
+  stroke-width: 1.5;
+}
+
+.modal-flower-accent {
+  width: 44px;
+  height: auto;
+  margin-bottom: 6px;
+  opacity: 0.85;
+}
+
+.modal-title {
+  font-family: var(--font-serif);
+  font-size: 1.6rem;
+  color: var(--color-deep-blue);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+}
+
+.modal-subtitle {
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  margin-top: 4px;
+  max-width: 280px;
+}
+
+/* ============================================================
+   GIFT MODAL & SECTION STYLES (Luxury Capsule, Gilded QR, Slip)
+   ============================================================ */
+
+/* Luxury Gift Presentation Card on Section 11 */
+.connection-gift-card {
+  width: 100%;
+  margin-top: 24px;
+  background: linear-gradient(145deg, #FFFCF7 0%, #F5F0E6 100%);
+  border: 1px solid rgba(212, 175, 55, 0.45);
+  border-radius: 16px;
+  padding: 24px 18px;
+  position: relative;
+  box-shadow: 0 10px 28px rgba(82, 111, 125, 0.08), inset 0 0 0 1px rgba(255, 255, 255, 0.8);
+  overflow: hidden;
+  text-align: center;
+}
+
+.connection-gift-card::before {
+  content: "";
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  right: 4px;
+  bottom: 4px;
+  border: 1px dashed rgba(212, 175, 55, 0.3);
+  border-radius: 12px;
+  pointer-events: none;
+}
+
+.gift-card-inner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.gift-card-icon-wrap {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.16) 0%, rgba(82, 111, 125, 0.12) 100%);
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #B38F28;
+  margin-bottom: 10px;
+  box-shadow: 0 3px 10px rgba(212, 175, 55, 0.12);
+}
+
+.gift-card-svg-icon {
+  width: 22px;
+  height: 22px;
+}
+
+.gift-card-badge {
+  display: block;
+  font-family: var(--font-sans);
+  font-size: 0.68rem;
+  letter-spacing: 0.22em;
+  color: #8C6F1E;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.gift-card-title {
+  font-family: var(--font-serif);
+  font-size: 1.55rem;
+  font-weight: 600;
+  color: #2C3E4A;
+  margin-bottom: 8px;
+}
+
+.gift-card-divider {
+  width: 46px;
+  height: 1.5px;
+  background: linear-gradient(90deg, transparent, #D4AF37, transparent);
+  margin: 0 auto 12px auto;
+}
+
+.gift-card-note {
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  color: #5A6D77;
+  line-height: 1.6;
+  max-width: 320px;
+  margin-bottom: 18px;
+}
+
+.btn-gift-luxury {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px 28px;
+  background: linear-gradient(135deg, #3A5565 0%, #253946 100%);
+  color: #FFFDF8 !important;
+  border: 1px solid rgba(212, 175, 55, 0.65);
+  border-radius: 999px;
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(37, 57, 70, 0.28), 0 0 12px rgba(212, 175, 55, 0.2);
+  transition: all 0.25s ease;
+}
+
+.btn-gift-luxury:hover {
+  background: linear-gradient(135deg, #46677A 0%, #2F4757 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(37, 57, 70, 0.35), 0 0 16px rgba(212, 175, 55, 0.35);
+  border-color: #ECC880;
+}
+
+.btn-gift-sparkle {
+  color: #ECC880;
+  font-size: 0.75rem;
+}
+
+/* Modal Internal Elements */
+.modal-sage-header {
+  width: 78px;
+  height: auto;
+  margin-bottom: 8px;
+  filter: drop-shadow(0 2px 6px rgba(82, 111, 125, 0.15));
+}
+
+.gift-tabs-wrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 18px;
+}
+
+.gift-tabs-capsule {
+  display: inline-flex;
+  background: #EAE6DC;
+  padding: 4px;
+  border-radius: 999px;
+  border: 1px solid rgba(169, 197, 216, 0.45);
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05);
+  gap: 4px;
+}
+
+.gift-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 18px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: transparent;
+  font-family: var(--font-sans);
+  font-size: 0.74rem;
+  letter-spacing: 0.1em;
+  font-weight: 600;
+  color: #6C7A82;
+  cursor: pointer;
+  transition: all 0.22s ease;
+}
+
+.tab-avatar-icon {
+  font-size: 0.95rem;
+}
+
+.gift-tab-btn:hover {
+  color: #2C3E4A;
+}
+
+.gift-tab-btn.active {
+  background: linear-gradient(135deg, #3A5565 0%, #253946 100%);
+  color: #FFFDF8 !important;
+  border: 1px solid rgba(212, 175, 55, 0.55);
+  box-shadow: 0 4px 12px rgba(37, 57, 70, 0.22);
+}
+
+.gift-content-panel {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  animation: fadeInModalPanel 0.3s ease;
+}
+
+.gift-content-panel.active {
+  display: flex;
+}
+
+@keyframes fadeInModalPanel {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Gilded QR Code Frame */
+.qr-luxury-frame {
+  position: relative;
+  background: linear-gradient(145deg, #FFFFFF 0%, #FAF8F2 100%);
+  border: 1.5px solid rgba(212, 175, 55, 0.5);
+  border-radius: 14px;
+  padding: 14px 14px 10px 14px;
+  box-shadow: 0 6px 20px rgba(82, 111, 125, 0.1);
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.qr-corner-star {
+  position: absolute;
+  font-size: 0.68rem;
+  color: #D4AF37;
+  line-height: 1;
+}
+
+.qr-star-tl { top: 4px; left: 5px; }
+.qr-star-tr { top: 4px; right: 5px; }
+.qr-star-bl { bottom: 4px; left: 5px; }
+.qr-star-br { bottom: 4px; right: 5px; }
+
+.qr-image-wrapper {
+  width: 155px;
+  height: 155px;
+  background: #FFF;
+  border-radius: 8px;
+  padding: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.qr-image-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.qr-scan-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 8px;
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  color: #72848F;
+  letter-spacing: 0.03em;
+}
+
+/* Luxury Bank Slip Card */
+.bank-slip-card {
+  width: 100%;
+  background: #FFFFFF;
+  border: 1px solid rgba(169, 197, 216, 0.45);
+  border-radius: 12px;
+  box-shadow: 0 4px 14px rgba(82, 111, 125, 0.06);
+  overflow: hidden;
+}
+
+.bank-slip-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  border-bottom: 1px dashed rgba(169, 197, 216, 0.35);
+  text-align: left;
+}
+
+.bank-slip-row:last-child {
+  border-bottom: none;
+}
+
+.bank-slip-field {
+  display: flex;
+  flex-direction: column;
+}
+
+.bank-slip-label {
+  font-family: var(--font-sans);
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #7F909A;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.bank-slip-value {
+  font-family: var(--font-serif);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #2C3E4A;
+}
+
+.bank-slip-badge {
+  font-family: var(--font-sans);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  padding: 2px 7px;
+  border-radius: 6px;
+  background: rgba(82, 111, 125, 0.12);
+  color: #3B535F;
+}
+
+.slip-name {
+  letter-spacing: 0.05em;
+  color: #1C2D37;
+}
+
+.slip-account-num {
+  font-family: var(--font-sans);
+  font-size: 1.05rem;
+  letter-spacing: 0.12em;
+  font-weight: 700;
+  color: #213A49;
+}
+
+.slip-memo {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 0.92rem;
+  color: #4A606D;
+}
+
+.btn-copy-luxury {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  background: linear-gradient(135deg, #3A5565 0%, #253946 100%);
+  color: #FFFDF8 !important;
+  border: 1px solid rgba(212, 175, 55, 0.5);
+  border-radius: 999px;
+  font-family: var(--font-sans);
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(37, 57, 70, 0.2);
+  transition: all 0.2s ease;
+}
+
+.btn-copy-luxury:hover {
+  background: linear-gradient(135deg, #476679 0%, #2C4252 100%);
+  border-color: #D4AF37;
+  transform: translateY(-1px);
+}
+
+.btn-copy-luxury svg {
+  width: 12px;
+  height: 12px;
+}
+
+/* Full Width Form Row for RSVP Name Input */
+.form-row-full {
+  width: 100%;
+  margin-bottom: var(--space-sm, 12px);
+}
+
+.form-row-full .inline-form-input {
+  width: 100%;
+}
+
+/* ============================================================
+   RSVP & BLESSING FORM STYLES
+   ============================================================ */
+.stationery-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  text-align: left;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.form-label {
+  font-family: var(--font-sans);
+  font-size: 0.74rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--color-deep-blue);
+  font-weight: 600;
+}
+
+.form-input,
+.form-textarea,
+.form-select {
+  width: 100%;
+  padding: 10px 14px;
+  background-color: #FAF8F2;
+  border: 1px solid rgba(169, 197, 216, 0.45);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.88rem;
+  color: var(--color-text);
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-input:focus,
+.form-textarea:focus,
+.form-select:focus {
+  border-color: var(--color-deep-blue);
+  box-shadow: 0 0 0 2px rgba(88, 116, 135, 0.12);
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.form-radio-group {
+  display: flex;
+  gap: var(--space-md);
+  margin-top: 4px;
+}
+
+.form-radio-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  color: var(--color-text);
+  cursor: pointer;
+}
+
+/* ============================================================
+   LIGHTBOX (Full-Screen Editorial Photo Viewer)
+   ============================================================ */
+.lightbox-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(40, 50, 56, 0.92);
+  z-index: 2500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s;
+}
+
+.lightbox-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.lightbox-image-container {
+  position: relative;
+  max-width: 90vw;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.lightbox-photo {
+  max-width: 100%;
+  max-height: 80vh;
+  border-radius: var(--radius-sm);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+  object-fit: contain;
+}
+
+.lightbox-caption {
+  font-family: var(--font-serif);
+  font-size: 1rem;
+  font-style: italic;
+  color: #FFFDF8;
+  margin-top: 12px;
+  text-align: center;
+}
+
+.lightbox-close-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  color: #FFFDF8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.lightbox-close-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.lightbox-close-btn svg {
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+}
+
+/* ============================================================
+   TOAST NOTIFICATION (Paper Feedback for Copying & Submitting)
+   ============================================================ */
+.stationery-toast {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background-color: var(--color-deep-blue);
+  color: var(--color-paper);
+  padding: 10px 20px;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  box-shadow: 0 8px 24px rgba(70, 84, 90, 0.3);
+  z-index: 3000;
+  opacity: 0;
+  visibility: hidden;
+  transition: transform 0.3s var(--ease-out-smooth), opacity 0.3s ease, visibility 0.3s;
+  pointer-events: none;
+}
+
+.stationery-toast.active {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+  visibility: visible;
+}
+

@@ -1,0 +1,1905 @@
+/**
+ * ============================================================
+ * SECTIONS STYLING — BLUE BOTANICAL WEDDING
+ * Refined Information Architecture, Typography & Layout
+ * Continuous Fine-Art Wedding Stationery Paper Flow
+ * ============================================================
+ */
+
+/* Base Section Styling */
+.stationery-section {
+  position: relative;
+  width: 100%;
+  padding: var(--space-xl) var(--space-md);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  overflow: hidden; /* Prevents any decorative element from leaking out */
+}
+
+/* Uppercase Subtitle Label */
+.section-label {
+  font-family: var(--font-sans);
+  font-size: 0.68rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--color-deep-blue-grey);
+  font-weight: 600;
+  margin-bottom: 2px;
+  opacity: 0.88;
+  z-index: 5;
+}
+
+/* Calligraphic Script Section Title — Handwritten Stationery Feel */
+.section-title {
+  font-family: var(--font-script);
+  font-size: clamp(2.35rem, 7.6vw, 3.1rem);
+  font-weight: 400;
+  color: var(--color-deep-blue-grey);
+  letter-spacing: 0.02em;
+  line-height: 1.18;
+  margin-bottom: var(--space-sm);
+  max-width: 100%;
+  word-break: normal;
+  overflow-wrap: break-word;
+  z-index: 5;
+}
+
+.section-lead-text {
+  font-family: var(--font-sans);
+  font-size: 0.86rem;
+  color: var(--color-text-muted);
+  max-width: 320px;
+  margin: 0 auto var(--space-md);
+  line-height: 1.6;
+  z-index: 5;
+}
+
+/* ============================================================
+   01 — HERO SECTION
+   Editorial hierarchy: The Wedding Of -> Names -> Date -> Option A Photo
+   ============================================================ */
+.section-hero {
+  padding-top: 48px;
+  padding-bottom: var(--space-xl);
+}
+
+.hero-hydrangea-corner {
+  position: absolute;
+  top: -6px;
+  left: -6px;
+  width: clamp(100px, 27vw, 135px);
+  height: auto;
+  pointer-events: none;
+  z-index: 3;
+  opacity: 0.98;
+  filter: drop-shadow(0 3px 8px rgba(83, 111, 124, 0.12));
+}
+
+.hero-branch-bottom {
+  position: absolute;
+  bottom: -4px;
+  right: -6px;
+  width: clamp(95px, 25vw, 125px);
+  height: auto;
+  pointer-events: none;
+  z-index: 4;
+  opacity: 0.94;
+  scale: -1 1; /* Inverts horizontally: stem is at the right frame edge, leafy tip points gracefully inwards into the card */
+  transform-origin: center;
+  animation: heroBranchSway 7s ease-in-out infinite alternate;
+  filter: drop-shadow(0 2px 6px rgba(83, 111, 124, 0.1));
+}
+
+@keyframes heroBranchSway {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(2deg); }
+}
+
+.hero-butterfly {
+  position: absolute;
+  top: 48px;
+  right: 24px;
+  width: 24px;
+  height: auto;
+  pointer-events: none;
+  z-index: 4;
+  opacity: 0.95;
+}
+
+.hero-header {
+  z-index: 5;
+  margin-top: 10px;
+}
+
+.hero-badge {
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--color-deep-blue-grey);
+  font-weight: 600;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.hero-names-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  margin: var(--space-xs) 0;
+  z-index: 5;
+}
+
+.hero-name {
+  font-family: var(--font-serif);
+  font-size: clamp(1.65rem, 5.6vw, 2.1rem);
+  font-weight: 500;
+  color: var(--color-text);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  line-height: 1.15;
+}
+
+.hero-amp {
+  font-family: var(--font-script);
+  font-size: 1.85rem;
+  color: var(--color-deep-blue-grey);
+  line-height: 1;
+  margin: -2px 0;
+}
+
+/* Date Only in Hero — Clean & Uncluttered */
+.hero-datestamp {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: var(--space-xs) 0 var(--space-md);
+  z-index: 5;
+}
+
+.hero-date-val {
+  font-family: var(--font-sans);
+  font-size: 1.05rem;
+  letter-spacing: 0.22em;
+  color: var(--color-deep-blue-grey);
+  font-weight: 600;
+}
+
+/* Option A: Editorial Rectangular Portrait with Fine Botanical Frame */
+.hero-portrait-container {
+  position: relative;
+  width: clamp(210px, 56vw, 255px);
+  aspect-ratio: 4 / 5;
+  margin: var(--space-xs) auto var(--space-md);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border-subtle);
+  background-color: var(--color-paper-tint);
+  padding: 6px; /* Fine paper matting */
+  box-shadow: 0 10px 28px -6px rgba(83, 111, 124, 0.16);
+  z-index: 5;
+}
+
+.hero-portrait-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border: 0.75px solid var(--color-border-inner);
+}
+
+.hero-portrait-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.8s var(--ease-out-smooth);
+}
+
+.hero-portrait-container:hover .hero-portrait-img {
+  transform: scale(1.03);
+}
+
+/* Fine-Art Botanical Corner Motifs on Portrait Frame */
+.hero-portrait-container.hero-botanical-frame {
+  padding: 10px;
+  background-color: #FAF8F5;
+  box-shadow: 0 12px 34px -6px rgba(83, 111, 124, 0.18), 0 2px 8px rgba(83, 111, 124, 0.06);
+}
+
+.botanical-corner {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  z-index: 6;
+  pointer-events: none;
+  opacity: 0.92;
+  transition: transform 0.4s var(--ease-out-smooth);
+}
+
+.botanical-corner svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.botanical-corner.tl {
+  top: -2px;
+  left: -2px;
+}
+
+.botanical-corner.tr {
+  top: -2px;
+  right: -2px;
+  transform: scaleX(-1);
+}
+
+.botanical-corner.bl {
+  bottom: -2px;
+  left: -2px;
+  transform: scaleY(-1);
+}
+
+.botanical-corner.br {
+  bottom: -2px;
+  right: -2px;
+  transform: scale(-1);
+}
+
+.hero-portrait-container:hover .botanical-corner.tl {
+  transform: translate(-1px, -1px);
+}
+.hero-portrait-container:hover .botanical-corner.tr {
+  transform: scaleX(-1) translate(-1px, -1px);
+}
+.hero-portrait-container:hover .botanical-corner.bl {
+  transform: scaleY(-1) translate(-1px, -1px);
+}
+.hero-portrait-container:hover .botanical-corner.br {
+  transform: scale(-1) translate(-1px, -1px);
+}
+
+.hero-scroll-cue {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  margin-top: var(--space-sm);
+  z-index: 5;
+}
+
+.hero-scroll-line {
+  width: 1px;
+  height: 20px;
+  background-color: var(--color-dusty-blue);
+}
+
+.hero-scroll-text {
+  font-family: var(--font-sans);
+  font-size: 0.68rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+/* ============================================================
+   02 — WELCOME SECTION (Thư Mời / Lời Ngỏ)
+   ============================================================ */
+.section-welcome {
+  padding-top: var(--space-md);
+  padding-bottom: var(--space-md);
+}
+
+.welcome-side-accent {
+  position: absolute;
+  top: 14px;
+  right: -8px;
+  width: clamp(65px, 18vw, 85px);
+  height: auto;
+  opacity: 0.88;
+  pointer-events: none;
+  z-index: 3;
+  filter: drop-shadow(0 2px 6px rgba(83, 111, 124, 0.1));
+}
+
+.welcome-top-floret {
+  width: 34px;
+  height: auto;
+  margin: 0 auto var(--space-xs);
+  opacity: 0.9;
+  filter: drop-shadow(0 2px 4px rgba(83, 111, 124, 0.12));
+  z-index: 5;
+}
+
+.welcome-inner {
+  max-width: 350px;
+  margin: 0 auto;
+  z-index: 5;
+}
+
+.welcome-quote {
+  font-family: var(--font-sans);
+  font-size: 0.98rem;
+  font-style: italic;
+  font-weight: 500;
+  line-height: 1.65;
+  color: var(--color-deep-blue-grey);
+  margin-bottom: var(--space-md);
+}
+
+.welcome-text {
+  font-family: var(--font-sans);
+  font-size: 0.86rem;
+  line-height: 1.75;
+  color: var(--color-text);
+}
+
+/* ============================================================
+   03 — SAVE THE DATE SECTION (Opened Envelope Flat-Lay — Photo 5)
+   ============================================================ */
+/* ============================================================
+   03 — SAVE THE DATE SECTION (Bức Thư Mở Chuẩn Phong Bì Thật — Ảnh Số 1)
+   ============================================================ */
+.section-save-the-date {
+  position: relative;
+  padding-top: var(--space-md);
+  padding-bottom: var(--space-xl);
+  overflow: visible;
+}
+
+/* Surrounding Botanicals (Flowers, leaves & butterflies around the envelope — Photo 1) */
+.std-surroundings {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.std-outer-hydrangea-top {
+  position: absolute;
+  top: -15px;
+  left: 15px;
+  width: clamp(75px, 20vw, 95px);
+  height: auto;
+  z-index: 6;
+  opacity: 0.92;
+  filter: drop-shadow(0 3px 8px rgba(83, 111, 124, 0.12));
+}
+
+.std-outer-branch {
+  position: absolute;
+  top: 36%;
+  left: -16px;
+  width: clamp(70px, 18vw, 85px);
+  height: auto;
+  z-index: 6;
+  opacity: 0.86;
+  transform: rotate(18deg);
+  filter: drop-shadow(0 2px 6px rgba(83, 111, 124, 0.1));
+}
+
+.std-outer-orchid-cluster {
+  position: absolute;
+  bottom: -20px;
+  right: -14px;
+  width: clamp(95px, 28vw, 125px);
+  height: auto;
+  z-index: 6;
+  opacity: 0.96;
+  filter: drop-shadow(0 4px 12px rgba(83, 111, 124, 0.18));
+}
+
+.std-outer-butterfly-top {
+  position: absolute;
+  top: -12px;
+  right: 20px;
+  width: 26px;
+  height: auto;
+  z-index: 7;
+  transform: rotate(-12deg);
+}
+
+.std-outer-butterfly-side {
+  position: absolute;
+  bottom: 80px;
+  left: -10px;
+  width: 24px;
+  height: auto;
+  z-index: 7;
+  scale: -1 1;
+  transform: rotate(-18deg);
+}
+
+.std-outer-petals {
+  position: absolute;
+  bottom: -15px;
+  right: 15px;
+  width: clamp(90px, 25vw, 120px);
+  height: auto;
+  z-index: 2;
+  opacity: 0.85;
+}
+
+/* Authentic Opened Envelope Shell */
+.std-real-envelope {
+  position: relative;
+  width: 100%;
+  max-width: 340px;
+  height: 440px;
+  margin: 35px auto 10px;
+  z-index: 3;
+}
+
+/* Back Interior & Top Open Flap pointing upward */
+.std-env-back-flap {
+  position: absolute;
+  top: -45px;
+  left: 0;
+  width: 100%;
+  height: 75px;
+  z-index: 1;
+}
+
+.std-env-top-triangle {
+  width: 100%;
+  height: 100%;
+  background-color: #f6f1e8;
+  background-image: url('../images/botanical/envelope-lining-pattern.webp');
+  background-size: cover;
+  background-position: center bottom;
+  clip-path: polygon(0 100%, 50% 0, 100% 100%);
+  filter: drop-shadow(0 -3px 6px rgba(82, 111, 125, 0.12));
+}
+
+.std-env-inner-wall {
+  position: absolute;
+  top: 25px;
+  left: 0;
+  width: 100%;
+  bottom: 0;
+  background-color: #eee7da;
+  border-radius: 4px;
+  box-shadow: 0 12px 32px -6px rgba(82, 111, 125, 0.2);
+  z-index: 2;
+  overflow: hidden;
+}
+
+.std-env-inner-wall::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(82, 111, 125, 0.16) 0%, rgba(238, 231, 218, 0.45) 40%, rgba(82, 111, 125, 0.25) 100%);
+  pointer-events: none;
+}
+
+/* Letter Card (Ruột thiệp nhô ra ở nửa phần hở trên — Căn giữa chuẩn xác 100%) */
+.std-letter-card {
+  position: absolute;
+  top: 2px;
+  left: 20px;
+  right: 20px;
+  height: 330px;
+  background-color: #fffdf9;
+  border-radius: 2px;
+  border: 1px solid rgba(82, 111, 125, 0.22);
+  box-shadow: 0 6px 20px rgba(82, 111, 125, 0.12);
+  padding: 13px 12px 10px;
+  z-index: 3;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  box-sizing: border-box;
+}
+
+/* Full-surface subtle botanical pattern overlay (mờ mờ không cản trở chữ) */
+.std-card-bg-pattern {
+  position: absolute;
+  inset: 0;
+  background-image: url('../images/botanical/envelope-lining-pattern.webp');
+  background-size: 210px auto;
+  background-repeat: repeat;
+  background-position: center center;
+  opacity: 0.12;
+  mix-blend-mode: multiply;
+  pointer-events: none;
+  z-index: 1;
+  border-radius: 2px;
+}
+
+/* Inset fine double border on letter card */
+.std-card-border-frame {
+  position: absolute;
+  inset: 4px;
+  border: 0.75px solid rgba(82, 111, 125, 0.18);
+  border-radius: 1px;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Botanical sprig decorating top-right corner of card */
+.std-card-corner-sprig-tr {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  width: 35px;
+  height: auto;
+  transform: rotate(15deg);
+  opacity: 0.85;
+  pointer-events: none;
+  z-index: 8;
+  filter: drop-shadow(0 2px 4px rgba(82, 111, 125, 0.12));
+}
+
+/* Botanical mini divider inside card */
+.std-card-mini-divider {
+  width: 80px;
+  height: 8px;
+  margin: 1px auto 3px;
+  opacity: 0.65;
+  display: block;
+}
+
+/* Mini Polaroid pinned to corner (Photo 1 — Rõ nét, không bị thu bé trên điện thoại) */
+.std-mini-polaroid {
+  position: absolute;
+  top: -14px;
+  left: -14px;
+  width: 64px;
+  background: #ffffff;
+  padding: 4px 4px 13px 4px;
+  border-radius: 1px;
+  box-shadow: 0 4px 12px rgba(60, 75, 85, 0.22);
+  transform: rotate(-8deg);
+  z-index: 10;
+  border: 0.5px solid rgba(0,0,0,0.06);
+}
+
+.std-mini-polaroid-inner {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+}
+
+.std-mini-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.std-mini-flower-pin {
+  position: absolute;
+  bottom: -6px;
+  right: -6px;
+  width: 24px;
+  height: auto;
+  pointer-events: none;
+  filter: drop-shadow(0 2px 4px rgba(82, 111, 125, 0.2));
+}
+
+/* Card Content Typography */
+.std-card-content {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 5;
+}
+
+.std-minimal-label {
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--color-deep-blue-grey);
+  font-weight: 700;
+  margin-bottom: 2px;
+  display: block;
+}
+
+/* Tên cô dâu chú rể: Lệch tự nhiên nhưng gắn kết chặt chẽ, đồng nhất trên cả Mobile và PC */
+.std-couple-staggered-names {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: auto;
+  margin: 5px auto 4px;
+  position: relative;
+  z-index: 2;
+}
+
+.std-name-line {
+  font-family: var(--font-script);
+  font-size: clamp(1.6rem, 5vw, 1.88rem);
+  color: var(--color-deep-blue-grey);
+  white-space: nowrap;
+  line-height: 1.05;
+  letter-spacing: 0.02em;
+  display: block;
+}
+
+.std-name-bride {
+  transform: translateX(-18px);
+  text-align: center;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.85);
+}
+
+.std-name-groom {
+  transform: translateX(18px);
+  text-align: center;
+  margin-top: -2px;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.85);
+}
+
+/* Khối 3: Ngày tháng & Đếm ngược dịch chuyển xuống vùng không gian mở của phong thư */
+.std-card-lower-block {
+  margin-top: 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.std-minimal-date {
+  font-family: var(--font-sans);
+  font-size: clamp(1.35rem, 4.6vw, 1.65rem);
+  font-weight: 700;
+  color: var(--color-deep-blue-grey);
+  letter-spacing: 0.1em;
+  margin: 1px 0 4px;
+}
+
+.std-countdown-intro {
+  font-family: var(--font-sans);
+  font-size: 0.6rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+/* Compact Countdown Timer (Bé & Tinh xảo) */
+.std-compact-countdown {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(4px, 1.8vw, 8px);
+  z-index: 5;
+  margin-top: 1px;
+}
+
+.std-compact-countdown .countdown-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: clamp(34px, 9.5vw, 42px);
+}
+
+.std-compact-countdown .countdown-number {
+  font-family: var(--font-sans);
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-text);
+  line-height: 1;
+}
+
+.std-compact-countdown .countdown-unit {
+  font-family: var(--font-sans);
+  font-size: 0.52rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  margin-top: 3px;
+  font-weight: 600;
+}
+
+.std-compact-countdown .countdown-sep {
+  font-family: var(--font-sans);
+  font-size: 1.1rem;
+  color: var(--color-dusty-blue);
+  opacity: 0.75;
+  margin-top: -6px;
+}
+
+/* Front Envelope Pocket (Chiếm 55% nửa dưới — Vỏ thư thật) */
+.std-env-front-pocket {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 235px;
+  z-index: 4;
+  pointer-events: none;
+}
+
+.std-pocket-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Exterior Botanical Decorations on Envelope Pocket */
+.std-pocket-decor-bl {
+  position: absolute;
+  bottom: 8px;
+  left: 6px;
+  width: 65px;
+  height: auto;
+  opacity: 0.6;
+  mix-blend-mode: multiply;
+  transform: rotate(-15deg);
+  pointer-events: none;
+  z-index: 2;
+  filter: saturate(0.85);
+}
+
+.std-pocket-decor-br {
+  position: absolute;
+  bottom: 6px;
+  right: 6px;
+  width: 60px;
+  bottom: 15px;
+  right: 10px;
+  width: 66px;
+  height: auto;
+  opacity: 0.6;
+  opacity: 0.65;
+  mix-blend-mode: multiply;
+  transform: scaleX(-1) rotate(20deg);
+  transform: scaleX(-1) rotate(28deg);
+  pointer-events: none;
+  z-index: 2;
+  filter: saturate(0.85);
+}
+
+/* Authentic Wax Seal pinned at the center fold */
+.std-pocket-wax-seal {
+  position: absolute;
+  top: 118px;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 48px;
+  height: 48px;
+  z-index: 5;
+  filter: drop-shadow(0 5px 12px rgba(82, 111, 125, 0.28));
+}
+
+.std-pocket-seal-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.std-pocket-seal-sprig {
+  position: absolute;
+  top: -10px;
+  right: -8px;
+  width: 26px;
+  height: auto;
+  opacity: 0.92;
+  pointer-events: none;
+}
+
+/* ============================================================
+   04 — COUPLE SECTION (Polaroid Collage Theo Ảnh Mẫu)
+   ============================================================ */
+.section-couple {
+  padding-top: var(--space-sm);
+  padding-bottom: var(--space-lg);
+}
+
+.couple-polaroid-container {
+  position: relative;
+  width: 100%;
+  max-width: 350px;
+  margin: 10px auto 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 0 4px;
+}
+
+.couple-polaroid-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  width: 100%;
+}
+
+.row-groom {
+  padding-left: 10px;
+  padding-right: 4px;
+}
+
+.row-bride {
+  padding-left: 4px;
+  padding-right: 10px;
+  margin-top: -16px;
+}
+
+/* Polaroid Photo Card */
+.couple-polaroid-card {
+  background: #ffffff;
+  padding: 7px 7px 22px 7px;
+  border-radius: 2px;
+  box-shadow: 0 10px 24px -4px rgba(60, 75, 85, 0.16), 0 2px 6px rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(82, 111, 125, 0.1);
+  width: clamp(140px, 42vw, 165px);
+  flex-shrink: 0;
+  transition: transform 0.4s ease;
+}
+
+.polaroid-groom {
+  transform: rotate(3.5deg);
+  z-index: 2;
+}
+
+.polaroid-bride {
+  transform: rotate(-4deg);
+  z-index: 3;
+}
+
+.polaroid-photo-inner {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  border-radius: 1px;
+}
+
+.polaroid-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Metadata Text */
+.couple-polaroid-meta {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.meta-left {
+  text-align: left;
+  padding-right: 12px;
+}
+
+.meta-right {
+  text-align: right;
+  padding-left: 12px;
+}
+
+.couple-role-script {
+  font-family: var(--font-script);
+  font-size: clamp(1.85rem, 6vw, 2.2rem);
+  color: var(--color-deep-blue-grey);
+  line-height: 1.1;
+  display: block;
+  margin-bottom: 2px;
+}
+
+.couple-name-serif {
+  font-family: var(--font-serif);
+  font-size: clamp(1.15rem, 3.8vw, 1.45rem);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-text);
+  line-height: 1.15;
+  white-space: nowrap;
+}
+
+/* Center Connecting Wax Seal */
+.couple-center-seal-wrapper {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 46px;
+  height: 46px;
+  z-index: 10;
+  filter: drop-shadow(0 6px 14px rgba(60, 75, 85, 0.28));
+  pointer-events: none;
+}
+
+.couple-center-seal-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* ============================================================
+   05 — FAMILY SECTION (Hai Bên Gia Đình — Ngang Hàng 50/50)
+   ============================================================ */
+.section-family {
+  padding-top: var(--space-md);
+  padding-bottom: var(--space-md);
+}
+
+.family-columns {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(10px, 3vw, 20px);
+  width: 100%;
+  max-width: 375px;
+  margin: var(--space-sm) auto 0;
+  position: relative;
+  z-index: 5;
+}
+
+.family-column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.family-divider {
+  width: 1px;
+  height: 60px;
+  background-color: var(--color-dusty-blue);
+  opacity: 0.45;
+  flex-shrink: 0;
+}
+
+.family-side-title {
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--color-deep-blue-grey);
+  font-weight: 700;
+  margin-bottom: var(--space-xs);
+  position: relative;
+  display: inline-block;
+  padding-bottom: 4px;
+}
+
+.family-side-title::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 28px;
+  height: 1px;
+  background-color: var(--color-dusty-blue);
+  opacity: 0.65;
+}
+
+.family-parent {
+  font-family: var(--font-sans);
+  font-size: 0.86rem;
+  color: var(--color-text);
+  margin: 2px 0;
+  font-weight: 500;
+}
+
+.family-location {
+  font-family: var(--font-sans);
+  font-size: 0.74rem;
+  color: var(--color-text-muted);
+  margin-top: 4px;
+  letter-spacing: 0.04em;
+}
+
+/* ============================================================
+   06 — INVITATION DAY SECTION (Lời Mời & Ngày Mời)
+   ============================================================ */
+.section-invitation-day {
+  padding-top: var(--space-md);
+  padding-bottom: var(--space-md);
+}
+
+.invitation-day-card {
+  width: 100%;
+  max-width: 360px;
+  margin: 0 auto;
+  padding: var(--space-lg) var(--space-md);
+  border: 1px solid var(--color-border-outer);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-paper-tint);
+  position: relative;
+  z-index: 5;
+  box-shadow: 0 4px 18px rgba(83, 111, 124, 0.06);
+  text-align: center;
+}
+
+.invitation-inner-border {
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  right: 5px;
+  bottom: 5px;
+  border: 0.75px solid var(--color-border-inner);
+  pointer-events: none;
+}
+
+.invitation-formal-intro {
+  margin-bottom: var(--space-md);
+  padding: 0 6px;
+}
+
+.invitation-greeting-lead {
+  font-family: var(--font-serif);
+  font-size: clamp(1.15rem, 4.2vw, 1.35rem);
+  font-weight: 600;
+  color: var(--color-deep-blue-grey);
+  letter-spacing: 0.04em;
+  margin-bottom: 4px;
+  line-height: 1.35;
+}
+
+.invitation-greeting-sub {
+  font-family: var(--font-sans);
+  font-size: 0.88rem;
+  color: var(--color-text);
+  line-height: 1.55;
+  letter-spacing: 0.01em;
+}
+
+.invitation-meta-details {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-md);
+  padding-top: var(--space-md);
+  border-top: 1px solid rgba(168, 195, 211, 0.4);
+}
+
+.invitation-meta-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.invitation-meta-label {
+  font-family: var(--font-sans);
+  font-size: 0.68rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-deep-blue-grey);
+  font-weight: 700;
+  opacity: 0.85;
+}
+
+.invitation-meta-value {
+  font-family: var(--font-sans);
+  font-size: 0.94rem;
+  font-weight: 600;
+  color: var(--color-text);
+  line-height: 1.4;
+}
+
+.invitation-lunar-val {
+  font-family: var(--font-sans);
+  font-size: 0.74rem;
+  font-style: italic;
+  color: var(--color-text-muted);
+}
+
+.invitation-address-val {
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+  line-height: 1.4;
+}
+
+/* Consistent Stationery Map CTA */
+.stationery-map-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-family: var(--font-sans);
+  font-size: 0.74rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-deep-blue-grey);
+  font-weight: 700;
+  padding: 7px 18px;
+  border: 1px solid var(--color-deep-blue-grey);
+  border-radius: var(--radius-sm);
+  background-color: transparent;
+  transition: all 0.25s ease;
+  margin-top: 4px;
+  text-decoration: none;
+  cursor: pointer;
+  z-index: 6;
+}
+
+.stationery-map-cta:hover {
+  background-color: var(--color-deep-blue-grey);
+  color: var(--color-paper);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(83, 111, 124, 0.15);
+}
+
+.stationery-map-cta svg {
+  width: 14px;
+  height: 14px;
+  stroke: currentColor;
+  flex-shrink: 0;
+}
+
+/* ============================================================
+   07 — CEREMONY SECTION (Lễ Thành Hôn — Đổi từ Lễ Thành Hôn & Tiệc Cưới)
+   ============================================================ */
+.section-ceremony {
+  padding-top: var(--space-md);
+  padding-bottom: var(--space-md);
+}
+
+.ceremony-card-wrapper {
+  width: 100%;
+  max-width: 360px;
+  background-color: var(--color-paper-tint);
+  border: 1px solid var(--color-border-outer);
+  border-radius: var(--radius-sm);
+  padding: var(--space-xl) var(--space-md);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  box-shadow: 0 4px 18px rgba(83, 111, 124, 0.07);
+  z-index: 5;
+  overflow: hidden;
+}
+
+.ceremony-corner-tr {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: clamp(75px, 20vw, 92px);
+  height: auto;
+  pointer-events: none;
+  z-index: 6;
+  opacity: 0.96;
+  filter: drop-shadow(0 3px 8px rgba(83, 111, 124, 0.12));
+}
+
+.ceremony-corner-bl {
+  position: absolute;
+  bottom: -8px;
+  left: -8px;
+  width: clamp(75px, 20vw, 98px);
+  height: auto;
+  pointer-events: none;
+  z-index: 6;
+  opacity: 0.96;
+  filter: drop-shadow(0 3px 8px rgba(83, 111, 124, 0.12));
+}
+
+.ceremony-butterfly {
+  position: absolute;
+  top: 48px;
+  left: 14px;
+  width: 22px;
+  height: auto;
+  pointer-events: none;
+  z-index: 7;
+  opacity: 0.92;
+}
+
+.ceremony-inner-border {
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  right: 5px;
+  bottom: 5px;
+  border: 0.75px solid var(--color-border-inner);
+  pointer-events: none;
+}
+
+.ceremony-invitation-intro {
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  font-style: italic;
+  color: var(--color-text-muted);
+  margin-bottom: 2px;
+}
+
+.ceremony-couple-header {
+  font-family: var(--font-serif);
+  font-size: 1.35rem;
+  font-weight: 500;
+  color: var(--color-text);
+  letter-spacing: 0.08em;
+  margin-bottom: var(--space-md);
+  padding: 0 20px;
+}
+
+/* Ceremony Stacked Layout (Thời gian & Địa điểm mỗi thứ 1 khối hàng dọc sang trọng) */
+.ceremony-stacked-details {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  margin: var(--space-xs) 0 var(--space-md);
+  padding: 18px var(--space-xs);
+  border-top: 1px solid rgba(169, 196, 211, 0.35);
+  border-bottom: 1px solid rgba(169, 196, 211, 0.35);
+  text-align: center;
+}
+
+.ceremony-detail-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+}
+
+.ceremony-block-label {
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-deep-blue-grey);
+  font-weight: 700;
+}
+
+.ceremony-time-date {
+  font-family: var(--font-sans);
+  font-size: 1.16rem;
+  font-weight: 700;
+  color: var(--color-text);
+  margin: 1px 0;
+  letter-spacing: 0.02em;
+}
+
+.ceremony-lunar-note {
+  font-family: var(--font-sans);
+  font-size: 0.76rem;
+  font-style: italic;
+  color: var(--color-text-muted);
+}
+
+.ceremony-block-divider {
+  width: 46px;
+  height: 1px;
+  background: rgba(169, 196, 211, 0.45);
+}
+
+.ceremony-venue-highlight {
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-deep-blue-grey);
+  line-height: 1.4;
+}
+
+.ceremony-venue-address {
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  color: var(--color-text);
+  line-height: 1.45;
+  margin-top: 1px;
+}
+
+.ceremony-heartfelt-quote {
+  font-family: var(--font-sans);
+  font-size: 0.86rem;
+  font-style: italic;
+  color: var(--color-deep-blue-grey);
+  max-width: 280px;
+  line-height: 1.55;
+  margin-bottom: var(--space-md);
+}
+
+/* Map CTA Button: Short Text & SVG Icon */
+.ceremony-map-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-sans);
+  font-size: 0.74rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-deep-blue-grey);
+  font-weight: 600;
+  padding: 6px 16px;
+  border: 1px solid var(--color-deep-blue-grey);
+  border-radius: var(--radius-sm);
+  background-color: transparent;
+  transition: all 0.25s ease;
+  z-index: 6;
+}
+
+.ceremony-map-cta:hover {
+  background-color: var(--color-deep-blue-grey);
+  color: var(--color-paper);
+  transform: translateY(-1px);
+}
+
+.ceremony-map-cta svg {
+  width: 14px;
+  height: 14px;
+  stroke: currentColor;
+}
+
+/* ============================================================
+   08 — TIMELINE SECTION (Chương Trình Tiệc)
+   ============================================================ */
+.section-timeline {
+  padding-top: var(--space-md);
+  padding-bottom: var(--space-md);
+}
+
+.timeline-track {
+  position: relative;
+  width: 100%;
+  max-width: 340px;
+  margin-top: var(--space-md);
+  padding-left: 28px;
+  z-index: 5;
+}
+
+.timeline-track::before {
+  content: "";
+  position: absolute;
+  top: 10px;
+  bottom: 10px;
+  left: 6px;
+  width: 1px;
+  background-color: var(--color-dusty-blue);
+  opacity: 0.55;
+}
+
+.timeline-event {
+  position: relative;
+  padding-bottom: var(--space-xl);
+  text-align: left;
+}
+
+.timeline-event:last-child {
+  padding-bottom: 0;
+}
+
+.timeline-event::before {
+  content: "";
+  position: absolute;
+  top: 6px;
+  left: -28px;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background-color: var(--color-paper);
+  border: 1.5px solid var(--color-deep-blue-grey);
+  box-shadow: 0 0 0 2px rgba(169, 196, 211, 0.4);
+}
+
+.timeline-time {
+  font-family: var(--font-sans);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--color-text);
+  letter-spacing: 0.04em;
+  line-height: 1;
+}
+
+.timeline-title {
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-deep-blue-grey);
+  font-weight: 700;
+  margin: 4px 0;
+}
+
+.timeline-desc {
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
+  line-height: 1.55;
+}
+
+/* ============================================================
+   09 — OUR BEGINNING SECTION (Chuyện Chúng Mình)
+   ============================================================ */
+.section-story {
+  padding-top: var(--space-md);
+  padding-bottom: var(--space-md);
+}
+
+.story-card-wrapper {
+  max-width: 360px;
+  margin: 0 auto;
+  z-index: 5;
+}
+
+.story-image-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 320px;
+  aspect-ratio: 16 / 10;
+  margin: 0 auto var(--space-md);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border-subtle);
+  padding: 5px;
+  background-color: var(--color-paper-tint);
+  box-shadow: 0 8px 24px -6px rgba(83, 111, 124, 0.14);
+}
+
+.story-image-inner {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border: 0.5px solid var(--color-border-inner);
+}
+
+.story-image-inner img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+}
+
+.story-leaves-accent {
+  position: absolute;
+  bottom: -8px;
+  right: -8px;
+  width: 50px !important;
+  height: auto !important;
+  pointer-events: none;
+  z-index: 6;
+  opacity: 0.94;
+  filter: drop-shadow(0 2px 6px rgba(83, 111, 124, 0.14));
+}
+
+.story-quote {
+  font-family: var(--font-sans);
+  font-size: 0.96rem;
+  font-style: italic;
+  color: var(--color-deep-blue-grey);
+  line-height: 1.6;
+  margin-bottom: var(--space-sm);
+}
+
+.story-content {
+  font-family: var(--font-sans);
+  font-size: 0.84rem;
+  color: var(--color-text);
+  line-height: 1.7;
+}
+
+/* ============================================================
+   10 — GALLERY SECTION (Kỷ Niệm / Album)
+   ============================================================ */
+.section-gallery {
+  padding-top: var(--space-md);
+  padding-left: var(--space-md);
+  padding-right: var(--space-md);
+  padding-bottom: var(--space-md);
+}
+
+.editorial-gallery-grid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  width: 100%;
+  max-width: 420px;
+  margin-top: var(--space-sm);
+  z-index: 5;
+}
+
+.gallery-item-featured {
+  width: 100%;
+  height: 280px;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  box-shadow: 0 10px 24px -6px rgba(83, 111, 124, 0.16);
+  border: 1px solid var(--color-border-subtle);
+  cursor: pointer;
+  position: relative;
+}
+
+.gallery-row-asymmetric {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: var(--space-md);
+  align-items: center;
+}
+
+.gallery-item-small {
+  height: 190px;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  box-shadow: 0 8px 20px -6px rgba(83, 111, 124, 0.14);
+  border: 1px solid var(--color-border-subtle);
+  cursor: pointer;
+  position: relative;
+}
+
+.gallery-item-offset {
+  transform: translateY(8px);
+}
+
+.gallery-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s var(--ease-out-smooth);
+}
+
+.gallery-item-featured:hover .gallery-photo,
+.gallery-item-small:hover .gallery-photo {
+  transform: scale(1.04);
+}
+
+.gallery-caption-hint {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  background: rgba(255, 253, 248, 0.9);
+  padding: 3px 8px;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-sans);
+  font-size: 0.65rem;
+  color: var(--color-deep-blue-grey);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.gallery-item-featured:hover .gallery-caption-hint,
+.gallery-item-small:hover .gallery-caption-hint {
+  opacity: 1;
+}
+
+/* ============================================================
+   11 — CONNECTION SECTION (GẮN KẾT: Lời Chúc + RSVP + Hộp Quà Mừng)
+   Continuous Paper Flow — No Dashboard Cards
+   ============================================================ */
+.section-connection {
+  padding-top: var(--space-md);
+  padding-bottom: var(--space-xl);
+}
+
+.blessing-sprig-accent {
+  width: 40px;
+  height: auto;
+  margin: 0 auto var(--space-xs);
+  opacity: 0.94;
+  display: block;
+  filter: drop-shadow(0 2px 5px rgba(83, 111, 124, 0.12));
+  z-index: 5;
+}
+
+.connection-flow-container {
+  width: 100%;
+  max-width: 375px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 5;
+}
+
+/* Sub-Block 1: Lời chúc (Ticker + Form) */
+.connection-block-title {
+  font-family: var(--font-sans);
+  font-size: 0.74rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-deep-blue-grey);
+  font-weight: 700;
+  margin: var(--space-md) 0 var(--space-sm);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.blessing-ticker-card {
+  width: 100%;
+  background-color: var(--color-paper-tint);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-sm);
+  padding: var(--space-sm) var(--space-md);
+  margin-bottom: var(--space-md);
+  max-height: 180px;
+  overflow-y: auto;
+  text-align: left;
+}
+
+.blessing-item {
+  padding: var(--space-sm) 0;
+  border-bottom: 1px dashed rgba(169, 196, 211, 0.35);
+}
+
+.blessing-item:last-child {
+  border-bottom: none;
+}
+
+.blessing-author-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2px;
+}
+
+.blessing-author {
+  font-family: var(--font-sans);
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.blessing-time {
+  font-family: var(--font-sans);
+  font-size: 0.68rem;
+  color: var(--color-text-light);
+}
+
+.blessing-message {
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  color: var(--color-text);
+  line-height: 1.5;
+}
+
+/* Inline Blessing Form */
+.inline-blessing-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: var(--space-lg);
+}
+
+.inline-form-input {
+  width: 100%;
+}
+
+.inline-form-textarea {
+  width: 100%;
+  resize: vertical;
+  min-height: 64px;
+}
+
+/* Sub-Block 2: RSVP Confirmation */
+.inline-rsvp-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: var(--space-md) var(--space-sm);
+  border-top: 1px solid rgba(168, 195, 211, 0.35);
+  border-bottom: 1px solid rgba(168, 195, 211, 0.35);
+  margin-bottom: var(--space-lg);
+}
+
+.rsvp-choice-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: left;
+  margin: 4px 0;
+}
+
+.rsvp-choice-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-sans);
+  font-size: 0.84rem;
+  color: var(--color-text);
+  cursor: pointer;
+}
+
+.rsvp-choice-label input[type="radio"] {
+  accent-color: var(--color-deep-blue-grey);
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.rsvp-details-row {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 8px;
+}
+
+/* Sub-Block 3: Gửi Quà Mừng CTA */
+.connection-gift-block {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.connection-gift-note {
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
+  line-height: 1.6;
+  max-width: 320px;
+  margin-bottom: var(--space-md);
+}
+
+/* General Stationery Buttons */
+.btn-stationery-primary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 11px 22px;
+  background-color: var(--color-deep-blue-grey);
+  color: var(--color-paper);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.74rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  font-weight: 600;
+  transition: background-color 0.25s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 14px rgba(83, 111, 124, 0.2);
+  border: none;
+  cursor: pointer;
+}
+
+.btn-stationery-primary:hover {
+  background-color: #425c68;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(83, 111, 124, 0.28);
+}
+
+.btn-stationery-outline {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 22px;
+  background-color: transparent;
+  color: var(--color-deep-blue-grey);
+  border: 1px solid var(--color-deep-blue-grey);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.74rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  font-weight: 600;
+  transition: background-color 0.25s ease, color 0.25s ease, transform 0.2s ease;
+  cursor: pointer;
+}
+
+.btn-stationery-outline:hover {
+  background-color: rgba(169, 196, 211, 0.15);
+  transform: translateY(-1px);
+}
+
+.btn-stationery-primary svg,
+.btn-stationery-outline svg {
+  width: 14px;
+  height: 14px;
+  stroke: currentColor;
+}
+
+/* ============================================================
+   12 — FOOTER SECTION (Thank You)
+   ============================================================ */
+.section-footer {
+  padding-top: var(--space-xl);
+  padding-bottom: var(--space-xxl);
+  border-top: 1px solid rgba(169, 196, 211, 0.35);
+  margin-top: var(--space-lg);
+  background-color: var(--color-paper-tint);
+  position: relative;
+  overflow: hidden;
+}
+
+.footer-hydrangea-bouquet {
+  width: clamp(140px, 36vw, 185px);
+  height: auto;
+  margin-bottom: var(--space-md);
+  opacity: 0.98;
+  filter: drop-shadow(0 4px 14px rgba(83, 111, 124, 0.15));
+  z-index: 5;
+}
+
+.footer-scattered-petals {
+  position: absolute;
+  bottom: 24px;
+  right: 18px;
+  width: 65px;
+  height: auto;
+  opacity: 0.85;
+  pointer-events: none;
+  z-index: 4;
+  filter: drop-shadow(0 2px 4px rgba(83, 111, 124, 0.08));
+  animation: petalSway 8s ease-in-out infinite alternate;
+}
+
+.footer-butterfly {
+  position: absolute;
+  top: 40px;
+  right: 32px;
+  width: 26px;
+  height: auto;
+  opacity: 0.92;
+  pointer-events: none;
+  z-index: 6;
+}
+
+.footer-thank-you {
+  font-family: var(--font-script);
+  font-size: clamp(2.4rem, 8vw, 3.2rem);
+  font-weight: 400;
+  color: var(--color-deep-blue-grey);
+  line-height: 1.15;
+  margin-bottom: var(--space-xs);
+  z-index: 5;
+}
+
+.footer-quote {
+  font-family: var(--font-sans);
+  font-size: 0.88rem;
+  font-style: italic;
+  color: var(--color-text-muted);
+  max-width: 320px;
+  line-height: 1.6;
+  margin-bottom: var(--space-md);
+  z-index: 5;
+}
+
+.footer-signature {
+  font-family: var(--font-script);
+  font-size: 2.2rem;
+  color: var(--color-deep-blue-grey);
+  line-height: 1;
+  margin-top: var(--space-xs);
+  z-index: 5;
+}
+
+.footer-meta {
+  font-family: var(--font-sans);
+  font-size: 0.65rem;
+  letter-spacing: 0.22em;
+  color: var(--color-text-light);
+  text-transform: uppercase;
+  margin-top: var(--space-lg);
+  z-index: 5;
+}
+
+/* ============================================================
+   RESPONSIVE REFINEMENTS (360px - 390px)
+   ============================================================ */
+@media (max-width: 380px) {
+  .save-the-date-editorial-row {
+    gap: 6px;
+  }
+  .std-date-main {
+    font-size: 1.25rem;
+  }
+  .countdown-grid {
+    gap: clamp(6px, 2vw, 10px);
+  }
+  .countdown-number {
+    font-size: 1.95rem;
+  }
+  .hero-name {
+    font-size: 1.7rem;
+  }
+  .couple-grid {
+    gap: 8px;
+  }
+  .family-columns {
+    gap: 8px;
+  }
+}

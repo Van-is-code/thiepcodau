@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 80" fill="none" width="100%" height="100%">
+  <defs>
+    <linearGradient id="fcDustyBlue" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#C9DDE8" />
+      <stop offset="100%" stop-color="#A9C5D8" />
+    </linearGradient>
+    <linearGradient id="fcPowderBlue" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#E2EEF5" />
+      <stop offset="100%" stop-color="#BFD6E4" />
+    </linearGradient>
+    <linearGradient id="fcSage" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#B8CBB8" />
+      <stop offset="100%" stop-color="#9BAF9B" />
+    </linearGradient>
+  </defs>
+
+  <g id="flower-cluster">
+    <!-- Horizontal arched stem -->
+    <path d="M15 42 C 45 35 115 35 145 42" stroke="#7B937B" stroke-width="1" stroke-linecap="round" />
+    
+    <!-- Left Sage Leaves -->
+    <path d="M35 38 C 22 26 30 18 40 28 C 45 33 40 37 35 38 Z" fill="url(#fcSage)" stroke="#587487" stroke-width="0.5" opacity="0.85" />
+    <path d="M50 42 C 40 52 48 60 58 50 C 62 46 55 42 50 42 Z" fill="url(#fcSage)" stroke="#587487" stroke-width="0.5" opacity="0.85" />
+    
+    <!-- Right Sage Leaves -->
+    <path d="M125 38 C 138 26 130 18 120 28 C 115 33 120 37 125 38 Z" fill="url(#fcSage)" stroke="#587487" stroke-width="0.5" opacity="0.85" />
+    <path d="M110 42 C 120 52 112 60 102 50 C 98 46 105 42 110 42 Z" fill="url(#fcSage)" stroke="#587487" stroke-width="0.5" opacity="0.85" />
+
+    <!-- Center Main Flower Bloom -->
+    <g transform="translate(80, 40) scale(0.9)">
+      <path d="M0 0 C -14 -24 14 -24 0 0 Z" fill="url(#fcDustyBlue)" stroke="#587487" stroke-width="0.6" />
+      <path d="M0 0 C 22 -15 28 10 0 0 Z" fill="url(#fcPowderBlue)" stroke="#587487" stroke-width="0.6" />
+      <path d="M0 0 C 24 12 12 26 0 0 Z" fill="url(#fcDustyBlue)" stroke="#587487" stroke-width="0.6" />
+      <path d="M0 0 C -10 26 -24 12 0 0 Z" fill="url(#fcPowderBlue)" stroke="#587487" stroke-width="0.6" />
+      <path d="M0 0 C -26 6 -18 -18 0 0 Z" fill="url(#fcDustyBlue)" stroke="#587487" stroke-width="0.6" />
+      <!-- Flower Center -->
+      <circle cx="0" cy="0" r="3.5" fill="#FFFDF8" stroke="#587487" stroke-width="0.6" />
+      <circle cx="0" cy="0" r="1.5" fill="#587487" />
+    </g>
+
+    <!-- Small Flanking Buds -->
+    <g transform="translate(62, 38) scale(0.5) rotate(-15)">
+      <path d="M0 0 C -10 -18 10 -18 0 0 Z" fill="url(#fcPowderBlue)" stroke="#587487" stroke-width="0.5" />
+      <path d="M0 0 C 15 -10 20 8 0 0 Z" fill="url(#fcDustyBlue)" stroke="#587487" stroke-width="0.5" />
+      <circle cx="0" cy="0" r="2.2" fill="#FFFDF8" stroke="#587487" stroke-width="0.5" />
+    </g>
+    <g transform="translate(98, 38) scale(0.5) rotate(15)">
+      <path d="M0 0 C -10 -18 10 -18 0 0 Z" fill="url(#fcPowderBlue)" stroke="#587487" stroke-width="0.5" />
+      <path d="M0 0 C -15 -10 -20 8 0 0 Z" fill="url(#fcDustyBlue)" stroke="#587487" stroke-width="0.5" />
+      <circle cx="0" cy="0" r="2.2" fill="#FFFDF8" stroke="#587487" stroke-width="0.5" />
+    </g>
+
+    <!-- Delicate berries / dots -->
+    <circle cx="25" cy="40" r="1.5" fill="#A9C5D8" />
+    <circle cx="135" cy="40" r="1.5" fill="#A9C5D8" />
+  </g>
+</svg>
+

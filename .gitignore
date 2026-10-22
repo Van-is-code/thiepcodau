@@ -49,6 +49,7 @@ _BE_Wedding_Web_git_backup/
 /theme_hydrangea_editorial/
 /LUAT_AGENT/
 /.claude/
+scratch/
 
 # Cấu hình deploy cá nhân
 deploy.config.json

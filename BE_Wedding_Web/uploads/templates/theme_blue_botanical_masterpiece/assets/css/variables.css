@@ -1,0 +1,65 @@
+/**
+ * ============================================================
+ * DESIGN TOKENS & SYSTEM VARIABLES — BLUE BOTANICAL WATERCOLOR
+ * Exact Color Palette from Art Direction Reference
+ * ============================================================
+ */
+
+:root {
+  /* 1. Color System (Strict adherence to reference image & art direction) */
+  --color-bg: #F5F1E8;              /* Warm Ivory: artisan cotton background */
+  --color-paper: #FFFDF8;           /* Paper White: fine wedding stationery card */
+  --color-paper-tint: #F8F5EE;      /* Secondary paper tone for cards */
+  --color-very-light-blue: #D9E7ED; /* Very Light Blue: wash & petal highlights */
+  --color-powder-blue: #C4D9E5;     /* Powder Blue: soft petal tone */
+  --color-dusty-blue: #A8C3D3;      /* Dusty Blue: envelope & primary floral hue */
+  --color-botanical-sage: #9CAA91;  /* Botanical Sage: eucalyptus & olive leaves */
+  --color-muted-green: #718A78;     /* Muted Green: stems & leaf veins */
+  --color-deep-blue-grey: #526F7D;  /* Deep Blue Grey: typography hierarchy & borders */
+  --color-deep-blue: #526F7D;       /* Deep Blue: primary dark blue accent for modals & buttons */
+  --color-text: #46545A;            /* Primary Text: refined editorial tone */
+  --color-text-muted: #6B7D86;      /* Secondary Text: subtitles & metadata */
+  --color-text-light: #94A6AF;      /* Light tags & fine captions */
+
+  /* Double-line fine stationery border tokens */
+  --color-border-outer: rgba(168, 195, 211, 0.65);
+  --color-border-inner: rgba(196, 217, 229, 0.45);
+  --color-border-subtle: rgba(168, 195, 211, 0.3);
+
+  /* Envelope Palette from Reference */
+  --env-body-bg: #9EB8C8;
+  --env-flap-bg: #A8C3D3;
+  --env-inside-bg: #8FAEC0;
+  --env-shadow: rgba(82, 111, 125, 0.22);
+  --seal-cream: #EDE4D3;
+  --seal-rim: #DFD4C0;
+
+  /* 2. Spacing System */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 36px;
+  --space-xxl: 56px;
+
+  /* 3. Typography System — Clean Sans-serif Body + Calligraphic Script Section Titles */
+  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-body: var(--font-sans);
+  --font-serif: 'Cormorant Garamond', Garamond, Georgia, serif;
+  --font-script: 'Alex Brush', cursive;
+
+  /* 4. Shadows & Radii */
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-lg: 8px;
+  --radius-pill: 9999px;
+
+  --shadow-paper: 0 16px 40px -12px rgba(82, 111, 125, 0.12), 0 2px 8px rgba(70, 84, 90, 0.03);
+  --shadow-envelope: 0 24px 55px -15px rgba(82, 111, 125, 0.25), 0 8px 24px rgba(70, 84, 90, 0.08);
+  --shadow-modal: 0 32px 64px -16px rgba(70, 84, 90, 0.28), 0 0 0 1px rgba(168, 195, 211, 0.4);
+
+  /* 5. Motion Tokens */
+  --ease-out-smooth: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out-smooth: cubic-bezier(0.65, 0, 0.35, 1);
+  --trans-base: 0.35s var(--ease-out-smooth);
+}

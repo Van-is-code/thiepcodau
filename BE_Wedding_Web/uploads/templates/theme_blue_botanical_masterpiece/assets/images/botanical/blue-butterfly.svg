@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 55" fill="none" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bfWingLeft" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#D5E4EA" stop-opacity="0.95"/>
+      <stop offset="60%" stop-color="#A9C4D3" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#6F92A8" stop-opacity="0.85"/>
+    </linearGradient>
+    <linearGradient id="bfWingRight" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#C2D8E5" stop-opacity="0.95"/>
+      <stop offset="70%" stop-color="#8EB0C4" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#557B93" stop-opacity="0.85"/>
+    </linearGradient>
+  </defs>
+
+  <g id="watercolor-blue-butterfly">
+    <!-- Left Forewing -->
+    <path d="M28 26 C 22 10 5 8 4 22 C 3 32 18 34 27 28 Z" fill="url(#bfWingLeft)" stroke="#536F7C" stroke-width="0.5"/>
+    <!-- Left Hindwing -->
+    <path d="M27 28 C 16 30 10 44 20 48 C 28 50 28 36 28 30 Z" fill="url(#bfWingLeft)" stroke="#536F7C" stroke-width="0.45" opacity="0.85"/>
+
+    <!-- Right Forewing -->
+    <path d="M32 26 C 38 8 55 6 56 20 C 57 30 42 32 33 28 Z" fill="url(#bfWingRight)" stroke="#536F7C" stroke-width="0.5"/>
+    <!-- Right Hindwing -->
+    <path d="M33 28 C 44 30 50 44 40 48 C 32 50 32 36 32 30 Z" fill="url(#bfWingRight)" stroke="#536F7C" stroke-width="0.45" opacity="0.85"/>
+
+    <!-- Slender Butterfly Body -->
+    <path d="M30 20 C 29 26 29 36 30 42" stroke="#46545A" stroke-width="1.2" stroke-linecap="round"/>
+    
+    <!-- Antennae -->
+    <path d="M29 20 C 26 14 20 12 18 10" stroke="#536F7C" stroke-width="0.6" stroke-linecap="round"/>
+    <path d="M31 20 C 34 14 40 12 42 10" stroke="#536F7C" stroke-width="0.6" stroke-linecap="round"/>
+  </g>
+</svg>
+

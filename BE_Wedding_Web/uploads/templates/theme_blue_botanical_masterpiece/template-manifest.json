@@ -1,0 +1,412 @@
+{
+  "version": 1,
+  "generated_at": "2026-09-25T09:23:10.088Z",
+  "entry_file": "index.html",
+  "fields": [
+    "bride.address",
+    "bride.bank_account_name",
+    "bride.bank_account_number",
+    "bride.bank_name",
+    "bride.father_bride",
+    "bride.mother_bride",
+    "bride_name",
+    "bride_short_name",
+    "bride_transfer_note",
+    "ceremony_heartfelt_quote",
+    "ceremony_intro",
+    "ceremony_lunar_text",
+    "ceremony_short",
+    "ceremony_time_weekday",
+    "envelope_subtext",
+    "family_lead_text",
+    "footer_thank_you",
+    "groom.address",
+    "groom.bank_account_name",
+    "groom.bank_account_number",
+    "groom.bank_name",
+    "groom.father_grom",
+    "groom.mother_groom",
+    "groom_name",
+    "groom_short_name",
+    "groom_transfer_note",
+    "invitation_greeting",
+    "invitation_greeting_sub",
+    "map_url",
+    "monogram",
+    "podcast_title",
+    "reception_lunar_text",
+    "reception_map_url",
+    "reception_short",
+    "reception_time",
+    "reception_venue_address",
+    "reception_venue_name",
+    "reception_weekday",
+    "story_content",
+    "story_quote",
+    "thank_you_message",
+    "timeline_desc_1",
+    "timeline_desc_2",
+    "timeline_desc_3",
+    "timeline_desc_4",
+    "timeline_time_1",
+    "timeline_time_2",
+    "timeline_time_3",
+    "timeline_time_4",
+    "timeline_title_1",
+    "timeline_title_2",
+    "timeline_title_3",
+    "timeline_title_4",
+    "venue_address",
+    "venue_name",
+    "vinyl_track_text",
+    "wedding_tag",
+    "welcome_quote",
+    "welcome_text"
+  ],
+  "image_slots": [
+    {
+      "slot": "cover",
+      "count": 3,
+      "label": "Ảnh bìa"
+    },
+    {
+      "slot": "groom",
+      "count": 1,
+      "label": "Ảnh chú rể"
+    },
+    {
+      "slot": "bride",
+      "count": 1,
+      "label": "Ảnh cô dâu"
+    },
+    {
+      "slot": "story",
+      "count": 1,
+      "label": "Ảnh chuyện tình"
+    },
+    {
+      "slot": "gallery",
+      "count": 6,
+      "label": "Album ảnh"
+    },
+    {
+      "slot": "bank_qr",
+      "count": 2,
+      "label": "Mã QR mừng cưới"
+    }
+  ],
+  "field_groups": {
+    "bank": [
+      {
+        "key": "groom.bank_name",
+        "label": "Ngân hàng chú rể",
+        "readonly": true
+      },
+      {
+        "key": "groom.bank_account_name",
+        "label": "Chủ TK chú rể",
+        "readonly": true
+      },
+      {
+        "key": "groom.bank_account_number",
+        "label": "Số TK chú rể",
+        "readonly": true
+      },
+      {
+        "key": "groom_transfer_note",
+        "label": "Nội dung CK (chú rể)",
+        "readonly": false
+      },
+      {
+        "key": "bride.bank_name",
+        "label": "Ngân hàng cô dâu",
+        "readonly": true
+      },
+      {
+        "key": "bride.bank_account_name",
+        "label": "Chủ TK cô dâu",
+        "readonly": true
+      },
+      {
+        "key": "bride.bank_account_number",
+        "label": "Số TK cô dâu",
+        "readonly": true
+      },
+      {
+        "key": "bride_transfer_note",
+        "label": "Nội dung CK (cô dâu)",
+        "readonly": false
+      }
+    ],
+    "couple": [
+      {
+        "key": "bride_short_name",
+        "label": "Tên gọi cô dâu",
+        "readonly": false
+      },
+      {
+        "key": "groom_short_name",
+        "label": "Tên gọi chú rể",
+        "readonly": false
+      },
+      {
+        "key": "groom_name",
+        "label": "Họ tên chú rể",
+        "readonly": false
+      },
+      {
+        "key": "bride_name",
+        "label": "Họ tên cô dâu",
+        "readonly": false
+      }
+    ],
+    "family": [
+      {
+        "key": "family_lead_text",
+        "label": "Dẫn mục gia đình",
+        "readonly": false
+      },
+      {
+        "key": "groom.father_grom",
+        "label": "Cha chú rể",
+        "readonly": false
+      },
+      {
+        "key": "groom.mother_groom",
+        "label": "Mẹ chú rể",
+        "readonly": false
+      },
+      {
+        "key": "groom.address",
+        "label": "Quê quán nhà trai",
+        "readonly": false
+      },
+      {
+        "key": "bride.father_bride",
+        "label": "Cha cô dâu",
+        "readonly": false
+      },
+      {
+        "key": "bride.mother_bride",
+        "label": "Mẹ cô dâu",
+        "readonly": false
+      },
+      {
+        "key": "bride.address",
+        "label": "Quê quán nhà gái",
+        "readonly": false
+      }
+    ],
+    "content": [
+      {
+        "key": "envelope_subtext",
+        "label": "Chữ trên phong bì",
+        "readonly": false
+      },
+      {
+        "key": "vinyl_track_text",
+        "label": "Chữ chạy quanh đĩa than",
+        "readonly": false
+      },
+      {
+        "key": "podcast_title",
+        "label": "Tên bản ghi âm",
+        "readonly": false
+      },
+      {
+        "key": "welcome_quote",
+        "label": "Câu dẫn lời ngỏ",
+        "readonly": false
+      },
+      {
+        "key": "welcome_text",
+        "label": "Đoạn lời ngỏ",
+        "readonly": false
+      },
+      {
+        "key": "invitation_greeting",
+        "label": "Lời mời",
+        "readonly": false
+      },
+      {
+        "key": "invitation_greeting_sub",
+        "label": "Lời mời phụ",
+        "readonly": false
+      },
+      {
+        "key": "story_quote",
+        "label": "Câu dẫn chuyện tình",
+        "readonly": false
+      },
+      {
+        "key": "story_content",
+        "label": "Nội dung chuyện tình",
+        "readonly": false
+      },
+      {
+        "key": "footer_thank_you",
+        "label": "Tiêu đề chân trang",
+        "readonly": false
+      }
+    ],
+    "general": [
+      {
+        "key": "wedding_tag",
+        "label": "Nhãn THE WEDDING OF",
+        "readonly": false
+      },
+      {
+        "key": "monogram",
+        "label": "Chữ lồng (M & N)",
+        "readonly": false
+      },
+      {
+        "key": "thank_you_message",
+        "label": "Lời cảm ơn",
+        "readonly": false
+      }
+    ],
+    "ceremony": [
+      {
+        "key": "ceremony_short",
+        "label": "Ngày lễ (26.04.2025)",
+        "readonly": false
+      },
+      {
+        "key": "ceremony_intro",
+        "label": "Dẫn mục lễ",
+        "readonly": false
+      },
+      {
+        "key": "ceremony_time_weekday",
+        "label": "Giờ + thứ (lễ)",
+        "readonly": false
+      },
+      {
+        "key": "ceremony_lunar_text",
+        "label": "Âm lịch (lễ)",
+        "readonly": false
+      },
+      {
+        "key": "venue_name",
+        "label": "Tên nơi làm lễ",
+        "readonly": false
+      },
+      {
+        "key": "venue_address",
+        "label": "Địa chỉ làm lễ",
+        "readonly": false
+      },
+      {
+        "key": "ceremony_heartfelt_quote",
+        "label": "Câu cảm ơn ở mục lễ",
+        "readonly": false
+      },
+      {
+        "key": "map_url",
+        "label": "Link chỉ đường (lễ)",
+        "readonly": false
+      }
+    ],
+    "timeline": [
+      {
+        "key": "timeline_time_1",
+        "label": "Mốc 1 — giờ",
+        "readonly": false
+      },
+      {
+        "key": "timeline_title_1",
+        "label": "Mốc 1 — tiêu đề",
+        "readonly": false
+      },
+      {
+        "key": "timeline_desc_1",
+        "label": "Mốc 1 — mô tả",
+        "readonly": false
+      },
+      {
+        "key": "timeline_time_2",
+        "label": "Mốc 2 — giờ",
+        "readonly": false
+      },
+      {
+        "key": "timeline_title_2",
+        "label": "Mốc 2 — tiêu đề",
+        "readonly": false
+      },
+      {
+        "key": "timeline_desc_2",
+        "label": "Mốc 2 — mô tả",
+        "readonly": false
+      },
+      {
+        "key": "timeline_time_3",
+        "label": "Mốc 3 — giờ",
+        "readonly": false
+      },
+      {
+        "key": "timeline_title_3",
+        "label": "Mốc 3 — tiêu đề",
+        "readonly": false
+      },
+      {
+        "key": "timeline_desc_3",
+        "label": "Mốc 3 — mô tả",
+        "readonly": false
+      },
+      {
+        "key": "timeline_time_4",
+        "label": "Mốc 4 — giờ",
+        "readonly": false
+      },
+      {
+        "key": "timeline_title_4",
+        "label": "Mốc 4 — tiêu đề",
+        "readonly": false
+      },
+      {
+        "key": "timeline_desc_4",
+        "label": "Mốc 4 — mô tả",
+        "readonly": false
+      }
+    ],
+    "reception": [
+      {
+        "key": "reception_time",
+        "label": "Giờ đãi tiệc",
+        "readonly": false
+      },
+      {
+        "key": "reception_weekday",
+        "label": "Thứ (tiệc)",
+        "readonly": false
+      },
+      {
+        "key": "reception_short",
+        "label": "Ngày tiệc",
+        "readonly": false
+      },
+      {
+        "key": "reception_lunar_text",
+        "label": "Âm lịch (tiệc)",
+        "readonly": false
+      },
+      {
+        "key": "reception_venue_name",
+        "label": "Tên nhà hàng",
+        "readonly": false
+      },
+      {
+        "key": "reception_venue_address",
+        "label": "Địa chỉ đãi tiệc",
+        "readonly": false
+      },
+      {
+        "key": "reception_map_url",
+        "label": "Link chỉ đường (tiệc)",
+        "readonly": false
+      }
+    ]
+  },
+  "has_music_box": false
+}
