@@ -26,6 +26,9 @@ export default function InvitePage() {
   const [guestName, setGuestName] = useState('')
   const [guestNote, setGuestNote] = useState('')
   const [guestLinkVisible, setGuestLinkVisible] = useState(false)
+  const [createdUrl, setCreatedUrl] = useState('')
+  const [isSavingGuest, setIsSavingGuest] = useState(false)
+  const [guestSaveSuccess, setGuestSaveSuccess] = useState(false)
   const [copiedKey, setCopiedKey] = useState('')
   const [sharePayload, setSharePayload] = useState(null)
 
@@ -56,6 +59,8 @@ export default function InvitePage() {
 
   useEffect(() => {
     setGuestLinkVisible(false)
+    setCreatedUrl('')
+    setGuestSaveSuccess(false)
     setCopiedKey('')
     setSharePayload(null)
     return () => {
@@ -73,15 +78,10 @@ export default function InvitePage() {
 
   const guestUrl = useMemo(() => {
     if (!publicUrl || !guestName.trim()) return ''
-    const slug = guestName
-      .trim()
-      .toLowerCase()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/(^-|-$)/g, '')
-    return `${publicUrl}?guest=${slug}`
+    return `${publicUrl}?guest=${encodeURIComponent(guestName.trim())}`
   }, [publicUrl, guestName])
+
+  const activeGuestUrl = createdUrl || guestUrl
 
   const guestNoteText = guestNote.trim()
 
@@ -111,12 +111,13 @@ export default function InvitePage() {
 
   const closeShare = () => setSharePayload(null)
 
-  const doShare = async (platform) => {
-    if (!sharePayload?.url) return
-    const message = `💍 Kính mời ${sharePayload.name || 'bạn'} đến tham dự lễ thành hôn của chúng tôi!\n\nXem thiệp tại: ${sharePayload.url}`
+  const doShareDirect = async (platform, targetUrl, recipientName) => {
+    if (!targetUrl) return
+    const nameStr = recipientName ? ` ${recipientName}` : ''
+    const message = `💍 Trân trọng kính mời${nameStr} đến tham dự lễ cưới của chúng tôi!\n\nXem thiệp mời tại: ${targetUrl}`
 
     if (platform === 'copy') {
-      await handleCopy(sharePayload.url, 'share')
+      await handleCopy(targetUrl, targetUrl)
       return
     }
 
@@ -127,7 +128,7 @@ export default function InvitePage() {
 
     if (platform === 'fb') {
       window.open(
-        `https://facebook.com/sharer/sharer.php?u=${encodeURIComponent(sharePayload.url)}`,
+        `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(targetUrl)}`,
         '_blank',
         'noopener,noreferrer',
       )
@@ -135,13 +136,59 @@ export default function InvitePage() {
     }
 
     if (platform === 'msg') {
-      window.open(`https://m.me/?text=${encodeURIComponent(message)}`, '_blank', 'noopener,noreferrer')
+      if (navigator.share) {
+        try {
+          await navigator.share({ title: 'Thiệp cưới', text: message, url: targetUrl })
+          return
+        } catch (_e) {}
+      }
+      await handleCopy(message, 'copied-msg')
+      window.open('https://m.me', '_blank', 'noopener,noreferrer')
     }
   }
 
-  const generateGuestUrl = () => {
-    if (!guestUrl) return
-    setGuestLinkVisible(true)
+  const doShare = async (platform) => {
+    if (!sharePayload?.url) return
+    await doShareDirect(platform, sharePayload.url, sharePayload.name)
+  }
+
+  const generateGuestUrl = async () => {
+    const trimmed = guestName.trim()
+    if (!trimmed) {
+      alert('Vui lòng nhập tên khách mời')
+      return
+    }
+    if (!selectedId) {
+      alert('Vui lòng chọn một thiệp cưới')
+      return
+    }
+
+    setIsSavingGuest(true)
+    setGuestSaveSuccess(false)
+    try {
+      const res = await api.createGuest({
+        name: trimmed,
+        description: guestNote.trim() || null,
+        invitation_id: selectedId,
+      })
+      const gData = res.data?.data || res.data
+      let finalUrl = ''
+      if (gData?.privateInvitation?.url) {
+        finalUrl = `${window.location.origin}${gData.privateInvitation.url}`
+      } else if (publicUrl) {
+        finalUrl = `${publicUrl}?guest=${encodeURIComponent(trimmed)}`
+      }
+      setCreatedUrl(finalUrl)
+      setGuestLinkVisible(true)
+      setGuestSaveSuccess(true)
+    } catch (err) {
+      console.error('Lỗi khi lưu khách mời:', err)
+      const fallbackUrl = `${publicUrl}?guest=${encodeURIComponent(trimmed)}`
+      setCreatedUrl(fallbackUrl)
+      setGuestLinkVisible(true)
+    } finally {
+      setIsSavingGuest(false)
+    }
   }
 
   return (
@@ -233,10 +280,13 @@ export default function InvitePage() {
               </button>
             </div>
             <div className="share-btns">
-              <button type="button" className="shr-btn zalo" onClick={() => openShare(publicUrl, displayName)}>
+              <button type="button" className="shr-btn zalo" onClick={() => doShareDirect('zalo', publicUrl, displayName)}>
                 <span>Zalo</span>
               </button>
-              <button type="button" className="shr-btn fb" onClick={() => openShare(publicUrl, displayName)}>
+              <button type="button" className="shr-btn msg" onClick={() => doShareDirect('msg', publicUrl, displayName)}>
+                <span>Messenger</span>
+              </button>
+              <button type="button" className="shr-btn fb" onClick={() => doShareDirect('fb', publicUrl, displayName)}>
                 <span>Facebook</span>
               </button>
               <button type="button" className="shr-btn cp" onClick={() => handleCopy(publicUrl, 'public-link')}>
@@ -267,14 +317,20 @@ export default function InvitePage() {
                   onChange={(e) => {
                     setGuestName(e.target.value)
                     setGuestLinkVisible(false)
+                    setGuestSaveSuccess(false)
                   }}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') generateGuestUrl()
                   }}
                 />
-                <button type="button" className="btn-main invite-create-btn" onClick={generateGuestUrl}>
+                <button
+                  type="button"
+                  className="btn-main invite-create-btn"
+                  onClick={generateGuestUrl}
+                  disabled={isSavingGuest}
+                >
                   <IconSparkles size={14} />
-                  <span>Tạo Link</span>
+                  <span>{isSavingGuest ? 'Đang lưu…' : 'Tạo Link'}</span>
                 </button>
               </div>
             </div>
@@ -287,25 +343,31 @@ export default function InvitePage() {
               />
             </div>
 
-            <div className={`gen-box${guestLinkVisible && guestUrl ? ' active' : ''}`}>
+            <div className={`gen-box${guestLinkVisible && activeGuestUrl ? ' active' : ''}`}>
               <div className="gen-lbl">Kính gửi vị khách quý:</div>
               <div className="gen-name">{guestName || 'Chưa nhập tên'}</div>
               {guestNoteText ? <div className="gen-note">({guestNoteText})</div> : null}
-              <div className="gen-url">{guestUrl || 'Link sẽ xuất hiện ở đây sau khi tạo.'}</div>
+              {guestSaveSuccess && (
+                <div style={{ color: '#2e7d32', fontSize: 13, fontWeight: 600, margin: '6px 0 10px', display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <IconCheck size={15} color="#2e7d32" />
+                  <span>Đã lưu thành công vào Danh Sách Khách Mời!</span>
+                </div>
+              )}
+              <div className="gen-url">{activeGuestUrl || 'Link sẽ xuất hiện ở đây sau khi tạo.'}</div>
               <div className="share-btns">
-                <button type="button" className="shr-btn zalo" onClick={() => openShare(guestUrl, guestName)}>
+                <button type="button" className="shr-btn zalo" onClick={() => doShareDirect('zalo', activeGuestUrl, guestName)}>
                   <span>Gửi Zalo</span>
                 </button>
-                <button type="button" className="shr-btn fb" onClick={() => openShare(guestUrl, guestName)}>
-                  <span>Gửi Facebook</span>
-                </button>
-                <button type="button" className="shr-btn msg" onClick={() => openShare(guestUrl, guestName)}>
+                <button type="button" className="shr-btn msg" onClick={() => doShareDirect('msg', activeGuestUrl, guestName)}>
                   <span>Messenger</span>
+                </button>
+                <button type="button" className="shr-btn fb" onClick={() => doShareDirect('fb', activeGuestUrl, guestName)}>
+                  <span>Gửi Facebook</span>
                 </button>
                 <button
                   type="button"
                   className={`shr-btn cp${copiedKey === 'guest' ? ' ok' : ''}`}
-                  onClick={() => handleCopy(guestUrl, 'guest')}
+                  onClick={() => handleCopy(activeGuestUrl, 'guest')}
                 >
                   {copiedKey === 'guest' ? (
                     <>

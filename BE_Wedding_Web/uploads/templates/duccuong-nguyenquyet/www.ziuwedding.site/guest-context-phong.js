@@ -1,11 +1,13 @@
 (function () {
   function readContext() {
     const params = new URLSearchParams(window.location.search);
+    const invData = window.invitationData || {};
 
     const context = {
-      guestId: params.get('gid') || localStorage.getItem('guest_id') || '',
-      guestName: params.get('gname') || localStorage.getItem('guest_name') || '',
-      invitationSlug: params.get('inv') || localStorage.getItem('invitation_slug') || '',
+      guestId: params.get('gid') || params.get('guest_id') || invData.guest_id || localStorage.getItem('guest_id') || '',
+      guestName: params.get('gname') || params.get('guest') || params.get('guest_name') || invData.guest_name || localStorage.getItem('guest_name') || '',
+      invitationSlug: params.get('inv') || invData.invitation_slug || invData.slug || localStorage.getItem('invitation_slug') || '',
+      invitationId: invData.id || invData.invitation_id || '',
     };
 
     if (context.guestId) localStorage.setItem('guest_id', context.guestId);
@@ -528,42 +530,46 @@
   }
 
   function wireCheckinSubmit(context) {
-    const form = document.querySelector('#FORM2 form');
-    if (!form) {
-      return;
-    }
+    const form = document.querySelector('#FORM2 form') || document.querySelector('#FORM2');
+    const submitBtn = document.getElementById('BUTTON2');
 
-    form.addEventListener('submit', async function (event) {
-      event.preventDefault();
+    let isSubmitting = false;
+    const handleCheckinSubmit = async function (event) {
+      if (event && event.preventDefault) event.preventDefault();
+      if (isSubmitting) return;
 
-      const messageInput = form.querySelector('textarea[name="message"]');
-      const attendanceInput = form.querySelector('input[name="form_item6"]:checked');
-      const nameInput = form.querySelector('input[name="name"]');
+      const messageInput = form ? form.querySelector('textarea[name="message"]') : document.querySelector('textarea[name="message"]');
+      const attendanceInput = form ? form.querySelector('input[name="form_item6"]:checked') : document.querySelector('input[name="form_item6"]:checked');
+      const nameInput = form ? form.querySelector('input[name="name"]') : document.querySelector('input[name="name"]');
 
-      // Lấy tên từ input field (đã được tự động điền sẵn nếu có guest_id)
-      // Fallback về context.guestName nếu input không có giá trị
       let guestName = nameInput ? nameInput.value.trim() : '';
       if (!guestName && context.guestName) {
         guestName = context.guestName;
       }
-
-      const payload = {
-        guest_id: context.guestId || null,
-        invitation_slug: context.invitationSlug || null,
-        name_guest: guestName,
-        messages: messageInput ? messageInput.value.trim() : null,
-        confirm_attendance: attendanceInput ? attendanceInput.value : null,
-        number_of_attendees: null,
-        guests_type: context.guestId ? 'private' : 'public',
-      };
-
-      if (!payload.name_guest) {
+      if (!guestName) {
         alert('Vui lòng nhập tên của bạn.');
         return;
       }
 
+      const invData = window.invitationData || {};
+      const invId = invData.id || invData.invitation_id || context.invitationId;
+      const apiBase = invData.api_base || '';
+
+      const payload = {
+        invitation_id: invId || null,
+        guest_id: context.guestId || invData.guest_id || null,
+        invitation_slug: context.invitationSlug || invData.invitation_slug || null,
+        name_guest: guestName,
+        messages: messageInput ? messageInput.value.trim() : null,
+        confirm_attendance: attendanceInput ? attendanceInput.value : 'yes',
+        number_of_attendees: null,
+        guests_type: context.guestId ? 'private' : 'ca_hai',
+      };
+
+      isSubmitting = true;
       try {
-        const response = await fetch('/api/messages-checkins', {
+        const targetUrl = (apiBase ? apiBase : '') + '/api/messages-checkins';
+        const response = await fetch(targetUrl, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -581,12 +587,21 @@
         await response.json();
 
         showTY();
-        form.reset();
+        if (form && form.reset) form.reset();
+        if (messageInput) messageInput.value = '';
         renderGuestOnPage(context);
       } catch (error) {
         alert(error.message || 'Đã có lỗi xảy ra. Vui lòng thử lại.');
+      } finally {
+        isSubmitting = false;
       }
-    });
+    };
+
+    if (form) form.addEventListener('submit', handleCheckinSubmit);
+    if (submitBtn) {
+      submitBtn.style.cursor = 'pointer';
+      submitBtn.addEventListener('click', handleCheckinSubmit);
+    }
   }
 
   document.addEventListener('DOMContentLoaded', async function () {

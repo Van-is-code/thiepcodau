@@ -153,6 +153,9 @@ export const buildMergedData = (invitation) => {
 
   data.invitation_id = invitation?.id || ''
   data.api_base = API_BASE || (typeof window !== 'undefined' ? window.location.origin : '')
+  data.guest_name = invitation?.guest_name || ''
+  data.guest_id = invitation?.guest_id || ''
+  data.guest_note = invitation?.guest_note || ''
   if (Array.isArray(invitation?.wishes)) {
     data.wishes = invitation.wishes
   }
@@ -497,6 +500,52 @@ const buildDomInjectScript = (editMode) => `
       }
     }
 
+    // --- Cá nhân hoá tên khách mời (nếu có guest_name trong dữ liệu) ---
+    if (data.guest_name) {
+      var guestName = String(data.guest_name).trim();
+      var guestNameUpper = guestName.toUpperCase();
+
+      // Gán vào các element đại diện cho tên khách
+      var recipientEls = document.querySelectorAll('[data-field="guest_name"], #envelope-recipient-name, .recipient-name, .guest-name, #guest-name');
+      for (var rIdx = 0; rIdx < recipientEls.length; rIdx++) {
+        var rEl = recipientEls[rIdx];
+        if (rEl === document.activeElement) continue;
+        rEl.textContent = guestNameUpper;
+      }
+
+      // Khớp lời mời cụ thể ở phong bì / thiệp LadiPage (#HEADLINE43)
+      var h43 = document.querySelector('#HEADLINE43 .ladi-headline');
+      if (h43 && !h43.__wwCustomized) {
+        h43.innerHTML = 'Trân trọng kính mời <strong>' + guestName + '</strong><br>tham dự bữa tiệc chung vui cùng gia đình chúng tôi<br>';
+        h43.__wwCustomized = true;
+      }
+
+      // Quét và thay thế các từ "Quý khách" trong toàn bộ văn bản (tránh script, style, textarea, input)
+      var textHolders = document.querySelectorAll('h1, h2, h3, h4, h5, p, span, .ladi-headline, .section-lead-text, .modal-lead-note, .gift-trigger-hint, .dresscode-desc');
+      for (var thIdx = 0; thIdx < textHolders.length; thIdx++) {
+        var holder = textHolders[thIdx];
+        if (holder.closest && (holder.closest('script') || holder.closest('style') || holder.closest('textarea') || holder.closest('input') || holder.closest('form'))) continue;
+        if (holder.children.length === 0 && holder.textContent) {
+          var original = holder.textContent;
+          if (original.indexOf('Quý khách') !== -1 || original.indexOf('QUÝ KHÁCH') !== -1 || original.indexOf('Quý Khách') !== -1 || original.indexOf('quý khách') !== -1) {
+            holder.textContent = original
+              .replace(/QUÝ KHÁCH/g, guestNameUpper)
+              .replace(/Quý [Kk]hách/g, guestName)
+              .replace(/quý khách/g, guestName);
+          }
+        }
+      }
+
+      // Điền sẵn tên vào ô nhập lời chúc / xác nhận
+      var nameInps = document.querySelectorAll('input[name="name"], input[name="name_guest"]');
+      for (var niIdx = 0; niIdx < nameInps.length; niIdx++) {
+        var nInp = nameInps[niIdx];
+        if (!nInp.value || nInp.value === 'Quý khách' || nInp.value === 'QUÝ KHÁCH') {
+          nInp.value = guestName;
+        }
+      }
+    }
+
     var hrefEls = document.querySelectorAll('[data-field-href]');
     for (var j = 0; j < hrefEls.length; j++) {
       var hrefEl = hrefEls[j];
@@ -610,7 +659,9 @@ const buildDomInjectScript = (editMode) => `
 
     var mSettings = data.music_settings || (data.extra_data && data.extra_data.music_settings) || {};
     var mVol = typeof mSettings.music_volume === 'number' ? mSettings.music_volume / 100 : 0.8;
-    var audioEl = document.querySelector('audio:not([data-skip-auto-music])');
+    
+    // Tìm audio element: ưu tiên #background-music có sẵn trong template, hoặc audio bất kỳ
+    var audioEl = document.getElementById('background-music') || document.querySelector('audio');
 
     if (data.music_url) {
       if (!audioEl) {
@@ -620,10 +671,74 @@ const buildDomInjectScript = (editMode) => `
         audioEl.preload = 'auto';
         document.body.appendChild(audioEl);
       }
+      
+      // Cập nhật cả <source> con (nếu mẫu dùng cấu trúc <audio><source ...></audio>)
+      var childSource = audioEl.querySelector('source');
+      if (childSource && childSource.src !== data.music_url) {
+        childSource.src = data.music_url;
+      }
       if (audioEl.src !== data.music_url) {
         audioEl.src = data.music_url;
       }
+      try { audioEl.load(); } catch (e) {}
       audioEl.volume = mVol;
+      window.MUSIC_PLAYLIST = [data.music_url];
+    }
+
+    // Đấu nối nút bấm điều khiển nhạc (#BUTTON4, #GROUP43, #toggle-music)
+    if (audioEl && !audioEl.__wwWiredButtons) {
+      audioEl.__wwWiredButtons = true;
+      var musicToggles = [
+        document.getElementById('toggle-music'),
+        document.getElementById('BUTTON4'),
+        document.getElementById('GROUP43')
+      ].filter(Boolean);
+
+      var updateMusicUi = function() {
+        var isPlaying = !audioEl.paused;
+        var tBtn = document.getElementById('toggle-music');
+        if (tBtn) {
+          tBtn.textContent = isPlaying ? '🔊' : '🔇';
+          tBtn.style.animation = isPlaying ? 'rotate 2s linear infinite' : 'none';
+        }
+        var mIcons = document.querySelectorAll('#IMAGE39, #BUTTON4, #GROUP43');
+        for (var mi = 0; mi < mIcons.length; mi++) {
+          if (isPlaying) {
+            mIcons[mi].classList.add('ww-rotating');
+          } else {
+            mIcons[mi].classList.remove('ww-rotating');
+          }
+        }
+      };
+
+      var toggleAudio = function(e) {
+        if (e && e.preventDefault) e.preventDefault();
+        if (audioEl.paused) {
+          audioEl.play().then(updateMusicUi).catch(function() {});
+        } else {
+          audioEl.pause();
+          updateMusicUi();
+        }
+      };
+
+      for (var bIdx = 0; bIdx < musicToggles.length; bIdx++) {
+        var bEl = musicToggles[bIdx];
+        bEl.style.cursor = 'pointer';
+        bEl.addEventListener('click', toggleAudio);
+      }
+
+      audioEl.addEventListener('play', updateMusicUi);
+      audioEl.addEventListener('pause', updateMusicUi);
+
+      // Thử phát tự động sau tương tác đầu tiên của khách
+      var tryAutoPlay = function() {
+        if (audioEl && audioEl.paused) {
+          audioEl.play().then(updateMusicUi).catch(function() {});
+        }
+      };
+      window.addEventListener('scroll', tryAutoPlay, { once: true });
+      document.addEventListener('click', tryAutoPlay, { once: true });
+      document.addEventListener('touchstart', tryAutoPlay, { once: true });
     }
 
     var vUrl = mSettings.voice_url;
@@ -659,6 +774,84 @@ const buildDomInjectScript = (editMode) => `
           }
         }, { once: true });
       }
+    }
+
+    // --- Xử lý gửi lời chúc & xác nhận tham dự (Universal Wishes / RSVP) ---
+    var wishForms = document.querySelectorAll('form, #FORM2');
+    for (var wfIdx = 0; wfIdx < wishForms.length; wfIdx++) {
+      (function(fEl) {
+        if (fEl.__wwWishWired) return;
+        var msgBox = fEl.querySelector ? (fEl.querySelector('textarea[name="message"]') || fEl.querySelector('textarea[name="messages"]') || fEl.querySelector('textarea') || fEl.querySelector('input[name="message"]')) : null;
+        if (!msgBox) return;
+        fEl.__wwWishWired = true;
+
+        var triggerBtn = fEl.querySelector('#BUTTON2') || document.getElementById('BUTTON2') || fEl.querySelector('button[type="submit"]') || fEl.querySelector('.ladi-button');
+
+        var isSubmittingWish = false;
+        var submitWishHandler = function(ev) {
+          if (ev && ev.preventDefault) ev.preventDefault();
+          if (isSubmittingWish) return;
+
+          var nInp = fEl.querySelector('input[name="name"]') || fEl.querySelector('input[name="name_guest"]') || document.querySelector('input[name="name"]');
+          var guestName = (nInp && nInp.value ? nInp.value.trim() : '') || data.guest_name || '';
+          var msgVal = msgBox ? msgBox.value.trim() : '';
+
+          if (!guestName) {
+            alert('Vui lòng nhập tên của bạn.');
+            if (nInp) nInp.focus();
+            return;
+          }
+
+          var attInp = fEl.querySelector('input[type="radio"]:checked') || document.querySelector('input[name="form_item6"]:checked');
+          var attendance = attInp ? attInp.value : 'yes';
+
+          var invId = data.invitation_id || data.id || '';
+          var apiBase = data.api_base || '';
+
+          var payload = {
+            invitation_id: invId || null,
+            invitation_slug: data.invitation_slug || data.slug || null,
+            guest_id: data.guest_id || null,
+            name_guest: guestName,
+            messages: msgVal || null,
+            confirm_attendance: attendance,
+            guests_type: data.guest_id ? 'private' : 'ca_hai'
+          };
+
+          isSubmittingWish = true;
+          var targetUrl = (apiBase ? apiBase : '') + '/api/messages-checkins';
+          fetch(targetUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          }).then(function(res) {
+            if (!res.ok) {
+              return res.json().then(function(e) { throw new Error(e.message || 'Lỗi gửi lời chúc'); });
+            }
+            return res.json();
+          }).then(function() {
+            if (typeof window.showTY === 'function') {
+              window.showTY();
+            } else {
+              showUniversalToast('🎉 Cảm ơn bạn đã gửi lời chúc tới cô dâu chú rể!');
+            }
+            if (msgBox) msgBox.value = '';
+            if (fEl.reset) fEl.reset();
+          }).catch(function(err) {
+            alert(err.message || 'Không thể gửi lời chúc lúc này. Vui lòng thử lại sau.');
+          }).finally(function() {
+            isSubmittingWish = false;
+          });
+        };
+
+        if (fEl.tagName === 'FORM') {
+          fEl.addEventListener('submit', submitWishHandler);
+        }
+        if (triggerBtn) {
+          triggerBtn.style.cursor = 'pointer';
+          triggerBtn.addEventListener('click', submitWishHandler);
+        }
+      })(wishForms[wfIdx]);
     }
   }
 
@@ -734,8 +927,22 @@ const buildDomInjectScript = (editMode) => `
     '.ww-ipgrid button .ww-ic{width:28px;height:28px;color:#3a2f27}' +
     '.ww-ipgrid button span{font-size:9px;line-height:1.2;text-align:center;color:#8a7d6e}' +
     '.ww-dc-erow{display:flex;align-items:center;gap:8px}' +
-    '.ww-dc-erow input[type=color]{width:44px;height:34px;border:1px solid #ddd;border-radius:8px;padding:2px;cursor:pointer;background:#fff}';
+    '.ww-dc-erow input[type=color]{width:44px;height:34px;border:1px solid #ddd;border-radius:8px;padding:2px;cursor:pointer;background:#fff}' +
+    '@keyframes wwRotate{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}' +
+    '.ww-rotating{animation:wwRotate 3s linear infinite !important;transform-origin:center center}' +
+    '.ww-toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:rgba(31,25,23,.92);color:#fff;padding:12px 24px;border-radius:999px;font-family:-apple-system,sans-serif;font-size:14px;font-weight:600;z-index:2147483647;box-shadow:0 8px 24px rgba(0,0,0,.3);text-align:center;pointer-events:none;transition:opacity .35s ease}';
   (document.head || document.documentElement).appendChild(WW_CAL_STYLE);
+
+  function showUniversalToast(msg) {
+    var toast = document.createElement('div');
+    toast.className = 'ww-toast';
+    toast.textContent = msg;
+    document.body.appendChild(toast);
+    setTimeout(function() {
+      toast.style.opacity = '0';
+      setTimeout(function() { toast.remove(); }, 400);
+    }, 3500);
+  }
 
   applyAll(window.invitationData);
   window.__weddingWebReinject = applyAll;

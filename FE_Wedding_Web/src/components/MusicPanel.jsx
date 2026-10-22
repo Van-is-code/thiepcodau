@@ -246,9 +246,9 @@ export default function MusicPanel({ invitation, onSaved, onClose, inline = fals
       setErr('Link nhạc phải bắt đầu bằng http(s):// hoặc /media/')
       return
     }
-    if (list.some((x) => x.url === url)) return
     setErr('')
-    setList((l) => [...l, { url, title: title || fileName(url) }])
+    const chosen = { url, title: title || fileName(url) }
+    setList((l) => [chosen, ...l.filter((x) => x.url !== url)])
   }
 
   const taiNhacRieng = async (file) => {
@@ -260,7 +260,8 @@ export default function MusicPanel({ invitation, onSaved, onClose, inline = fals
       const d = r.data?.data || r.data
       const url = d?.music_url || d?.url
       if (!url) throw new Error('Máy chủ không trả về đường dẫn nhạc')
-      add(url, file.name.replace(/\.[^.]+$/, ''))
+      const chosen = { url, title: file.name.replace(/\.[^.]+$/, '') }
+      setList((prev) => [chosen, ...prev.filter((x) => x.url !== url)])
     } catch (e) {
       setErr(e?.response?.data?.message || e.message || 'Tải nhạc lên thất bại')
     } finally {
@@ -622,8 +623,14 @@ export default function MusicPanel({ invitation, onSaved, onClose, inline = fals
                         {playingTrackUrl === t.url ? <IconSquare size={12} /> : <IconPlay size={12} />}
                       </button>
                       <span style={{ flex: 1, fontSize: 12.5, color: '#1f1917', fontWeight: 500 }}>{t.title}</span>
-                      <button style={S.btnPick} onClick={() => add(t.url, t.title)}>
-                        + Chọn bài này
+                      <button
+                        style={{
+                          ...S.btnPick,
+                          ...(list[0]?.url === t.url ? { background: '#4f7e65', borderColor: '#4f7e65', color: '#fff' } : {})
+                        }}
+                        onClick={() => add(t.url, t.title)}
+                      >
+                        {list[0]?.url === t.url ? '✓ Đang dùng' : list.some((x) => x.url === t.url) ? '✓ Đã chọn' : '+ Chọn bài này'}
                       </button>
                     </div>
                   ))}

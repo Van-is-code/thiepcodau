@@ -41,7 +41,49 @@ const TemplateLoader = () => {
           throw new Error(`Không tìm thấy thiệp cưới với đường dẫn: ${slug}`)
         }
 
-        setInvitation(invData)
+        // Đọc thông tin khách mời từ link riêng (guest_name mã hoá, hoặc ?guest=, ?to=...)
+        const searchParams = new URLSearchParams(window.location.search)
+        const guestNameParam = searchParams.get('guest_name') || searchParams.get('guest') || searchParams.get('gname') || searchParams.get('to') || ''
+        const guestIdParam = searchParams.get('gid') || searchParams.get('guest_id') || ''
+
+        let resolvedGuestName = ''
+        let resolvedGuestId = guestIdParam
+        let resolvedGuestNote = ''
+
+        if (guestNameParam) {
+          let tokenSuccess = false
+          // Chuỗi token mã hoá từ BE PrivateInvitation có độ dài >= 30
+          if (guestNameParam.length >= 30) {
+            try {
+              const guestRes = await api.getPublicGuest(guestNameParam)
+              const gData = guestRes.data?.data || guestRes.data
+              if (gData && gData.name) {
+                resolvedGuestName = gData.name
+                resolvedGuestId = gData.id || resolvedGuestId
+                resolvedGuestNote = gData.description || ''
+                tokenSuccess = true
+              }
+            } catch (_e) {
+              // Token không hợp lệ hoặc lỗi mạng, fallback sang đọc tên thường
+            }
+          }
+          if (!tokenSuccess) {
+            try {
+              resolvedGuestName = decodeURIComponent(guestNameParam).replace(/-/g, ' ').trim()
+            } catch (_e) {
+              resolvedGuestName = guestNameParam.replace(/-/g, ' ').trim()
+            }
+          }
+        }
+
+        const enrichedInvitation = {
+          ...invData,
+          guest_name: resolvedGuestName || invData.guest_name || '',
+          guest_id: resolvedGuestId || invData.guest_id || '',
+          guest_note: resolvedGuestNote || invData.guest_note || '',
+        }
+
+        setInvitation(enrichedInvitation)
 
         // Mẫu thiệp được xác định qua invData.template (join sẵn từ BE)
         const templateUrl = resolveTemplateUrl(invData.template?.html_path)

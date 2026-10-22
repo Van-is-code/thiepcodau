@@ -186,7 +186,7 @@ const create = async (payload, actor) => {
 		const guest = await Guest.create(data, { transaction });
 		const encryptedGuestValue = buildGuestEncryptedQueryValue(guest, invitationId);
 
-		await PrivateInvitation.create(
+		const pInv = await PrivateInvitation.create(
 			{
 				id: randomUUID(),
 				guest_id: guest.id,
@@ -198,6 +198,7 @@ const create = async (payload, actor) => {
 			{ transaction }
 		);
 
+		guest.setDataValue('privateInvitation', pInv);
 		return guest;
 	});
 };

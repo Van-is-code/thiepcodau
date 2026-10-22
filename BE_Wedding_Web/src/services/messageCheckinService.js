@@ -148,7 +148,12 @@ const getById = async (id, actor) => {
 // Trước đây hàm này nhận nguyên req.body: thiếu invitation_id thì lỗi 500, và khách
 // gửi được cột tuỳ ý. Nay dùng danh sách trắng.
 const create = async (payload) => {
-	const invitationId = payload?.invitation_id;
+	let invitationId = payload?.invitation_id || payload?.invitationId;
+	if (!invitationId && (payload?.invitation_slug || payload?.invitationSlug)) {
+		const slugVal = payload.invitation_slug || payload.invitationSlug;
+		const foundInv = await Invitation.findOne({ where: { invitation_slug: slugVal }, attributes: ['id'] });
+		if (foundInv) invitationId = foundInv.id;
+	}
 	if (!invitationId) {
 		const e = new Error('invitation_id là bắt buộc'); e.status = 400; throw e;
 	}

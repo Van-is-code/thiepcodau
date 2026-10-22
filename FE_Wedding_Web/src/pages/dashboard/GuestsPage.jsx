@@ -11,6 +11,9 @@ import {
   IconExternalLink,
   IconSparkles,
   IconPlus,
+  IconTrash2,
+  IconShare2,
+  IconX,
 } from '../../components/Icons'
 
 export default function GuestsPage() {
@@ -21,6 +24,12 @@ export default function GuestsPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [copiedId, setCopiedId] = useState('')
+
+  // Modal thêm khách mới
+  const [showAddModal, setShowAddModal] = useState(false)
+  const [newGuestName, setNewGuestName] = useState('')
+  const [newGuestNote, setNewGuestNote] = useState('')
+  const [addingGuest, setAddingGuest] = useState(false)
 
   useEffect(() => {
     const loadInvitations = async () => {
@@ -41,17 +50,21 @@ export default function GuestsPage() {
     loadInvitations()
   }, [])
 
-  useEffect(() => {
-    const loadGuests = async () => {
-      if (!selectedId) {
-        setGuests([])
-        return
-      }
+  const reloadGuests = async () => {
+    if (!selectedId) {
+      setGuests([])
+      return
+    }
+    try {
       const res = await api.getGuests(selectedId)
       setGuests(toArray(res.data))
+    } catch {
+      setGuests([])
     }
+  }
 
-    loadGuests().catch(() => setGuests([]))
+  useEffect(() => {
+    reloadGuests()
   }, [selectedId])
 
   const invitation = useMemo(
@@ -65,16 +78,96 @@ export default function GuestsPage() {
     const q = search.trim().toLowerCase()
     if (!q) return guests
     return guests.filter((g) => {
-      const combined = `${g.name || ''} ${g.note || ''}`.toLowerCase()
+      const combined = `${g.name || ''} ${g.note || ''} ${g.description || ''}`.toLowerCase()
       return combined.includes(q)
     })
   }, [guests, search])
+
+  const getPersonalUrl = (g) => {
+    if (g?.privateInvitation?.url) {
+      return `${window.location.origin}${g.privateInvitation.url}`
+    }
+    if (g?.url) return g.url
+    const base = invitation ? invitationPublicUrl(invitation) : ''
+    return `${base}?guest=${encodeURIComponent(g?.name || '')}`
+  }
 
   const handleCopyUrl = (url, id) => {
     if (!url) return
     navigator.clipboard.writeText(url)
     setCopiedId(id)
     setTimeout(() => setCopiedId(''), 1800)
+  }
+
+  const handleShare = async (platform, g) => {
+    const pUrl = getPersonalUrl(g)
+    const msg = `💍 Trân trọng kính mời ${g.name || 'bạn'} đến tham dự lễ cưới của chúng tôi!\n\nXem thiệp mời tại: ${pUrl}`
+
+    if (platform === 'zalo') {
+      window.open(`https://zalo.me/share?text=${encodeURIComponent(msg)}`, '_blank', 'noopener,noreferrer')
+      return
+    }
+
+    if (platform === 'fb') {
+      window.open(
+        `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(pUrl)}`,
+        '_blank',
+        'noopener,noreferrer',
+      )
+      return
+    }
+
+    if (platform === 'msg') {
+      if (navigator.share) {
+        try {
+          await navigator.share({ title: 'Thiệp cưới', text: msg, url: pUrl })
+          return
+        } catch (_e) {}
+      }
+      navigator.clipboard.writeText(msg)
+      window.open('https://m.me', '_blank', 'noopener,noreferrer')
+    }
+  }
+
+  const handleDeleteGuest = async (id, name) => {
+    if (!window.confirm(`Bạn có chắc chắn muốn xoá khách mời "${name || 'này'}" không?`)) return
+    try {
+      await api.deleteGuest(id)
+      setGuests((prev) => prev.filter((g) => g.id !== id))
+    } catch (e) {
+      alert(e?.response?.data?.message || e.message || 'Xoá khách mời thất bại')
+    }
+  }
+
+  const handleAddGuest = async (e) => {
+    e && e.preventDefault()
+    const trimmed = newGuestName.trim()
+    if (!trimmed) {
+      alert('Vui lòng nhập tên khách mời')
+      return
+    }
+    if (!selectedId) {
+      alert('Vui lòng chọn một thiệp cưới')
+      return
+    }
+
+    setAddingGuest(true)
+    try {
+      const res = await api.createGuest({
+        name: trimmed,
+        description: newGuestNote.trim() || null,
+        invitation_id: selectedId,
+      })
+      const created = res.data?.data || res.data
+      setGuests((prev) => [created, ...prev])
+      setNewGuestName('')
+      setNewGuestNote('')
+      setShowAddModal(false)
+    } catch (err) {
+      alert(err?.response?.data?.message || err.message || 'Không thể tạo khách mời')
+    } finally {
+      setAddingGuest(false)
+    }
   }
 
   if (loading) {
@@ -98,18 +191,29 @@ export default function GuestsPage() {
 
   return (
     <div className="pg">
-      <div className="ph-row">
+      <div className="ph-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 14 }}>
         <div>
           <p className="ph-ew">
             <IconUsers size={14} />
             Danh Sách Khách Mời
           </p>
           <h1 className="ph-t">Quản Lý Khách Mời</h1>
-          <p className="ph-d">Theo dõi danh sách khách mời cá nhân hoá và gửi link thiệp trực tiếp.</p>
+          <p className="ph-d">Theo dõi danh sách khách mời cá nhân hoá và gửi link mời nhanh qua Zalo, Messenger, Facebook.</p>
         </div>
-        <div className="quota-badge">
-          <span>Tổng số:</span>
-          <strong>{guests.length}</strong> khách
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div className="quota-badge">
+            <span>Tổng số:</span>
+            <strong>{guests.length}</strong> khách
+          </div>
+          <button
+            type="button"
+            className="btn-main"
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 16px', fontSize: 13.5 }}
+            onClick={() => setShowAddModal(true)}
+          >
+            <IconPlus size={14} />
+            <span>Thêm Khách Mới</span>
+          </button>
         </div>
       </div>
 
@@ -160,7 +264,7 @@ export default function GuestsPage() {
           <div className="gt-th">Tên Khách Mời</div>
           <div className="gt-th">Ghi Chú / Vai Trò</div>
           <div className="gt-th">Link Thiệp Cá Nhân Hoá</div>
-          <div className="gt-th" style={{ textAlign: 'right' }}>Thao Tác</div>
+          <div className="gt-th" style={{ textAlign: 'right', minWidth: 260 }}>Mời Nhanh & Thao Tác</div>
         </div>
         <div id="guest-table-body">
           {filtered.length === 0 ? (
@@ -172,21 +276,14 @@ export default function GuestsPage() {
                 Chưa có khách mời nào trong danh sách này
               </p>
               <p className="empty-txt" style={{ fontSize: 12.5, marginTop: 4 }}>
-                Hãy sang trang "Tạo Link Mời" để tạo thiệp cá nhân hoá cho từng vị khách của bạn.
+                Bấm nút "Thêm Khách Mới" ở trên hoặc sang trang "Tạo Link Mời" để tạo thiệp cho từng vị khách.
               </p>
             </div>
           ) : (
             filtered.map((g) => {
-              const slug = String(g.name || '')
-                .trim()
-                .toLowerCase()
-                .normalize('NFD')
-                .replace(/[\u0300-\u036f]/g, '')
-                .replace(/[^a-z0-9]+/g, '-')
-                .replace(/(^-|-$)/g, '')
-              const personalUrl =
-                g.url || `${invitationPublicUrl(invitation)}?guest=${slug || encodeURIComponent(g.name || '')}`
+              const personalUrl = getPersonalUrl(g)
               const isCopied = copiedId === String(g.id)
+              const noteText = g.description || g.note || ''
 
               return (
                 <div key={g.id} className="gt-row">
@@ -215,8 +312,8 @@ export default function GuestsPage() {
 
                   <div className="gt-td">
                     <span className="gt-note">
-                      {g.note ? (
-                        g.note
+                      {noteText ? (
+                        noteText
                       ) : (
                         <span style={{ color: 'var(--text-placeholder)', fontStyle: 'italic' }}>—</span>
                       )}
@@ -224,15 +321,74 @@ export default function GuestsPage() {
                   </div>
 
                   <div className="gt-td">
-                    <span className="gt-url">{personalUrl}</span>
+                    <span className="gt-url" title={personalUrl}>{personalUrl}</span>
                   </div>
 
                   <div className="gt-td" style={{ textAlign: 'right' }}>
-                    <div className="gt-acts" style={{ justifyContent: 'flex-end' }}>
+                    <div className="gt-acts" style={{ justifyContent: 'flex-end', gap: 5, flexWrap: 'wrap' }}>
+                      {/* Nút gửi nhanh Zalo */}
+                      <button
+                        type="button"
+                        style={{
+                          padding: '4px 8px',
+                          borderRadius: 8,
+                          border: '1px solid #b3d7ff',
+                          background: '#ebf5ff',
+                          color: '#0068ff',
+                          fontSize: 11.5,
+                          fontWeight: 700,
+                          cursor: 'pointer',
+                        }}
+                        onClick={() => handleShare('zalo', g)}
+                        title="Mời nhanh qua Zalo"
+                      >
+                        Zalo
+                      </button>
+
+                      {/* Nút gửi nhanh Messenger */}
+                      <button
+                        type="button"
+                        style={{
+                          padding: '4px 8px',
+                          borderRadius: 8,
+                          border: '1px solid #dfc7ff',
+                          background: '#f5edff',
+                          color: '#7828c8',
+                          fontSize: 11.5,
+                          fontWeight: 700,
+                          cursor: 'pointer',
+                        }}
+                        onClick={() => handleShare('msg', g)}
+                        title="Mời nhanh qua Messenger"
+                      >
+                        Messenger
+                      </button>
+
+                      {/* Nút chia sẻ Facebook */}
+                      <button
+                        type="button"
+                        style={{
+                          padding: '4px 8px',
+                          borderRadius: 8,
+                          border: '1px solid #cce0ff',
+                          background: '#eaf2ff',
+                          color: '#1877f2',
+                          fontSize: 11.5,
+                          fontWeight: 700,
+                          cursor: 'pointer',
+                        }}
+                        onClick={() => handleShare('fb', g)}
+                        title="Chia sẻ lên Facebook"
+                      >
+                        FB
+                      </button>
+
+                      {/* Copy Link */}
                       <button
                         type="button"
                         className="btn-sm ghost"
                         onClick={() => handleCopyUrl(personalUrl, String(g.id))}
+                        title="Sao chép link mời"
                       >
                         {isCopied ? (
                           <>
@@ -246,13 +402,37 @@ export default function GuestsPage() {
                           </>
                         )}
                       </button>
+
+                      {/* Mở Thiệp */}
                       <button
                         type="button"
                         className="btn-sm rose"
                         onClick={() => window.open(personalUrl, '_blank', 'noopener,noreferrer')}
+                        title="Mở xem thiệp"
                       >
                         <IconExternalLink size={13} />
-                        <span>Mở Thiệp</span>
+                        <span>Mở</span>
+                      </button>
+
+                      {/* Xoá khách */}
+                      <button
+                        type="button"
+                        style={{
+                          border: 'none',
+                          background: '#feebe8',
+                          color: '#c0392b',
+                          borderRadius: 6,
+                          width: 28,
+                          height: 28,
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          cursor: 'pointer',
+                        }}
+                        onClick={() => handleDeleteGuest(g.id, g.name)}
+                        title="Xoá khách này"
+                      >
+                        <IconTrash2 size={13} />
                       </button>
                     </div>
                   </div>
@@ -262,6 +442,120 @@ export default function GuestsPage() {
           )}
         </div>
       </div>
+
+      {/* Modal Thêm Khách Mời Nhanh */}
+      {showAddModal && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(31,25,23,0.5)',
+            backdropFilter: 'blur(4px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 9999,
+            padding: 16,
+          }}
+          onClick={(e) => e.target === e.currentTarget && setShowAddModal(false)}
+        >
+          <div
+            style={{
+              background: '#fff',
+              borderRadius: 20,
+              padding: '24px 28px',
+              maxWidth: 440,
+              width: '100%',
+              boxShadow: '0 20px 50px rgba(0,0,0,0.2)',
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+              <div style={{ fontSize: 18, fontWeight: 700, color: '#1f1917' }}>Thêm Khách Mời Mới</div>
+              <button
+                type="button"
+                onClick={() => setShowAddModal(false)}
+                style={{ border: 'none', background: 'none', cursor: 'pointer', color: '#6e625c' }}
+              >
+                <IconX size={18} />
+              </button>
+            </div>
+            <form onSubmit={handleAddGuest}>
+              <div style={{ marginBottom: 12 }}>
+                <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#443731', marginBottom: 6 }}>
+                  Tên khách mời *
+                </label>
+                <input
+                  style={{
+                    width: '100%',
+                    padding: '9px 12px',
+                    border: '1px solid #d4c8be',
+                    borderRadius: 10,
+                    fontSize: 14,
+                    boxSizing: 'border-box',
+                    outline: 'none',
+                  }}
+                  placeholder="VD: Anh Tuấn, Cô Linh, Bạn Nam…"
+                  value={newGuestName}
+                  onChange={(e) => setNewGuestName(e.target.value)}
+                  autoFocus
+                />
+              </div>
+              <div style={{ marginBottom: 20 }}>
+                <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#443731', marginBottom: 6 }}>
+                  Ghi chú / Mối quan hệ (tuỳ chọn)
+                </label>
+                <input
+                  style={{
+                    width: '100%',
+                    padding: '9px 12px',
+                    border: '1px solid #d4c8be',
+                    borderRadius: 10,
+                    fontSize: 14,
+                    boxSizing: 'border-box',
+                    outline: 'none',
+                  }}
+                  placeholder="Bạn cấp 3, đồng nghiệp, người thân…"
+                  value={newGuestNote}
+                  onChange={(e) => setNewGuestNote(e.target.value)}
+                />
+              </div>
+              <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
+                <button
+                  type="button"
+                  onClick={() => setShowAddModal(false)}
+                  style={{
+                    padding: '9px 18px',
+                    borderRadius: 10,
+                    border: '1px solid #d4c8be',
+                    background: '#f9f6f2',
+                    cursor: 'pointer',
+                    fontSize: 13,
+                    fontWeight: 600,
+                  }}
+                >
+                  Huỷ
+                </button>
+                <button
+                  type="submit"
+                  disabled={addingGuest}
+                  style={{
+                    padding: '9px 20px',
+                    borderRadius: 10,
+                    border: 'none',
+                    background: 'linear-gradient(135deg, #e58d6f, #c96547)',
+                    color: '#fff',
+                    cursor: 'pointer',
+                    fontSize: 13,
+                    fontWeight: 700,
+                  }}
+                >
+                  {addingGuest ? 'Đang tạo…' : 'Tạo Khách Mời'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
