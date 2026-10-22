@@ -701,13 +701,21 @@ const buildDomInjectScript = (editMode) => `
           tBtn.textContent = isPlaying ? '🔊' : '🔇';
           tBtn.style.animation = isPlaying ? 'rotate 2s linear infinite' : 'none';
         }
-        var mIcons = document.querySelectorAll('#IMAGE39, #BUTTON4, #GROUP43');
+        // CHỈ quay đĩa nhạc tròn (#IMAGE39 .ladi-image), TUYỆT ĐỐI KHÔNG quay thanh nút #BUTTON4 hay #GROUP43
+        var mIcons = document.querySelectorAll('#IMAGE39 .ladi-image, #IMAGE39 .ladi-image-background, .music-disc-icon');
         for (var mi = 0; mi < mIcons.length; mi++) {
           if (isPlaying) {
             mIcons[mi].classList.add('ww-rotating');
           } else {
             mIcons[mi].classList.remove('ww-rotating');
           }
+        }
+        // Đảm bảo thanh chữ không bao giờ bị quay
+        var staticBars = document.querySelectorAll('#BUTTON4, #GROUP43, #BUTTON_TEXT4');
+        for (var si = 0; si < staticBars.length; si++) {
+          staticBars[si].classList.remove('ww-rotating');
+          staticBars[si].style.removeProperty('animation');
+          staticBars[si].style.removeProperty('transform');
         }
       };
 
