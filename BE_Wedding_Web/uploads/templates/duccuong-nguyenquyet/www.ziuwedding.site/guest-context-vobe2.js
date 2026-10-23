@@ -60,21 +60,43 @@
     if (!envelope) return;
 
     const targetFile = 'phongbibe2.html';
-    envelope.setAttribute('href', targetFile);
-    envelope.setAttribute('target', '_self');
+    envelope.setAttribute('href', 'javascript:void(0)');
+    envelope.removeAttribute('target');
+
+    const handleOpen = function (event) {
+      if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+        if (event.stopImmediatePropagation) event.stopImmediatePropagation();
+      }
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({ type: 'wedding-web:navigate', file: targetFile }, '*');
+      } else {
+        window.location.href = targetFile;
+      }
+    };
 
     if (!envelope.__wwWired) {
       envelope.__wwWired = true;
-      envelope.addEventListener('click', function (event) {
-        event.preventDefault();
-        if (window.parent && window.parent !== window) {
-          window.parent.postMessage({ type: 'wedding-web:navigate', file: targetFile }, '*');
-        } else {
-          window.location.href = targetFile;
-        }
-      });
+      envelope.addEventListener('click', handleOpen, true);
+      envelope.addEventListener('click', handleOpen, false);
     }
   }
+
+  // Chặn ngay lập tức ở cấp window pha capture để LadiPage hoặc thẻ <a> không thể tự reload iframe
+  window.addEventListener('click', function (event) {
+    const grp = event.target && event.target.closest && (event.target.closest('#GROUP1') || event.target.closest('a[href*="phongbibe2"]'));
+    if (grp) {
+      event.preventDefault();
+      event.stopPropagation();
+      if (event.stopImmediatePropagation) event.stopImmediatePropagation();
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({ type: 'wedding-web:navigate', file: 'phongbibe2.html' }, '*');
+      } else {
+        window.location.href = 'phongbibe2.html';
+      }
+    }
+  }, true);
 
   function conditionallyHideDecorationElements(context) {
     const line1 = document.getElementById('LINE1');

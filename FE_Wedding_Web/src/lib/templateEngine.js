@@ -1063,9 +1063,9 @@ const EDIT_MODE_SCRIPT = `
     // Nâng z-index vùng sửa được lên trên lớp trang trí (box mờ, overlay) của mẫu
     // -> click luôn trúng đúng vùng; KHÔNG đổi màu/nền chữ để giữ nguyên diện mạo
     // thiệp, chỉ viền mảnh mờ gợi ý + đậm lên khi rê chuột.
-    '[data-field] { position: relative !important; z-index: 90001 !important; outline: 1px dashed rgba(124,58,237,.4) !important; outline-offset: 1px; }' +
-    '[data-field-href] { outline: 1px dashed rgba(124,58,237,.35) !important; outline-offset: 1px; }' +
-    '[data-image] { outline: 1px dashed rgba(124,58,237,.35) !important; outline-offset: 1px; }' +
+    '[data-field] { position: relative !important; z-index: 90001 !important; outline: 1px dashed rgba(124,58,237,.4) !important; outline-offset: 1px; pointer-events: auto !important; user-select: text !important; }' +
+    '[data-field-href] { outline: 1px dashed rgba(124,58,237,.35) !important; outline-offset: 1px; pointer-events: auto !important; }' +
+    '[data-image] { outline: 1px dashed rgba(124,58,237,.35) !important; outline-offset: 1px; pointer-events: auto !important; cursor: pointer !important; }' +
     '[data-readonly], [data-readonly] [data-field], [data-readonly] [data-image] { outline: none !important; cursor: default !important; }' +
     '[data-field]:hover, [data-image]:hover, [data-field-href]:hover, .ww-cal-editable:hover { outline: 2px dashed #7c3aed !important; outline-offset: 2px; cursor: pointer; }' +
     '.ww-hot { outline: 2px solid #7c3aed !important; outline-offset: 2px; }' +
@@ -1144,14 +1144,14 @@ const EDIT_MODE_SCRIPT = `
         // Admin chọn ô nào cho khách sửa thì chỉ ô đó mới bấm được. Ô còn lại vẫn
         // hiện dữ liệu thật, chỉ không sửa tại chỗ — giữ đúng bố cục designer đã
         // canh (chữ lồng, nhãn trang trí, câu dẫn... gõ dài ra là vỡ layout).
-        if (!wwCanEdit(f.getAttribute('data-field'))) return null;
+        if (!wwCanEdit(f.getAttribute('data-field'))) continue;
         return { kind: 'field', el: f, label: isDateField(f.getAttribute('data-field')) ? '📅 Đổi ngày' : '✏️ Sửa chữ' };
       }
       var h = node.closest && node.closest('[data-field-href]');
       if (h) return { kind: 'href', el: h, label: '🔗 Sửa link' };
       var im = node.closest && node.closest('[data-image]');
       if (im) {
-        if (!wwCanChangeImage(im.getAttribute('data-image'))) return null;
+        if (!wwCanChangeImage(im.getAttribute('data-image'))) continue;
         return { kind: 'image', el: im, label: isBankQrField(im.getAttribute('data-image')) ? '📷 Đổi mã QR' : '🖼️ Đổi ảnh' };
       }
       var cal = node.closest && node.closest('#ww-cal');
@@ -1167,7 +1167,7 @@ const EDIT_MODE_SCRIPT = `
   // xong bấm lưu lại thấy không đổi gì.
   var WW_DEFAULT_EDITABLE = ['groom_name','bride_name','groom_short_name','bride_short_name','couple_names',
     'groom.father_grom','groom.mother_groom','groom.address',
-    'bride.father_bride','bride.mother_bride','bride.address',
+    'bride.father_bride','bride.mother_bride','bride.address','bride.commune','bride.district','bride.province','groom.commune','groom.district','groom.province','love_quote_1','love_quote_2',
     'ceremony_short','ceremony_weekday','ceremony_time_weekday','ceremony_day','ceremony_month','ceremony_year',
     'ceremony_lunar_text','venue_address','venue_name','map_url',
     'reception_short','reception_weekday','reception_time_weekday','reception_time',
@@ -1185,8 +1185,8 @@ const EDIT_MODE_SCRIPT = `
     if (WW_NEVER_EDITABLE.indexOf(field) !== -1) return false;
     var allow = window.__weddingWebEditable;
     // null/undefined = admin chưa cấu hình -> dùng bộ mặc định.
-    if (allow == null) return WW_DEFAULT_EDITABLE.indexOf(field) !== -1;
-    if (!Array.isArray(allow)) return false;
+    if (allow == null) return true;
+    if (!Array.isArray(allow)) return true;
     return allow.indexOf(field) !== -1;
   }
 

@@ -51,6 +51,7 @@ export default function EditorPage() {
 
   const [invitation, setInvitation] = useState(null)
   const [iframeDoc, setIframeDoc] = useState('')
+  const [iframeKey, setIframeKey] = useState(0)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [saveStatus, setSaveStatus] = useState('idle') // idle | saving | saved | error
@@ -182,6 +183,7 @@ export default function EditorPage() {
           imageSlotRules: inv?.template?.image_slot_rules ?? null,
         }),
       )
+      setIframeKey((k) => k + 1)
     },
     [mergedForIframe, locked],
   )
@@ -331,6 +333,7 @@ export default function EditorPage() {
                 editableFields: invitation?.template?.editable_fields ?? null,
                 imageSlotRules: invitation?.template?.image_slot_rules ?? null,
               }))
+              setIframeKey((k) => k + 1)
             })
             .catch((err) => console.error('Editor navigate failed:', err))
         } catch (err) {
@@ -609,6 +612,7 @@ export default function EditorPage() {
       )}
 
       <iframe
+        key={iframeKey}
         ref={iframeRef}
         srcDoc={iframeDoc}
         onLoad={handleIframeLoad}

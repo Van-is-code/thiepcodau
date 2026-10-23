@@ -623,9 +623,94 @@
     }
   }
 
+  
+  async function ensureInvitationHydrated(context) {
+    if (window.invitationData && (window.invitationData.groom_name || window.invitationData.id)) {
+      return;
+    }
+    let slug = context.invitationSlug || localStorage.getItem('invitation_slug') || '';
+    if (!slug) {
+      try {
+        const path = (window.parent && window.parent !== window ? window.parent.location.pathname : window.location.pathname) || '';
+        const m = path.match(/thiep-([a-z0-9_-]+)/i);
+        if (m) slug = m[0];
+      } catch (_e) {}
+    }
+    if (!slug && document.referrer) {
+      const m = document.referrer.match(/thiep-([a-z0-9_-]+)/i);
+      if (m) slug = m[0];
+    }
+    if (!slug) return;
+
+    try {
+      const res = await fetch('/api/invitations/slug/' + slug);
+      if (!res.ok) return;
+      const json = await res.json();
+      const inv = json && (json.data || json);
+      if (!inv || !inv.id) return;
+
+      const groomName = (inv.groom && inv.groom.name_groom) || '';
+      const brideName = (inv.bride && inv.bride.name_bride) || '';
+      const groomParts = groomName.trim().split(/\s+/);
+      const brideParts = brideName.trim().split(/\s+/);
+      const groomShort = groomParts[groomParts.length - 1] || '';
+      const brideShort = brideParts[brideParts.length - 1] || '';
+
+      window.invitationData = Object.assign({}, inv.extra_data || {}, inv, {
+        groom_name: groomName,
+        bride_name: brideName,
+        groom_short_name: groomShort,
+        bride_short_name: brideShort,
+        images: inv.images || inv.invitation_images || [],
+      });
+
+      if (window.__weddingWebReinject) {
+        window.__weddingWebReinject(window.invitationData);
+      } else {
+        const fields = document.querySelectorAll('[data-field]');
+        for (let i = 0; i < fields.length; i++) {
+          const el = fields[i];
+          const f = el.getAttribute('data-field');
+          if (f === 'groom_name' && groomName) el.textContent = groomName;
+          else if (f === 'bride_name' && brideName) el.textContent = brideName;
+          else if (f === 'groom_short_name' && groomShort) el.textContent = groomShort;
+          else if (f === 'bride_short_name' && brideShort) el.textContent = brideShort;
+          else if (f === 'ceremony_short' && inv.ceremony_date) {
+            const d = new Date(inv.ceremony_date);
+            if (!isNaN(d.getTime())) {
+              const day = String(d.getUTCDate()).padStart(2, '0');
+              const mon = String(d.getUTCMonth() + 1).padStart(2, '0');
+              el.textContent = day + '.' + mon + '.' + d.getUTCFullYear();
+            }
+          }
+        }
+
+        const imgs = inv.images || inv.invitation_images || [];
+        const imageEls = document.querySelectorAll('[data-image]');
+        for (let j = 0; j < imageEls.length; j++) {
+          const el = imageEls[j];
+          const type = el.getAttribute('data-image');
+          const idx = el.getAttribute('data-image-index');
+          const filtered = imgs.filter(function(img) { return img.image_type === type; }).sort(function(a, b) { return (a.sort_order || 0) - (b.sort_order || 0); });
+          let match = idx !== null ? filtered[Number(idx)] : filtered[0];
+          if (idx !== null) {
+            const exact = filtered.find(function(img) { return (img.sort_order || 0) === Number(idx); });
+            if (exact) match = exact;
+          }
+          if (match && match.image_url) {
+            const bg = el.querySelector('.ladi-image-background') || el.querySelector('.ladi-box') || el;
+            bg.style.setProperty('background-image', 'url("' + match.image_url + '")', 'important');
+            bg.style.setProperty('background-size', 'cover', 'important');
+          }
+        }
+      }
+    } catch (_e) {}
+  }
+
   document.addEventListener('DOMContentLoaded', async function () {
     ensureThankYouPopup();
     const context = readContext();
+    await ensureInvitationHydrated(context);
     await hydrateGuestName(context);
     renderGuestOnPage(context);
     wireCheckinSubmit(context);

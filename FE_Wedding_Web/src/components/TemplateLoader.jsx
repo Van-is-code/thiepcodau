@@ -1,16 +1,25 @@
 import React, { useEffect, useState } from 'react'
-import { useParams, useLocation } from 'react-router-dom'
+import { useParams, useLocation, useNavigate } from 'react-router-dom'
 import { api } from '../api'
 import { buildIframeDocument, resolveTemplateUrl } from '../lib/templateEngine'
-import { IconHeart, IconSparkles, IconAlertCircle, IconRefreshCw, IconChevronLeft } from './Icons'
+import { IconHeart, IconSparkles, IconAlertCircle, IconRefreshCw, IconChevronLeft, IconEdit3 } from './Icons'
 
 const TemplateLoader = () => {
   const { slug } = useParams()
   const location = useLocation()
+  const navigate = useNavigate()
   const [invitation, setInvitation] = useState(null)
   const [templateContent, setTemplateContent] = useState('')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [iframeKey, setIframeKey] = useState(0)
+
+  let currentUser = null
+  try {
+    const userStr = typeof window !== 'undefined' ? localStorage.getItem('user') : null
+    if (userStr) currentUser = JSON.parse(userStr)
+  } catch {}
+  const isOwner = currentUser && invitation && (currentUser.id === invitation.users_id || currentUser.role === 'admin')
 
   useEffect(() => {
     const loadInvitation = async () => {
@@ -134,7 +143,10 @@ const TemplateLoader = () => {
           : (typeof window !== 'undefined' ? new URL(baseUrl, window.location.origin).href : baseUrl)
         const nextUrl = new URL(event.data.file, fullBase).href
         loadTemplateHTML(nextUrl)
-          .then(setTemplateContent)
+          .then((html) => {
+            setTemplateContent(html)
+            setIframeKey((prev) => prev + 1)
+          })
           .catch((err) => console.error('Error navigating within template:', err))
       } catch (err) {
         console.error('Error navigating within template:', err)
@@ -201,23 +213,62 @@ const TemplateLoader = () => {
   }
 
   return (
-    <iframe
-      srcDoc={buildIframeDocument(templateContent, invitation)}
-      style={{
-        width: '100%',
-        height: '100vh',
-        border: 'none',
-        margin: 0,
-        padding: 0,
-        display: 'block',
-      }}
-      sandbox="allow-scripts allow-same-origin allow-popups allow-downloads"
-      title="Wedding Invitation"
-    />
+    <>
+      {isOwner && (
+        <div style={styles.ownerToolbar}>
+          <button
+            onClick={() => navigate(`/editor/${invitation.id}`)}
+            style={styles.ownerEditBtn}
+            title="Mở trình chỉnh sửa nội dung và ảnh trên thiệp này"
+          >
+            <IconEdit3 size={16} />
+            <span>Chỉnh Sửa Thiệp</span>
+          </button>
+        </div>
+      )}
+      <iframe
+        key={iframeKey}
+        srcDoc={buildIframeDocument(templateContent, invitation)}
+        style={{
+          width: '100%',
+          height: '100vh',
+          border: 'none',
+          margin: 0,
+          padding: 0,
+          display: 'block',
+        }}
+        sandbox="allow-scripts allow-same-origin allow-popups allow-downloads allow-forms allow-modals"
+        title="Wedding Invitation"
+      />
+    </>
   )
 }
 
 const styles = {
+  ownerToolbar: {
+    position: 'fixed',
+    top: 14,
+    right: 14,
+    zIndex: 999999,
+    display: 'flex',
+    alignItems: 'center',
+    gap: 8,
+  },
+  ownerEditBtn: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: 8,
+    padding: '10px 18px',
+    background: 'linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%)',
+    color: '#fff',
+    border: 'none',
+    borderRadius: 9999,
+    cursor: 'pointer',
+    fontSize: 13.5,
+    fontWeight: 600,
+    boxShadow: '0 6px 20px rgba(109, 40, 217, 0.4)',
+    transition: 'transform 0.15s ease, box-shadow 0.15s ease',
+  },
   loadingContainer: {
     width: '100%',
     height: '100vh',
