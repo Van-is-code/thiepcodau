@@ -507,7 +507,7 @@ const buildDomInjectScript = (editMode) => `
         var qParams = new URLSearchParams(window.location.search || (window.parent && window.parent.location.search) || '');
         var qTo = qParams.get('to') || qParams.get('guest') || qParams.get('guest_name') || qParams.get('gname');
         if (qTo) {
-          effectiveGuestName = decodeURIComponent(qTo.replace(/\+/g, ' ')).trim();
+          effectiveGuestName = decodeURIComponent(qTo.split('+').join(' ')).trim();
         }
       } catch (_e) {}
     }
