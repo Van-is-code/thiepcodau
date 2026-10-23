@@ -99,4 +99,13 @@ const attachUploaded = async (req, res) => {
 	}
 };
 
-module.exports = { getAll, getById, create, update, remove, presignUpload, attachUploaded };
+const assign = async (req, res) => {
+	try {
+		const data = await invitationImageService.assign(req.body || {}, actorOf(req));
+		return res.status(200).json({ success: true, message: 'Đã gán ảnh thành công', data });
+	} catch (error) {
+		return fail(res, error, 'Gán ảnh thất bại');
+	}
+};
+
+module.exports = { getAll, getById, create, update, remove, presignUpload, attachUploaded, assign };

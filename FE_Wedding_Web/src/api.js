@@ -158,6 +158,8 @@ export const api = {
   // Báo server hoàn tất sau khi đã PUT thẳng lên R2.
   attachInvitationImage: (payload) =>
     apiClient.post('/api/invitation-images/attach', payload),
+  assignInvitationImage: (payload) =>
+    apiClient.post('/api/invitation-images/assign', payload),
 
   // User Profile
   getProfile: () => apiClient.get('/api/users/profile'),

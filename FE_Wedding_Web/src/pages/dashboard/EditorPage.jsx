@@ -25,6 +25,7 @@ import {
 import BankQrPanel from '../../components/BankQrPanel'
 import MusicPanel from '../../components/MusicPanel'
 import ImageCropper from '../../components/ImageCropper'
+import ImagePickerModal from '../../components/ImagePickerModal'
 import EditorTourGuide from '../../components/EditorTourGuide'
 
 // data:image/png;base64,... -> File (để upload QR sinh ra làm ảnh thiệp)
@@ -66,6 +67,7 @@ export default function EditorPage() {
       return false
     }
   })
+  const [imagePicker, setImagePicker] = useState(null) // { field, index, ratio }
   const [cropTask, setCropTask] = useState(null) // { file, ratio, field, index }
   // Hàng đợi cắt ảnh khi tải NHIỀU ảnh album 1 lần: cắt xong ảnh này -> lưu -> ảnh kế.
   const [cropQueue, setCropQueue] = useState(null) // { files: File[], ratio, field, baseIndex, pos, total }
@@ -279,6 +281,13 @@ export default function EditorPage() {
       if (!q) { setCropTask(null); return }
       setCropTask(null)
       if (croppedFileOrNull) {
+        const previewUrl = URL.createObjectURL(croppedFileOrNull)
+        iframeRef.current?.contentWindow?.postMessage({
+          type: 'wedding-web:optimistic-image',
+          field: q.field,
+          index: q.baseIndex + q.pos,
+          url: previewUrl,
+        }, '*')
         const inv = await saveImage(q.field, q.baseIndex + q.pos, croppedFileOrNull)
         if (inv) queueLatestInvRef.current = inv
       }
@@ -302,6 +311,15 @@ export default function EditorPage() {
       if (event.data.type === 'wedding-web:open-bank-qr') {
         if (locked) modal.alert({ tone: 'warn', title: 'Thiệp đã khoá', message: lockNote(lockState) })
         else setBankPanel(true)
+        return
+      }
+      if (event.data.type === 'wedding-web:choose-image') {
+        if (locked) {
+          modal.alert({ tone: 'warn', title: 'Thiệp đã khoá', message: lockNote(lockState) })
+          return
+        }
+        const { field, index, ratio } = event.data
+        setImagePicker({ field, index, ratio })
         return
       }
       if (event.data.type === 'wedding-web:edit') {
@@ -637,6 +655,88 @@ export default function EditorPage() {
           setShowTour(false)
         }}
       />
+      {imagePicker && (
+        <ImagePickerModal
+          slot={imagePicker.field}
+          index={imagePicker.index}
+          ratio={imagePicker.ratio}
+          existingImages={invitation?.images || []}
+          onUploadNew={(file) => {
+            const p = imagePicker
+            setImagePicker(null)
+            if (file && p) {
+              setCropTask({ file, ratio: p.ratio || null, field: p.field, index: p.index })
+            }
+          }}
+          onSelectExisting={async (sourceImage) => {
+            const p = imagePicker
+            setImagePicker(null)
+            if (!p || !sourceImage) return
+
+            // 1. Cập nhật giao diện iframe ngay lập tức (<50ms)
+            iframeRef.current?.contentWindow?.postMessage({
+              type: 'wedding-web:optimistic-image',
+              field: p.field,
+              index: p.index,
+              url: sourceImage.image_url,
+            }, '*')
+
+            // 2. Gán trong state React
+            const targetField = p.field
+            const targetIndex = p.index ?? 0
+            const existingSlot = (invitation?.images || []).find(
+              (img) => img.image_type === targetField && (p.index === null ? true : (img.sort_order || 0) === targetIndex)
+            )
+
+            const optAssigned = {
+              ...(existingSlot || {}),
+              id: existingSlot ? existingSlot.id : 'opt-' + Date.now(),
+              invitation_id: invitation.id,
+              image_url: sourceImage.image_url,
+              image_type: targetField,
+              sort_order: targetIndex,
+              variants: sourceImage.variants || null,
+              storage_driver: sourceImage.storage_driver,
+              storage_key: sourceImage.storage_key,
+              width: sourceImage.width,
+              height: sourceImage.height,
+            }
+
+            const nextImgs = existingSlot
+              ? (invitation.images || []).map((img) => (img.id === existingSlot.id ? optAssigned : img))
+              : [...(invitation.images || []), optAssigned]
+            const nextInv = { ...invitation, images: nextImgs }
+            setInvitation(nextInv)
+            pushToIframe(nextInv, pending)
+
+            // 3. Gọi API assign không tốn thời gian upload
+            setSaveStatus('saving')
+            try {
+              const res = await api.assignInvitationImage({
+                invitation_id: invitation.id,
+                source_image_id: sourceImage.id,
+                image_type: targetField,
+                sort_order: targetIndex,
+              })
+              const saved = res.data?.data || res.data
+              const finalImgs = (nextInv.images || []).map((img) =>
+                (img.id === optAssigned.id || (img.image_type === targetField && (img.sort_order || 0) === targetIndex))
+                  ? saved
+                  : img
+              )
+              const finalInv = { ...nextInv, images: finalImgs }
+              setInvitation(finalInv)
+              pushToIframe(finalInv, pending)
+              setSaveStatus('saved')
+            } catch (err) {
+              console.error('Assign existing image failed:', err)
+              setSaveStatus('error')
+              modal.alert({ tone: 'danger', title: 'Lỗi gán ảnh', message: err?.response?.data?.message || err.message })
+            }
+          }}
+          onClose={() => setImagePicker(null)}
+        />
+      )}
       {cropTask && (
         <ImageCropper
           key={cropTask.file?.name + '|' + cropTask.index}
@@ -648,7 +748,17 @@ export default function EditorPage() {
             const t = cropTask
             if (cropQueue) { advanceQueue(croppedFile); return }
             setCropTask(null)
-            const inv = await saveImage(t.field, t.index, croppedFile)
+
+            // OPTIMISTIC PREVIEW: Cập nhật ngay lập tức vào thiệp (<50ms)
+            const previewUrl = URL.createObjectURL(croppedFile)
+            iframeRef.current?.contentWindow?.postMessage({
+              type: 'wedding-web:optimistic-image',
+              field: t.field,
+              index: t.index,
+              url: previewUrl,
+            }, '*')
+
+            await saveImage(t.field, t.index, croppedFile)
           }}
         />
       )}

@@ -486,6 +486,48 @@ const buildDomInjectScript = (editMode) => `
     }
   }
 
+  function updateCountdownTimer(data) {
+    if (typeof window.__wwUpdateCountdown === 'function') {
+      try { window.__wwUpdateCountdown(); } catch (e) {}
+    }
+    var dEl = document.getElementById('countdown-days') || document.querySelector('.countdown-days, [data-countdown-days]');
+    var hEl = document.getElementById('countdown-hours') || document.querySelector('.countdown-hours, [data-countdown-hours]');
+    var mEl = document.getElementById('countdown-minutes') || document.querySelector('.countdown-minutes, [data-countdown-minutes]');
+    var sEl = document.getElementById('countdown-seconds') || document.querySelector('.countdown-seconds, [data-countdown-seconds]');
+    if (!dEl || !hEl || !mEl || !sEl) return;
+
+    var curData = data || window.invitationData || {};
+    var raw = curData.ceremony_date || curData.reception_date
+      || (window.weddingData && window.weddingData.eventTime && window.weddingData.eventTime.isoDateTime)
+      || "2025-04-26T11:00:00+07:00";
+    var d = new Date(raw);
+    var targetTime = isNaN(d.getTime()) ? new Date("2025-04-26T11:00:00+07:00").getTime() : d.getTime();
+    var now = new Date().getTime();
+    var distance = targetTime - now;
+
+    function formatTwoDigits(num) {
+      return num < 10 ? "0" + Math.max(0, num) : String(Math.max(0, num));
+    }
+
+    if (distance <= 0) {
+      dEl.textContent = "00";
+      hEl.textContent = "00";
+      mEl.textContent = "00";
+      sEl.textContent = "00";
+      return;
+    }
+
+    var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+    var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    var minutes = Math.floor((distance % (1000 * 60)) / (1000 * 60));
+    var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+    dEl.textContent = formatTwoDigits(days);
+    hEl.textContent = formatTwoDigits(hours);
+    mEl.textContent = formatTwoDigits(minutes);
+    sEl.textContent = formatTwoDigits(seconds);
+  }
+
   function applyAll(newData) {
     var data = newData || window.invitationData || {};
     window.invitationData = data;
@@ -611,18 +653,18 @@ const buildDomInjectScript = (editMode) => `
       var filtered = imageList
         .filter(function (img) { return img.image_type === key; })
         .sort(function (a, b) { return (a.sort_order || 0) - (b.sort_order || 0); });
-      var item = idxAttr !== null ? filtered[Number(idxAttr)] : filtered[0];
-      // Ô ảnh "điểm nhấn" rời (IMAGE1/IMAGE8/IMAGE12/BOX26 — dùng chung image_type
-      // "gallery" với data-image-index) — chủ thiệp bấm trực tiếp để tải: khớp theo
-      // ĐÚNG sort_order = index (ảnh lưu với sort_order đó) trước, không có mới rơi
-      // về vị trí thứ N trong album. Trước đây chỉ khớp theo vị trí nên tải thẳng
-      // vào ô này thì ảnh không hiện (album ít ảnh -> filtered[N] rỗng).
-      if (idxAttr !== null && !(imgEl.closest && imgEl.closest('#GALLERY1'))) {
-        var exact = null;
-        for (var ei = 0; ei < filtered.length; ei++) {
-          if ((filtered[ei].sort_order || 0) === Number(idxAttr)) { exact = filtered[ei]; break; }
+      var item = null;
+      if (idxAttr !== null) {
+        if (imgEl.closest && imgEl.closest('#GALLERY1')) {
+          item = filtered[Number(idxAttr)] || null;
+        } else {
+          var targetIndex = Number(idxAttr);
+          for (var ei = 0; ei < filtered.length; ei++) {
+            if ((filtered[ei].sort_order || 0) === targetIndex) { item = filtered[ei]; break; }
+          }
         }
-        if (exact) item = exact;
+      } else {
+        item = filtered[0] || null;
       }
       var bgTarget = imgEl.classList.contains('ladi-image-background') || imgEl.classList.contains('ladi-box')
         ? imgEl
@@ -704,6 +746,7 @@ const buildDomInjectScript = (editMode) => `
     try { renderCeremonyCalendar(data); } catch (e) {}
     try { renderTimeline(data); } catch (e) {}
     try { renderQrPopup(data); } catch (e) {}
+    try { updateCountdownTimer(data); } catch (e) {}
 
     var mSettings = data.music_settings || (data.extra_data && data.extra_data.music_settings) || {};
     var mVol = typeof mSettings.music_volume === 'number' ? mSettings.music_volume / 100 : 0.8;
@@ -1034,6 +1077,7 @@ const buildDomInjectScript = (editMode) => `
 
   applyAll(window.invitationData);
   window.__weddingWebReinject = applyAll;
+  setInterval(function () { try { updateCountdownTimer(window.invitationData); } catch (e) {} }, 1000);
 
   // Retry passes để chống việc LadiPage render bất đồng bộ hoặc lazyload ghi đè mất thông tin
   setTimeout(function () { applyAll(window.invitationData); }, 100);
@@ -1045,8 +1089,41 @@ const buildDomInjectScript = (editMode) => `
   });
 
   window.addEventListener('message', function (event) {
-    if (event.data && event.data.type === 'wedding-web:data-updated') {
+    if (!event.data) return;
+    if (event.data.type === 'wedding-web:data-updated') {
       applyAll(event.data.data);
+    }
+    if (event.data.type === 'wedding-web:optimistic-image') {
+      var field = event.data.field;
+      var index = event.data.index;
+      var url = event.data.url;
+      if (!field || !url) return;
+      var imageEls = document.querySelectorAll('[data-image="' + field + '"]');
+      for (var oi = 0; oi < imageEls.length; oi++) {
+        var oEl = imageEls[oi];
+        var idxAttr = oEl.getAttribute('data-image-index');
+        if (index !== null && index !== undefined) {
+          if (Number(idxAttr) !== Number(index)) continue;
+        }
+        oEl.classList.remove('ww-img-empty');
+        oEl.classList.add('ww-img-loaded');
+        var bgTarget = oEl.classList.contains('ladi-image-background') || oEl.classList.contains('ladi-box')
+          ? oEl
+          : (oEl.querySelector('.ladi-image-background') || oEl.querySelector('.ladi-box') || oEl);
+        if (oEl.tagName === 'IMG') {
+          oEl.src = url;
+          oEl.removeAttribute('srcset');
+          oEl.style.removeProperty('object-fit');
+          oEl.style.removeProperty('background-color');
+        } else {
+          bgTarget.style.removeProperty('background-size');
+          bgTarget.style.removeProperty('background-color');
+          bgTarget.style.setProperty('filter', 'none', 'important');
+          bgTarget.style.setProperty('background-size', 'cover', 'important');
+          bgTarget.style.setProperty('background-position', 'center', 'important');
+          bgTarget.style.setProperty('background-image', 'url("' + url + '")', 'important');
+        }
+      }
     }
   });
 
@@ -1337,33 +1414,16 @@ const EDIT_MODE_SCRIPT = `
       return;
     }
 
-    var input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'image/*';
-    // Album ảnh cho phép chọn nhiều file 1 lần -> trình sửa xử lý cắt tuần tự.
-    if (field === 'gallery') input.multiple = true;
-    input.style.display = 'none';
-    document.body.appendChild(input);
+    var ratio = elRatio(el);
+    var index = idxAttr !== null ? Number(idxAttr) : null;
 
-    input.addEventListener('change', function () {
-      var files = input.files ? Array.prototype.slice.call(input.files) : [];
-      document.body.removeChild(input);
-      if (!files.length) return;
-      var ratio = elRatio(el);
-      if (field === 'gallery' && files.length > 1) {
-        post({ field: field, kind: 'image-batch', files: files, ratio: ratio });
-      } else {
-        post({
-          field: field,
-          kind: 'image',
-          index: idxAttr !== null ? Number(idxAttr) : null,
-          file: files[0],
-          ratio: ratio,
-        });
-      }
-    });
-
-    input.click();
+    // Gửi message lên EditorPage để mở popup thư viện chọn ảnh độc lập
+    window.parent.postMessage({
+      type: 'wedding-web:choose-image',
+      field: field,
+      index: index,
+      ratio: ratio,
+    }, '*');
   }
 
   // ---------------------------------------------------------------------------

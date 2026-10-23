@@ -12,18 +12,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (!daysEl || !hoursEl || !minutesEl || !secondsEl) return;
 
-  // Retrieve event time from weddingData if available, fallback to default
-  const targetDateStr = (window.weddingData && window.weddingData.eventTime && window.weddingData.eventTime.isoDateTime)
-    ? window.weddingData.eventTime.isoDateTime
-    : "2025-04-26T11:00:00+07:00";
-
-  const targetTime = new Date(targetDateStr).getTime();
+  function getTargetTime() {
+    const raw = (window.invitationData && (window.invitationData.ceremony_date || window.invitationData.reception_date))
+      || (window.weddingData && window.weddingData.eventTime && window.weddingData.eventTime.isoDateTime)
+      || "2025-04-26T11:00:00+07:00";
+    const d = new Date(raw);
+    return isNaN(d.getTime()) ? new Date("2025-04-26T11:00:00+07:00").getTime() : d.getTime();
+  }
 
   function formatTwoDigits(num) {
     return num < 10 ? "0" + Math.max(0, num) : String(Math.max(0, num));
   }
 
   function updateCountdown() {
+    const targetTime = getTargetTime();
     const now = new Date().getTime();
     const distance = targetTime - now;
 
@@ -46,7 +48,7 @@ document.addEventListener("DOMContentLoaded", () => {
     secondsEl.textContent = formatTwoDigits(seconds);
   }
 
+  window.__wwUpdateCountdown = updateCountdown;
   updateCountdown();
   setInterval(updateCountdown, 1000);
 });
-

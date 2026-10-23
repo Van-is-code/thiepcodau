@@ -323,6 +323,63 @@ const update = async (id, payload, actor, file) => {
   return publicImage(item);
 };
 
+const assign = async (payload, actor) => {
+  const invitationId = payload.invitation_id;
+  const invitation = await assertCanUseInvitation(invitationId, actor);
+
+  if (!payload.source_image_id) {
+    const e = new Error('source_image_id là bắt buộc'); e.status = 400; throw e;
+  }
+  const sourceImage = await InvitationImage.findOne({
+    where: { id: payload.source_image_id, invitation_id: invitationId },
+  });
+  if (!sourceImage) {
+    const e = new Error('Không tìm thấy ảnh nguồn để gán vào ô'); e.status = 404; throw e;
+  }
+
+  const imageType = IMAGE_TYPES.has(payload.image_type) ? payload.image_type : 'gallery';
+  const sortOrder = payload.sort_order !== undefined ? (Number.parseInt(payload.sort_order, 10) || 0) : 0;
+
+  const existing = await InvitationImage.findOne({
+    where: { invitation_id: invitationId, image_type: imageType, sort_order: sortOrder },
+  });
+
+  const chung = {
+    image_url: sourceImage.image_url,
+    storage_driver: sourceImage.storage_driver,
+    storage_key: sourceImage.storage_key,
+    width: sourceImage.width,
+    height: sourceImage.height,
+    bytes: sourceImage.bytes,
+    blur_data_url: sourceImage.blur_data_url,
+    dominant_color: sourceImage.dominant_color,
+    variants: sourceImage.variants,
+    updated_at: new Date(),
+  };
+
+  if (existing) {
+    await existing.update({
+      ...chung,
+      image_alt: payload.image_alt !== undefined ? String(payload.image_alt).slice(0, 255) : existing.image_alt,
+      is_cover: imageType === 'cover',
+    });
+    return publicImage(existing);
+  }
+
+  const row = await InvitationImage.create({
+    id: randomUUID(),
+    users_id: invitation.users_id,
+    invitation_id: invitationId,
+    image_alt: payload.image_alt !== undefined ? String(payload.image_alt).slice(0, 255) : sourceImage.image_alt,
+    image_type: imageType,
+    sort_order: sortOrder,
+    is_cover: imageType === 'cover',
+    created_at: new Date(),
+    ...chung,
+  });
+  return publicImage(row);
+};
+
 const remove = async (id, actor) => {
   const item = await findRaw(id);
   await assertCanUseInvitation(item.invitation_id, actor);
@@ -340,6 +397,7 @@ module.exports = {
   getById,
   create,
   attachFromStorage,
+  assign,
   update,
   remove,
   publicImage,

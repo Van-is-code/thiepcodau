@@ -18,6 +18,9 @@ router.post('/presign', uploadLimiter, invitationImageController.presignUpload);
 // Báo cho server biết đã PUT xong, để nó xử lý ảnh và ghi nhận. Cũng khai trước '/:id'.
 router.post('/attach', uploadLimiter, invitationImageController.attachUploaded);
 
+// Gán ảnh đã tải lên vào một ô khác mà không cần tải hay xử lý lại ảnh.
+router.post('/assign', uploadLimiter, invitationImageController.assign);
+
 router.get('/:id', invitationImageController.getById);
 
 // verifyUpload chạy sau multer: chặn tệp giả danh ảnh (html/svg/php đổi đuôi).
