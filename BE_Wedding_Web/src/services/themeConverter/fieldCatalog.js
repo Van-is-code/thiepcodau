@@ -85,6 +85,8 @@ const EXTRA_FIELDS = {
   couple_names: { label: 'Tên đôi (ghép chung 1 ô)', group: 'couple' },
   guest_name: { label: 'Tên khách mời', group: 'content' },
   invitation_lead: { label: 'Lời mời tiệc cưới', group: 'content' },
+  wedding_location: { label: 'Địa điểm / Thành phố bìa thiệp', group: 'general' },
+  wedding_city: { label: 'Thành phố tổ chức', group: 'general' },
   reception_venue_sub: { label: 'Sảnh / Tầng nhà hàng', group: 'reception' },
   wedding_tag: { label: 'Nhãn THE WEDDING OF', group: 'general' },
   love_quote_1: { label: 'Lời dẫn tình yêu 1', group: 'content' },
@@ -172,7 +174,7 @@ const DEFAULT_EDITABLE = [
   'reception_weekday_date', 'reception_full_date', 'reception_lunar_text',
   'reception_venue_address', 'reception_venue_name', 'reception_map_url',
   // Nội dung
-  'thank_you_message', 'title_vi', 'extra_notes', 'invitation_lead', 'guest_name',
+  'thank_you_message', 'title_vi', 'extra_notes', 'invitation_lead', 'guest_name', 'wedding_location', 'wedding_city',
 ];
 
 // Trường KHÔNG BAO GIỜ cho sửa tại chỗ, dù admin có tích.

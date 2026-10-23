@@ -151,6 +151,12 @@ export const buildMergedData = (invitation) => {
   addDateParts(data, invitation?.ceremony_date, 'ceremony')
   addDateParts(data, invitation?.reception_date, 'reception')
 
+  if (data.wedding_location && !data.wedding_city) {
+    data.wedding_city = String(data.wedding_location).replace(/^[\s—–-]+|[\s—–-]+$/g, '').trim()
+  } else if (data.wedding_city && !data.wedding_location) {
+    data.wedding_location = `— ${data.wedding_city} —`
+  }
+
   data.invitation_id = invitation?.id || ''
   data.api_base = API_BASE || (typeof window !== 'undefined' ? window.location.origin : '')
   data.guest_name = invitation?.guest_name || ''
@@ -1469,7 +1475,7 @@ const EDIT_MODE_SCRIPT = `
     'reception_short','reception_weekday','reception_time_weekday','reception_time',
     'reception_day','reception_month','reception_year','reception_lunar_text',
     'reception_venue_address','reception_venue_name','reception_map_url',
-    'thank_you_message','title_vi','extra_notes','invitation_lead','guest_name','show_timeline','show_dresscode',
+    'thank_you_message','title_vi','extra_notes','invitation_lead','guest_name','wedding_location','wedding_city','show_timeline','show_dresscode',
     'ceremony_month_num','ceremony_year_num','ceremony_time','ceremony_weekday_date','ceremony_full_date','reception_month_num','reception_year_num','reception_time','reception_weekday_date','reception_full_date','welcome_quote','welcome_text','family_lead_text','ceremony_heartfelt_quote','story_quote','timeline_time_1','timeline_title_1','timeline_desc_1','timeline_time_2','timeline_title_2','timeline_desc_2','timeline_time_3','timeline_title_3','timeline_desc_3','timeline_time_4','timeline_title_4','timeline_desc_4','timeline_time_5','timeline_title_5','timeline_desc_5'];
 
   // Thông tin ngân hàng KHÔNG BAO GIỜ sửa tại chỗ — đi qua panel quét mã QR, vì
