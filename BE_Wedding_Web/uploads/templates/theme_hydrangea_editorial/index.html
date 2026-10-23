@@ -305,18 +305,53 @@
   </section>
 
 
-  <!-- ================= SCENE 04: LỄ THÀNH HÔN & TIỆC CƯỚI (OPEN BOTANICAL EVENT SCENE) ================= -->
+    <!-- ================= SCENE 04: TIỆC CƯỚI & LỄ THÀNH HÔN ================= -->
   <section class="editorial-scene scene-events" id="events">
     <div class="events-header text-center">
       <span class="section-eyebrow">THỜI GIAN &amp; ĐỊA ĐIỂM</span>
       <h2 class="section-title">LỄ THÀNH HÔN &amp; TIỆC CƯỚI</h2>
-      <p class="section-lead-text">Sự hiện diện của Quý khách là niềm vinh hạnh trọn vẹn nhất cho ngày vui của hai gia đình chúng tôi</p>
+      <p class="section-lead-text" data-field="invitation_lead">Trân trọng kính mời Quý khách đến dự buổi tiệc cưới mừng hạnh phúc chung vui của gia đình chúng tôi</p>
     </div>
 
-    <!-- Open Event Flow with Botanical Line Connection (NO boxes, NO cards) -->
+    <!-- Open Event Flow with Botanical Line Connection -->
     <div class="events-botanical-flow">
       
-      <!-- Event 01: LỄ THÀNH HÔN -->
+      <!-- Event 01: TIỆC CƯỚI (Đưa lên trên theo yêu cầu) -->
+      <article class="event-moment-node">
+        <div class="event-moment-icon-node" aria-hidden="true">
+          <svg class="fine-moment-svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8 22h8M12 15v7M5 2h14l-2 9a5 5 0 0 1-10 0L5 2z"></path>
+          </svg>
+        </div>
+        <span class="event-stage-tag">TIỆC CƯỚI</span>
+
+        <div class="event-datetime-line">
+          <span class="event-exact-time" data-field="reception_time">11:00</span>
+          <span class="event-datetime-sep">·</span>
+          <span class="event-exact-date" data-field="reception_weekday_date">THỨ BẢY, 18.01.2026</span>
+        </div>
+        <p class="event-lunar-note" data-field="reception_lunar_text">(Nhằm ngày 30 tháng 11 năm Ất Tỵ)</p>
+
+        <h3 class="event-venue-title" data-field="reception_venue_name">TRỐNG ĐỒNG PALACE</h3>
+        <address class="event-venue-address" data-field="reception_venue_address">Số 72 Trần Đăng Ninh, Phường Dịch Vọng, Quận Cầu Giấy, TP. Hà Nội</address>
+
+        <a class="event-action-pill" href="https://maps.app.goo.gl/EqgrhhWk7vfXXbVN7" data-field-href="reception_map_url" target="_blank" rel="noopener">
+          <span>CHỈ ĐƯỜNG</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </a>
+      </article>
+
+      <!-- Connecting Botanical Stem Line -->
+      <div class="events-inter-stem" aria-hidden="true">
+        <svg class="inter-stem-svg" width="24" height="64" viewBox="0 0 24 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 0 V24 C12 30 18 34 18 40 C18 46 12 50 12 64" stroke="#7E6C94" stroke-opacity="0.35" stroke-width="1.2" stroke-dasharray="2 3"/>
+          <circle cx="12" cy="32" r="3" fill="#7E6C94" fill-opacity="0.6"/>
+        </svg>
+      </div>
+
+      <!-- Event 02: LỄ THÀNH HÔN (Đưa xuống dưới) -->
       <article class="event-moment-node">
         <div class="event-moment-icon-node" aria-hidden="true">
           <svg class="fine-moment-svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
@@ -337,43 +372,7 @@
         <address class="event-venue-address" data-field="venue_address">Thôn Kim Chung, Xã Kim Chung, Huyện Hoài Đức, TP. Hà Nội</address>
 
         <a class="event-action-pill" href="https://maps.app.goo.gl/EqgrhhWk7vfXXbVN7" data-field-href="map_url" target="_blank" rel="noopener">
-          <span>Chỉ đường tới Nhà Trai</span>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline>
-          </svg>
-        </a>
-      </article>
-
-      <!-- Connecting Botanical Stem Line -->
-      <div class="events-inter-stem" aria-hidden="true">
-        <svg class="inter-stem-svg" width="24" height="64" viewBox="0 0 24 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 0 V24 C12 30 18 34 18 40 C18 46 12 50 12 64" stroke="#7E6C94" stroke-opacity="0.35" stroke-width="1.2" stroke-dasharray="2 3"/>
-          <circle cx="12" cy="32" r="3" fill="#7E6C94" fill-opacity="0.6"/>
-        </svg>
-      </div>
-
-      <!-- Event 02: TIỆC CƯỚI CHÍNH -->
-      <article class="event-moment-node">
-        <div class="event-moment-icon-node" aria-hidden="true">
-          <svg class="fine-moment-svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M8 22h8M12 15v7M5 2h14l-2 9a5 5 0 0 1-10 0L5 2z"></path>
-          </svg>
-        </div>
-        <span class="event-stage-tag">TIỆC CƯỚI CHÍNH</span>
-
-        <div class="event-datetime-line">
-          <span class="event-exact-time" data-field="reception_time">11:00</span>
-          <span class="event-datetime-sep">·</span>
-          <span class="event-exact-date" data-field="reception_weekday_date">THỨ BẢY, 18.01.2026</span>
-        </div>
-        <p class="event-lunar-note" data-field="reception_lunar_text">(Nhằm ngày 30 tháng 11 năm Ất Tỵ)</p>
-
-        <h3 class="event-venue-title" data-field="reception_venue_name">TRỐNG ĐỒNG PALACE</h3>
-        <p class="event-venue-sub" data-field="reception_venue_sub">Sảnh Lavender, Tầng 2</p>
-        <address class="event-venue-address" data-field="reception_venue_address">Số 72 Trần Đăng Ninh, Phường Dịch Vọng, Quận Cầu Giấy, TP. Hà Nội</address>
-
-        <a class="event-action-pill" href="https://maps.app.goo.gl/EqgrhhWk7vfXXbVN7" data-field-href="reception_map_url" target="_blank" rel="noopener">
-          <span>Chỉ đường tới Trống Đồng Palace</span>
+          <span>CHỈ ĐƯỜNG</span>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
             <line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline>
           </svg>

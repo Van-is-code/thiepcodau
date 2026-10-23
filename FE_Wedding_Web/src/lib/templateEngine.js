@@ -259,42 +259,104 @@ const buildDomInjectScript = (editMode) => `
   // ceremony_date lên trên khối lịch cũ (ẩn khối cũ đi) nên luôn đúng tháng, đúng
   // thứ, và trái tim rơi đúng ngày cưới.
   function renderCeremonyCalendar(data) {
-    var host = document.getElementById('SECTION8');
-    if (!host) return;
-    var container = host.querySelector('.ladi-container') || host;
-    var raw = data && data.ceremony_date;
+    var raw = data && (data.ceremony_date || data.reception_date);
     var d = raw ? new Date(raw) : null;
     if (!d || isNaN(d.getTime())) return;
     var year = d.getUTCFullYear();
     var month = d.getUTCMonth();
     var weddingDay = d.getUTCDate();
 
-    // Ẩn toàn bộ ô lịch tĩnh của mẫu (mọi headline trong SECTION8 + vệt trang trí).
-    var statics = host.querySelectorAll('[id^="HEADLINE"], #IMAGE29, #SHAPE5');
-    for (var s = 0; s < statics.length; s++) statics[s].style.setProperty('visibility', 'hidden', 'important');
+    // 1. Mẫu LadiPage (#SECTION8)
+    var host = document.getElementById('SECTION8');
+    if (host) {
+      var container = host.querySelector('.ladi-container') || host;
+      var statics = host.querySelectorAll('[id^="HEADLINE"], #IMAGE29, #SHAPE5');
+      for (var s = 0; s < statics.length; s++) statics[s].style.setProperty('visibility', 'hidden', 'important');
 
-    var wrap = document.getElementById('ww-cal');
-    if (!wrap) {
-      wrap = document.createElement('div');
-      wrap.id = 'ww-cal';
-      container.appendChild(wrap);
+      var wrap = document.getElementById('ww-cal');
+      if (!wrap) {
+        wrap = document.createElement('div');
+        wrap.id = 'ww-cal';
+        container.appendChild(wrap);
+      }
+      var firstDow = (new Date(Date.UTC(year, month, 1)).getUTCDay() + 6) % 7; // 0 = Monday
+      var daysInMonth = new Date(Date.UTC(year, month + 1, 0)).getUTCDate();
+      var cells = '';
+      for (var i = 0; i < firstDow; i++) cells += '<span class="ww-cal-cell ww-cal-empty"></span>';
+      for (var day = 1; day <= daysInMonth; day++) {
+        var isWed = day === weddingDay;
+        cells += '<span class="ww-cal-cell' + (isWed ? ' ww-cal-wed' : '') + '">' +
+          (isWed ? '<svg viewBox="0 0 32 29" class="ww-cal-heart"><path d="M16 29S2 19.7 2 9.9C2 4.6 6.3.5 11.4.5 14 .5 16 2 16 2s2-1.5 4.6-1.5C25.7.5 30 4.6 30 9.9 30 19.7 16 29 16 29z"/></svg>' : '') +
+          '<i>' + cpad(day) + '</i></span>';
+      }
+      var heads = '';
+      for (var h = 0; h < 7; h++) heads += '<span class="ww-cal-head">' + WEEKDAYS_SHORT[h] + '</span>';
+      wrap.innerHTML =
+        '<div class="ww-cal-month">' + (MONTHS_EN[month] || '') + '</div>' +
+        '<div class="ww-cal-grid">' + heads + cells + '</div>' +
+        (EDIT_MODE ? '<div class="ww-cal-hint">✏️ Bấm để chọn lại ngày cưới</div>' : '');
     }
-    var firstDow = (new Date(Date.UTC(year, month, 1)).getUTCDay() + 6) % 7; // 0 = Monday
-    var daysInMonth = new Date(Date.UTC(year, month + 1, 0)).getUTCDate();
-    var cells = '';
-    for (var i = 0; i < firstDow; i++) cells += '<span class="ww-cal-cell ww-cal-empty"></span>';
-    for (var day = 1; day <= daysInMonth; day++) {
-      var isWed = day === weddingDay;
-      cells += '<span class="ww-cal-cell' + (isWed ? ' ww-cal-wed' : '') + '">' +
-        (isWed ? '<svg viewBox="0 0 32 29" class="ww-cal-heart"><path d="M16 29S2 19.7 2 9.9C2 4.6 6.3.5 11.4.5 14 .5 16 2 16 2s2-1.5 4.6-1.5C25.7.5 30 4.6 30 9.9 30 19.7 16 29 16 29z"/></svg>' : '') +
-        '<i>' + cpad(day) + '</i></span>';
+
+    // 2. Mẫu Editorial (#calendar / .scene-calendar / .editorial-calendar-table)
+    var edCalSection = document.getElementById('calendar') || document.querySelector('.scene-calendar');
+    var edTable = document.querySelector('.editorial-calendar-table');
+    if (edTable) {
+      if (edCalSection) {
+        var titleEl = edCalSection.querySelector('.calendar-header .section-title, .section-title');
+        if (titleEl) {
+          titleEl.textContent = 'THÁNG ' + cpad(month + 1) + ' / ' + year;
+        }
+      }
+      var tbody = edTable.querySelector('tbody') || edTable;
+      var firstDowEd = (new Date(Date.UTC(year, month, 1)).getUTCDay() + 6) % 7; // 0 = Hai, ..., 6 = CN
+      var daysInMonthEd = new Date(Date.UTC(year, month + 1, 0)).getUTCDate();
+      var tRows = '';
+      var curCol = 0;
+      var curRow = '<tr>';
+      for (var f = 0; f < firstDowEd; f++) {
+        curRow += '<td></td>';
+        curCol++;
+      }
+      for (var dNum = 1; dNum <= daysInMonthEd; dNum++) {
+        if (curCol === 7) {
+          curRow += '</tr>';
+          tRows += curRow;
+          curRow = '<tr>';
+          curCol = 0;
+        }
+        if (dNum === weddingDay) {
+          curRow += '<td class="calendar-wedding-day">' +
+            '<div class="calendar-jewel-marker">' +
+            '<span class="marker-day">' + cpad(dNum) + '</span>' +
+            '<span class="marker-flower-badge" aria-hidden="true">✦</span>' +
+            '</div></td>';
+        } else {
+          curRow += '<td>' + cpad(dNum) + '</td>';
+        }
+        curCol++;
+      }
+      if (curCol > 0) {
+        while (curCol < 7) {
+          curRow += '<td></td>';
+          curCol++;
+        }
+        curRow += '</tr>';
+        tRows += curRow;
+      }
+      tbody.innerHTML = tRows;
+
+      // Cập nhật link Google Calendar
+      var gcalPill = document.querySelector('.google-calendar-pill');
+      if (gcalPill) {
+        var gTitle = encodeURIComponent((data.title_vi || ('Đám cưới ' + (data.groom_name || 'Chú rể') + ' & ' + (data.bride_name || 'Cô dâu'))).trim());
+        var yStr = String(year);
+        var mStr = cpad(month + 1);
+        var dStr = cpad(weddingDay);
+        var gDate = yStr + mStr + dStr + 'T040000Z/' + yStr + mStr + dStr + 'T070000Z';
+        var gVenue = encodeURIComponent((data.venue_name || data.reception_venue_name || 'Hôn lễ').trim() + ' - ' + (data.venue_address || data.reception_venue_address || '').trim());
+        gcalPill.setAttribute('href', 'https://www.google.com/calendar/render?action=TEMPLATE&text=' + gTitle + '&dates=' + gDate + '&location=' + gVenue);
+      }
     }
-    var heads = '';
-    for (var h = 0; h < 7; h++) heads += '<span class="ww-cal-head">' + WEEKDAYS_SHORT[h] + '</span>';
-    wrap.innerHTML =
-      '<div class="ww-cal-month">' + (MONTHS_EN[month] || '') + '</div>' +
-      '<div class="ww-cal-grid">' + heads + cells + '</div>' +
-      (EDIT_MODE ? '<div class="ww-cal-hint">✏️ Bấm để chọn lại ngày cưới</div>' : '');
   }
 
   // ---- THƯ VIỆN ICON TIMELINE (nét vẽ tay, cùng phong cách 3 icon gốc) -------
@@ -327,67 +389,204 @@ const buildDomInjectScript = (editMode) => `
   function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
 
   var WW_TL_DEFAULT = [
-    { t: '16:00', label: 'Đón khách', icon: 'don-khach' },
-    { t: '16:30', label: 'Khai tiệc', icon: 'khai-tiec' }
+    { t: '10:30', label: 'Đón khách & Check-in', desc: 'Chụp ảnh kỷ niệm cùng Cô dâu & Chú rể', icon: 'don-khach' },
+    { t: '11:00', label: 'Nghi lễ thành hôn', desc: 'Lễ thành hôn trang trọng và bắt đầu khai tiệc mừng', icon: 'trao-nhan' },
+    { t: '11:45', label: 'Cắt bánh & Nâng ly', desc: 'Cô dâu chú rể rót tháp rượu hạnh phúc và gửi lời tri ân', icon: 'nang-ly' },
+    { t: '12:30', label: 'Tiệc mừng & Minigame', desc: 'Giao lưu cùng bạn bè thân hữu và bốc thăm may mắn', icon: 'khai-tiec' },
+    { t: '13:30', label: 'Tiễn khách & Cảm ơn', desc: 'Lưu lại những kỷ niệm đẹp và gửi lời chúc tốt lành', icon: 'tien-khach' }
   ];
 
   // ---- TIMELINE + DRESS CODE (tự sinh từ extra_data.timeline / .dresscode) ---
-  // Mẫu gốc chốt cứng 2–4 mốc + "Dress code" đặt tuyệt đối. Ở đây phủ 1 khối tự
-  // sinh lên SECTION5 (ẩn phần cũ) NHƯNG giữ NGUYÊN font + bố cục của mẫu:
-  //   - "Timeline"/"Dress code": font calligraphy của mẫu, cỡ 49px, trắng
-  //   - dòng giờ/nội dung: font hẹp in hoa của mẫu, 16px, trắng
-  //   - đường kẻ dọc + chấm tròn + icon bên trái, chữ bên phải như mẫu
   var TL_FONT_HEAD = 'MUZUViWSVAtUEVSRkVDVEtQFMTElHUkFQSFkuVFRG, "Prata", "Tinos", serif';
   var TL_FONT_ITEM = 'MUZUVlZJUEFsYnJhRGlzcGxheSMaWdodCdGY, "Roboto", sans-serif';
   function wwTimelineItems(data) {
-    var arr = data && data.timeline;
+    var arr = data && (data.timeline || (data.extra_data && data.extra_data.timeline));
     if (Array.isArray(arr) && arr.length) return arr;
+    var extra = (data && data.extra_data) || data || {};
+    var fromIndexed = [];
+    for (var idx = 1; idx <= 8; idx++) {
+      var t = extra['timeline_time_' + idx];
+      var title = extra['timeline_title_' + idx];
+      var desc = extra['timeline_desc_' + idx];
+      if (t || title || desc) {
+        fromIndexed.push({ t: t || '', label: title || '', title: title || '', desc: desc || '', icon: 'don-khach' });
+      }
+    }
+    if (fromIndexed.length) return fromIndexed;
     return WW_TL_DEFAULT;
   }
   function wwDressCode(data) {
-    var d = (data && data.dresscode) || {};
-    return { text: d.text || '', colors: Array.isArray(d.colors) ? d.colors : [] };
+    var d = (data && data.dresscode) || (data && data.extra_data && data.extra_data.dresscode) || {};
+    var rawColors = Array.isArray(d.colors) ? d.colors : (d.colors ? [d.colors] : []);
+    return {
+      text: d.text || '',
+      colors: rawColors.length ? rawColors : [
+        { hex: '#7e6c94', name: 'Lavender', sub: 'Lụa Tím Nhạt' },
+        { hex: '#f5e6d3', name: 'Cream', sub: 'Kem Sữa' },
+        { hex: '#a3b899', name: 'Sage', sub: 'Xanh Bạc Hà' },
+        { hex: '#5c3d4e', name: 'Plum', sub: 'Mận Trầm' }
+      ]
+    };
   }
   function renderTimeline(data) {
-    var host = document.getElementById('SECTION5');
-    if (!host) return;
-    var container = host.querySelector('.ladi-container') || host;
-    // Ẩn nội dung tĩnh (giữ ảnh nền IMAGE18 + lớp phủ BOX4).
-    var statics = host.querySelectorAll('[id^="HEADLINE"], [id^="LINE"], [id^="GROUP"], [id^="IMAGE"]:not(#IMAGE18), [id^="BOX"]:not(#BOX4), [id^="SHAPE"]');
-    for (var s = 0; s < statics.length; s++) statics[s].style.setProperty('visibility', 'hidden', 'important');
+    var showTl = data.show_timeline !== false && (!data.extra_data || data.extra_data.show_timeline !== false);
+    var showDc = data.show_dresscode !== false && (!data.extra_data || data.extra_data.show_dresscode !== false);
 
     var items = wwTimelineItems(data);
     var dress = wwDressCode(data);
-    var wrap = document.getElementById('ww-timeline');
-    if (!wrap) { wrap = document.createElement('div'); wrap.id = 'ww-timeline'; container.appendChild(wrap); }
 
-    var rows = '';
-    for (var i = 0; i < items.length; i++) {
-      var it = items[i] || {};
-      rows += '<div class="ww-tl-row">' +
-        '<span class="ww-tl-ic">' + (it.icon && WW_ICONS[it.icon] ? wwIconSvg(it.icon) : '') + '</span>' +
-        '<span class="ww-tl-txt"><span class="ww-tl-time">' + esc(it.t || '') + '</span>' +
-        '<span class="ww-tl-label">' + esc(it.label || '') + '</span></span>' +
-      '</div>';
+    // 1. Mẫu Editorial: #timeline / .scene-timeline
+    var edTimeline = document.getElementById('timeline') || document.querySelector('.scene-timeline');
+    if (edTimeline) {
+      if (!EDIT_MODE && !showTl && !showDc) {
+        edTimeline.style.display = 'none';
+        return;
+      }
+      edTimeline.style.removeProperty('display');
+
+      var tlHeader = edTimeline.querySelector('.timeline-header');
+      var stem = edTimeline.querySelector('.living-botanical-stem');
+      var dcArea = edTimeline.querySelector('.dresscode-open-area');
+
+      // Timeline visibility
+      if (!showTl) {
+        if (!EDIT_MODE) {
+          if (tlHeader) tlHeader.style.display = 'none';
+          if (stem) stem.style.display = 'none';
+        } else {
+          if (tlHeader) tlHeader.style.removeProperty('display');
+          if (stem) {
+            stem.style.removeProperty('display');
+            stem.style.opacity = '0.4';
+          }
+          var oldBanner = edTimeline.querySelector('.ww-off-banner-tl');
+          if (!oldBanner && tlHeader) {
+            tlHeader.insertAdjacentHTML('afterend', '<div class="ww-off-banner ww-off-banner-tl" data-edit-tl>⚠️ Timeline đang TẮT (người xem sẽ không thấy). Bấm để chỉnh sửa hoặc bật lại.</div>');
+          }
+        }
+      } else {
+        if (tlHeader) tlHeader.style.removeProperty('display');
+        if (stem) {
+          stem.style.removeProperty('display');
+          stem.style.removeProperty('opacity');
+        }
+        var bannerTl = edTimeline.querySelector('.ww-off-banner-tl');
+        if (bannerTl) bannerTl.remove();
+
+        // Render stem milestones
+        if (stem) {
+          var stemHtml = '<div class="stem-central-vine" aria-hidden="true"></div>';
+          for (var i = 0; i < items.length; i++) {
+            var it = items[i] || {};
+            var ic = it.icon && WW_ICONS[it.icon] ? wwIconSvg(it.icon) : '<svg class="fine-stem-svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="12" cy="12" r="6"></circle></svg>';
+            stemHtml += '<div class="stem-milestone stem-milestone--node" data-edit-tl style="' + (EDIT_MODE ? 'cursor:pointer' : '') + '">' +
+              '<div class="stem-node-badge" aria-hidden="true">' + ic + '</div>' +
+              '<div class="stem-milestone-content">' +
+                '<span class="milestone-time">' + esc(it.t || '') + '</span>' +
+                '<h4 class="milestone-title">' + esc(it.label || it.title || '') + '</h4>' +
+                (it.desc ? '<p class="milestone-desc">' + esc(it.desc) + '</p>' : '') +
+              '</div>' +
+            '</div>';
+          }
+          stem.innerHTML = stemHtml;
+        }
+      }
+
+      // Dress code visibility
+      if (dcArea) {
+        if (!showDc) {
+          if (!EDIT_MODE) {
+            dcArea.style.display = 'none';
+          } else {
+            dcArea.style.removeProperty('display');
+            var palette = dcArea.querySelector('.dresscode-palette-row');
+            if (palette) palette.style.opacity = '0.4';
+            var oldDcBanner = dcArea.querySelector('.ww-off-banner-dc');
+            if (!oldDcBanner) {
+              dcArea.insertAdjacentHTML('afterbegin', '<div class="ww-off-banner ww-off-banner-dc" data-edit-dc>⚠️ Dress code đang TẮT (người xem sẽ không thấy). Bấm để chỉnh sửa hoặc bật lại.</div>');
+            }
+          }
+        } else {
+          dcArea.style.removeProperty('display');
+          var bannerDc = dcArea.querySelector('.ww-off-banner-dc');
+          if (bannerDc) bannerDc.remove();
+          var paletteEl = dcArea.querySelector('.dresscode-palette-row');
+          if (paletteEl) paletteEl.style.removeProperty('opacity');
+
+          var descEl = dcArea.querySelector('.dresscode-desc');
+          if (descEl && dress.text) descEl.textContent = dress.text;
+
+          if (paletteEl && dress.colors && dress.colors.length) {
+            var swHtml = '';
+            for (var c = 0; c < dress.colors.length; c++) {
+              var cItem = dress.colors[c];
+              var hex = typeof cItem === 'string' ? cItem : (cItem && cItem.hex ? cItem.hex : '#c8a06a');
+              var name = typeof cItem === 'object' && cItem ? (cItem.name || '') : '';
+              var sub = typeof cItem === 'object' && cItem ? (cItem.sub || '') : '';
+              swHtml += '<div class="dresscode-swatch" data-edit-dc style="' + (EDIT_MODE ? 'cursor:pointer' : '') + '">' +
+                '<span class="swatch-circle" style="background:' + esc(hex) + '"></span>' +
+                (name ? '<span class="swatch-name">' + esc(name) + '</span>' : '') +
+                (sub ? '<span class="swatch-sub">' + esc(sub) + '</span>' : '') +
+              '</div>';
+            }
+            paletteEl.innerHTML = swHtml;
+          }
+        }
+      }
     }
-    var swatches = '';
-    for (var c = 0; c < dress.colors.length; c++) {
-      swatches += '<span class="ww-dc-sw" style="background:' + esc(dress.colors[c]) + '"></span>';
-    }
-    var dressBlock = (dress.text || dress.colors.length || EDIT_MODE)
-      ? '<div class="ww-tl-dress">' +
+
+    // 2. Mẫu LadiPage: #SECTION5
+    var host = document.getElementById('SECTION5');
+    if (host) {
+      if (!EDIT_MODE && !showTl && !showDc) {
+        host.style.setProperty('display', 'none', 'important');
+        return;
+      }
+      host.style.removeProperty('display');
+      var container = host.querySelector('.ladi-container') || host;
+      var statics = host.querySelectorAll('[id^="HEADLINE"], [id^="LINE"], [id^="GROUP"], [id^="IMAGE"]:not(#IMAGE18), [id^="BOX"]:not(#BOX4), [id^="SHAPE"]');
+      for (var s = 0; s < statics.length; s++) statics[s].style.setProperty('visibility', 'hidden', 'important');
+
+      var wrap = document.getElementById('ww-timeline');
+      if (!wrap) { wrap = document.createElement('div'); wrap.id = 'ww-timeline'; container.appendChild(wrap); }
+
+      var rows = '';
+      if (showTl || EDIT_MODE) {
+        for (var j = 0; j < items.length; j++) {
+          var it2 = items[j] || {};
+          rows += '<div class="ww-tl-row">' +
+            '<span class="ww-tl-ic">' + (it2.icon && WW_ICONS[it2.icon] ? wwIconSvg(it2.icon) : '') + '</span>' +
+            '<span class="ww-tl-txt"><span class="ww-tl-time">' + esc(it2.t || '') + '</span>' +
+            '<span class="ww-tl-label">' + esc(it2.label || it2.title || '') + '</span></span>' +
+          '</div>';
+        }
+      }
+
+      var swatches = '';
+      for (var k = 0; k < dress.colors.length; k++) {
+        var col = dress.colors[k];
+        var colHex = typeof col === 'string' ? col : (col && col.hex ? col.hex : '#c8a06a');
+        swatches += '<span class="ww-dc-sw" style="background:' + esc(colHex) + '"></span>';
+      }
+
+      var dressBlock = '';
+      if (showDc || EDIT_MODE) {
+        dressBlock = '<div class="ww-tl-dress" style="' + (!showDc && EDIT_MODE ? 'opacity:0.4' : '') + '">' +
+          (!showDc && EDIT_MODE ? '<div class="ww-off-banner" data-edit-dc>⚠️ Dress code đang TẮT</div>' : '') +
           '<span class="ww-dc-head">Dress code</span>' +
           (dress.text ? '<span class="ww-dc-text">' + esc(dress.text) + '</span>' : '') +
           (swatches ? '<span class="ww-dc-row">' + swatches + '</span>' : '') +
           (EDIT_MODE ? '<button type="button" class="ww-tl-btn" data-edit-dc>🎨 Sửa dress code</button>' : '') +
-        '</div>'
-      : '';
+        '</div>';
+      }
 
-    wrap.innerHTML =
-      '<div class="ww-tl-title">Timeline</div>' +
-      (EDIT_MODE ? '<button type="button" class="ww-tl-btn ww-tl-btn-top" data-edit-tl>✏️ Sửa lịch trình</button>' : '') +
-      '<div class="ww-tl-items">' + rows + '</div>' +
-      dressBlock;
+      wrap.innerHTML =
+        (!showTl && EDIT_MODE ? '<div class="ww-off-banner" data-edit-tl>⚠️ Timeline đang TẮT</div>' : '') +
+        (showTl || EDIT_MODE ? ('<div class="ww-tl-title" style="' + (!showTl && EDIT_MODE ? 'opacity:0.4' : '') + '">Timeline</div>' +
+          (EDIT_MODE ? '<button type="button" class="ww-tl-btn ww-tl-btn-top" data-edit-tl>✏️ Sửa lịch trình</button>' : '') +
+          '<div class="ww-tl-items" style="' + (!showTl && EDIT_MODE ? 'opacity:0.4' : '') + '">' + rows + '</div>') : '') +
+        dressBlock;
+    }
   }
 
   // ---- POPUP MÃ QR MỪNG CƯỚI (đổ dữ liệu ngân hàng do AI đọc từ ảnh QR) ------
@@ -610,21 +809,37 @@ const buildDomInjectScript = (editMode) => `
         h43.__wwCustomized = true;
       }
 
-      // Quét và thay thế các từ "Quý khách" trong toàn bộ văn bản (tránh script, style, textarea, input)
-      var textHolders = document.querySelectorAll('h1, h2, h3, h4, h5, p, span, .ladi-headline, .section-lead-text, .modal-lead-note, .gift-trigger-hint, .dresscode-desc');
-      for (var thIdx = 0; thIdx < textHolders.length; thIdx++) {
-        var holder = textHolders[thIdx];
-        if (holder.closest && (holder.closest('script') || holder.closest('style') || holder.closest('textarea') || holder.closest('input') || holder.closest('form'))) continue;
-        if (holder.children.length === 0 && holder.textContent) {
-          var original = holder.textContent;
-          if (original.indexOf('Quý khách') !== -1 || original.indexOf('QUÝ KHÁCH') !== -1 || original.indexOf('Quý Khách') !== -1 || original.indexOf('quý khách') !== -1) {
-            holder.textContent = original
+      // Quét tất cả text node trong tài liệu để thay thế "Quý khách" / "QUÝ KHÁCH" / "quý khách" bằng tên khách
+      try {
+        var walker = document.createTreeWalker(
+          document.body,
+          NodeFilter.SHOW_TEXT,
+          {
+            acceptNode: function(node) {
+              if (!node || !node.parentElement) return NodeFilter.FILTER_REJECT;
+              var parent = node.parentElement;
+              var tag = parent.tagName ? parent.tagName.toLowerCase() : '';
+              if (tag === 'script' || tag === 'style' || tag === 'textarea' || tag === 'input' || tag === 'option' || tag === 'select') {
+                return NodeFilter.FILTER_REJECT;
+              }
+              if (parent.closest && parent.closest('form, script, style, .ww-sheet-mask, .ww-dp-mask')) {
+                return NodeFilter.FILTER_REJECT;
+              }
+              return NodeFilter.FILTER_ACCEPT;
+            }
+          }
+        );
+        var textNode;
+        while ((textNode = walker.nextNode())) {
+          var val = textNode.nodeValue;
+          if (val && (val.indexOf('Quý khách') !== -1 || val.indexOf('QUÝ KHÁCH') !== -1 || val.indexOf('Quý Khách') !== -1 || val.indexOf('quý khách') !== -1)) {
+            textNode.nodeValue = val
               .replace(/QUÝ KHÁCH/g, guestNameUpper)
               .replace(/Quý [Kk]hách/g, guestName)
               .replace(/quý khách/g, guestName);
           }
         }
-      }
+      } catch (_e) {}
 
       // Điền sẵn tên vào ô nhập lời chúc / xác nhận
       var nameInps = document.querySelectorAll('input[name="name"], input[name="name_guest"]');
@@ -1038,16 +1253,19 @@ const buildDomInjectScript = (editMode) => `
 
     // ---- edit sheets (timeline / dress / icon-picker) ----
     '.ww-sheet-mask{position:fixed;inset:0;z-index:2147483300;background:rgba(31,25,23,.55);display:flex;align-items:center;justify-content:center;padding:16px}' +
-    '.ww-sheet{width:min(400px,100%);max-height:88vh;overflow:auto;background:#fff;border-radius:18px;box-shadow:0 24px 60px rgba(0,0,0,.35);font-family:-apple-system,system-ui,sans-serif;color:#1f1917}' +
+    '.ww-sheet{width:min(440px,94vw);max-height:88vh;overflow:auto;background:#fff;border-radius:18px;box-shadow:0 24px 60px rgba(0,0,0,.35);font-family:-apple-system,system-ui,sans-serif;color:#1f1917}' +
     '.ww-sheet-hd{padding:15px 18px;border-bottom:1px solid #eee;font-weight:700;font-size:15px;display:flex;align-items:center;justify-content:space-between}' +
     '.ww-sheet-hd button{border:none;background:#f2ede7;width:26px;height:26px;border-radius:8px;cursor:pointer;font-size:15px;line-height:1}' +
     '.ww-sheet-bd{padding:14px 18px;display:flex;flex-direction:column;gap:12px}' +
-    '.ww-tl-erow{display:grid;grid-template-columns:48px 96px 1fr 30px;gap:8px;align-items:center}' +
-    '.ww-tl-erow .ww-ipick{width:48px;height:48px;border:1px solid #ddd;border-radius:10px;background:#faf7f2;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0}' +
-    '.ww-tl-erow .ww-ipick .ww-ic{width:26px;height:26px;color:#5a463c}' +
+    '.ww-toggle-label{display:flex;align-items:center;gap:10px;padding:10px 14px;background:#f8f6f2;border-radius:10px;cursor:pointer;font-weight:600;font-size:13px;color:#332924;margin-bottom:4px}' +
+    '.ww-toggle-label input[type=checkbox]{width:18px;height:18px;cursor:pointer;accent-color:#c96547}' +
+    '.ww-off-banner{display:block;margin:12px auto;padding:10px 16px;background:#fff4eb;border:1px dashed #e58d6f;border-radius:10px;color:#a84323;font-size:13px;text-align:center;cursor:pointer;font-weight:600;max-width:420px;line-height:1.4}' +
+    '.ww-tl-erow{display:grid;grid-template-columns:46px 86px 1fr 30px;gap:6px;align-items:center;margin-bottom:8px}' +
+    '.ww-tl-erow .ww-ipick{width:46px;height:46px;border:1px solid #ddd;border-radius:10px;background:#faf7f2;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;font-size:12px;font-weight:700;color:#8a6b45}' +
+    '.ww-tl-erow .ww-ipick .ww-ic{width:24px;height:24px;color:#5a463c}' +
     '.ww-sheet input[type=text],.ww-sheet input[type=time],.ww-sheet textarea{width:100%;border:1px solid #ddd;border-radius:8px;padding:8px;font:inherit;font-size:13px;box-sizing:border-box}' +
-    '.ww-tl-erow .ww-del{border:none;background:#f6eceb;color:#c0392b;border-radius:8px;width:30px;height:30px;cursor:pointer;font-size:16px}' +
-    '.ww-sheet .ww-add{border:1px dashed #c9b592;background:#faf7f2;color:#8a6b45;border-radius:10px;padding:9px;font:inherit;font-size:13px;font-weight:600;cursor:pointer}' +
+    '.ww-tl-erow .ww-del{border:none;background:#f6eceb;color:#c0392b;border-radius:8px;width:30px;height:30px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center}' +
+    '.ww-sheet .ww-add{border:1px dashed #c9b592;background:#faf7f2;color:#8a6b45;border-radius:10px;padding:9px;font:inherit;font-size:13px;font-weight:600;cursor:pointer;width:100%;text-align:center}' +
     '.ww-sheet-ft{display:flex;gap:8px;padding:12px 18px 16px}' +
     '.ww-sheet-ft button{flex:1;border:none;border-radius:10px;padding:10px;font:inherit;font-size:13px;font-weight:700;cursor:pointer}' +
     '.ww-sheet-ok{background:linear-gradient(135deg,#e58d6f,#c96547);color:#fff}' +
@@ -1057,8 +1275,9 @@ const buildDomInjectScript = (editMode) => `
     '.ww-ipgrid button.on{border-color:#c96547;background:#fbefe9}' +
     '.ww-ipgrid button .ww-ic{width:28px;height:28px;color:#3a2f27}' +
     '.ww-ipgrid button span{font-size:9px;line-height:1.2;text-align:center;color:#8a7d6e}' +
-    '.ww-dc-erow{display:flex;align-items:center;gap:8px}' +
-    '.ww-dc-erow input[type=color]{width:44px;height:34px;border:1px solid #ddd;border-radius:8px;padding:2px;cursor:pointer;background:#fff}' +
+    '.ww-dc-erow{display:flex;align-items:center;gap:6px;margin-bottom:8px}' +
+    '.ww-dc-erow input[type=color]{width:44px;height:34px;border:1px solid #ddd;border-radius:8px;padding:2px;cursor:pointer;background:#fff;flex-shrink:0}' +
+    '.ww-dc-erow .ww-del{border:none;background:#f6eceb;color:#c0392b;border-radius:8px;width:30px;height:30px;cursor:pointer;font-size:16px;flex-shrink:0;display:flex;align-items:center;justify-content:center}' +
     '@keyframes wwRotate{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}' +
     '.ww-rotating{animation:wwRotate 3s linear infinite !important;transform-origin:center center}' +
     '.ww-toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:rgba(31,25,23,.92);color:#fff;padding:12px 24px;border-radius:999px;font-family:-apple-system,sans-serif;font-size:14px;font-weight:600;z-index:2147483647;box-shadow:0 8px 24px rgba(0,0,0,.3);text-align:center;pointer-events:none;transition:opacity .35s ease}';
@@ -1208,9 +1427,9 @@ const EDIT_MODE_SCRIPT = `
       if (node.closest && node.closest('.ww-badge, .ww-dp-mask, .ww-sheet-mask, .ww-date-input')) return null;
       if (node.closest && node.closest('[data-edit-dc]')) return { kind: 'dress', el: node, label: '🎨 Sửa dress code' };
       if (node.closest && node.closest('[data-edit-tl]')) return { kind: 'timeline', el: node, label: '✏️ Sửa lịch trình' };
-      var dress = node.closest && node.closest('.ww-tl-dress');
+      var dress = node.closest && node.closest('.ww-tl-dress, .dresscode-open-area, .dresscode-palette-row, .dresscode-swatch');
       if (dress) return { kind: 'dress', el: dress, label: '🎨 Sửa dress code' };
-      var tlrow = node.closest && node.closest('.ww-tl-row, .ww-tl-items');
+      var tlrow = node.closest && node.closest('.ww-tl-row, .ww-tl-items, .living-botanical-stem, .stem-milestone, .scene-timeline .timeline-header, #timeline .timeline-header');
       if (tlrow) return { kind: 'timeline', el: tlrow, label: '✏️ Sửa lịch trình' };
       // data-readonly: vẫn BƠM dữ liệu để hiển thị, nhưng không cho sửa tại chỗ.
       // Dùng cho khối đã có đường sửa riêng — vd. thông tin ngân hàng mừng cưới đi
@@ -1231,7 +1450,7 @@ const EDIT_MODE_SCRIPT = `
         if (!wwCanChangeImage(im.getAttribute('data-image'))) continue;
         return { kind: 'image', el: im, label: isBankQrField(im.getAttribute('data-image')) ? '📷 Đổi mã QR' : '🖼️ Đổi ảnh' };
       }
-      var cal = node.closest && node.closest('#ww-cal');
+      var cal = node.closest && node.closest('#ww-cal, .editorial-calendar-table, .scene-calendar, #calendar');
       if (cal) return { kind: 'calendar', el: cal, label: '📅 Đổi ngày cưới' };
     }
     return null;
@@ -1250,7 +1469,8 @@ const EDIT_MODE_SCRIPT = `
     'reception_short','reception_weekday','reception_time_weekday','reception_time',
     'reception_day','reception_month','reception_year','reception_lunar_text',
     'reception_venue_address','reception_venue_name','reception_map_url',
-    'thank_you_message','title_vi','extra_notes','ceremony_month_num','ceremony_year_num','ceremony_time','ceremony_weekday_date','ceremony_full_date','reception_month_num','reception_year_num','reception_time','reception_weekday_date','reception_full_date','welcome_quote','welcome_text','family_lead_text','ceremony_heartfelt_quote','story_quote','timeline_time_1','timeline_title_1','timeline_desc_1','timeline_time_2','timeline_title_2','timeline_desc_2','timeline_time_3','timeline_title_3','timeline_desc_3','timeline_time_4','timeline_title_4','timeline_desc_4','timeline_time_5','timeline_title_5','timeline_desc_5'];
+    'thank_you_message','title_vi','extra_notes','invitation_lead','guest_name','show_timeline','show_dresscode',
+    'ceremony_month_num','ceremony_year_num','ceremony_time','ceremony_weekday_date','ceremony_full_date','reception_month_num','reception_year_num','reception_time','reception_weekday_date','reception_full_date','welcome_quote','welcome_text','family_lead_text','ceremony_heartfelt_quote','story_quote','timeline_time_1','timeline_title_1','timeline_desc_1','timeline_time_2','timeline_title_2','timeline_desc_2','timeline_time_3','timeline_title_3','timeline_desc_3','timeline_time_4','timeline_title_4','timeline_desc_4','timeline_time_5','timeline_title_5','timeline_desc_5'];
 
   // Thông tin ngân hàng KHÔNG BAO GIỜ sửa tại chỗ — đi qua panel quét mã QR, vì
   // số tài khoản gõ tay sẽ lệch với mã QR đang hiện.
@@ -1494,33 +1714,45 @@ const EDIT_MODE_SCRIPT = `
 
   function tlRowHtml(it) {
     it = it || {};
+    var label = esc(it.label || it.title || '').replace(/"/g, '&quot;');
+    var desc = esc(it.desc || '').replace(/"/g, '&quot;');
     return '<div class="ww-tl-erow" data-icon="' + (it.icon || '') + '">' +
-      '<button type="button" class="ww-ipick">' + (it.icon && WW_ICONS[it.icon] ? wwIconSvg(it.icon) : '<span style="font-size:18px;color:#c9b592">+</span>') + '</button>' +
+      '<button type="button" class="ww-ipick" title="Chọn icon">' + (it.icon && WW_ICONS[it.icon] ? wwIconSvg(it.icon) : '<span style="font-size:12px;font-weight:700;color:#8a6b45">+icon</span>') + '</button>' +
       '<input type="time" class="ww-t" value="' + (it.t || '') + '">' +
-      '<input type="text" class="ww-l" placeholder="Nội dung mốc" value="' + esc(it.label || '').replace(/"/g, '&quot;') + '">' +
-      '<button type="button" class="ww-del">&times;</button>' +
+      '<div style="display:flex;flex-direction:column;gap:4px">' +
+        '<input type="text" class="ww-l" placeholder="Tiêu đề mốc (VD: Khai tiệc)" value="' + label + '">' +
+        '<input type="text" class="ww-d" placeholder="Mô tả phụ (tuỳ chọn)" value="' + desc + '" style="font-size:11px;padding:4px 6px">' +
+      '</div>' +
+      '<button type="button" class="ww-del" title="Xoá mốc">&times;</button>' +
     '</div>';
   }
 
   function openTimelineEditor() {
     var data = window.invitationData || {};
     var items = wwTimelineItems(data);
+    var showTl = data.show_timeline !== false && (!data.extra_data || data.extra_data.show_timeline !== false);
     var rows = items.map(tlRowHtml).join('');
-    var body = '<div class="ww-tl-rows">' + rows + '</div><button type="button" class="ww-add" data-add>+ Thêm mốc</button>';
+    var body =
+      '<label class="ww-toggle-label"><input type="checkbox" id="ww-tl-toggle"' + (showTl ? ' checked' : '') + '> <span>Hiển thị phần Timeline trên thiệp</span></label>' +
+      '<div class="ww-tl-rows">' + rows + '</div>' +
+      '<button type="button" class="ww-add" data-add>+ Thêm mốc lịch trình</button>';
     var mask = sheet('Lịch trình timeline', body, function (m) {
+      var isVisible = !!m.querySelector('#ww-tl-toggle').checked;
       var out = [];
       m.querySelectorAll('.ww-tl-erow').forEach(function (r) {
         var t = r.querySelector('.ww-t').value.trim();
         var l = r.querySelector('.ww-l').value.trim();
+        var d = (r.querySelector('.ww-d') ? r.querySelector('.ww-d').value.trim() : '');
         var ic = r.getAttribute('data-icon') || '';
-        if (t || l) out.push({ t: t, label: l, icon: ic });
+        if (t || l || d) out.push({ t: t, label: l, title: l, desc: d, icon: ic });
       });
+      post({ field: 'show_timeline', kind: 'field', value: isVisible });
       post({ field: 'timeline', kind: 'field', value: out });
     });
     var rowsBox = mask.querySelector('.ww-tl-rows');
     mask.addEventListener('click', function (ev) {
       if (ev.target.closest && ev.target.closest('[data-add]')) {
-        rowsBox.insertAdjacentHTML('beforeend', tlRowHtml({ t: '', label: '', icon: '' }));
+        rowsBox.insertAdjacentHTML('beforeend', tlRowHtml({ t: '12:00', label: '', desc: '', icon: 'nang-ly' }));
         return;
       }
       var del = ev.target.closest && ev.target.closest('.ww-del');
@@ -1530,36 +1762,58 @@ const EDIT_MODE_SCRIPT = `
         var row = pick.closest('.ww-tl-erow');
         openIconPicker(row.getAttribute('data-icon') || '', function (id) {
           row.setAttribute('data-icon', id || '');
-          pick.innerHTML = id && WW_ICONS[id] ? wwIconSvg(id) : '<span style="font-size:18px;color:#c9b592">+</span>';
+          pick.innerHTML = id && WW_ICONS[id] ? wwIconSvg(id) : '<span style="font-size:12px;font-weight:700;color:#8a6b45">+icon</span>';
         });
       }
     });
   }
 
   // ---------------------------------------------------------------------------
-  // Popup sửa DRESS CODE — nội dung + bảng màu (chọn màu RGB tự do).
+  // Popup sửa DRESS CODE — nội dung + bảng màu (chọn màu RGB tự do, không giới hạn).
   // ---------------------------------------------------------------------------
-  function dcRowHtml(hex) {
-    return '<div class="ww-dc-erow"><input type="color" class="ww-c" value="' + (/^#[0-9a-fA-F]{6}$/.test(hex || '') ? hex : '#c8a06a') + '"><button type="button" class="ww-del">&times;</button></div>';
+  function dcRowHtml(item) {
+    var hex = typeof item === 'string' ? item : (item && item.hex ? item.hex : '#c8a06a');
+    if (!/^#[0-9a-fA-F]{6}$/.test(hex)) hex = '#c8a06a';
+    var name = typeof item === 'object' && item ? (item.name || '') : '';
+    var sub = typeof item === 'object' && item ? (item.sub || '') : '';
+    return '<div class="ww-dc-erow">' +
+      '<input type="color" class="ww-c" value="' + hex + '">' +
+      '<input type="text" class="ww-dc-n" placeholder="Tên màu (VD: Tím, Be...)" value="' + esc(name).replace(/"/g, '&quot;') + '" style="flex:1">' +
+      '<input type="text" class="ww-dc-s" placeholder="Ghi chú (VD: Lụa nhạt...)" value="' + esc(sub).replace(/"/g, '&quot;') + '" style="flex:1">' +
+      '<button type="button" class="ww-del" title="Xoá màu">&times;</button>' +
+    '</div>';
   }
   function openDressEditor() {
     var data = window.invitationData || {};
     var dc = wwDressCode(data);
+    var showDc = data.show_dresscode !== false && (!data.extra_data || data.extra_data.show_dresscode !== false);
+    var colorsList = dc.colors && dc.colors.length ? dc.colors : ['#7e6c94', '#f5e6d3', '#a3b899', '#5c3d4e'];
     var body =
-      '<label style="font-size:12px;color:#6e625c;font-weight:600">Nội dung</label>' +
-      '<textarea class="ww-dc-t" rows="3" placeholder="VD: Trang phục lịch sự, ưu tiên tông màu ...">' + esc(dc.text) + '</textarea>' +
-      '<label style="font-size:12px;color:#6e625c;font-weight:600">Bảng màu gợi ý</label>' +
-      '<div class="ww-dc-colors">' + (dc.colors.length ? dc.colors.map(dcRowHtml).join('') : dcRowHtml('#c8a06a')) + '</div>' +
-      '<button type="button" class="ww-add" data-addc>+ Thêm màu</button>';
+      '<label class="ww-toggle-label"><input type="checkbox" id="ww-dc-toggle"' + (showDc ? ' checked' : '') + '> <span>Hiển thị phần Dress code trên thiệp</span></label>' +
+      '<label style="font-size:12px;color:#6e625c;font-weight:600">Lời nhắn / Quy định trang phục</label>' +
+      '<textarea class="ww-dc-t" rows="3" placeholder="VD: Để có những bức hình đồng điệu và trang nhã nhất, Quý khách có thể ưu tiên các gam màu:">' + esc(dc.text) + '</textarea>' +
+      '<label style="font-size:12px;color:#6e625c;font-weight:600">Bảng màu gợi ý (thêm/xoá tuỳ ý)</label>' +
+      '<div class="ww-dc-colors">' + colorsList.map(dcRowHtml).join('') + '</div>' +
+      '<button type="button" class="ww-add" data-addc>+ Thêm màu mới</button>';
     var mask = sheet('Dress code', body, function (m) {
+      var isVisible = !!m.querySelector('#ww-dc-toggle').checked;
       var text = m.querySelector('.ww-dc-t').value.trim();
       var colors = [];
-      m.querySelectorAll('.ww-c').forEach(function (c) { colors.push(c.value); });
+      m.querySelectorAll('.ww-dc-erow').forEach(function (r) {
+        var c = r.querySelector('.ww-c').value;
+        var n = (r.querySelector('.ww-dc-n') ? r.querySelector('.ww-dc-n').value.trim() : '');
+        var s = (r.querySelector('.ww-dc-s') ? r.querySelector('.ww-dc-s').value.trim() : '');
+        colors.push({ hex: c, name: n, sub: s });
+      });
+      post({ field: 'show_dresscode', kind: 'field', value: isVisible });
       post({ field: 'dresscode', kind: 'field', value: { text: text, colors: colors } });
     });
     var box = mask.querySelector('.ww-dc-colors');
     mask.addEventListener('click', function (ev) {
-      if (ev.target.closest && ev.target.closest('[data-addc]')) { box.insertAdjacentHTML('beforeend', dcRowHtml('#8a1420')); return; }
+      if (ev.target.closest && ev.target.closest('[data-addc]')) {
+        box.insertAdjacentHTML('beforeend', dcRowHtml({ hex: '#8a1420', name: '', sub: '' }));
+        return;
+      }
       var del = ev.target.closest && ev.target.closest('.ww-del');
       if (del && del.closest('.ww-dc-erow')) del.closest('.ww-dc-erow').remove();
     });
