@@ -21,6 +21,7 @@ module.exports = {
         SET
           template_name = 'Đức Cương & Nguyễn Quyết',
           html_path = '/templates/duccuong-nguyenquyet/www.ziuwedding.site/vobe2.html',
+          schema = '{"editHtmlPath": "/templates/duccuong-nguyenquyet/www.ziuwedding.site/phongbibe2.html"}',
           has_music_box = true,
           status = 'published',
           visibility = 'restricted',
@@ -37,6 +38,7 @@ module.exports = {
           template_code,
           template_name,
           html_path,
+          schema,
           has_music_box,
           status,
           visibility,
@@ -50,6 +52,7 @@ module.exports = {
           'duccuong-nguyenquyet',
           'Đức Cương & Nguyễn Quyết',
           '/templates/duccuong-nguyenquyet/www.ziuwedding.site/vobe2.html',
+          '{"editHtmlPath": "/templates/duccuong-nguyenquyet/www.ziuwedding.site/phongbibe2.html"}',
           true,
           'published',
           'restricted',

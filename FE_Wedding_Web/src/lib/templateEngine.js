@@ -524,31 +524,42 @@ const buildDomInjectScript = (editMode) => `
         rEl.textContent = guestNameUpper;
       }
 
-      // Khớp tên khách ở bìa ngoài phong bì (vobe2.html / #HEADLINE3)
-      var updateHeadline3 = function() {
-        var h3 = document.querySelector('#HEADLINE3 .ladi-headline') || document.querySelector('#HEADLINE3');
-        if (h3 && h3.textContent.trim() !== guestName) {
-          h3.textContent = guestName;
-        }
-      };
-      updateHeadline3();
-      setTimeout(updateHeadline3, 80);
-      setTimeout(updateHeadline3, 300);
-      setTimeout(updateHeadline3, 800);
-      setTimeout(updateHeadline3, 1600);
+      // Khớp tên khách ở bìa ngoài phong bì (CHỈ áp dụng cho bìa ngoài vobe2.html, tuyệt đối KHÔNG ghi đè lên phongbibe2.html hay các thẻ chứa data-field tên cô dâu / chú rể)
+      var isEnvelopeCover = Boolean(
+        document.querySelector('#GROUP1 [data-action], #GROUP1 a[href*="phongbibe2"]') ||
+        (document.getElementById('HEADLINE4') && document.getElementById('HEADLINE4').textContent.indexOf('Trân trọng kính mời') !== -1 && !document.getElementById('SECTION2'))
+      );
+      var headline3El = document.querySelector('#HEADLINE3');
+      var headline3HasFields = headline3El ? Boolean(headline3El.querySelector('[data-field]') || headline3El.hasAttribute('data-field')) : false;
 
-      try {
-        var targetH3 = document.querySelector('#HEADLINE3 .ladi-headline') || document.querySelector('#HEADLINE3');
-        if (targetH3 && window.MutationObserver && !targetH3.__wwObserved) {
-          targetH3.__wwObserved = true;
-          var obs = new MutationObserver(function() {
-            if (targetH3.textContent.trim() !== guestName) {
-              targetH3.textContent = guestName;
+      if (isEnvelopeCover && !headline3HasFields) {
+        var updateHeadline3 = function() {
+          var h3 = document.querySelector('#HEADLINE3 .ladi-headline') || document.querySelector('#HEADLINE3');
+          if (h3 && !h3.querySelector('[data-field]') && !h3.hasAttribute('data-field')) {
+            if (h3.textContent.trim() !== guestName) {
+              h3.textContent = guestName;
             }
-          });
-          obs.observe(targetH3, { childList: true, characterData: true, subtree: true });
-        }
-      } catch (_e) {}
+          }
+        };
+        updateHeadline3();
+        setTimeout(updateHeadline3, 80);
+        setTimeout(updateHeadline3, 300);
+        setTimeout(updateHeadline3, 800);
+        setTimeout(updateHeadline3, 1600);
+
+        try {
+          var targetH3 = document.querySelector('#HEADLINE3 .ladi-headline') || document.querySelector('#HEADLINE3');
+          if (targetH3 && window.MutationObserver && !targetH3.__wwObserved) {
+            targetH3.__wwObserved = true;
+            var obs = new MutationObserver(function() {
+              if (!targetH3.querySelector('[data-field]') && !targetH3.hasAttribute('data-field') && targetH3.textContent.trim() !== guestName) {
+                targetH3.textContent = guestName;
+              }
+            });
+            obs.observe(targetH3, { childList: true, characterData: true, subtree: true });
+          }
+        } catch (_e) {}
+      }
 
       // Khớp lời mời cụ thể ở phong bì / thiệp LadiPage (#HEADLINE43)
       var h43 = document.querySelector('#HEADLINE43 .ladi-headline');
@@ -1023,6 +1034,15 @@ const buildDomInjectScript = (editMode) => `
 
   applyAll(window.invitationData);
   window.__weddingWebReinject = applyAll;
+
+  // Retry passes để chống việc LadiPage render bất đồng bộ hoặc lazyload ghi đè mất thông tin
+  setTimeout(function () { applyAll(window.invitationData); }, 100);
+  setTimeout(function () { applyAll(window.invitationData); }, 300);
+  setTimeout(function () { applyAll(window.invitationData); }, 700);
+  setTimeout(function () { applyAll(window.invitationData); }, 1500);
+  window.addEventListener('load', function () {
+    applyAll(window.invitationData);
+  });
 
   window.addEventListener('message', function (event) {
     if (event.data && event.data.type === 'wedding-web:data-updated') {

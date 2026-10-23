@@ -126,7 +126,10 @@ export default function EditorPage() {
         if (!invData) throw new Error('Không tìm thấy thiệp')
 
         const isLocked = Boolean(invData.lock_state?.locked)
-        const editEntryPath = invData.template?.schema?.editHtmlPath
+        const editEntryPath = invData.template?.schema?.editHtmlPath ||
+          (invData.template?.html_path && invData.template.html_path.includes('vobe2.html')
+            ? invData.template.html_path.replace('vobe2.html', 'phongbibe2.html')
+            : null)
         const templateUrl = resolveTemplateUrl(editEntryPath || invData.template?.html_path)
         if (!templateUrl) throw new Error('Thiệp này chưa được gán mẫu giao diện')
 
@@ -321,13 +324,14 @@ export default function EditorPage() {
           const nextUrl = new URL(event.data.file, fullBase).href
           fetch(nextUrl, { cache: 'default' })
             .then((r) => r.text())
-            .then((html) =>
+            .then((html) => {
+              templateHtmlRef.current = html
               setIframeDoc(buildIframeDocument(html, mergedForIframe(invitation, pending), {
                 editMode: !locked,
                 editableFields: invitation?.template?.editable_fields ?? null,
                 imageSlotRules: invitation?.template?.image_slot_rules ?? null,
               }))
-            )
+            })
             .catch((err) => console.error('Editor navigate failed:', err))
         } catch (err) {
           console.error('Editor navigate failed:', err)
