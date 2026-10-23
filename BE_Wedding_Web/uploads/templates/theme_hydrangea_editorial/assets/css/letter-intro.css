@@ -425,16 +425,28 @@ body.intro-active {
   z-index: 4;
   display: flex;
   flex-direction: column;
+  padding: 8px;
+  pointer-events: none;
+  will-change: transform, box-shadow;
+  box-sizing: border-box;
+}
+
+.enclosed-card-frame {
+  width: 100%;
+  height: 100%;
+  border: 1px solid rgba(122, 104, 144, 0.2);
+  border-radius: 3px;
+  display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 16px;
-  pointer-events: none;
-  will-change: transform, box-shadow;
+  padding: 10px 12px;
+  box-sizing: border-box;
 }
 
 .inner-card-botanical-top {
-  margin-bottom: 6px;
+  margin-bottom: 5px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -442,8 +454,8 @@ body.intro-active {
 }
 
 .letter-top-tag {
-  font-size: 8.5px;
-  font-weight: 500;
+  font-size: 8px;
+  font-weight: 600;
   letter-spacing: 0.28em;
   text-transform: uppercase;
   color: var(--intro-hydrangea-mid);
@@ -451,28 +463,53 @@ body.intro-active {
 }
 
 .letter-sub-tag {
-  font-size: 7.5px;
+  font-size: 7px;
   letter-spacing: 0.32em;
   text-transform: uppercase;
   color: var(--intro-hydrangea-soft);
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
 .letter-names {
   font-family: 'Cormorant Garamond', Georgia, serif;
-  font-size: 16.5px;
-  font-weight: 500;
+  font-size: 16px;
+  font-weight: 600;
   letter-spacing: 0.16em;
   color: var(--intro-hydrangea-deep);
   text-transform: uppercase;
-  line-height: 1.2;
+  line-height: 1.25;
+  margin: 0;
 }
 
 .letter-botanical-rule {
-  width: 32px;
-  height: 1px;
-  background: linear-gradient(to right, transparent, rgba(122, 104, 144, 0.5), transparent);
-  margin: 7px auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 6px auto;
+}
+
+.letter-date-loc-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2.5px;
+}
+
+.letter-date-row {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  color: var(--intro-hydrangea-deep);
+  text-transform: uppercase;
+}
+
+.letter-loc-row {
+  font-size: 8px;
+  font-weight: 500;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--intro-ink-muted);
 }
 
 .letter-date-loc {

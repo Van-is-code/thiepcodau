@@ -350,7 +350,7 @@
             playPromise.then(function () {
               var musicBtn = document.getElementById('music-toggle');
               if (musicBtn) {
-                musicBtn.classList.add('playing');
+                musicBtn.classList.add('is-playing', 'playing');
                 musicBtn.setAttribute('aria-pressed', 'true');
               }
             }).catch(function () {});

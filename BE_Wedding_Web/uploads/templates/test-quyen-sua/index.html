@@ -76,17 +76,29 @@
 
           <!-- Enclosed Stationery Letter Paper (emerges & expands on tap, matching Panel 6) -->
           <div class="enclosed-letter-paper" id="envelope-letter-paper">
-            <div class="inner-card-botanical-top" aria-hidden="true">
-              <svg width="24" height="10" viewBox="0 0 24 10" fill="none">
-                <path d="M12 1 C10 4 3 5 0 7 M12 1 C14 4 21 5 24 7" stroke="#7E6BA4" stroke-width="0.85" stroke-linecap="round"></path>
-                <circle cx="12" cy="5" r="1.3" fill="#7E6BA4" fill-opacity="0.6"></circle>
-              </svg>
+            <div class="enclosed-card-frame">
+              <div class="inner-card-botanical-top" aria-hidden="true">
+                <svg width="28" height="12" viewBox="0 0 28 12" fill="none">
+                  <path d="M14 1 C11 4 4 6 0 8 M14 1 C17 4 24 6 28 8" stroke="#7E6BA4" stroke-width="0.9" stroke-linecap="round"/>
+                  <circle cx="14" cy="6" r="1.6" fill="#7E6BA4" fill-opacity="0.75"/>
+                  <circle cx="10" cy="8" r="1" fill="#7E6BA4" fill-opacity="0.4"/>
+                  <circle cx="18" cy="8" r="1" fill="#7E6BA4" fill-opacity="0.4"/>
+                </svg>
+              </div>
+              <span class="letter-top-tag" data-field="wedding_tag">WEDDING INVITATION</span>
+              <span class="letter-sub-tag" data-field="wedding_tag">SAVE THE DATE</span>
+              <h3 class="letter-names" data-field="couple_names">DUY NAM &amp; VÂN ANH</h3>
+              <div class="letter-botanical-rule" aria-hidden="true">
+                <svg width="44" height="6" viewBox="0 0 44 6" fill="none">
+                  <path d="M0 3 H18 M26 3 H44" stroke="#7E6BA4" stroke-width="0.75" stroke-opacity="0.45"/>
+                  <rect x="20" y="1" width="4" height="4" transform="rotate(45 22 3)" fill="#7E6BA4" fill-opacity="0.6"/>
+                </svg>
+              </div>
+              <div class="letter-date-loc-block">
+                <div class="letter-date-row" data-field="ceremony_short">18 . 01 . 2026</div>
+                <div class="letter-loc-row"><span class="letter-date-loc-city" data-field="wedding_city">HÀ NỘI</span></div>
+              </div>
             </div>
-            <span class="letter-top-tag" data-field="wedding_tag">WEDDING INVITATION</span>
-            <span class="letter-sub-tag" data-field="wedding_tag">SAVE THE DATE</span>
-            <h3 class="letter-names" data-field="couple_names">DUY NAM &amp; VÂN ANH</h3>
-            <div class="letter-botanical-rule"></div>
-            <p class="letter-date-loc"><span data-field="ceremony_short">18 . 01 . 2026</span> — <span class="letter-date-loc-city" data-field="wedding_city">HÀ NỘI</span></p>
           </div>
 
           <!-- Envelope Front Pocket -->
@@ -188,40 +200,67 @@
   </header>
 
 
-  <!-- ================= SCENE 02: THE PROCLAMATION & POETIC PRELUDE ================= -->
-  <section class="editorial-scene scene-proclamation" id="quote">
-    <div class="scene-inner text-center">
-      <span class="emotional-script-accent">Our Beginning</span>
-      <blockquote class="poetic-statement">
-        “Từ khoảnh khắc ta tìm thấy nhau giữa vạn người, từng ngày trôi qua đều hóa thành một lời hẹn ước dịu dàng...”
-      </blockquote>
-      <p class="poetic-author" data-field="couple_names">— DUY NAM &amp; VÂN ANH —</p>
+  <!-- ================= SCENE 02: GIỚI THIỆU CÔ DÂU & CHÚ RỂ (COUPLE INTRODUCTION) ================= -->
+  <section class="editorial-scene scene-couple-intro" id="couple">
+    <!-- Top-Right Watercolor Bloom Accent -->
+    <div class="couple-botanical-corner couple-botanical-corner--tr" aria-hidden="true">
+      <img src="assets/images/hydrangea-branch.webp" alt="" class="botanical-sway-slow">
     </div>
 
-    <!-- Subtle connecting botanical bridge between text and photograph -->
-    <div class="proclamation-botanical-bridge" aria-hidden="true">
-      <svg class="bridge-stem-svg" width="40" height="24" viewBox="0 0 40 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M20 0 V10 C20 16 12 18 6 24 M20 10 C20 16 28 18 34 24" stroke="#7E6C94" stroke-opacity="0.3" stroke-width="1.2" stroke-linecap="round"></path>
-        <circle cx="20" cy="8" r="2" fill="#7E6C94" fill-opacity="0.45"></circle>
-      </svg>
-    </div>
-
-    <!-- Centered portrait frame strictly aligned to ONE central visual axis with subtle botanical overlap -->
-    <div class="proclamation-photo-wrap">
-      <!-- Subtle botanical leaf softly touching the top-left corner of the photograph -->
-      <div class="proclamation-photo-flourish" aria-hidden="true">
-        <img src="assets/images/hydrangea-branch.webp" alt="" class="proclamation-sprig botanical-sway-slow">
+    <div class="couple-intro-container">
+      <!-- Groom Row: Text on Left, Photo on Right -->
+      <div class="couple-card-row couple-card-row--groom">
+        <div class="couple-info-col couple-info-col--groom">
+          <span class="couple-role-script">Chú rể</span>
+          <h3 class="couple-name-serif" data-field="groom_name">DUY NAM</h3>
+        </div>
+        <div class="couple-photo-col couple-photo-col--groom">
+          <div class="couple-polaroid-frame couple-polaroid-frame--groom">
+            <div class="polaroid-photo-box">
+              <img src="assets/images/591f1988-dea4-4997-8911-a862e5bd1174.jpg" alt="Chú rể" data-image="groom" class="couple-polaroid-img">
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div class="proclamation-photo-frame">
-        <img src="assets/images/2f85443c-e6a1-44a4-8bd4-43dd576fd24e.jpg" alt="Khoảnh khắc cô dâu và chú rể">
+      <!-- Center Wax Seal Stamp Bridge -->
+      <div class="couple-center-bridge" aria-hidden="true">
+        <div class="couple-wax-seal-wrapper">
+          <img src="assets/images/intro-wax-seal.webp" alt="" class="couple-seal-img">
+        </div>
+        <div class="couple-floating-petal couple-floating-petal--1"></div>
+        <div class="couple-floating-petal couple-floating-petal--2"></div>
       </div>
-      <span class="proclamation-photo-caption">Hà Nội, những ngày vào đông</span>
+
+      <!-- Bride Row: Photo on Left, Text on Right -->
+      <div class="couple-card-row couple-card-row--bride">
+        <div class="couple-photo-col couple-photo-col--bride">
+          <div class="couple-polaroid-frame couple-polaroid-frame--bride">
+            <div class="polaroid-photo-box">
+              <img src="assets/images/45a36f75-193b-41c4-a6ba-9e071ee1870c.jpg" alt="Cô dâu" data-image="bride" class="couple-polaroid-img">
+            </div>
+          </div>
+        </div>
+        <div class="couple-info-col couple-info-col--bride">
+          <span class="couple-role-script">Cô dâu</span>
+          <h3 class="couple-name-serif" data-field="bride_name">VÂN ANH</h3>
+        </div>
+      </div>
+
+      <!-- Bottom Delicate Botanical Divider -->
+      <div class="couple-bottom-divider" aria-hidden="true">
+        <svg width="46" height="12" viewBox="0 0 46 12" fill="none">
+          <path d="M4 6 H16 M30 6 H42" stroke="#7E6C94" stroke-width="0.8" stroke-opacity="0.4"/>
+          <circle cx="23" cy="6" r="2.2" fill="#7E6C94" fill-opacity="0.6"/>
+          <ellipse cx="14" cy="6" rx="2" ry="1" fill="#7E6C94" fill-opacity="0.4"/>
+          <ellipse cx="32" cy="6" rx="2" ry="1" fill="#7E6C94" fill-opacity="0.4"/>
+        </svg>
+      </div>
     </div>
 
-    <!-- Subtle Section Transition Gem -->
-    <div class="scene-transition-gem text-center" aria-hidden="true">
-      <span class="botanical-star-gem">✦</span>
+    <!-- Bottom-Left Watercolor Bloom Accent -->
+    <div class="couple-botanical-corner couple-botanical-corner--bl" aria-hidden="true">
+      <img src="assets/images/hydrangea-cluster.webp" alt="" class="botanical-sway">
     </div>
   </section>
 
@@ -376,41 +415,114 @@
   </section>
 
 
-  <!-- ================= SCENE 05: THE DAY IS COMING (ANTICIPATION & COUNTDOWN) ================= -->
+  <!-- ================= SCENE 05: THE DAY IS COMING (OPEN ENVELOPE STATIONERY COUNTDOWN) ================= -->
   <section class="editorial-scene scene-countdown" id="countdown">
-    <!-- Thin botanical branch gently passing behind countdown numbers -->
-    <div class="countdown-botanical-drift" aria-hidden="true">
-      <img src="assets/images/hydrangea-branch.webp" alt="" class="countdown-drift-img botanical-sway-slow">
+    <!-- Corner Botanical Flourishes -->
+    <div class="countdown-botanical-flourish cd-flourish--tl" aria-hidden="true">
+      <img src="assets/images/hydrangea-cluster.webp" alt="" class="botanical-sway-slow">
+    </div>
+    <div class="countdown-botanical-flourish cd-flourish--tr" aria-hidden="true">
+      <img src="assets/images/intro-env-sprig-tr.png" alt="" class="botanical-sway">
     </div>
 
-    <div class="countdown-open-content text-center">
-      <span class="countdown-eyebrow">THE DAY IS COMING</span>
-      <h2 class="countdown-title">HÔN LỄ SẮP DIỄN RA</h2>
+    <!-- Envelope Container -->
+    <div class="countdown-envelope-container">
+      <!-- Open Top Flap -->
+      <div class="countdown-top-flap" aria-hidden="true">
+        <svg class="countdown-top-flap-svg" viewBox="0 0 340 90" preserveAspectRatio="none">
+          <path d="M0 90 L170 0 L340 90 Z" fill="#F4EDE3" stroke="rgba(126, 107, 148, 0.22)" stroke-width="1.2"/>
+        </svg>
+      </div>
 
-      <!-- Four Balanced Units with Identical Visual Scale -->
-      <div class="pure-countdown-row" data-countdown="2026-01-18T11:00:00+07:00">
-        <div class="countdown-unit-box">
-          <span class="countdown-num" data-unit="days">48</span>
-          <span class="countdown-unit-label">NGÀY</span>
-        </div>
-        <span class="countdown-sep">:</span>
-        <div class="countdown-unit-box">
-          <span class="countdown-num" data-unit="hours">12</span>
-          <span class="countdown-unit-label">GIỜ</span>
-        </div>
-        <span class="countdown-sep">:</span>
-        <div class="countdown-unit-box">
-          <span class="countdown-num" data-unit="minutes">30</span>
-          <span class="countdown-unit-label">PHÚT</span>
-        </div>
-        <span class="countdown-sep">:</span>
-        <div class="countdown-unit-box">
-          <span class="countdown-num" data-unit="seconds">45</span>
-          <span class="countdown-unit-label">GIÂY</span>
+      <!-- Inner Stationery Letter Card -->
+      <div class="countdown-letter-card">
+        <div class="countdown-letter-card-inner">
+          <!-- Pinned Mini Polaroid on Top-Left Corner -->
+          <div class="cd-pinned-polaroid" aria-hidden="true">
+            <div class="cd-mini-polaroid-frame">
+              <img src="assets/images/52ed9a3f-608e-403c-98a9-9cf73747e2a8.jpg" alt="Khoảnh khắc ngọt ngào" data-image="story" class="cd-mini-photo">
+            </div>
+            <img src="assets/images/intro-env-sprig-tr.png" alt="" class="cd-polaroid-sprig">
+          </div>
+
+          <!-- Eyebrow -->
+          <span class="cd-stationery-eyebrow">SAVE THE DATE</span>
+
+          <!-- Calligraphy couple names -->
+          <h3 class="cd-stationery-couple font-script" data-field="couple_names">Minh Anh &amp; Hoàng Nam</h3>
+
+          <!-- Bold Clean Date Numerals -->
+          <div class="cd-stationery-date-row">
+            <span data-field="ceremony_day">26</span>
+            <span class="cd-dot">·</span>
+            <span data-field="ceremony_month_num">04</span>
+            <span class="cd-dot">·</span>
+            <span data-field="ceremony_year_num">2025</span>
+          </div>
+
+          <!-- Divider Rule with center motif -->
+          <div class="cd-stationery-divider" aria-hidden="true">
+            <span class="st-rule"></span>
+            <span class="st-diamond">❖</span>
+            <span class="st-rule"></span>
+          </div>
+
+          <!-- Subtitle -->
+          <p class="cd-stationery-lead">HÔN LỄ SẼ DIỄN RA SAU:</p>
+
+          <!-- 4-digit Pure Countdown Row -->
+          <div class="pure-countdown-row" data-countdown="2026-01-18T11:00:00+07:00">
+            <div class="countdown-unit-box">
+              <span class="countdown-num" data-unit="days">00</span>
+              <span class="countdown-unit-label">NGÀY</span>
+            </div>
+            <span class="countdown-sep">:</span>
+            <div class="countdown-unit-box">
+              <span class="countdown-num" data-unit="hours">00</span>
+              <span class="countdown-unit-label">GIỜ</span>
+            </div>
+            <span class="countdown-sep">:</span>
+            <div class="countdown-unit-box">
+              <span class="countdown-num" data-unit="minutes">00</span>
+              <span class="countdown-unit-label">PHÚT</span>
+            </div>
+            <span class="countdown-sep">:</span>
+            <div class="countdown-unit-box">
+              <span class="countdown-num" data-unit="seconds">00</span>
+              <span class="countdown-unit-label">GIÂY</span>
+            </div>
+          </div>
+
+          <!-- Target Full Date Note -->
+          <p class="countdown-target-note" data-field="ceremony_full_date">Thứ Bảy · 18 tháng 01 năm 2026</p>
         </div>
       </div>
 
-      <p class="countdown-target-note">Thứ Bảy · 18 tháng 01 năm 2026</p>
+      <!-- Front Envelope Pocket overlay with V-cut, stitching and Wax Seal -->
+      <div class="countdown-front-pocket" aria-hidden="true">
+        <svg class="countdown-pocket-svg" viewBox="0 0 340 140" preserveAspectRatio="none">
+          <path d="M0 0 L170 85 L340 0 L340 140 L0 140 Z" fill="#EFE8DC" stroke="rgba(126, 107, 148, 0.22)" stroke-width="1.2"/>
+          <!-- Stitched dashed line -->
+          <path d="M6 6 L170 88 L334 6" fill="none" stroke="rgba(126, 107, 148, 0.35)" stroke-width="1.1" stroke-dasharray="4 3"/>
+        </svg>
+
+        <!-- Centered Wax Seal Stamp -->
+        <div class="countdown-pocket-seal">
+          <img src="assets/images/intro-wax-seal.webp" alt="" class="seal-pocket-img">
+        </div>
+
+        <!-- Corner sprigs on bottom -->
+        <img src="assets/images/intro-env-sprig-bl.png" alt="" class="pocket-corner-sprig pocket-corner-sprig--bl">
+        <img src="assets/images/intro-env-sprig-tr.png" alt="" class="pocket-corner-sprig pocket-corner-sprig--br">
+      </div>
+    </div>
+
+    <!-- Bottom Botanical Flourishes -->
+    <div class="countdown-botanical-flourish cd-flourish--bl" aria-hidden="true">
+      <img src="assets/images/hydrangea-branch.webp" alt="" class="botanical-sway">
+    </div>
+    <div class="countdown-botanical-flourish cd-flourish--br" aria-hidden="true">
+      <img src="assets/images/flower2-bloom.webp" alt="" class="botanical-sway-slow">
     </div>
   </section>
 

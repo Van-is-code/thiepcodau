@@ -695,10 +695,10 @@ const buildDomInjectScript = (editMode) => `
     if (typeof window.__wwUpdateCountdown === 'function') {
       try { window.__wwUpdateCountdown(); } catch (e) {}
     }
-    var dEl = document.getElementById('countdown-days') || document.querySelector('.countdown-days, [data-countdown-days]');
-    var hEl = document.getElementById('countdown-hours') || document.querySelector('.countdown-hours, [data-countdown-hours]');
-    var mEl = document.getElementById('countdown-minutes') || document.querySelector('.countdown-minutes, [data-countdown-minutes]');
-    var sEl = document.getElementById('countdown-seconds') || document.querySelector('.countdown-seconds, [data-countdown-seconds]');
+    var dEl = document.getElementById('countdown-days') || document.querySelector('.countdown-days, [data-countdown-days], [data-unit="days"]');
+    var hEl = document.getElementById('countdown-hours') || document.querySelector('.countdown-hours, [data-countdown-hours], [data-unit="hours"]');
+    var mEl = document.getElementById('countdown-minutes') || document.querySelector('.countdown-minutes, [data-countdown-minutes], [data-unit="minutes"]');
+    var sEl = document.getElementById('countdown-seconds') || document.querySelector('.countdown-seconds, [data-countdown-seconds], [data-unit="seconds"]');
     if (!dEl || !hEl || !mEl || !sEl) return;
 
     var curData = data || window.invitationData || {};
@@ -1025,6 +1025,16 @@ const buildDomInjectScript = (editMode) => `
             mIcons[mi].classList.remove('ww-rotating');
           }
         }
+        var discBtns = document.querySelectorAll('.music-disc-btn, #music-toggle');
+        for (var di = 0; di < discBtns.length; di++) {
+          if (isPlaying) {
+            discBtns[di].classList.add('is-playing');
+            discBtns[di].setAttribute('aria-pressed', 'true');
+          } else {
+            discBtns[di].classList.remove('is-playing');
+            discBtns[di].setAttribute('aria-pressed', 'false');
+          }
+        }
         // Đảm bảo thanh chữ không bao giờ bị quay
         var staticBars = document.querySelectorAll('#BUTTON4, #GROUP43, #BUTTON_TEXT4');
         for (var si = 0; si < staticBars.length; si++) {
@@ -1061,6 +1071,15 @@ const buildDomInjectScript = (editMode) => `
         btn4.__wwControlled = true;
         btn4.style.cursor = 'pointer';
         btn4.addEventListener('click', toggleAudio);
+      }
+
+      var discBtnsW = document.querySelectorAll('#music-toggle, .music-disc-btn');
+      for (var dbi = 0; dbi < discBtnsW.length; dbi++) {
+        var db = discBtnsW[dbi];
+        if (db && !db.__wwControlled) {
+          db.__wwControlled = true;
+          db.addEventListener('click', toggleAudio);
+        }
       }
 
       audioEl.addEventListener('play', updateMusicUi);

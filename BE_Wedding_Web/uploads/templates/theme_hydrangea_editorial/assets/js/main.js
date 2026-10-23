@@ -36,22 +36,30 @@
   function initCountdown() {
     var el = document.querySelector('[data-countdown]');
     if (!el) return;
-    var targetAttr = el.getAttribute('data-countdown');
-    var targetDate = new Date(targetAttr).getTime();
+
+    function getTarget() {
+      var inv = window.invitationData || {};
+      var raw = inv.ceremony_date || inv.reception_date || el.getAttribute('data-countdown');
+      var t = new Date(raw).getTime();
+      return isNaN(t) ? 0 : t;
+    }
+
+    var targetDate = getTarget();
     var daysSpan = el.querySelector('[data-unit="days"]');
     var hoursSpan = el.querySelector('[data-unit="hours"]');
     var minutesSpan = el.querySelector('[data-unit="minutes"]');
     var secondsSpan = el.querySelector('[data-unit="seconds"]');
 
-    // If target date in the past, provide active demo countdown (48 days ahead) so seconds tick vividly
     var now = Date.now();
-    if (isNaN(targetDate) || targetDate <= now) {
+    if (!targetDate || targetDate <= now) {
       targetDate = now + (48 * 24 * 60 * 60 * 1000) + (12 * 60 * 60 * 1000) + (29 * 60 * 1000) + (50 * 1000);
     }
 
     function updateTimer() {
+      var realTarget = getTarget();
+      var activeTarget = (!realTarget || realTarget <= Date.now()) ? targetDate : realTarget;
       var current = Date.now();
-      var diff = targetDate - current;
+      var diff = activeTarget - current;
       if (diff < 0) diff = 0;
 
       var days = Math.floor(diff / (1000 * 60 * 60 * 24));
@@ -492,46 +500,52 @@
   /* ------------------------------------------------------------------ */
   function initMusic() {
     var btn = document.getElementById('music-toggle');
-    var audio = document.getElementById('bg-audio');
+    var audio = document.getElementById('bg-audio') || document.querySelector('audio');
     if (!btn || !audio) return;
 
-    var isPlaying = false;
-
-    function play() {
-      isPlaying = true;
-      btn.classList.add('is-playing');
-      btn.setAttribute('aria-pressed', 'true');
-      var p = audio.play();
-      if (p && p.catch) {
-        p.catch(function (err) {
-          console.log('Audio notice:', err.message || err);
-        });
-      }
-    }
-
-    function pause() {
-      audio.pause();
-      isPlaying = false;
-      btn.classList.remove('is-playing');
-      btn.setAttribute('aria-pressed', 'false');
-    }
-
-    btn.addEventListener('click', function () {
-      if (isPlaying) {
-        pause();
+    function updateUi() {
+      if (!audio.paused) {
+        btn.classList.add('is-playing');
+        btn.setAttribute('aria-pressed', 'true');
       } else {
-        play();
+        btn.classList.remove('is-playing');
+        btn.setAttribute('aria-pressed', 'false');
       }
+    }
+
+    audio.addEventListener('play', updateUi);
+    audio.addEventListener('pause', updateUi);
+    audio.addEventListener('playing', updateUi);
+    audio.addEventListener('ended', updateUi);
+
+    btn.addEventListener('click', function (e) {
+      if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+      if (!audio.paused) {
+        window.__wwUserPaused = true;
+        audio.pause();
+      } else {
+        window.__wwUserPaused = false;
+        var p = audio.play();
+        if (p && p.catch) p.catch(function () {});
+      }
+      updateUi();
     });
 
     document.addEventListener('click', function firstInteraction(e) {
-      if (e.target && e.target.closest('#music-toggle')) {
+      if (e.target && e.target.closest('#music-toggle, .music-disc-btn')) {
         return;
       }
-      if (!isPlaying) {
-        play();
+      if (window.__wwUserPaused) return;
+      if (audio.paused) {
+        var p = audio.play();
+        if (p && p.catch) p.catch(function () {});
       }
     }, { once: true });
+
+    updateUi();
   }
 
   /* ------------------------------------------------------------------ */
