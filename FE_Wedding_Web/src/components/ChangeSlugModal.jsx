@@ -678,3 +678,4 @@ export default function ChangeSlugModal({ isOpen, onClose, invitation, onSlugCha
     </div>
   )
 }
+

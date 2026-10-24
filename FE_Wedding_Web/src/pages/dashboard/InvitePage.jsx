@@ -77,7 +77,7 @@ export default function InvitePage() {
     return `${publicUrl}?to=${encodeURIComponent(guestName.trim())}${timeQuery}`
   }, [publicUrl, guestName, customReceptionTime])
 
-  const activeGuestUrl = createdUrl || guestUrl
+  const activeGuestUrl = createdUrl || (guestLinkVisible ? guestUrl : '')
   const guestNoteText = guestNote.trim()
 
   const copyText = async (text) => {
@@ -385,7 +385,7 @@ export default function InvitePage() {
                   <span>Đã lưu thành công vào Danh Sách Khách Mời!</span>
                 </div>
               )}
-              <div className="gen-url">{activeGuestUrl || 'Link sẽ xuất hiện ở đây sau khi tạo.'}</div>
+              <div className="gen-url">{activeGuestUrl || 'Link rút gọn độc nhất sẽ xuất hiện ở đây sau khi bạn bấm "Tạo Link".'}</div>
               {guestLinkVisible && activeGuestUrl && (
                 <div style={{ marginTop: 14, display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
                   <button
