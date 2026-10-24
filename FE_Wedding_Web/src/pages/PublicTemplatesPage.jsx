@@ -694,7 +694,7 @@ export default function PublicTemplatesPage() {
     })
   }, [templates, search, tab])
 
-  const handleUseTemplate = async (tpl) => {
+  const handleUseTemplate = (tpl) => {
     if (creatingId) return
 
     // If not logged in, prompt user to log in or create account
@@ -703,16 +703,7 @@ export default function PublicTemplatesPage() {
       return
     }
 
-    try {
-      setCreatingId(tpl.id)
-      const res = await api.createDraftInvitation(tpl.id)
-      const invitation = res.data?.data || res.data
-      navigate(`/editor/${invitation.id}`)
-    } catch (err) {
-      alert(err?.response?.data?.message || err.message || 'Không thể tạo thiệp từ mẫu này')
-    } finally {
-      setCreatingId('')
-    }
+    setSelectedTemplateForSlug(tpl)
   }
 
   return (
