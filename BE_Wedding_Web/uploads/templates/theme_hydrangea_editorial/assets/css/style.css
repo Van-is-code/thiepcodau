@@ -38,7 +38,7 @@
 
   /* Typography */
   --font-primary:      'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-  --font-serif-accent: 'Cormorant Garamond', Georgia, serif;
+  --font-serif-accent: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
   --font-script:       'Alex Brush', cursive;
 
   /* Mobile Width */
@@ -317,21 +317,22 @@ button {
 }
 
 .cover-name {
-  font-family: var(--font-serif-accent);
-  font-size: clamp(2.5rem, 10.5vw, 3.2rem);
-  font-weight: 300;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--ink-primary);
-  line-height: 1.05;
+  font-family: var(--font-script), 'Alex Brush', cursive;
+  font-size: clamp(3rem, 11vw, 4rem);
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: capitalize;
+  color: #2D587B;
+  line-height: 1.1;
+  display: block;
 }
 
 .cover-amp {
-  font-family: var(--font-script);
-  font-size: 2.6rem;
-  color: var(--hydrangea-mid);
-  line-height: 0.7;
-  margin: 4px 0;
+  font-family: var(--font-script), 'Alex Brush', cursive;
+  font-size: 2.2rem;
+  color: #7E6BA4;
+  line-height: 0.8;
+  margin: -4px 0 -2px;
   display: block;
 }
 
@@ -548,7 +549,7 @@ button {
 }
 
 .couple-name-serif {
-  font-family: var(--font-serif-accent), 'Cormorant Garamond', Georgia, serif;
+  font-family: var(--font-primary);
   font-size: 16px;
   font-weight: 600;
   letter-spacing: 0.14em;
@@ -1156,11 +1157,11 @@ button {
   z-index: 2;
   background: #FFFFFF;
   background-image: 
-    radial-gradient(circle at 50% 15%, #FFFFFF 0%, #FAF8F5 100%),
-    linear-gradient(to bottom, #FFFFFF 0%, #F6F2EC 100%);
+    radial-gradient(circle at 50% 10%, #FFFFFF 0%, #FAF8F5 100%),
+    linear-gradient(to bottom, #FFFFFF 0%, #F8F4EE 100%);
   border-radius: 4px;
   border: 1px solid rgba(126, 107, 148, 0.22);
-  padding: 14px 14px 58px 14px;
+  padding: 14px 14px 72px 14px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
   text-align: center;
   box-sizing: border-box;
@@ -1169,17 +1170,17 @@ button {
 .countdown-letter-card-inner {
   border: 1px solid rgba(126, 107, 148, 0.18);
   border-radius: 3px;
-  padding: 22px 12px 18px;
+  padding: 26px 14px 22px;
   position: relative;
 }
 
 /* Pinned Mini Polaroid on Top-Left Corner */
 .cd-pinned-polaroid {
   position: absolute;
-  top: -16px;
-  left: -8px;
+  top: -20px;
+  left: -12px;
   z-index: 5;
-  transform: rotate(-6deg);
+  transform: rotate(-7deg);
   transition: transform 0.3s ease;
 }
 
@@ -1189,11 +1190,11 @@ button {
 
 .cd-mini-polaroid-frame {
   background: #FFFFFF;
-  padding: 5px 5px 16px 5px;
+  padding: 4px 4px 14px 4px;
   border-radius: 2px;
-  box-shadow: 0 6px 14px rgba(45, 35, 55, 0.16);
-  width: 58px;
-  height: 68px;
+  box-shadow: 0 4px 12px rgba(45, 35, 55, 0.15);
+  width: 52px;
+  height: 62px;
   box-sizing: border-box;
 }
 
@@ -1207,7 +1208,7 @@ button {
 
 .cd-polaroid-sprig {
   position: absolute;
-  bottom: 4px;
+  bottom: 0px;
   right: -8px;
   width: 22px;
   pointer-events: none;
@@ -1218,69 +1219,66 @@ button {
   font-family: var(--font-primary);
   font-size: 10px;
   font-weight: 700;
-  letter-spacing: 0.28em;
+  letter-spacing: 0.26em;
   text-transform: uppercase;
   color: #2D587B;
   display: block;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
 }
 
 .cd-stationery-couple {
   font-family: var(--font-script), 'Alex Brush', cursive;
-  font-size: clamp(28px, 8vw, 34px);
+  font-size: clamp(28px, 7.5vw, 34px);
   color: #2D587B;
-  margin: 0 0 8px 0;
+  margin: 0 0 6px 0;
   line-height: 1.15;
-  font-weight: normal;
+  font-weight: 400;
+  text-transform: capitalize;
 }
 
 .cd-stationery-date-row {
   font-family: var(--font-primary);
-  font-size: clamp(24px, 7vw, 29px);
+  font-size: clamp(21px, 6vw, 24px);
   font-weight: 700;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.12em;
   color: #26435F;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
 }
 
 .cd-dot {
   color: #7E6C94;
   opacity: 0.55;
+  margin: 0 2px;
 }
 
-.cd-stationery-divider {
+.cd-stationery-dots {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  max-width: 170px;
-  margin: 0 auto 12px;
-}
-
-.cd-stationery-divider .st-rule {
-  flex: 1;
-  height: 1px;
-  background: linear-gradient(to right, transparent, rgba(126, 107, 148, 0.45), transparent);
-}
-
-.cd-stationery-divider .st-diamond {
-  font-size: 9px;
   color: #7E6C94;
-  opacity: 0.75;
+  opacity: 0.55;
+  font-size: 14px;
+  line-height: 1;
+  margin: 0 auto 10px;
+}
+
+.cd-stationery-divider {
+  display: none;
 }
 
 .cd-stationery-lead {
   font-family: var(--font-primary);
   font-size: 9px;
   font-weight: 600;
-  letter-spacing: 0.22em;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
   color: #4A5568;
-  margin: 0 0 14px 0;
+  margin: 0 0 12px 0;
 }
 
 /* Front Envelope Pocket overlay */
@@ -1289,7 +1287,7 @@ button {
   left: 0;
   right: 0;
   bottom: 0;
-  height: 95px;
+  height: 105px;
   z-index: 3;
   pointer-events: none;
 }
@@ -1298,25 +1296,38 @@ button {
   width: 100%;
   height: 100%;
   display: block;
-  filter: drop-shadow(0 -3px 10px rgba(45, 35, 55, 0.08));
+  filter: drop-shadow(0 -4px 10px rgba(45, 35, 55, 0.08));
 }
 
 .countdown-pocket-seal {
   position: absolute;
-  top: 8px;
+  top: 10px;
   left: 50%;
   transform: translateX(-50%);
-  width: 46px;
-  height: 46px;
+  width: 48px;
+  height: 48px;
   z-index: 4;
-  filter: drop-shadow(0 4px 10px rgba(50, 35, 60, 0.24));
+  filter: drop-shadow(0 4px 10px rgba(50, 35, 60, 0.22));
+}
+
+.seal-sprig-bg {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  width: 32px;
+  height: auto;
+  transform: rotate(20deg);
+  opacity: 0.85;
+  pointer-events: none;
 }
 
 .seal-pocket-img {
+  position: relative;
   width: 100%;
   height: 100%;
   object-fit: contain;
   display: block;
+  z-index: 2;
 }
 
 .pocket-corner-sprig {
@@ -1340,20 +1351,20 @@ button {
   display: flex;
   justify-content: center;
   align-items: baseline;
-  gap: 10px;
-  margin-bottom: 12px;
+  gap: 8px;
+  margin-bottom: 4px;
 }
 
 .countdown-unit-box {
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-width: 46px;
+  min-width: 44px;
 }
 
 .countdown-num {
   font-family: var(--font-primary);
-  font-size: clamp(21px, 6vw, 25px);
+  font-size: clamp(20px, 5.5vw, 23px);
   font-weight: 700;
   line-height: 1;
   color: #1E374D;
@@ -1362,27 +1373,26 @@ button {
 
 .countdown-unit-label {
   font-family: var(--font-primary);
-  font-size: 8px;
+  font-size: 9px;
   font-weight: 600;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.16em;
   color: #5D728A;
   margin-top: 4px;
 }
 
 .countdown-sep {
   font-family: var(--font-primary);
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 600;
   color: #94A3B8;
-  opacity: 0.7;
+  opacity: 0.6;
+  line-height: 1;
+  align-self: flex-start;
+  margin-top: 3px;
 }
 
 .countdown-target-note {
-  font-family: var(--font-serif-accent);
-  font-style: italic;
-  font-size: 12.5px;
-  color: #64748B;
-  margin-top: 6px;
+  display: none;
 }
 
 /* ==========================================================================
@@ -1721,7 +1731,7 @@ button {
   position: absolute;
   left: 0;
   top: -4px;
-  font-family: var(--font-serif-accent);
+  font-family: var(--font-primary);
   font-size: 1.8rem;
   color: var(--hydrangea-pale);
   line-height: 1;
@@ -2193,9 +2203,9 @@ button {
 }
 
 .gift-modal-title {
-  font-family: var(--font-serif-accent);
-  font-size: 1.5rem;
-  font-weight: 400;
+  font-family: var(--font-primary);
+  font-size: 1.35rem;
+  font-weight: 600;
   letter-spacing: 0.1em;
   color: var(--ink-primary);
   text-transform: uppercase;
@@ -2369,13 +2379,14 @@ button {
 }
 
 .finale-couple-names {
-  font-family: var(--font-serif-accent);
-  font-size: clamp(1.7rem, 6.5vw, 2.2rem);
-  font-weight: 300;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--ink-primary);
+  font-family: var(--font-script), 'Alex Brush', cursive;
+  font-size: clamp(2.4rem, 8vw, 3.2rem);
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  text-transform: capitalize;
+  color: #2D587B;
   margin-bottom: 4px;
+  line-height: 1.15;
 }
 
 .finale-date {
