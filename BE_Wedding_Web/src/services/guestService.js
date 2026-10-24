@@ -151,13 +151,28 @@ const getPublicByToken = async (token) => {
 		const normalizedCode = clean.toLowerCase();
 		const item = await Guest.findOne({
 			where: clean.length === 36 ? { id: normalizedCode } : sequelize.where(sequelize.cast(sequelize.col('Guest.id'), 'text'), { [Op.like]: `${normalizedCode}%` }),
-			attributes: ['id', 'name', 'description']
+			attributes: ['id', 'name', 'description', 'reception_time'],
+			include: [{
+				model: PrivateInvitation,
+				as: 'privateInvitation',
+				required: false,
+				attributes: ['id', 'url', 'invitationns_id']
+			}]
 		});
 		if (item) {
+			let resolvedTime = item.reception_time || null;
+			if (!resolvedTime && item.privateInvitation?.url) {
+				try {
+					const q = new URLSearchParams(item.privateInvitation.url.slice(item.privateInvitation.url.indexOf('?')));
+					resolvedTime = q.get('time') || null;
+				} catch (_e) {}
+			}
 			return {
 				id: item.id,
 				name: item.name,
 				description: item.description || null,
+				reception_time: resolvedTime,
+				invitation_id: item.privateInvitation?.invitationns_id || null,
 			};
 		}
 	}
@@ -182,13 +197,16 @@ const create = async (payload, actor) => {
 
 	const data = { ...payload };
 	const invitationId = data.invitation_id;
-	const customTime = payload.reception_time ? String(payload.reception_time).trim() : '';
+	const customTime = payload.reception_time ? String(payload.reception_time).trim() : null;
 	delete data.id;
 	delete data.invitation_id;
 	delete data.users_id;
 	delete data.reception_time;
 	data.id = randomUUID();
 	data.users_id = actor.id;
+	if (customTime) {
+		data.reception_time = customTime;
+	}
 
 	// Kiểm quyền với thiệp: trước đây chỉ kiểm "thiệp có tồn tại không", nên bất kỳ
 	// ai cũng nhét được khách lạ vào đám cưới của người khác.
@@ -213,7 +231,7 @@ const create = async (payload, actor) => {
 				id: randomUUID(),
 				guest_id: guest.id,
 				invitationns_id: invitationId,
-				url: `/${invitation.invitation_slug}?to=${encodeURIComponent(guest.name)}&g=${shortCode}${timeQuery}`,
+				url: `/${invitation.invitation_slug}?g=${shortCode}`,
 				created_at: getNowValue(PrivateInvitation.rawAttributes.created_at),
 				updated_at: getNowValue(PrivateInvitation.rawAttributes.updated_at)
 			},

@@ -108,6 +108,12 @@ export default function GuestsPage() {
   }, [invitation])
 
   const getGuestTime = (g) => {
+    if (g?.reception_time) {
+      return {
+        time: g.reception_time,
+        isCustom: true,
+      }
+    }
     const urlStr = g?.privateInvitation?.url || g?.url || ''
     if (urlStr) {
       try {
@@ -123,12 +129,6 @@ export default function GuestsPage() {
           }
         }
       } catch (_e) {}
-    }
-    if (g?.reception_time) {
-      return {
-        time: g.reception_time,
-        isCustom: true,
-      }
     }
     return {
       time: defaultReceptionTime,

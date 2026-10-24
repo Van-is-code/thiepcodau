@@ -3,6 +3,7 @@ import { api } from '../../api'
 import { invitationName, invitationPublicUrl, toArray } from './helpers'
 import InvitationSelector from './InvitationSelector'
 import QuickShareModal from './QuickShareModal'
+import ChangeSlugModal from '../../components/ChangeSlugModal'
 import {
   IconSend,
   IconSparkles,
@@ -25,6 +26,7 @@ export default function InvitePage() {
   const [guestSaveSuccess, setGuestSaveSuccess] = useState(false)
   const [copiedKey, setCopiedKey] = useState('')
   const [sharePayload, setSharePayload] = useState(null)
+  const [showSlugModal, setShowSlugModal] = useState(false)
 
   useEffect(() => {
     const loadInvitations = async () => {
@@ -130,9 +132,6 @@ export default function InvitePage() {
       let finalUrl = ''
       if (gData?.privateInvitation?.url) {
         finalUrl = `${window.location.origin}${gData.privateInvitation.url}`
-        if (customTime && !finalUrl.includes('time=')) {
-          finalUrl += timeQuery
-        }
       } else if (publicUrl) {
         finalUrl = `${publicUrl}?to=${encodeURIComponent(trimmed)}${timeQuery}`
       }
@@ -228,6 +227,17 @@ export default function InvitePage() {
                     <span>Sao chép Link</span>
                   </>
                 )}
+              </button>
+              <button
+                type="button"
+                className="btn-sm ghost"
+                style={{ padding: '8px 14px', display: 'inline-flex', alignItems: 'center', gap: 6 }}
+                onClick={() => setShowSlugModal(true)}
+                disabled={!currentInvitation}
+                title="Thay đổi đường dẫn thiệp cưới theo ý muốn"
+              >
+                <span>🔗</span>
+                <span>Đổi Đường Dẫn (Slug)</span>
               </button>
             </div>
           </div>
@@ -418,6 +428,24 @@ export default function InvitePage() {
         url={sharePayload?.url}
         recipientName={sharePayload?.name}
       />
+
+      {/* Change Slug Modal */}
+      {showSlugModal && currentInvitation && (
+        <ChangeSlugModal
+          isOpen={showSlugModal}
+          onClose={() => setShowSlugModal(false)}
+          invitation={currentInvitation}
+          onSlugChanged={(newSlug) => {
+            setInvitations((prev) =>
+              prev.map((item) =>
+                String(item.id) === String(selectedId)
+                  ? { ...item, invitation_slug: newSlug, slug: newSlug }
+                  : item
+              )
+            )
+          }}
+        />
+      )}
     </div>
   )
 }

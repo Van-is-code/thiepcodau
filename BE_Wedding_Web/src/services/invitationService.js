@@ -809,7 +809,144 @@ const createDraft = async (templateId, userId, opts = {}) => {
 	return withLockState(await findRaw(invitationId));
 };
 
+
+const RESERVED_SLUGS = new Set(['login', 'register', 'dashboard', 'admin', 'api', 'editor', 'templates', 'assets', 'uploads', 'favicon.ico', 'g', 'm', 'k', 'invite', 'invitations']);
+
+const removeDiacriticsVi = (str) => {
+	return String(str || '')
+		.normalize('NFD')
+		.replace(/[\u0300-\u036f]/g, '')
+		.replace(/đ/g, 'd')
+		.replace(/Đ/g, 'D');
+};
+
+const cleanSlug = (str) => {
+	return removeDiacriticsVi(str)
+		.toLowerCase()
+		.trim()
+		.replace(/[^a-z0-9-]/g, '-')
+		.replace(/-+/g, '-')
+		.replace(/^-|-$/g, '')
+		.slice(0, 100);
+};
+
+const checkSlugAvailability = async (invitationId, desiredSlug, actor) => {
+	if (!invitationId) throw new Error('invitationId là bắt buộc');
+	const item = await findRaw(invitationId);
+	await ensureCanAccess(item, actor);
+
+	let slug = cleanSlug(desiredSlug);
+	if (!slug) {
+		slug = generateSlug();
+	}
+
+	// Kiểm tra nếu trùng từ khoá hệ thống
+	const isReserved = RESERVED_SLUGS.has(slug);
+
+	// Kiểm tra trùng trong DB với thiệp khác
+	const existing = await Invitation.findOne({
+		where: {
+			invitation_slug: slug,
+			id: { [Op.ne]: invitationId }
+		},
+		attributes: ['id', 'invitation_slug']
+	});
+
+	if (!existing && !isReserved) {
+		return {
+			available: true,
+			slug,
+			suggested: null,
+			message: 'Đường dẫn hợp lệ và có thể sử dụng!'
+		};
+	}
+
+	// Đã bị trùng -> Tự động tìm đuôi phân biệt khả dụng
+	const currentYear = new Date().getFullYear();
+	const candidates = [
+		`${slug}-${currentYear}`,
+		`${slug}-wedding`,
+		`${slug}-1`,
+		`${slug}-2`,
+		`${slug}-88`
+	];
+
+	let suggested = null;
+	for (const candidate of candidates) {
+		const match = await Invitation.findOne({
+			where: {
+				invitation_slug: candidate,
+				id: { [Op.ne]: invitationId }
+			},
+			attributes: ['id']
+		});
+		if (!match && !RESERVED_SLUGS.has(candidate)) {
+			suggested = candidate;
+			break;
+		}
+	}
+
+	if (!suggested) {
+		suggested = `${slug}-${Math.random().toString(36).slice(2, 6)}`;
+	}
+
+	return {
+		available: false,
+		slug,
+		suggested,
+		message: `Đường dẫn "${slug}" đã có người sử dụng. Hệ thống gợi ý thêm đuôi: "${suggested}"`
+	};
+};
+
+const updateSlug = async (invitationId, desiredSlug, actor) => {
+	const item = await findRaw(invitationId);
+	await ensureCanAccess(item, actor);
+
+	let slug = cleanSlug(desiredSlug);
+	if (!slug) {
+		slug = generateSlug();
+	}
+
+	const check = await checkSlugAvailability(invitationId, slug, actor);
+	let finalSlug = slug;
+	if (!check.available) {
+		// Dùng đuôi gợi ý không trùng
+		finalSlug = check.suggested;
+	}
+
+	item.invitation_slug = finalSlug;
+	if (Invitation.rawAttributes.updated_at) {
+		item.updated_at = getNowValue(Invitation.rawAttributes.updated_at);
+	}
+	await item.save();
+
+	// Cập nhật lại các PrivateInvitation của thiệp này sang slug mới
+	try {
+		const pInvs = await PrivateInvitation.findAll({
+			where: { invitationns_id: invitationId },
+			include: [{ model: Guest, as: 'guest', attributes: ['id'] }]
+		});
+		for (const p of pInvs) {
+			if (p.guest && p.guest.id) {
+				const sc = p.guest.id.replace(/-/g, '').slice(0, 8);
+				p.url = `/${finalSlug}?g=${sc}`;
+				if (PrivateInvitation.rawAttributes.updated_at) {
+					p.updated_at = getNowValue(PrivateInvitation.rawAttributes.updated_at);
+				}
+				await p.save();
+			}
+		}
+	} catch (_e) {}
+
+	return {
+		success: true,
+		invitation_slug: finalSlug,
+		was_adjusted: finalSlug !== slug,
+		original_slug: slug
+	};
+};
+
 module.exports = {
 	getAll, getById, getBySlug, create, update, editorSave, changeTemplate, setMusic, setBank, remove, createDraft,
-	assertOwnMusic
+	assertOwnMusic, checkSlugAvailability, updateSlug, cleanSlug, generateSlug
 };

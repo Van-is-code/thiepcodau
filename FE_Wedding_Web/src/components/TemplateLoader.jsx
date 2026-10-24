@@ -59,10 +59,26 @@ const TemplateLoader = () => {
         const customTimeParam = searchParams.get('time') || searchParams.get('t') || searchParams.get('reception_time') || ''
 
         let resolvedGuestName = ''
-        let resolvedGuestId = guestCodeParam
+        let resolvedGuestId = guestCodeParam || ''
         let resolvedGuestNote = ''
+        let guestDataFetched = null
 
-        if (guestNameParam) {
+        // 1. Nếu có mã ngắn khách mời (?g=...) - ưu tiên hàng đầu cho link rút gọn hiện đại
+        if (guestCodeParam) {
+          try {
+            const guestRes = await api.getPublicGuest(guestCodeParam)
+            const gData = guestRes.data?.data || guestRes.data
+            if (gData && gData.name) {
+              resolvedGuestName = gData.name
+              resolvedGuestId = gData.id || resolvedGuestId
+              if (gData.description) resolvedGuestNote = gData.description
+              guestDataFetched = gData
+            }
+          } catch (_e) {}
+        }
+
+        // 2. Nếu có tên truyền qua query (?to=...)
+        if (!resolvedGuestName && guestNameParam) {
           let tokenSuccess = false
           // Chuỗi token mã hoá từ BE PrivateInvitation cũ có độ dài >= 30
           if (guestNameParam.length >= 30) {
@@ -73,6 +89,7 @@ const TemplateLoader = () => {
                 resolvedGuestName = gData.name
                 resolvedGuestId = gData.id || resolvedGuestId
                 resolvedGuestNote = gData.description || ''
+                guestDataFetched = gData
                 tokenSuccess = true
               }
             } catch (_e) {
@@ -88,20 +105,10 @@ const TemplateLoader = () => {
           }
         }
 
-        if (guestCodeParam && !resolvedGuestName) {
-          try {
-            const guestRes = await api.getPublicGuest(guestCodeParam)
-            const gData = guestRes.data?.data || guestRes.data
-            if (gData && gData.name) {
-              resolvedGuestName = gData.name
-              resolvedGuestId = gData.id || resolvedGuestId
-              if (gData.description) resolvedGuestNote = gData.description
-            }
-          } catch (_e) {}
-        }
-
         let resolvedReceptionTime = invData.reception_time || (invData.extra_data && invData.extra_data.reception_time) || ''
-        if (customTimeParam) {
+        if (guestDataFetched?.reception_time) {
+          resolvedReceptionTime = guestDataFetched.reception_time
+        } else if (customTimeParam) {
           try {
             resolvedReceptionTime = decodeURIComponent(customTimeParam.replace(/\+/g, ' ')).trim()
           } catch (_e) {

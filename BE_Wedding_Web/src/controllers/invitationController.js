@@ -131,4 +131,25 @@ const createDraft = async (req, res) => {
 	}
 };
 
-module.exports = { getAll, getById, getBySlug, create, update, editorSave, changeTemplate, setMusic, setBank, remove, createDraft };
+
+const checkSlug = async (req, res) => {
+	try {
+		const desiredSlug = req.body.slug || req.query.slug || '';
+		const data = await invitationService.checkSlugAvailability(req.params.id, desiredSlug, actorOf(req));
+		return res.status(200).json({ success: true, data });
+	} catch (error) {
+		return res.status(error.status || 500).json({ success: false, message: error.message || 'Kiểm tra đường dẫn thất bại' });
+	}
+};
+
+const setSlug = async (req, res) => {
+	try {
+		const desiredSlug = req.body.slug || '';
+		const data = await invitationService.updateSlug(req.params.id, desiredSlug, actorOf(req));
+		return res.status(200).json({ success: true, message: 'Đã cập nhật đường dẫn thiệp', data });
+	} catch (error) {
+		return res.status(error.status || 500).json({ success: false, message: error.message || 'Cập nhật đường dẫn thất bại' });
+	}
+};
+
+module.exports = { getAll, getById, getBySlug, create, update, editorSave, changeTemplate, setMusic, setBank, remove, createDraft, checkSlug, setSlug };

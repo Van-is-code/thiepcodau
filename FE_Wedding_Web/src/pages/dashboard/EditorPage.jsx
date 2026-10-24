@@ -25,6 +25,7 @@ import {
 import BankQrPanel from '../../components/BankQrPanel'
 import MusicPanel from '../../components/MusicPanel'
 import ChangeTemplateModal from '../../components/ChangeTemplateModal'
+import ChangeSlugModal from '../../components/ChangeSlugModal'
 import ImageCropper from '../../components/ImageCropper'
 import ImagePickerModal from '../../components/ImagePickerModal'
 import EditorTourGuide from '../../components/EditorTourGuide'
@@ -62,6 +63,7 @@ export default function EditorPage() {
   const [bankPanel, setBankPanel] = useState(false)
   const [musicPanel, setMusicPanel] = useState(false)
   const [changeTemplateModalOpen, setChangeTemplateModalOpen] = useState(false)
+  const [changeSlugModalOpen, setChangeSlugModalOpen] = useState(false)
   const [showTour, setShowTour] = useState(() => {
     try {
       return !localStorage.getItem('has_seen_editor_tour_v1')
@@ -605,6 +607,15 @@ export default function EditorPage() {
           </button>
 
           <button
+            style={S.tplBtn}
+            onClick={() => setChangeSlugModalOpen(true)}
+            title="Tuỳ chỉnh link thiệp cưới (slug) không lo trùng lặp"
+          >
+            <span style={{ fontSize: 13 }}>🔗</span>
+            <span>Đổi Link</span>
+          </button>
+
+          <button
             style={{ ...S.saveBtn, opacity: !dirty || locked || saveStatus === 'saving' ? 0.5 : 1 }}
             onClick={handleSave}
             disabled={!dirty || locked || saveStatus === 'saving'}
@@ -653,6 +664,16 @@ export default function EditorPage() {
           invitationId={invitation?.id}
           onSuccess={() => {
             window.location.reload()
+          }}
+        />
+      )}
+      {changeSlugModalOpen && (
+        <ChangeSlugModal
+          isOpen={changeSlugModalOpen}
+          onClose={() => setChangeSlugModalOpen(false)}
+          invitation={invitation}
+          onSlugChanged={(newSlug) => {
+            setInvitation((prev) => ({ ...prev, invitation_slug: newSlug, slug: newSlug }))
           }}
         />
       )}

@@ -25,6 +25,10 @@ const Guest = sequelize.define('Guest', {
     type: DataTypes.TEXT,
     allowNull: true
   },
+  reception_time: {
+    type: DataTypes.STRING(30),
+    allowNull: true
+  },
   created_at: {
     type: DataTypes.DATE,
     allowNull: true,
