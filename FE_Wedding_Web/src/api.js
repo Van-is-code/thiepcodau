@@ -73,7 +73,8 @@ export const api = {
   getInvitationBySlug: (slug) => apiClient.get(`/api/invitations/slug/${slug}`),
   createInvitation: (data) => apiClient.post('/api/invitations', data),
   // Tạo 1 thiệp "nháp" chỉ từ template_id — dùng cho luồng sửa trực tiếp trên thiệp.
-  createDraftInvitation: (templateId) => apiClient.post('/api/invitations/draft', { template_id: templateId }),
+  createDraftInvitation: (templateId, payload = {}) =>
+    apiClient.post('/api/invitations/draft', { template_id: templateId, ...payload }),
   updateInvitation: (id, data) => apiClient.put(`/api/invitations/${id}`, data),
   deleteInvitation: (id) => apiClient.delete(`/api/invitations/${id}`),
   // Lưu 1 lượt từ trình sửa (gộp invitation + groom + bride) — tính 1 lượt sửa.
@@ -87,7 +88,10 @@ export const api = {
   },
   // Tài khoản ngân hàng mừng cưới (1 QR chung) — KHÔNG tính vào hạn mức.
   setInvitationBank: (id, bank) => apiClient.patch(`/api/invitations/${id}/bank`, bank),
-  checkInvitationSlug: (id, slug) => apiClient.post(`/api/invitations/${id}/check-slug`, { slug }),
+  checkInvitationSlug: (id, slug) =>
+    id && id !== 'new'
+      ? apiClient.post(`/api/invitations/${id}/check-slug`, { slug })
+      : apiClient.post('/api/invitations/check-slug', { slug }),
   setInvitationSlug: (id, slug) => apiClient.patch(`/api/invitations/${id}/slug`, { slug }),
 
   // Templates

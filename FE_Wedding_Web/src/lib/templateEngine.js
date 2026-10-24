@@ -1351,6 +1351,9 @@ const buildDomInjectScript = (editMode) => `
             }
             return res.json();
           }).then(function() {
+            if (typeof window.loadWishes === 'function') {
+              try { window.loadWishes(true); } catch(e) {}
+            }
             if (typeof window.showTY === 'function') {
               window.showTY();
             } else {

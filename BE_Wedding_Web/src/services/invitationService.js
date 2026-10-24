@@ -222,7 +222,10 @@ const getBySlug = async (invitationSlug) => {
 				attributes: ['id', 'name_guest', 'messages', 'created_at', 'confirm_attendance']
 			}
 		],
-		order: [[{ model: InvitationImage, as: 'images' }, 'sort_order', 'ASC']]
+		order: [
+			[{ model: InvitationImage, as: 'images' }, 'sort_order', 'ASC'],
+			[{ model: MessageCheckin, as: 'messagesCheckins' }, 'created_at', 'DESC']
+		]
 	});
 
 	if (!item) {
@@ -241,7 +244,8 @@ const getBySlug = async (invitationSlug) => {
 				message: m.messages,
 				attending: m.confirm_attendance,
 				date: m.created_at
-			}));
+			}))
+			.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
 	} else {
 		resObj.wishes = [];
 	}
@@ -772,11 +776,25 @@ const createDraft = async (templateId, userId, opts = {}) => {
 	const receptionDate = new Date(now);
 	receptionDate.setDate(receptionDate.getDate() + 30);
 
+	let initialSlug = generateSlug();
+	let isCustomSlug = false;
+	if (opts.slug || opts.desiredSlug) {
+		const rawSlug = String(opts.slug || opts.desiredSlug).trim();
+		const formatCheck = validateSlugFormat(rawSlug);
+		if (formatCheck.valid) {
+			const collision = await Invitation.findOne({ where: { invitation_slug: formatCheck.slug }, attributes: ['id'] });
+			if (!collision && !RESERVED_SLUGS.has(formatCheck.slug)) {
+				initialSlug = formatCheck.slug;
+				isCustomSlug = true;
+			}
+		}
+	}
+
 	const invitation = await Invitation.create({
 		id: randomUUID(),
 		users_id: userId,
 		template_id: templateId,
-		invitation_slug: generateSlug(),
+		invitation_slug: initialSlug,
 		title_vi: 'Thiệp cưới của chúng tôi',
 		title_en: 'Our Wedding',
 		groom_id: groom.id,
@@ -792,7 +810,7 @@ const createDraft = async (templateId, userId, opts = {}) => {
 		thank_you_message: 'Sự hiện diện của quý khách là niềm hạnh phúc của chúng tôi. Xin chân thành cảm ơn!',
 		extra_notes: '',
 		music_url: getRandomDefaultMusicUrl(),
-		extra_data: {},
+		extra_data: isCustomSlug ? { slug_customized: true } : {},
 		edit_count: 0,
 		edit_deadline: null,
 		created_at: getNowValue(Invitation.rawAttributes.created_at),
@@ -810,7 +828,79 @@ const createDraft = async (templateId, userId, opts = {}) => {
 };
 
 
-const RESERVED_SLUGS = new Set(['login', 'register', 'dashboard', 'admin', 'api', 'editor', 'templates', 'assets', 'uploads', 'favicon.ico', 'g', 'm', 'k', 'invite', 'invitations']);
+const RESERVED_SLUGS = new Set(['login', 'register', 'dashboard', 'admin', 'api', 'editor', 'templates', 'assets', 'uploads', 'favicon.ico', 'g', 'm', 'k', 'invite', 'invitations', 'auth']);
+
+const validateSlugFormat = (rawInput) => {
+	const str = String(rawInput ?? '').trim();
+	if (!str) {
+		return { valid: false, error: 'Đường dẫn không được để trống' };
+	}
+
+	// 1. Kiểm tra ký tự có dấu tiếng Việt
+	const vietnameseAccentsRegex = /[àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ]/i;
+	if (vietnameseAccentsRegex.test(str)) {
+		return {
+			valid: false,
+			error: 'Đường dẫn không được chứa ký tự có dấu tiếng Việt (ví dụ: "đ", "á", "ê"...). Vui lòng nhập không dấu (VD: dangchien-minhhang).'
+		};
+	}
+
+	// 2. Kiểm tra khoảng trắng
+	if (/\s/.test(str)) {
+		return {
+			valid: false,
+			error: 'Đường dẫn không được chứa khoảng trắng. Vui lòng dùng dấu gạch ngang (-) để phân cách.'
+		};
+	}
+
+	// 3. Kiểm tra chữ hoa
+	if (/[A-Z]/.test(str)) {
+		return {
+			valid: false,
+			error: 'Đường dẫn không được chứa chữ hoa. Vui lòng chỉ dùng chữ thường (a-z).'
+		};
+	}
+
+	// 4. Kiểm tra ký tự đặc biệt (chỉ cho phép a-z, 0-9, -)
+	if (/[^a-z0-9-]/.test(str)) {
+		return {
+			valid: false,
+			error: 'Đường dẫn chỉ được chứa chữ thường không dấu (a-z), số (0-9) và dấu gạch ngang (-). Không dùng ký tự đặc biệt (@, _, ., /,...).'
+		};
+	}
+
+	// 5. Độ dài
+	if (str.length < 3) {
+		return {
+			valid: false,
+			error: 'Đường dẫn phải có ít nhất 3 ký tự.'
+		};
+	}
+	if (str.length > 60) {
+		return {
+			valid: false,
+			error: 'Đường dẫn không được vượt quá 60 ký tự.'
+		};
+	}
+
+	// 6. Gạch ngang đầu hoặc cuối
+	if (str.startsWith('-') || str.endsWith('-')) {
+		return {
+			valid: false,
+			error: 'Đường dẫn không được bắt đầu hoặc kết thúc bằng dấu gạch ngang (-).'
+		};
+	}
+
+	// 7. Gạch ngang liên tiếp --
+	if (/--+/.test(str)) {
+		return {
+			valid: false,
+			error: 'Đường dẫn không được chứa các dấu gạch ngang liền nhau (--).'
+		};
+	}
+
+	return { valid: true, error: null, slug: str };
+};
 
 const removeDiacriticsVi = (str) => {
 	return String(str || '')
@@ -831,30 +921,42 @@ const cleanSlug = (str) => {
 };
 
 const checkSlugAvailability = async (invitationId, desiredSlug, actor) => {
-	if (!invitationId) throw new Error('invitationId là bắt buộc');
-	const item = await findRaw(invitationId);
-	await ensureCanAccess(item, actor);
-
-	let slug = cleanSlug(desiredSlug);
-	if (!slug) {
-		slug = generateSlug();
+	if (invitationId && invitationId !== 'new') {
+		const item = await findRaw(invitationId);
+		await ensureCanAccess(item, actor);
 	}
+
+	// Kiểm tra định dạng trước
+	const formatCheck = validateSlugFormat(desiredSlug);
+	if (!formatCheck.valid) {
+		return {
+			available: false,
+			format_error: true,
+			slug: desiredSlug,
+			suggested: null,
+			message: formatCheck.error
+		};
+	}
+
+	const slug = formatCheck.slug;
 
 	// Kiểm tra nếu trùng từ khoá hệ thống
 	const isReserved = RESERVED_SLUGS.has(slug);
 
 	// Kiểm tra trùng trong DB với thiệp khác
+	const whereCond = { invitation_slug: slug };
+	if (invitationId && invitationId !== 'new') {
+		whereCond.id = { [Op.ne]: invitationId };
+	}
 	const existing = await Invitation.findOne({
-		where: {
-			invitation_slug: slug,
-			id: { [Op.ne]: invitationId }
-		},
+		where: whereCond,
 		attributes: ['id', 'invitation_slug']
 	});
 
 	if (!existing && !isReserved) {
 		return {
 			available: true,
+			format_error: false,
 			slug,
 			suggested: null,
 			message: 'Đường dẫn hợp lệ và có thể sử dụng!'
@@ -873,11 +975,12 @@ const checkSlugAvailability = async (invitationId, desiredSlug, actor) => {
 
 	let suggested = null;
 	for (const candidate of candidates) {
+		const candidateWhere = { invitation_slug: candidate };
+		if (invitationId && invitationId !== 'new') {
+			candidateWhere.id = { [Op.ne]: invitationId };
+		}
 		const match = await Invitation.findOne({
-			where: {
-				invitation_slug: candidate,
-				id: { [Op.ne]: invitationId }
-			},
+			where: candidateWhere,
 			attributes: ['id']
 		});
 		if (!match && !RESERVED_SLUGS.has(candidate)) {
@@ -892,6 +995,7 @@ const checkSlugAvailability = async (invitationId, desiredSlug, actor) => {
 
 	return {
 		available: false,
+		format_error: false,
 		slug,
 		suggested,
 		message: `Đường dẫn "${slug}" đã có người sử dụng. Hệ thống gợi ý thêm đuôi: "${suggested}"`
@@ -902,19 +1006,41 @@ const updateSlug = async (invitationId, desiredSlug, actor) => {
 	const item = await findRaw(invitationId);
 	await ensureCanAccess(item, actor);
 
-	let slug = cleanSlug(desiredSlug);
-	if (!slug) {
-		slug = generateSlug();
+	// Tuỳ chỉnh chỉ được 1 lần duy nhất ngay từ đầu (trừ admin)
+	const isCustomized = Boolean(item.extra_data?.slug_customized);
+	if (isCustomized && !isAdmin(actor)) {
+		const err = new Error('Đường dẫn thiệp chỉ được thiết lập 1 lần duy nhất và đã được cố định vĩnh viễn.');
+		err.status = 400;
+		throw err;
 	}
 
+	const formatCheck = validateSlugFormat(desiredSlug);
+	if (!formatCheck.valid) {
+		const err = new Error(formatCheck.error);
+		err.status = 400;
+		throw err;
+	}
+
+	const slug = formatCheck.slug;
 	const check = await checkSlugAvailability(invitationId, slug, actor);
 	let finalSlug = slug;
 	if (!check.available) {
-		// Dùng đuôi gợi ý không trùng
-		finalSlug = check.suggested;
+		if (check.suggested) {
+			finalSlug = check.suggested;
+		} else {
+			const err = new Error(check.message);
+			err.status = 400;
+			throw err;
+		}
 	}
 
 	item.invitation_slug = finalSlug;
+	const currentExtra = (typeof item.extra_data === 'object' && item.extra_data !== null) ? item.extra_data : {};
+	item.extra_data = {
+		...currentExtra,
+		slug_customized: true
+	};
+
 	if (Invitation.rawAttributes.updated_at) {
 		item.updated_at = getNowValue(Invitation.rawAttributes.updated_at);
 	}
@@ -941,6 +1067,7 @@ const updateSlug = async (invitationId, desiredSlug, actor) => {
 	return {
 		success: true,
 		invitation_slug: finalSlug,
+		slug_customized: true,
 		was_adjusted: finalSlug !== slug,
 		original_slug: slug
 	};
@@ -948,5 +1075,5 @@ const updateSlug = async (invitationId, desiredSlug, actor) => {
 
 module.exports = {
 	getAll, getById, getBySlug, create, update, editorSave, changeTemplate, setMusic, setBank, remove, createDraft,
-	assertOwnMusic, checkSlugAvailability, updateSlug, cleanSlug, generateSlug
+	assertOwnMusic, checkSlugAvailability, updateSlug, cleanSlug, generateSlug, validateSlugFormat
 };

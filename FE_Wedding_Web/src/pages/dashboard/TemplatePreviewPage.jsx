@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { api } from '../../api'
 import { buildIframeDocument, resolveTemplateUrl } from '../../lib/templateEngine'
+import ChangeSlugModal from '../../components/ChangeSlugModal'
 import {
   IconChevronLeft,
   IconEye,
@@ -17,6 +18,7 @@ export default function TemplatePreviewPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [creating, setCreating] = useState(false)
+  const [showSlugModal, setShowSlugModal] = useState(false)
 
   useEffect(() => {
     let cancelled = false
@@ -82,7 +84,7 @@ export default function TemplatePreviewPage() {
     }
   }
 
-  const handleUseTemplate = async () => {
+  const handleUseTemplate = () => {
     const token = localStorage.getItem('token')
     if (!token) {
       if (window.confirm('Để chọn và chỉnh sửa mẫu thiệp này, bạn cần đăng nhập tài khoản. Bạn có muốn chuyển đến trang đăng nhập ngay không?')) {
@@ -90,16 +92,21 @@ export default function TemplatePreviewPage() {
       }
       return
     }
+    setShowSlugModal(true)
+  }
+
+  const handleConfirmCreate = async (slug) => {
     if (creating) return
     try {
       setCreating(true)
-      const res = await api.createDraftInvitation(templateId)
+      const res = await api.createDraftInvitation(templateId, { slug })
       const invitation = res.data?.data || res.data
       navigate(`/editor/${invitation.id}`)
     } catch (err) {
       alert(err?.response?.data?.message || err.message || 'Không tạo được thiệp')
     } finally {
       setCreating(false)
+      setShowSlugModal(false)
     }
   }
 
@@ -160,107 +167,15 @@ export default function TemplatePreviewPage() {
         sandbox="allow-scripts allow-same-origin allow-popups"
         title="Xem trước mẫu thiệp cưới"
       />
+
+      {showSlugModal && (
+        <ChangeSlugModal
+          isOpen={showSlugModal}
+          onClose={() => setShowSlugModal(false)}
+          mode="create"
+          onConfirmCreate={handleConfirmCreate}
+        />
+      )}
     </div>
   )
-}
-
-const S = {
-  wrap: {
-    display: 'flex',
-    flexDirection: 'column',
-    height: '100vh',
-    width: '100%',
-    backgroundColor: '#1f1917',
-    fontFamily: "'Plus Jakarta Sans', sans-serif",
-  },
-  topbar: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: 16,
-    padding: '12px 20px',
-    background: 'rgba(31, 25, 23, 0.95)',
-    backdropFilter: 'blur(12px)',
-    borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-    color: '#fff',
-    flexShrink: 0,
-    zIndex: 20,
-  },
-  backBtn: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    gap: 6,
-    background: 'rgba(255, 255, 255, 0.08)',
-    border: '1px solid rgba(255, 255, 255, 0.18)',
-    color: '#fff',
-    borderRadius: 9999,
-    padding: '8px 16px',
-    cursor: 'pointer',
-    fontSize: 13,
-    fontWeight: 500,
-    transition: 'all 0.2s ease',
-  },
-  titleWrap: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: 8,
-    overflow: 'hidden',
-  },
-  title: {
-    fontSize: 14.5,
-    fontWeight: 600,
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    whiteSpace: 'nowrap',
-  },
-  createBtn: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    gap: 8,
-    background: 'linear-gradient(135deg, #e58d6f 0%, #c96547 100%)',
-    border: 'none',
-    color: '#fff',
-    borderRadius: 9999,
-    padding: '9px 20px',
-    cursor: 'pointer',
-    fontSize: 13,
-    fontWeight: 600,
-    boxShadow: '0 4px 14px rgba(217, 119, 87, 0.35)',
-    transition: 'all 0.2s ease',
-  },
-  iframe: {
-    flex: 1,
-    width: '100%',
-    border: 'none',
-    background: '#fff',
-  },
-  center: {
-    width: '100%',
-    height: '100vh',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    background: '#fcfaf7',
-    fontFamily: "'Plus Jakarta Sans', sans-serif",
-    padding: 20,
-  },
-  loadingCard: {
-    background: '#fff',
-    border: '1px solid #ede5db',
-    borderRadius: 20,
-    padding: '36px 32px',
-    textAlign: 'center',
-    boxShadow: '0 10px 30px rgba(31, 25, 23, 0.08)',
-    maxWidth: 420,
-  },
-  btnBack: {
-    padding: '10px 22px',
-    background: '#d97757',
-    color: '#fff',
-    border: 'none',
-    borderRadius: 9999,
-    cursor: 'pointer',
-    fontSize: 13,
-    fontWeight: 600,
-  },
 }

@@ -347,7 +347,18 @@
       });
     }
 
-    function loadWishes() {
+    
+    function sortWishesDesc(arr) {
+      if (!Array.isArray(arr)) return [];
+      return arr.slice().sort(function (a, b) {
+        var tA = a.created_at || a.date || (a.time === 'Vừa xong' ? Date.now() : a.time);
+        var tB = b.created_at || b.date || (b.time === 'Vừa xong' ? Date.now() : b.time);
+        return new Date(tB || 0) - new Date(tA || 0);
+      });
+    }
+
+    function loadWishes(silent) {
+      window.loadWishes = loadWishes;
       // 1. Initial display from invitationData preloaded wishes or localStorage
       if (Array.isArray(inv.wishes) && inv.wishes.length > 0) {
         renderEntries(inv.wishes);
@@ -370,7 +381,7 @@
           .then(function (r) { return r.json(); })
           .then(function (json) {
             if (json && json.success && Array.isArray(json.data) && json.data.length > 0) {
-              renderEntries(json.data);
+              renderEntries(sortWishesDesc(json.data));
               try { localStorage.setItem(storageKey, JSON.stringify(json.data)); } catch (e) {}
             }
           })
@@ -426,6 +437,7 @@
           .then(function (r) { return r.json(); })
           .then(function (res) {
             console.log('Checkin saved to database:', res);
+            loadWishes(true); // reload live
           })
           .catch(function (err) {
             console.warn('Could not post checkin:', err);

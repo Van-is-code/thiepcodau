@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { api } from '../../api'
 import { toArray } from './helpers'
+import ChangeSlugModal from '../../components/ChangeSlugModal'
 import {
   IconPalette,
   IconSparkles,
@@ -45,17 +46,25 @@ export default function TemplatesPage() {
 
   const cards = useMemo(() => (templates.length ? templates : FALLBACK_TEMPLATES), [templates])
 
-  const handleCreate = async (tpl) => {
-    if (creatingId) return
+  const [selectedTemplateForSlug, setSelectedTemplateForSlug] = useState(null)
+
+  const handleStartCreate = (tpl) => {
+    setSelectedTemplateForSlug(tpl)
+  }
+
+  const handleConfirmCreateWithSlug = async (slug) => {
+    const tpl = selectedTemplateForSlug
+    if (!tpl) return
     try {
       setCreatingId(tpl.id)
-      const res = await api.createDraftInvitation(tpl.id)
+      const res = await api.createDraftInvitation(tpl.id, { slug })
       const invitation = res.data?.data || res.data
       navigate(`/editor/${invitation.id}`)
     } catch (err) {
       alert(err?.response?.data?.message || err.message || 'Không tạo được thiệp')
     } finally {
       setCreatingId('')
+      setSelectedTemplateForSlug(null)
     }
   }
 
@@ -118,7 +127,7 @@ export default function TemplatesPage() {
                   <button
                     className="btn-sm rose"
                     disabled={creatingId === tpl.id}
-                    onClick={() => handleCreate(tpl)}
+                    onClick={() => handleStartCreate(tpl)}
                   >
                     {creatingId === tpl.id ? (
                       <span>Đang tạo...</span>
@@ -134,6 +143,15 @@ export default function TemplatesPage() {
             </article>
           ))}
         </div>
+      )}
+
+      {selectedTemplateForSlug && (
+        <ChangeSlugModal
+          isOpen={!!selectedTemplateForSlug}
+          onClose={() => setSelectedTemplateForSlug(null)}
+          mode="create"
+          onConfirmCreate={handleConfirmCreateWithSlug}
+        />
       )}
     </div>
   )

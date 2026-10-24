@@ -124,7 +124,11 @@ const remove = async (req, res) => {
 
 const createDraft = async (req, res) => {
 	try {
-		const data = await invitationService.createDraft(req.body.template_id, req.user?.id);
+		const actor = actorOf(req);
+		const data = await invitationService.createDraft(req.body.template_id, req.user?.id, {
+			actor,
+			slug: req.body.slug || req.body.invitation_slug
+		});
 		return res.status(201).json({ success: true, message: 'Create draft invitation successfully', data });
 	} catch (error) {
 		return res.status(error.status || 500).json({ success: false, message: error.message || 'Failed to create draft invitation' });
@@ -135,7 +139,8 @@ const createDraft = async (req, res) => {
 const checkSlug = async (req, res) => {
 	try {
 		const desiredSlug = req.body.slug || req.query.slug || '';
-		const data = await invitationService.checkSlugAvailability(req.params.id, desiredSlug, actorOf(req));
+		const targetId = req.params.id || req.body.invitation_id || null;
+		const data = await invitationService.checkSlugAvailability(targetId, desiredSlug, actorOf(req));
 		return res.status(200).json({ success: true, data });
 	} catch (error) {
 		return res.status(error.status || 500).json({ success: false, message: error.message || 'Kiểm tra đường dẫn thất bại' });

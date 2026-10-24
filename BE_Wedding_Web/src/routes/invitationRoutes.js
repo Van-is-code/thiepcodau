@@ -12,6 +12,7 @@ router.use(authenticate);
 
 router.get('/', invitationController.getAll);
 router.post('/draft', invitationController.createDraft);
+router.post('/check-slug', invitationController.checkSlug);
 router.get('/:id', invitationController.getById);
 router.post('/', invitationController.create);
 // Trình sửa: lưu 1 lượt (gộp invitation + groom + bride). Tính vào hạn mức "5 lượt".

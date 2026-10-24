@@ -182,62 +182,14 @@ export default function InvitePage() {
               <span>{publicUrl || 'Chưa có link thiệp'}</span>
               <button
                 type="button"
-                className={`btn-copy${copiedKey === 'public' ? ' ok' : ''}`}
-                onClick={() => handleCopy(publicUrl, 'public')}
-                disabled={!publicUrl}
-              >
-                {copiedKey === 'public' ? (
-                  <>
-                    <IconCheck size={13} />
-                    <span>Đã copy</span>
-                  </>
-                ) : (
-                  <>
-                    <IconCopy size={13} />
-                    <span>Copy</span>
-                  </>
-                )}
-              </button>
-            </div>
-            <div style={{ marginTop: 14, display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
-              <button
-                type="button"
-                className="btn-quick-invite"
-                onClick={() => openShare(publicUrl, displayName)}
-                disabled={!publicUrl}
-              >
-                <IconSend size={15} />
-                <span>Mời Nhanh</span>
-              </button>
-              <button
-                type="button"
                 className="btn-sm ghost"
-                style={{ padding: '8px 14px' }}
-                onClick={() => handleCopy(publicUrl, 'public-link')}
-                disabled={!publicUrl}
-              >
-                {copiedKey === 'public-link' ? (
-                  <>
-                    <IconCheck size={14} color="#4f7e65" />
-                    <span style={{ color: '#4f7e65' }}>Đã copy</span>
-                  </>
-                ) : (
-                  <>
-                    <IconCopy size={14} />
-                    <span>Sao chép Link</span>
-                  </>
-                )}
-              </button>
-              <button
-                type="button"
-                className="btn-sm ghost"
-                style={{ padding: '8px 14px', display: 'inline-flex', alignItems: 'center', gap: 6 }}
+                style={{ padding: '8px 14px', display: 'inline-flex', alignItems: 'center', gap: 6, opacity: currentInvitation?.extra_data?.slug_customized ? 0.85 : 1 }}
                 onClick={() => setShowSlugModal(true)}
                 disabled={!currentInvitation}
-                title="Thay đổi đường dẫn thiệp cưới theo ý muốn"
+                title={currentInvitation?.extra_data?.slug_customized ? "Đường dẫn thiệp đã được xác nhận và cố định (1 lần duy nhất)" : "Thiết lập đường dẫn thiệp (chỉ được đặt 1 lần duy nhất)"}
               >
-                <span>🔗</span>
-                <span>Đổi Đường Dẫn (Slug)</span>
+                <span>{currentInvitation?.extra_data?.slug_customized ? '🔒' : '🔗'}</span>
+                <span>{currentInvitation?.extra_data?.slug_customized ? 'Đường Dẫn Đã Cố Định' : 'Đổi Đường Dẫn (1 Lần)'}</span>
               </button>
             </div>
           </div>

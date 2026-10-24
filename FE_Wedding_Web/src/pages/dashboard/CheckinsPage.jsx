@@ -62,7 +62,9 @@ export default function CheckinsPage() {
     try {
       if (!silent) setLoading(true)
       const res = await api.getCheckins(selectedId)
-      setCheckins(toArray(res.data))
+      const list = toArray(res.data)
+      list.sort((a, b) => new Date(b.created_at || b.date || 0) - new Date(a.created_at || a.date || 0))
+      setCheckins(list)
     } catch (err) {
       if (!silent) {
         setError(err?.response?.data?.message || err.message || 'Không tải được danh sách phản hồi')
@@ -82,7 +84,7 @@ export default function CheckinsPage() {
       if (document.visibilityState === 'visible') {
         loadCheckins(true)
       }
-    }, 5000)
+    }, 3000)
 
     return () => clearInterval(intervalId)
   }, [selectedId])

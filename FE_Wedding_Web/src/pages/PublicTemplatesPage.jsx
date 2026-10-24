@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { api } from '../api'
+import ChangeSlugModal from '../components/ChangeSlugModal'
 import {
   IconEye,
   IconSparkles,
@@ -1006,6 +1007,14 @@ export default function PublicTemplatesPage() {
           <p>© 2026 Thiệp Cưới Điện Tử — Nền tảng thiết kế thiệp cưới online cao cấp.</p>
         </footer>
       </div>
+          {selectedTemplateForSlug && (
+        <ChangeSlugModal
+          isOpen={!!selectedTemplateForSlug}
+          onClose={() => setSelectedTemplateForSlug(null)}
+          mode="create"
+          onConfirmCreate={handleConfirmCreateWithSlug}
+        />
+      )}
     </>
   )
 }

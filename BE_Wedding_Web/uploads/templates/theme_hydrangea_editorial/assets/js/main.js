@@ -483,7 +483,18 @@
       });
     }
 
-    function loadWishes() {
+    
+    function sortWishesDesc(arr) {
+      if (!Array.isArray(arr)) return [];
+      return arr.slice().sort(function (a, b) {
+        var tA = a.created_at || a.date || (a.time === 'Vừa xong' ? Date.now() : a.time);
+        var tB = b.created_at || b.date || (b.time === 'Vừa xong' ? Date.now() : b.time);
+        return new Date(tB || 0) - new Date(tA || 0);
+      });
+    }
+
+    function loadWishes(silent) {
+      window.loadWishes = loadWishes;
       var currentInv = window.invitationData || inv || {};
       var curId = invId || currentInv.id || currentInv.invitation_id || '';
       var curBase = apiBase || currentInv.api_base || (typeof window !== 'undefined' ? window.location.origin : '');
@@ -494,10 +505,10 @@
         if (local) {
           var parsed = JSON.parse(local);
           if (Array.isArray(parsed) && parsed.length > 0) {
-            renderEntries(parsed);
+            renderEntries(sortWishesDesc(parsed));
           }
         } else if (Array.isArray(currentInv.wishes) && currentInv.wishes.length > 0) {
-          renderEntries(currentInv.wishes);
+          renderEntries(sortWishesDesc(currentInv.wishes));
         }
       } catch (e) {}
 
@@ -508,7 +519,7 @@
           .then(function (json) {
             if (json && json.success && Array.isArray(json.data)) {
               if (json.data.length > 0) {
-                renderEntries(json.data);
+                renderEntries(sortWishesDesc(json.data));
                 try { localStorage.setItem(storageKey, JSON.stringify(json.data)); } catch (e) {}
               } else {
                 renderEntries([]);
@@ -569,6 +580,7 @@
           .then(function (r) { return r.json(); })
           .then(function (res) {
             console.log('Checkin saved to database:', res);
+            loadWishes(true); // reload live
           })
           .catch(function (err) {
             console.warn('Could not post checkin:', err);
@@ -622,6 +634,11 @@
     }
 
     loadWishes();
+    setInterval(function () {
+      if (document.visibilityState === 'visible') {
+        loadWishes(true);
+      }
+    }, 3500);
 
     // Listen for data updates (editor live update or iframe message)
     window.addEventListener('message', function (ev) {
