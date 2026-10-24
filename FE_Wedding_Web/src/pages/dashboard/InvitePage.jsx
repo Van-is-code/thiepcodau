@@ -9,6 +9,7 @@ import {
   IconUsers,
   IconCopy,
   IconCheck,
+  IconClock,
 } from '../../components/Icons'
 
 export default function InvitePage() {
