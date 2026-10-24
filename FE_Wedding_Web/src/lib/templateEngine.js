@@ -1930,7 +1930,13 @@ export const buildIframeDocument = (htmlContent, invitation, options = {}) => {
     window.__weddingWebImageRules = ${safeJsonForScript(options.imageSlotRules ?? null)};
   </script>`
 
-  let output = htmlContent
+  let output = htmlContent || ''
+
+  // Cache-busting: Đảm bảo các file CSS và JS trong mẫu luôn mang query param mới
+  // để trình duyệt và proxy không bao giờ dùng lại cache cũ khi có cập nhật.
+  const cacheBustTime = Date.now()
+  output = output.replace(/(href=["']assets\/css\/[^"']+\.css)(?:\?[^"']*)?(["'])/g, `$1?v=${cacheBustTime}$2`)
+  output = output.replace(/(src=["']assets\/js\/[^"']+\.js)(?:\?[^"']*)?(["'])/g, `$1?v=${cacheBustTime}$2`)
 
   // Thứ tự trong <head> có chủ đích: preconnect/preload đứng TRƯỚC để trình duyệt
   // khởi động kết nối và tải ảnh bìa ngay từ lúc quét HTML, không phải chờ script.

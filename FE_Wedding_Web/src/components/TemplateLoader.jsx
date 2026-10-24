@@ -158,7 +158,8 @@ const TemplateLoader = () => {
   }, [invitation])
 
   const loadTemplateHTML = async (templateUrl) => {
-    const response = await fetch(templateUrl, { cache: 'default' })
+    const bustUrl = `${templateUrl}${templateUrl.includes('?') ? '&' : '?'}v=${Date.now()}`
+    const response = await fetch(bustUrl, { cache: 'no-store' })
     if (!response.ok) {
       throw new Error(`Failed to load template: ${templateUrl}`)
     }

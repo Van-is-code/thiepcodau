@@ -136,7 +136,8 @@ export default function EditorPage() {
         const templateUrl = resolveTemplateUrl(editEntryPath || invData.template?.html_path)
         if (!templateUrl) throw new Error('Thiệp này chưa được gán mẫu giao diện')
 
-        const htmlRes = await fetch(templateUrl, { cache: 'default' })
+        const bustUrl = `${templateUrl}${templateUrl.includes('?') ? '&' : '?'}v=${Date.now()}`
+        const htmlRes = await fetch(bustUrl, { cache: 'no-store' })
         if (!htmlRes.ok) throw new Error(`Không tải được mẫu: ${templateUrl}`)
         const html = await htmlRes.text()
 
@@ -342,7 +343,8 @@ export default function EditorPage() {
             ? baseUrl
             : (typeof window !== 'undefined' ? new URL(baseUrl, window.location.origin).href : baseUrl)
           const nextUrl = new URL(event.data.file, fullBase).href
-          fetch(nextUrl, { cache: 'default' })
+          const bustNextUrl = `${nextUrl}${nextUrl.includes('?') ? '&' : '?'}v=${Date.now()}`
+          fetch(bustNextUrl, { cache: 'no-store' })
             .then((r) => r.text())
             .then((html) => {
               templateHtmlRef.current = html

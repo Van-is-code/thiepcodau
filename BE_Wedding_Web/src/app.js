@@ -146,7 +146,13 @@ app.use('/templates', (req, res, next) => {
 app.use('/templates', express.static(path.join(process.cwd(), 'uploads', 'templates'), {
   etag: true,
   setHeaders: function (res, filePath) {
-    res.setHeader('Cache-Control', /\.(html|js|css)$/i.test(filePath) ? 'no-cache' : 'public, max-age=86400');
+    if (/\.(html|js|css)$/i.test(filePath)) {
+      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+      res.setHeader('Pragma', 'no-cache');
+      res.setHeader('Expires', '0');
+    } else {
+      res.setHeader('Cache-Control', 'public, max-age=86400');
+    }
   },
 }));
 app.use('/api-docs-assets', express.static(path.join(__dirname, 'public')));
