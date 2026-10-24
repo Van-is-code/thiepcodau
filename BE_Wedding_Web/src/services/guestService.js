@@ -182,9 +182,11 @@ const create = async (payload, actor) => {
 
 	const data = { ...payload };
 	const invitationId = data.invitation_id;
+	const customTime = payload.reception_time ? String(payload.reception_time).trim() : '';
 	delete data.id;
 	delete data.invitation_id;
 	delete data.users_id;
+	delete data.reception_time;
 	data.id = randomUUID();
 	data.users_id = actor.id;
 
@@ -204,13 +206,14 @@ const create = async (payload, actor) => {
 	return sequelize.transaction(async (transaction) => {
 		const guest = await Guest.create(data, { transaction });
 		const shortCode = guest.id.replace(/-/g, '').slice(0, 8);
+		const timeQuery = customTime ? `&time=${encodeURIComponent(customTime)}` : '';
 
 		const pInv = await PrivateInvitation.create(
 			{
 				id: randomUUID(),
 				guest_id: guest.id,
 				invitationns_id: invitationId,
-				url: `/${invitation.invitation_slug}?to=${encodeURIComponent(guest.name)}&g=${shortCode}`,
+				url: `/${invitation.invitation_slug}?to=${encodeURIComponent(guest.name)}&g=${shortCode}${timeQuery}`,
 				created_at: getNowValue(PrivateInvitation.rawAttributes.created_at),
 				updated_at: getNowValue(PrivateInvitation.rawAttributes.updated_at)
 			},

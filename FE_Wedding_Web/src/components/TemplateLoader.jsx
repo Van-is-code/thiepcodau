@@ -56,6 +56,7 @@ const TemplateLoader = () => {
         const searchParams = new URLSearchParams(currentSearch)
         const guestNameParam = searchParams.get('to') || searchParams.get('guest') || searchParams.get('guest_name') || searchParams.get('gname') || ''
         const guestCodeParam = searchParams.get('g') || searchParams.get('gid') || searchParams.get('guest_id') || ''
+        const customTimeParam = searchParams.get('time') || searchParams.get('t') || searchParams.get('reception_time') || ''
 
         let resolvedGuestName = ''
         let resolvedGuestId = guestCodeParam
@@ -99,11 +100,21 @@ const TemplateLoader = () => {
           } catch (_e) {}
         }
 
+        let resolvedReceptionTime = invData.reception_time || (invData.extra_data && invData.extra_data.reception_time) || ''
+        if (customTimeParam) {
+          try {
+            resolvedReceptionTime = decodeURIComponent(customTimeParam.replace(/\+/g, ' ')).trim()
+          } catch (_e) {
+            resolvedReceptionTime = customTimeParam.replace(/\+/g, ' ').trim()
+          }
+        }
+
         const enrichedInvitation = {
           ...invData,
           guest_name: resolvedGuestName || invData.guest_name || '',
           guest_id: resolvedGuestId || invData.guest_id || '',
           guest_note: resolvedGuestNote || invData.guest_note || '',
+          reception_time: resolvedReceptionTime || invData.reception_time || '11:00',
         }
 
         setInvitation(enrichedInvitation)

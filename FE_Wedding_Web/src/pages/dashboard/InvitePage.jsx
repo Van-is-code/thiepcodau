@@ -17,6 +17,7 @@ export default function InvitePage() {
   const [selectedId, setSelectedId] = useState('')
   const [guestName, setGuestName] = useState('')
   const [guestNote, setGuestNote] = useState('')
+  const [customReceptionTime, setCustomReceptionTime] = useState('')
   const [guestLinkVisible, setGuestLinkVisible] = useState(false)
   const [createdUrl, setCreatedUrl] = useState('')
   const [isSavingGuest, setIsSavingGuest] = useState(false)
@@ -46,6 +47,7 @@ export default function InvitePage() {
     setGuestSaveSuccess(false)
     setCopiedKey('')
     setSharePayload(null)
+    setCustomReceptionTime('')
     return () => {
       if (copyTimerRef.current) window.clearTimeout(copyTimerRef.current)
     }
@@ -56,13 +58,21 @@ export default function InvitePage() {
     [invitations, selectedId],
   )
 
+  const defaultReceptionTime = useMemo(() => {
+    if (!currentInvitation) return '11:00'
+    const fromInv = currentInvitation.reception_time || currentInvitation.extra_data?.reception_time
+    if (fromInv && String(fromInv).trim()) return String(fromInv).trim()
+    return '11:00'
+  }, [currentInvitation])
+
   const publicUrl = currentInvitation ? invitationPublicUrl(currentInvitation) : ''
   const displayName = currentInvitation ? invitationName(currentInvitation) : ''
 
   const guestUrl = useMemo(() => {
     if (!publicUrl || !guestName.trim()) return ''
-    return `${publicUrl}?to=${encodeURIComponent(guestName.trim())}`
-  }, [publicUrl, guestName])
+    const timeQuery = customReceptionTime.trim() ? `&time=${encodeURIComponent(customReceptionTime.trim())}` : ''
+    return `${publicUrl}?to=${encodeURIComponent(guestName.trim())}${timeQuery}`
+  }, [publicUrl, guestName, customReceptionTime])
 
   const activeGuestUrl = createdUrl || guestUrl
   const guestNoteText = guestNote.trim()
@@ -106,25 +116,31 @@ export default function InvitePage() {
 
     setIsSavingGuest(true)
     setGuestSaveSuccess(false)
+    const customTime = customReceptionTime.trim() || undefined
+    const timeQuery = customTime ? `&time=${encodeURIComponent(customTime)}` : ''
     try {
       const res = await api.createGuest({
         name: trimmed,
         description: guestNote.trim() || null,
         invitation_id: selectedId,
+        reception_time: customTime,
       })
       const gData = res.data?.data || res.data
       let finalUrl = ''
       if (gData?.privateInvitation?.url) {
         finalUrl = `${window.location.origin}${gData.privateInvitation.url}`
+        if (customTime && !finalUrl.includes('time=')) {
+          finalUrl += timeQuery
+        }
       } else if (publicUrl) {
-        finalUrl = `${publicUrl}?to=${encodeURIComponent(trimmed)}`
+        finalUrl = `${publicUrl}?to=${encodeURIComponent(trimmed)}${timeQuery}`
       }
       setCreatedUrl(finalUrl)
       setGuestLinkVisible(true)
       setGuestSaveSuccess(true)
     } catch (err) {
       console.error('Lỗi khi lưu khách mời:', err)
-      const fallbackUrl = `${publicUrl}?to=${encodeURIComponent(trimmed)}`
+      const fallbackUrl = `${publicUrl}?to=${encodeURIComponent(trimmed)}${timeQuery}`
       setCreatedUrl(fallbackUrl)
       setGuestLinkVisible(true)
     } finally {
@@ -253,6 +269,83 @@ export default function InvitePage() {
                 </button>
               </div>
             </div>
+            <div className="fld" style={{ marginTop: 14 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6, flexWrap: 'wrap', gap: 6 }}>
+                <label style={{ margin: 0, display: 'flex', alignItems: 'center', gap: 6, fontWeight: 600 }}>
+                  <IconClock size={15} color="#d97757" />
+                  <span>Thời gian mời tiệc cưới (tuỳ chọn)</span>
+                </label>
+                <span style={{ fontSize: 12, color: '#777' }}>
+                  Giờ mặc định của thiệp: <strong style={{ color: '#d97757' }}>{defaultReceptionTime}</strong>
+                </span>
+              </div>
+              <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+                <input
+                  type="time"
+                  style={{
+                    maxWidth: 140,
+                    cursor: 'pointer',
+                    padding: '7px 10px',
+                    borderRadius: 8,
+                    border: '1px solid #d5d9df',
+                    fontSize: 14,
+                    background: '#fff'
+                  }}
+                  value={customReceptionTime}
+                  onChange={(e) => {
+                    setCustomReceptionTime(e.target.value)
+                    setGuestLinkVisible(false)
+                    setGuestSaveSuccess(false)
+                  }}
+                />
+                {['11:00', '11:30', '17:30', '18:00'].map((preset) => (
+                  <button
+                    key={preset}
+                    type="button"
+                    className="btn-sm ghost"
+                    style={{
+                      padding: '6px 11px',
+                      fontSize: 12,
+                      borderRadius: 6,
+                      borderColor: customReceptionTime === preset ? '#d97757' : '#d5d9df',
+                      color: customReceptionTime === preset ? '#d97757' : '#495057',
+                      background: customReceptionTime === preset ? '#fdf3ef' : '#fff',
+                      fontWeight: customReceptionTime === preset ? 600 : 400
+                    }}
+                    onClick={() => {
+                      setCustomReceptionTime(preset)
+                      setGuestLinkVisible(false)
+                      setGuestSaveSuccess(false)
+                    }}
+                  >
+                    {preset}
+                  </button>
+                ))}
+                {customReceptionTime && (
+                  <button
+                    type="button"
+                    className="btn-sm ghost"
+                    style={{ padding: '6px 10px', fontSize: 12, color: '#6c757d', borderRadius: 6 }}
+                    onClick={() => {
+                      setCustomReceptionTime('')
+                      setGuestLinkVisible(false)
+                      setGuestSaveSuccess(false)
+                    }}
+                    title="Khôi phục giờ mặc định"
+                  >
+                    Dùng mặc định ({defaultReceptionTime})
+                  </button>
+                )}
+              </div>
+              <p style={{ margin: '5px 0 0', fontSize: 12, color: '#777', lineHeight: 1.4 }}>
+                {customReceptionTime ? (
+                  <span>Khách mời này sẽ nhận được giờ mời tiệc riêng là: <strong style={{ color: '#d97757' }}>{customReceptionTime}</strong>.</span>
+                ) : (
+                  <span>Nếu không chọn giờ riêng, thiệp sẽ hiển thị theo giờ mặc định (<strong style={{ color: '#444' }}>{defaultReceptionTime}</strong>) đã lưu trên thiệp.</span>
+                )}
+              </p>
+            </div>
+
             <div className="fld" style={{ marginTop: 12 }}>
               <label>Ghi chú mối quan hệ (tuỳ chọn)</label>
               <input
@@ -266,6 +359,15 @@ export default function InvitePage() {
               <div className="gen-lbl">Kính gửi vị khách quý:</div>
               <div className="gen-name">{guestName || 'Chưa nhập tên'}</div>
               {guestNoteText ? <div className="gen-note">({guestNoteText})</div> : null}
+              <div style={{ marginTop: 6, marginBottom: 6, fontSize: 13, color: '#555', display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+                <IconClock size={14} color="#d97757" />
+                <span>
+                  Giờ mời tiệc:{' '}
+                  <strong style={{ color: customReceptionTime ? '#d97757' : '#333' }}>
+                    {customReceptionTime ? `${customReceptionTime} (Giờ mời riêng)` : `${defaultReceptionTime} (Mặc định của thiệp)`}
+                  </strong>
+                </span>
+              </div>
               {guestSaveSuccess && (
                 <div style={{ color: '#2e7d32', fontSize: 13, fontWeight: 600, margin: '6px 0 10px', display: 'flex', alignItems: 'center', gap: 6 }}>
                   <IconCheck size={15} color="#2e7d32" />

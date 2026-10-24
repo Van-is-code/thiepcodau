@@ -11,7 +11,7 @@
 
   var state = {
     deliveryState: 'INTRO_IDLE', // INTRO_IDLE -> DOVES_ARRIVING -> DOVES_FLYING -> LETTER_RELEASED -> LETTER_ARRIVED -> READY_TO_OPEN -> LETTER_OPENING -> INVITATION_REVEALED
-    recipientName: 'QUÝ KHÁCH',
+    recipientName: 'Quý Khách',
     timeline: null
   };
 

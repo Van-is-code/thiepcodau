@@ -151,6 +151,18 @@ export const buildMergedData = (invitation) => {
   addDateParts(data, invitation?.ceremony_date, 'ceremony')
   addDateParts(data, invitation?.reception_date, 'reception')
 
+  // Giờ tiệc cưới: ưu tiên reception_time từ invitation/link riêng (?time=...) hoặc extra_data.
+  // Tránh việc reception_date kiểu DATEONLY (UTC 00:00) ghi đè làm reception_time bị biến thành 00:00.
+  const explicitRecTime = invitation?.reception_time || invitation?.extra_data?.reception_time
+  if (explicitRecTime && String(explicitRecTime).trim()) {
+    data.reception_time = String(explicitRecTime).trim()
+  } else if (!data.reception_time || data.reception_time === '00:00') {
+    data.reception_time = '11:00'
+  }
+  if (data.reception_weekday) {
+    data.reception_time_weekday = `${data.reception_time}, ${data.reception_weekday}`
+  }
+
   if (data.wedding_location && !data.wedding_city) {
     data.wedding_city = String(data.wedding_location).replace(/^[\s—–-]+|[\s—–-]+$/g, '').trim()
   } else if (data.wedding_city && !data.wedding_location) {
@@ -787,16 +799,47 @@ const buildDomInjectScript = (editMode) => `
       } catch (_e) {}
     }
 
+    // Đọc query param ?time=... hoặc ?reception_time=... nếu có trên URL hiện tại
+    try {
+      var qParamsTime = new URLSearchParams(window.location.search || (window.parent && window.parent.location.search) || '');
+      var qTimeVal = qParamsTime.get('time') || qParamsTime.get('t') || qParamsTime.get('reception_time');
+      if (qTimeVal) {
+        var cleanQTime = decodeURIComponent(qTimeVal.split('+').join(' ')).trim();
+        if (cleanQTime) {
+          data.reception_time = cleanQTime;
+          if (data.reception_weekday) {
+            data.reception_time_weekday = cleanQTime + ', ' + data.reception_weekday;
+          }
+        }
+      }
+    } catch (_e) {}
+
+    // Đồng bộ giờ tiệc vào các element hiển thị giờ
+    if (data.reception_time) {
+      var exactTimeEls = document.querySelectorAll('[data-field="reception_time"], .event-exact-time, #reception-time');
+      for (var etIdx = 0; etIdx < exactTimeEls.length; etIdx++) {
+        var etEl = exactTimeEls[etIdx];
+        if (etEl === document.activeElement) continue;
+        etEl.textContent = data.reception_time;
+      }
+    }
+
     if (effectiveGuestName && effectiveGuestName !== 'Quý khách' && effectiveGuestName !== 'QUÝ KHÁCH') {
       var guestName = effectiveGuestName;
       var guestNameUpper = guestName.toUpperCase();
+      var guestNameDisplay = (guestNameUpper === 'QUÝ KHÁCH') ? 'Quý Khách' : guestName;
 
       // Gán vào các element đại diện cho tên khách
       var recipientEls = document.querySelectorAll('[data-field="guest_name"], #envelope-recipient-name, .recipient-name, .guest-name, #guest-name');
       for (var rIdx = 0; rIdx < recipientEls.length; rIdx++) {
         var rEl = recipientEls[rIdx];
         if (rEl === document.activeElement) continue;
-        rEl.textContent = guestNameUpper;
+        // Bìa phong bì và font chữ uốn lượn giữ hoa thường tự nhiên thay vì ép ALL-CAPS
+        if (rEl.classList.contains('recipient-name') || rEl.id === 'envelope-recipient-name' || rEl.closest('.recipient-box')) {
+          rEl.textContent = guestNameDisplay;
+        } else {
+          rEl.textContent = guestNameUpper;
+        }
       }
 
       // Khớp tên khách ở bìa ngoài phong bì (CHỈ áp dụng cho bìa ngoài vobe2.html, tuyệt đối KHÔNG ghi đè lên phongbibe2.html hay các thẻ chứa data-field tên cô dâu / chú rể)

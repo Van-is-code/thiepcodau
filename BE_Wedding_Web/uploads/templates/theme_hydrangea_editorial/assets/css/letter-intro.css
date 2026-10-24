@@ -581,12 +581,12 @@ body.intro-active {
 /* Recipient Plaque (On Top Flap Face, above the wax seal) */
 .recipient-box {
   position: absolute;
-  top: 18px;
-  left: 10px;
-  right: 10px;
+  top: 14px;
+  left: 8px;
+  right: 8px;
   z-index: 6;
   text-align: center;
-  padding: 4px 8px;
+  padding: 2px 6px;
   opacity: 0;
   transform: translate3d(0, 10px, 0);
   backface-visibility: hidden;
@@ -598,21 +598,25 @@ body.intro-active {
   font-family: var(--intro-font, 'Plus Jakarta Sans', sans-serif);
   font-style: normal;
   font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.05em;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
   color: var(--intro-hydrangea-mid);
   margin-bottom: 2px;
 }
 
 .recipient-name {
-  font-family: var(--intro-font, 'Plus Jakarta Sans', sans-serif);
-  font-size: clamp(14px, 3.8vw, 16px);
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  color: var(--intro-ink-primary);
-  text-transform: uppercase;
-  margin: 0;
-  line-height: 1.25;
+  font-family: var(--intro-font-script, 'Alex Brush', cursive) !important;
+  font-size: clamp(26px, 7.5vw, 34px);
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  color: var(--intro-hydrangea-deep, #4E3C64);
+  text-transform: capitalize;
+  margin: 1px 0 2px;
+  line-height: 1.15;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .recipient-rule {
