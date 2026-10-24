@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { api } from '../../api'
 import { invitationName, invitationPublicUrl, toArray } from './helpers'
+import InvitationSelector from './InvitationSelector'
 import QuickShareModal from './QuickShareModal'
 import {
   IconSend,
@@ -8,15 +9,12 @@ import {
   IconUsers,
   IconCopy,
   IconCheck,
-  IconChevronDown,
 } from '../../components/Icons'
 
 export default function InvitePage() {
-  const selectorRef = useRef(null)
   const copyTimerRef = useRef(null)
   const [invitations, setInvitations] = useState([])
   const [selectedId, setSelectedId] = useState('')
-  const [selectorOpen, setSelectorOpen] = useState(false)
   const [guestName, setGuestName] = useState('')
   const [guestNote, setGuestNote] = useState('')
   const [guestLinkVisible, setGuestLinkVisible] = useState(false)
@@ -40,16 +38,7 @@ export default function InvitePage() {
     loadInvitations()
   }, [])
 
-  useEffect(() => {
-    const handlePointerDown = (event) => {
-      if (!selectorRef.current?.contains(event.target)) {
-        setSelectorOpen(false)
-      }
-    }
 
-    document.addEventListener('mousedown', handlePointerDown)
-    return () => document.removeEventListener('mousedown', handlePointerDown)
-  }, [])
 
   useEffect(() => {
     setGuestLinkVisible(false)
@@ -156,40 +145,11 @@ export default function InvitePage() {
         </div>
       </div>
 
-      <div className="inv-sel" ref={selectorRef}>
-        <span className="inv-sel-lbl">Chọn Thiệp:</span>
-        <div className="inv-sel-drop">
-          <button
-            type="button"
-            className={`inv-sel-btn${selectorOpen ? ' open' : ''}`}
-            onClick={() => setSelectorOpen((value) => !value)}
-          >
-            <span className="inv-sel-dot" />
-            <span className="isd-name">{displayName || 'Chọn thiệp cưới'}</span>
-            <span className="isd-arrow">
-              <IconChevronDown size={14} />
-            </span>
-          </button>
-          {selectorOpen ? (
-            <div className="isd-menu">
-              {invitations.map((inv) => (
-                <button
-                  type="button"
-                  key={inv.id}
-                  className={`isd-opt${String(inv.id) === String(selectedId) ? ' active' : ''}`}
-                  onClick={() => {
-                    setSelectedId(String(inv.id))
-                    setSelectorOpen(false)
-                  }}
-                >
-                  <span className="isd-opt-name">{invitationName(inv)}</span>
-                  <span className="isd-opt-slug">/{inv.invitation_slug || inv.slug || ''}</span>
-                </button>
-              ))}
-            </div>
-          ) : null}
-        </div>
-      </div>
+      <InvitationSelector
+        invitations={invitations}
+        selectedId={selectedId}
+        onChange={setSelectedId}
+      />
 
       <div className="inv-grid">
         {/* Panel 1: Link thiệp chung */}

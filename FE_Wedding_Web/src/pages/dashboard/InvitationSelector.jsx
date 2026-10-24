@@ -1,6 +1,16 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { IconChevronDown, IconCheck, IconMail } from '../../components/Icons'
 
+const getInvDisplayName = (inv) => {
+  if (!inv) return 'Chọn thiệp cưới'
+  const groom = inv.groom?.name_groom || inv.groom_name || (typeof inv.groom === 'string' ? inv.groom : '') || ''
+  const bride = inv.bride?.name_bride || inv.bride_name || (typeof inv.bride === 'string' ? inv.bride : '') || ''
+  if (groom && bride) return `${groom} & ${bride}`
+  if (groom) return groom
+  if (bride) return bride
+  return inv.title_vi || inv.title || 'Thiệp cưới'
+}
+
 export default function InvitationSelector({ invitations, selectedId, onChange }) {
   const rootRef = useRef(null)
   const [open, setOpen] = useState(false)
@@ -28,13 +38,7 @@ export default function InvitationSelector({ invitations, selectedId, onChange }
           onClick={() => setOpen((value) => !value)}
         >
           <span className="inv-sel-dot" />
-          <span className="isd-name">
-            {current
-              ? `${current.groom?.name_groom || current.groom || ''} & ${current.bride?.name_bride || current.bride || ''}`.trim() ||
-                current.title_vi ||
-                'Thiệp cưới'
-              : 'Chọn thiệp cưới'}
-          </span>
+          <span className="isd-name">{getInvDisplayName(current)}</span>
           <span className="isd-arrow">
             <IconChevronDown size={14} />
           </span>
@@ -42,10 +46,7 @@ export default function InvitationSelector({ invitations, selectedId, onChange }
         <div className={`inv-sel-menu${open ? ' show' : ''}`}>
           {invitations.map((inv) => {
             const isChosen = String(inv.id) === String(selectedId)
-            const name =
-              `${inv.groom?.name_groom || inv.groom || ''} & ${inv.bride?.name_bride || inv.bride || ''}`.trim() ||
-              inv.title_vi ||
-              'Thiệp cưới'
+            const name = getInvDisplayName(inv)
             return (
               <button
                 key={inv.id}
@@ -59,7 +60,7 @@ export default function InvitationSelector({ invitations, selectedId, onChange }
                 <span className="iso-dot" />
                 <span className="iso-body">
                   <span className="iso-name">{name}</span>
-                  <span className="iso-date">/{inv.slug || inv.invitation_slug || ''}</span>
+                  <span className="iso-date">/{inv.invitation_slug || inv.slug || ''}</span>
                 </span>
                 {isChosen && (
                   <span className="iso-check">

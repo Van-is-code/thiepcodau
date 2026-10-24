@@ -426,6 +426,9 @@
     var inv = window.invitationData || {};
     var invId = inv.id || inv.invitation_id || '';
     var apiBase = inv.api_base || '';
+    if (!apiBase && typeof window !== 'undefined') {
+      apiBase = window.location.origin;
+    }
     var storageKey = 'hydrangea_editorial_wishes_' + (invId || 'default');
 
     var sampleWishes = [
@@ -461,50 +464,60 @@
     function renderEntries(entries) {
       list.innerHTML = '';
       if (!entries || !entries.length) {
-        list.innerHTML = '<p style="text-align:center;font-style:italic;color:#7e6c94;font-size:13px;padding:12px 0;">Hãy là người đầu tiên gửi lời chúc tới đôi uyên ương!</p>';
+        list.innerHTML = '<p style="text-align:center;font-style:italic;color:var(--hydrangea-mid, #7A6890);font-size:12.5px;padding:16px 0;opacity:0.85;">Chưa có lời chúc nào. Hãy là người đầu tiên gửi lời chúc tới đôi uyên ương!</p>';
         return;
       }
       entries.forEach(function (item) {
         var card = document.createElement('div');
         card.className = 'wish-entry';
+        var nameStr = item.name || item.name_guest || 'Khách mời';
+        var timeStr = item.time || formatTime(item.date || item.created_at);
+        var msgStr = item.message || item.messages || '';
         card.innerHTML =
           '<div class="wish-author">' +
-            '<span>' + escapeHTML(item.name || item.name_guest || '') + '</span>' +
-            '<span class="wish-time">' + escapeHTML(item.time || formatTime(item.date || item.created_at)) + '</span>' +
+            '<span>' + escapeHTML(nameStr) + '</span>' +
+            '<span class="wish-time">' + escapeHTML(timeStr) + '</span>' +
           '</div>' +
-          '<p class="wish-text">“' + escapeHTML(item.message || item.messages || '') + '”</p>';
+          '<p class="wish-text">“' + escapeHTML(msgStr) + '”</p>';
         list.appendChild(card);
       });
     }
 
     function loadWishes() {
-      // 1. Initial display from invitationData preloaded wishes or localStorage
-      if (Array.isArray(inv.wishes) && inv.wishes.length > 0) {
-        renderEntries(inv.wishes);
-      } else {
-        try {
-          var local = localStorage.getItem(storageKey);
-          if (local) {
-            renderEntries(JSON.parse(local));
-          } else {
-            renderEntries(defaultEntries);
-          }
-        } catch (e) {
-          renderEntries(defaultEntries);
-        }
-      }
+      var currentInv = window.invitationData || inv || {};
+      var curId = invId || currentInv.id || currentInv.invitation_id || '';
+      var curBase = apiBase || currentInv.api_base || (typeof window !== 'undefined' ? window.location.origin : '');
 
-      // 2. Fetch live wishes from backend API if invId exists
-      if (invId) {
-        fetch(apiBase + '/api/messages-checkins/public/' + invId)
+      // 1. Initial display from cache or preloaded wishes
+      try {
+        var local = localStorage.getItem(storageKey);
+        if (local) {
+          var parsed = JSON.parse(local);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            renderEntries(parsed);
+          }
+        } else if (Array.isArray(currentInv.wishes) && currentInv.wishes.length > 0) {
+          renderEntries(currentInv.wishes);
+        }
+      } catch (e) {}
+
+      // 2. Fetch live wishes from backend API if ID exists
+      if (curId) {
+        fetch(curBase + '/api/messages-checkins/public/' + curId)
           .then(function (r) { return r.json(); })
           .then(function (json) {
-            if (json && json.success && Array.isArray(json.data) && json.data.length > 0) {
-              renderEntries(json.data);
-              try { localStorage.setItem(storageKey, JSON.stringify(json.data)); } catch (e) {}
+            if (json && json.success && Array.isArray(json.data)) {
+              if (json.data.length > 0) {
+                renderEntries(json.data);
+                try { localStorage.setItem(storageKey, JSON.stringify(json.data)); } catch (e) {}
+              } else {
+                renderEntries([]);
+              }
             }
           })
-          .catch(function () {});
+          .catch(function (err) {
+            console.warn('Could not load public wishes:', err);
+          });
       }
     }
 
@@ -608,7 +621,19 @@
       });
     }
 
-    renderWishes();
+    loadWishes();
+
+    // Listen for data updates (editor live update or iframe message)
+    window.addEventListener('message', function (ev) {
+      if (ev.data && (ev.data.type === 'SET_INVITATION' || ev.data.type === 'wedding-web:update-data')) {
+        var incoming = ev.data.invitation || ev.data.data;
+        if (incoming && incoming.id) {
+          invId = incoming.id;
+          storageKey = 'hydrangea_editorial_wishes_' + invId;
+          loadWishes();
+        }
+      }
+    });
   }
 
   function escapeHTML(str) {

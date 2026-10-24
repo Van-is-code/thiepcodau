@@ -24,6 +24,7 @@ import {
 } from '../../components/Icons'
 import BankQrPanel from '../../components/BankQrPanel'
 import MusicPanel from '../../components/MusicPanel'
+import ChangeTemplateModal from '../../components/ChangeTemplateModal'
 import ImageCropper from '../../components/ImageCropper'
 import ImagePickerModal from '../../components/ImagePickerModal'
 import EditorTourGuide from '../../components/EditorTourGuide'
@@ -60,6 +61,7 @@ export default function EditorPage() {
   const [lockState, setLockState] = useState(null)
   const [bankPanel, setBankPanel] = useState(false)
   const [musicPanel, setMusicPanel] = useState(false)
+  const [changeTemplateModalOpen, setChangeTemplateModalOpen] = useState(false)
   const [showTour, setShowTour] = useState(() => {
     try {
       return !localStorage.getItem('has_seen_editor_tour_v1')
@@ -425,33 +427,7 @@ export default function EditorPage() {
       await modal.alert({ tone: 'warn', title: 'Thiệp đã khoá', message: lockNote(lockState) })
       return
     }
-    let templates = []
-    try {
-      const res = await api.getTemplates()
-      templates = (res.data?.data?.items || res.data?.data || res.data || []).filter(Boolean)
-    } catch (_e) {}
-    if (!templates.length) {
-      await modal.alert({ title: 'Đổi mẫu', message: 'Chưa có mẫu nào khác để chọn.' })
-      return
-    }
-    const list = templates.map((t) => `• ${t.template_name || t.template_code || t.id}`).join('\n')
-    const ok = await modal.confirm({
-      title: 'Đổi mẫu thiệp cưới',
-      message: `Đổi mẫu KHÔNG tính vào lượt sửa (được đổi thoải mái cho tới khi thiệp bị khoá).\n\nDanh sách mẫu hiện có:\n${list}\n\nĐổi sang mẫu đầu tiên trong danh sách?`,
-      confirmText: 'Đổi Mẫu',
-    })
-    if (!ok) return
-    try {
-      await api.changeInvitationTemplate(invitation.id, templates[0].id)
-      await modal.alert({ tone: 'success', title: 'Đã đổi mẫu', message: 'Đang tải lại trang sửa...' })
-      window.location.reload()
-    } catch (err) {
-      await modal.alert({
-        tone: 'danger',
-        title: 'Đổi mẫu thất bại',
-        message: err?.response?.data?.message || err.message,
-      })
-    }
+    setChangeTemplateModalOpen(true)
   }
 
   const openPanel = (setter) => async () => {
@@ -668,6 +644,17 @@ export default function EditorPage() {
       )}
       {musicPanel && (
         <MusicPanel invitation={invitation} onSaved={handleMusicSaved} onClose={() => setMusicPanel(false)} />
+      )}
+      {changeTemplateModalOpen && (
+        <ChangeTemplateModal
+          isOpen={changeTemplateModalOpen}
+          onClose={() => setChangeTemplateModalOpen(false)}
+          currentTemplateId={invitation?.template?.id || invitation?.template_id}
+          invitationId={invitation?.id}
+          onSuccess={() => {
+            window.location.reload()
+          }}
+        />
       )}
       <EditorTourGuide
         isOpen={showTour}
