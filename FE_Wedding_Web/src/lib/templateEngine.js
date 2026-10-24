@@ -692,8 +692,11 @@ const buildDomInjectScript = (editMode) => `
   }
 
   function updateCountdownTimer(data) {
-    if (typeof window.__wwUpdateCountdown === 'function') {
-      try { window.__wwUpdateCountdown(); } catch (e) {}
+    if (window.__wwHasCustomCountdown === true || typeof window.__wwUpdateCountdown === 'function') {
+      if (typeof window.__wwUpdateCountdown === 'function') {
+        try { window.__wwUpdateCountdown(data); } catch (e) {}
+      }
+      return; // Không can thiệp nếu template đã tự xử lý countdown để tránh giật lag, nháy số!
     }
     var dEl = document.getElementById('countdown-days') || document.querySelector('.countdown-days, [data-countdown-days], [data-unit="days"]');
     var hEl = document.getElementById('countdown-hours') || document.querySelector('.countdown-hours, [data-countdown-hours], [data-unit="hours"]');
@@ -702,24 +705,27 @@ const buildDomInjectScript = (editMode) => `
     if (!dEl || !hEl || !mEl || !sEl) return;
 
     var curData = data || window.invitationData || {};
+    var cdEl = document.querySelector('[data-countdown]');
     var raw = curData.ceremony_date || curData.reception_date
-      || (window.weddingData && window.weddingData.eventTime && window.weddingData.eventTime.isoDateTime)
-      || "2025-04-26T11:00:00+07:00";
-    var d = new Date(raw);
-    var targetTime = isNaN(d.getTime()) ? new Date("2025-04-26T11:00:00+07:00").getTime() : d.getTime();
-    var now = new Date().getTime();
+      || (cdEl && cdEl.getAttribute('data-countdown'))
+      || (window.weddingData && window.weddingData.eventTime && window.weddingData.eventTime.isoDateTime);
+    var targetTime = 0;
+    if (raw) {
+      var d = new Date(raw);
+      if (!isNaN(d.getTime())) targetTime = d.getTime();
+    }
+    var now = Date.now();
+    if (!targetTime || targetTime <= now) {
+      if (!window.__wwFallbackTarget) {
+        window.__wwFallbackTarget = now + (23 * 24 * 3600 * 1000) + (7 * 3600 * 1000) + (12 * 60 * 1000) + (35 * 1000);
+      }
+      targetTime = window.__wwFallbackTarget;
+    }
     var distance = targetTime - now;
+    if (distance < 0) distance = 0;
 
     function formatTwoDigits(num) {
       return num < 10 ? "0" + Math.max(0, num) : String(Math.max(0, num));
-    }
-
-    if (distance <= 0) {
-      dEl.textContent = "00";
-      hEl.textContent = "00";
-      mEl.textContent = "00";
-      sEl.textContent = "00";
-      return;
     }
 
     var days = Math.floor(distance / (1000 * 60 * 60 * 24));

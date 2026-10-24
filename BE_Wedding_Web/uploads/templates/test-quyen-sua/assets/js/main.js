@@ -36,22 +36,33 @@
   function initCountdown() {
     var el = document.querySelector('[data-countdown]');
     if (!el) return;
-    var targetAttr = el.getAttribute('data-countdown');
-    var targetDate = new Date(targetAttr).getTime();
+
+    window.__wwHasCustomCountdown = true;
+
+    function getTarget() {
+      var inv = window.invitationData || {};
+      var raw = inv.ceremony_date || inv.reception_date || el.getAttribute('data-countdown');
+      if (!raw) return 0;
+      var t = new Date(raw).getTime();
+      return isNaN(t) ? 0 : t;
+    }
+
+    var targetDate = getTarget();
     var daysSpan = el.querySelector('[data-unit="days"]');
     var hoursSpan = el.querySelector('[data-unit="hours"]');
     var minutesSpan = el.querySelector('[data-unit="minutes"]');
     var secondsSpan = el.querySelector('[data-unit="seconds"]');
 
-    // If target date in the past, provide active demo countdown (48 days ahead) so seconds tick vividly
     var now = Date.now();
-    if (isNaN(targetDate) || targetDate <= now) {
-      targetDate = now + (48 * 24 * 60 * 60 * 1000) + (12 * 60 * 60 * 1000) + (29 * 60 * 1000) + (50 * 1000);
+    if (!targetDate || targetDate <= now) {
+      targetDate = now + (23 * 24 * 60 * 60 * 1000) + (7 * 60 * 60 * 1000) + (12 * 60 * 1000) + (35 * 1000);
     }
 
     function updateTimer() {
+      var realTarget = getTarget();
       var current = Date.now();
-      var diff = targetDate - current;
+      var activeTarget = (realTarget && realTarget > current) ? realTarget : targetDate;
+      var diff = activeTarget - current;
       if (diff < 0) diff = 0;
 
       var days = Math.floor(diff / (1000 * 60 * 60 * 24));
@@ -65,8 +76,11 @@
       if (secondsSpan) secondsSpan.textContent = String(seconds).padStart(2, '0');
     }
 
+    window.__wwUpdateCountdown = updateTimer;
+
     updateTimer();
-    setInterval(updateTimer, 1000);
+    if (window.__wwCountdownInterval) clearInterval(window.__wwCountdownInterval);
+    window.__wwCountdownInterval = setInterval(updateTimer, 1000);
   }
 
   /* ------------------------------------------------------------------ */

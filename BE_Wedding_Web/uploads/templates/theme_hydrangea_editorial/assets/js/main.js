@@ -37,9 +37,12 @@
     var el = document.querySelector('[data-countdown]');
     if (!el) return;
 
+    window.__wwHasCustomCountdown = true;
+
     function getTarget() {
       var inv = window.invitationData || {};
       var raw = inv.ceremony_date || inv.reception_date || el.getAttribute('data-countdown');
+      if (!raw) return 0;
       var t = new Date(raw).getTime();
       return isNaN(t) ? 0 : t;
     }
@@ -52,13 +55,13 @@
 
     var now = Date.now();
     if (!targetDate || targetDate <= now) {
-      targetDate = now + (48 * 24 * 60 * 60 * 1000) + (12 * 60 * 60 * 1000) + (29 * 60 * 1000) + (50 * 1000);
+      targetDate = now + (23 * 24 * 60 * 60 * 1000) + (7 * 60 * 60 * 1000) + (12 * 60 * 1000) + (35 * 1000);
     }
 
     function updateTimer() {
       var realTarget = getTarget();
-      var activeTarget = (!realTarget || realTarget <= Date.now()) ? targetDate : realTarget;
       var current = Date.now();
+      var activeTarget = (realTarget && realTarget > current) ? realTarget : targetDate;
       var diff = activeTarget - current;
       if (diff < 0) diff = 0;
 
@@ -73,8 +76,11 @@
       if (secondsSpan) secondsSpan.textContent = String(seconds).padStart(2, '0');
     }
 
+    window.__wwUpdateCountdown = updateTimer;
+
     updateTimer();
-    setInterval(updateTimer, 1000);
+    if (window.__wwCountdownInterval) clearInterval(window.__wwCountdownInterval);
+    window.__wwCountdownInterval = setInterval(updateTimer, 1000);
   }
 
   /* ------------------------------------------------------------------ */

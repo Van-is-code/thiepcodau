@@ -425,112 +425,115 @@
       <img src="assets/images/intro-env-sprig-tr.png" alt="" class="botanical-sway">
     </div>
 
-            <!-- Envelope Container - Compact Pocket (No giant top flap) -->
+                <!-- Envelope Container with visible top flap peak ("chóp thư") -->
     <div class="countdown-envelope-container">
-      <!-- Open Envelope Back Collar (Behind the card) -->
-      <div class="countdown-envelope-back" aria-hidden="true">
-        <svg class="countdown-envelope-back-svg" viewBox="0 0 334 250" preserveAspectRatio="none">
+      <!-- Open Top Flap ("Chóp thư" nhô lên ở giữa) -->
+      <div class="countdown-top-flap" aria-hidden="true">
+        <svg class="countdown-top-flap-svg" viewBox="0 0 334 48" preserveAspectRatio="none">
           <defs>
-            <linearGradient id="backGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stop-color="#EAE2D3"/>
-              <stop offset="100%" stop-color="#DFD4C4"/>
-            </linearGradient>
+            <clipPath id="chopThuClip">
+              <polygon points="0,48 167,0 334,48"/>
+            </clipPath>
           </defs>
-          <!-- Open envelope back collar dipping slightly in center -->
-          <path d="M0,45 L167,80 L334,45 L334,250 L0,250 Z" fill="url(#backGrad)" stroke="rgba(126, 107, 148, 0.2)" stroke-width="1"/>
+          <polygon points="0,48 167,0 334,48" fill="#E8DEC4" stroke="rgba(126, 107, 148, 0.22)" stroke-width="1"/>
+          <image href="assets/images/intro-envelope-lining.png" x="0" y="0" width="334" height="48" preserveAspectRatio="xMidYMid slice" clip-path="url(#chopThuClip)" opacity="0.85"/>
+          <polyline points="2,47 167,2 332,47" fill="none" stroke="rgba(255,255,255,0.45)" stroke-width="1.2" clip-path="url(#chopThuClip)"/>
         </svg>
       </div>
 
-      <!-- Inner Stationery Letter Card (Sticking out of the envelope) -->
-      <div class="countdown-letter-card">
-        <div class="countdown-letter-card-inner">
-          <!-- Pinned Mini Polaroid on Top-Left Corner -->
-          <div class="cd-pinned-polaroid">
-            <div class="cd-mini-polaroid-frame">
-              <img src="assets/images/52ed9a3f-608e-403c-98a9-9cf73747e2a8.jpg" alt="Khoảnh khắc ngọt ngào" data-image="gallery" data-image-index="0" data-preserve-default="true" class="cd-mini-photo">
+      <!-- Envelope Body Backing (Visible on left & right sides) -->
+      <div class="countdown-envelope-body">
+        <!-- Inner Stationery Letter Card (Sticking out of the envelope) -->
+        <div class="countdown-letter-card">
+          <div class="countdown-letter-card-inner">
+            <!-- Pinned Mini Polaroid on Top-Left Corner -->
+            <div class="cd-pinned-polaroid">
+              <div class="cd-mini-polaroid-frame">
+                <img src="assets/images/52ed9a3f-608e-403c-98a9-9cf73747e2a8.jpg" alt="Khoảnh khắc ngọt ngào" data-image="gallery" data-image-index="0" data-preserve-default="true" class="cd-mini-photo">
+              </div>
+              <img src="assets/images/intro-env-sprig-tr.png" alt="" class="cd-polaroid-sprig" aria-hidden="true">
             </div>
-            <img src="assets/images/intro-env-sprig-tr.png" alt="" class="cd-polaroid-sprig" aria-hidden="true">
-          </div>
 
-          <!-- Top-Right Corner Botanical Sprig -->
-          <img src="assets/images/intro-env-sprig-tr.png" alt="" class="cd-card-sprig-tr" aria-hidden="true">
+            <!-- Top-Right Corner Botanical Sprig -->
+            <img src="assets/images/intro-env-sprig-tr.png" alt="" class="cd-card-sprig-tr" aria-hidden="true">
 
-          <!-- Eyebrow -->
-          <span class="cd-stationery-eyebrow">SAVE THE DATE</span>
+            <!-- Eyebrow -->
+            <span class="cd-stationery-eyebrow">SAVE THE DATE</span>
 
-          <!-- Vertically Stacked Calligraphy Couple Names -->
-          <div class="cd-stationery-couple">
-            <span class="cd-couple-name" data-field="groom_name">Chiến</span>
-            <span class="cd-couple-amp">&amp;</span>
-            <span class="cd-couple-name" data-field="bride_name">Hằng</span>
-          </div>
-
-          <!-- Divider Rule with center motif -->
-          <div class="cd-stationery-dots" aria-hidden="true">
-            <span>·</span><span>·</span><span>·</span>
-          </div>
-
-          <!-- Subtitle -->
-          <p class="cd-stationery-lead">HÔN LỄ SẼ DIỄN RA SAU:</p>
-
-          <!-- 4-digit Pure Countdown Row -->
-          <div class="pure-countdown-row" data-countdown="2026-01-18T11:00:00+07:00">
-            <div class="countdown-unit-box">
-              <span class="countdown-num" data-unit="days">00</span>
-              <span class="countdown-unit-label">NGÀY</span>
+            <!-- Vertically Stacked Calligraphy Couple Names -->
+            <div class="cd-stationery-couple">
+              <span class="cd-couple-name" data-field="groom_name">Chiến</span>
+              <span class="cd-couple-amp">&amp;</span>
+              <span class="cd-couple-name" data-field="bride_name">Hằng</span>
             </div>
-            <span class="countdown-sep">:</span>
-            <div class="countdown-unit-box">
-              <span class="countdown-num" data-unit="hours">00</span>
-              <span class="countdown-unit-label">GIỜ</span>
-            </div>
-            <span class="countdown-sep">:</span>
-            <div class="countdown-unit-box">
-              <span class="countdown-num" data-unit="minutes">00</span>
-              <span class="countdown-unit-label">PHÚT</span>
-            </div>
-            <span class="countdown-sep">:</span>
-            <div class="countdown-unit-box">
-              <span class="countdown-num" data-unit="seconds">00</span>
-              <span class="countdown-unit-label">GIÂY</span>
-            </div>
-          </div>
 
-          <!-- Hidden ceremony date fields for data engine compatibility -->
-          <div style="display: none;">
-            <span data-field="ceremony_day">26</span>
-            <span data-field="ceremony_month_num">04</span>
-            <span data-field="ceremony_year_num">2025</span>
-            <p data-field="ceremony_full_date">Thứ Bảy · 18 tháng 01 năm 2026</p>
+            <!-- Divider Rule with center motif -->
+            <div class="cd-stationery-dots" aria-hidden="true">
+              <span>·</span><span>·</span><span>·</span>
+            </div>
+
+            <!-- Subtitle -->
+            <p class="cd-stationery-lead">HÔN LỄ SẼ DIỄN RA SAU:</p>
+
+            <!-- 4-digit Pure Countdown Row -->
+            <div class="pure-countdown-row" data-countdown="2026-01-18T11:00:00+07:00">
+              <div class="countdown-unit-box">
+                <span class="countdown-num" data-unit="days">00</span>
+                <span class="countdown-unit-label">NGÀY</span>
+              </div>
+              <span class="countdown-sep">:</span>
+              <div class="countdown-unit-box">
+                <span class="countdown-num" data-unit="hours">00</span>
+                <span class="countdown-unit-label">GIỜ</span>
+              </div>
+              <span class="countdown-sep">:</span>
+              <div class="countdown-unit-box">
+                <span class="countdown-num" data-unit="minutes">00</span>
+                <span class="countdown-unit-label">PHÚT</span>
+              </div>
+              <span class="countdown-sep">:</span>
+              <div class="countdown-unit-box">
+                <span class="countdown-num" data-unit="seconds">00</span>
+                <span class="countdown-unit-label">GIÂY</span>
+              </div>
+            </div>
+
+            <!-- Hidden ceremony date fields for data engine compatibility -->
+            <div style="display: none;">
+              <span data-field="ceremony_day">26</span>
+              <span data-field="ceremony_month_num">04</span>
+              <span data-field="ceremony_year_num">2025</span>
+              <p data-field="ceremony_full_date">Thứ Bảy · 18 tháng 01 năm 2026</p>
+            </div>
           </div>
         </div>
-      </div>
 
-      <!-- Front Envelope Pocket overlay with V-cut, stitching and Wax Seal -->
-      <div class="countdown-front-pocket" aria-hidden="true">
-        <svg class="countdown-pocket-svg" viewBox="0 0 334 155" preserveAspectRatio="none">
-          <defs>
-            <linearGradient id="pocketGradCompact" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stop-color="#EAE2D3"/>
-              <stop offset="100%" stop-color="#DFD4C4"/>
-            </linearGradient>
-          </defs>
-          <!-- Deep V pocket shape -->
-          <path d="M0,20 L167,88 L334,20 L334,155 L0,155 Z" fill="url(#pocketGradCompact)" stroke="rgba(126, 107, 148, 0.2)" stroke-width="1"/>
-          <!-- Diagonal stitched fold lines meeting at V center -->
-          <line x1="0" y1="155" x2="167" y2="88" stroke="rgba(126, 107, 148, 0.35)" stroke-width="1.1" stroke-dasharray="3 3"/>
-          <line x1="334" y1="155" x2="167" y2="88" stroke="rgba(126, 107, 148, 0.35)" stroke-width="1.1" stroke-dasharray="3 3"/>
-        </svg>
+        <!-- Front Envelope Pocket Overlay -->
+        <div class="countdown-front-pocket" aria-hidden="true">
+          <svg class="countdown-pocket-svg" viewBox="0 0 334 155" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="pocketGradChopThu" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="#EAE2D3"/>
+                <stop offset="100%" stop-color="#DFD4C4"/>
+              </linearGradient>
+            </defs>
+            <!-- Deep V pocket shape -->
+            <path d="M0,20 L167,88 L334,20 L334,155 L0,155 Z" fill="url(#pocketGradChopThu)" stroke="rgba(126, 107, 148, 0.2)" stroke-width="1"/>
+            <!-- Diagonal stitched fold lines meeting at V center -->
+            <line x1="0" y1="155" x2="167" y2="88" stroke="rgba(126, 107, 148, 0.35)" stroke-width="1.1" stroke-dasharray="3 3"/>
+            <line x1="334" y1="155" x2="167" y2="88" stroke="rgba(126, 107, 148, 0.35)" stroke-width="1.1" stroke-dasharray="3 3"/>
+          </svg>
 
-        <!-- Centered Cream/Champagne Wax Seal Stamp -->
-        <div class="countdown-pocket-seal">
-          <img src="assets/images/intro-env-sprig-tr.png" alt="" class="seal-sprig-bg">
-          <img src="assets/images/cream-wax-seal.png" alt="" class="seal-pocket-img">
+          <!-- Centered Cream/Champagne Wax Seal Stamp -->
+          <div class="countdown-pocket-seal">
+            <img src="assets/images/intro-env-sprig-tr.png" alt="" class="seal-sprig-bg">
+            <img src="assets/images/cream-wax-seal.png" alt="" class="seal-pocket-img">
+          </div>
+
+          <!-- Corner sprigs on bottom -->
+          <img src="assets/images/intro-env-sprig-bl.png" alt="" class="pocket-corner-sprig pocket-corner-sprig--bl">
+          <img src="assets/images/intro-env-sprig-tr.png" alt="" class="pocket-corner-sprig pocket-corner-sprig--br">
         </div>
-
-        <!-- Corner sprigs on bottom -->
-        <img src="assets/images/intro-env-sprig-bl.png" alt="" class="pocket-corner-sprig pocket-corner-sprig--bl">
-        <img src="assets/images/intro-env-sprig-tr.png" alt="" class="pocket-corner-sprig pocket-corner-sprig--br">
       </div>
     </div>
 
