@@ -12,8 +12,9 @@
     initLightbox();
     initGiftModal();
     initUnifiedBlessing();
-    initMusic();
+        initMusic();
     initScrollObserver();
+    initMapDirections();
   });
 
   /* ------------------------------------------------------------------ */
@@ -684,6 +685,58 @@
 
     elements.forEach(function (el) {
       observer.observe(el);
+    });
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* 8. Map Directions Handler (Zalo, Messenger & Mobile App Launcher)   */
+  /* ------------------------------------------------------------------ */
+  function initMapDirections() {
+    var mapBtns = document.querySelectorAll(
+      '.event-action-pill, [data-field-href="map_url"], [data-field-href="reception_map_url"], a[href*="maps.app.goo.gl"], a[href*="google.com/maps"], a[href*="maps.google.com"]'
+    );
+
+    mapBtns.forEach(function (btn) {
+      btn.addEventListener('click', function (e) {
+        if (window.__weddingWebEditMode) return;
+
+        var href = btn.getAttribute('href') || btn.href;
+        var targetUrl = href;
+
+        if (!targetUrl || targetUrl === '#' || targetUrl.indexOf('javascript:') === 0) {
+          var node = btn.closest('.event-moment-node') || btn.closest('article') || btn.parentElement;
+          var addr = node ? node.querySelector('[data-field*="address"], address') : null;
+          if (addr && addr.textContent.trim()) {
+            targetUrl = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(addr.textContent.trim());
+          }
+        }
+        if (!targetUrl || targetUrl === '#') return;
+
+        var ua = (navigator.userAgent || '').toLowerCase();
+        var isMobile = /android|iphone|ipad|ipod/i.test(ua);
+        var isInApp = ua.indexOf('zalo') !== -1 || ua.indexOf('fbav') !== -1 || ua.indexOf('fban') !== -1 || ua.indexOf('messenger') !== -1;
+
+        if (isMobile || isInApp || window !== window.top) {
+          e.preventDefault();
+          e.stopPropagation();
+
+          // 1. Gửi message cho window cha (TemplateLoader) điều hướng top-level
+          try {
+            window.parent.postMessage({ type: 'wedding-web:open-map', url: targetUrl }, '*');
+          } catch (_e) {}
+
+          // 2. Thử trực tiếp window.top
+          try {
+            if (window.top && window.top !== window) {
+              window.top.location.href = targetUrl;
+              return;
+            }
+          } catch (_e) {}
+
+          // 3. Điều hướng cửa sổ hiện tại
+          window.location.href = targetUrl;
+        }
+      });
     });
   }
 

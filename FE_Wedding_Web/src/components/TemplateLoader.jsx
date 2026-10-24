@@ -129,10 +129,25 @@ const TemplateLoader = () => {
     }
   }, [slug, location.search])
 
-  // Điều hướng nội bộ giữa các file tĩnh trong cùng gói mẫu
+  // Điều hướng nội bộ và mở liên kết ngoài (Google Maps, Chỉ đường) cho Zalo / Messenger
   useEffect(() => {
     const handleMessage = (event) => {
-      if (!event.data || event.data.type !== 'wedding-web:navigate' || !event.data.file) return
+      if (!event.data) return
+
+      // Mở liên kết chỉ đường Google Maps từ iframe ra ngoài app bản đồ (khắc phục lỗi đứng yên trên Zalo/Messenger WebView)
+      if (event.data.type === 'wedding-web:open-map' || event.data.type === 'wedding-web:open-external-url') {
+        const url = event.data.url
+        if (url) {
+          try {
+            window.location.href = url
+          } catch (_e) {
+            window.open(url, '_blank')
+          }
+        }
+        return
+      }
+
+      if (event.data.type !== 'wedding-web:navigate' || !event.data.file) return
 
       const baseUrl = resolveTemplateUrl(invitation?.template?.html_path)
       if (!baseUrl) return
@@ -238,7 +253,7 @@ const TemplateLoader = () => {
           padding: 0,
           display: 'block',
         }}
-        sandbox="allow-scripts allow-same-origin allow-popups allow-downloads allow-forms allow-modals"
+        sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-top-navigation allow-top-navigation-by-user-activation allow-downloads allow-forms allow-modals"
         title="Wedding Invitation"
       />
     </>

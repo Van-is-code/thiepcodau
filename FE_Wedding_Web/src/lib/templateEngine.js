@@ -892,6 +892,57 @@ const buildDomInjectScript = (editMode) => `
       if (hrefValue) hrefEl.setAttribute('href', hrefValue);
     }
 
+    // Xử lý link chỉ đường Google Maps cho In-App Browser (Zalo, Messenger, Facebook)
+    function wireMapLinks() {
+      var mapLinks = document.querySelectorAll(
+        '[data-field-href="map_url"], [data-field-href="reception_map_url"], a.event-action-pill, a[href*="maps.app.goo.gl"], a[href*="google.com/maps"], a[href*="maps.google.com"]'
+      );
+      for (var mi = 0; mi < mapLinks.length; mi++) {
+        var mapA = mapLinks[mi];
+        if (mapA.__wwMapWired) continue;
+        mapA.__wwMapWired = true;
+
+        mapA.addEventListener('click', function (e) {
+          if (window.__weddingWebEditMode) return;
+
+          var rawHref = this.getAttribute('href');
+          var targetUrl = rawHref;
+
+          if (!targetUrl || targetUrl === '#' || targetUrl.indexOf('javascript:') === 0) {
+            var block = this.closest('.event-moment-node') || this.closest('.timeline-node') || this.closest('article') || this.closest('section') || this.parentElement;
+            var addrEl = block ? block.querySelector('[data-field*="address"], address') : null;
+            if (addrEl && addrEl.textContent.trim()) {
+              targetUrl = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(addrEl.textContent.trim());
+            }
+          }
+          if (!targetUrl || targetUrl === '#') return;
+
+          var ua = (navigator.userAgent || '').toLowerCase();
+          var isMobile = /android|iphone|ipad|ipod/i.test(ua);
+          var isInApp = ua.indexOf('zalo') !== -1 || ua.indexOf('fbav') !== -1 || ua.indexOf('fban') !== -1 || ua.indexOf('messenger') !== -1;
+
+          if (isMobile || isInApp || window !== window.top) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            try {
+              window.parent.postMessage({ type: 'wedding-web:open-map', url: targetUrl }, '*');
+            } catch (_err) {}
+
+            try {
+              if (window.top && window.top !== window) {
+                window.top.location.href = targetUrl;
+                return;
+              }
+            } catch (_err) {}
+
+            window.location.href = targetUrl;
+          }
+        });
+      }
+    }
+    wireMapLinks();
+
     var imageList = data.images || data.invitation_images || [];
     try { syncGallery(imageList); } catch (e) {}
     var imageEls = document.querySelectorAll('[data-image]');
