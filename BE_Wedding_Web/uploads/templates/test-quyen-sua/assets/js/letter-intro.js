@@ -357,26 +357,43 @@
         } catch (err) {}
       }
 
-      // Step 1: Prompt cue fades out smoothly
+            // -----------------------------------------------------------------------
+      // Physical Opening Animation: Sequential Timeline
+      // Flap opens 100% first, then letter card smoothly rises up!
+      // -----------------------------------------------------------------------
       if (typeof gsap !== 'undefined') {
-        gsap.to(promptCue, {
-          duration: 0.2,
+        var openTl = gsap.timeline();
+
+        // 1. Cue prompt fades out immediately & envelope lifts slightly
+        openTl.to(promptCue, {
+          duration: 0.15,
           opacity: 0,
           y: 8,
           ease: "power2.in"
-        });
+        }, 0);
 
-        // Step 2: Physical envelope lifts slightly
-        gsap.to(physicalEnvelope, {
+        openTl.to(physicalEnvelope, {
           duration: 0.35,
-          y: -6,
+          y: -4,
           scale: 1.02,
           ease: "power2.out"
-        });
+        }, 0);
 
-        // Step 3: Top flap folds open in 3D
-        gsap.to(envelopeTopFlap, {
-          duration: 0.7,
+        // 2. Wax seal fades out softly as flap begins to pull open
+        var waxSeal = document.getElementById('envelope-wax-seal');
+        if (waxSeal) {
+          openTl.to(waxSeal, {
+            duration: 0.25,
+            opacity: 0,
+            scale: 1.15,
+            ease: "power1.in"
+          }, 0.08);
+        }
+
+        // 3. Top flap folds OPEN in 3D (0.05s -> 0.65s)
+        // FLAP OPENS FIRST COMPLETELY!
+        openTl.to(envelopeTopFlap, {
+          duration: 0.6,
           rotationX: -180,
           transformOrigin: "top center",
           ease: "power2.inOut",
@@ -388,66 +405,74 @@
               envelopeTopFlap.style.zIndex = "12";
             }
           }
-        });
+        }, 0.05);
 
-        // Step 4: Enclosed stationery card slides up from pocket
-        gsap.to(enclosedCard, {
+        // 4. Enclosed stationery card slides UP from pocket ONLY AFTER flap has opened!
+        // The card smoothly emerges at t = 0.65s!
+        openTl.to(enclosedCard, {
           duration: 0.75,
-          y: -105,
+          y: -125,
           ease: "power2.out",
-          delay: 0.15
-        });
+          onStart: function () {
+            enclosedCard.style.zIndex = "15";
+          }
+        }, 0.65);
 
-        // Step 5: Card expands outward in front of flap
-        gsap.to(enclosedCard, {
-          duration: 0.5,
-          scale: 1.15,
-          zIndex: 15,
-          boxShadow: "0 24px 60px rgba(78, 60, 100, 0.25)",
-          ease: "power2.out",
-          delay: 0.5
-        });
+        // 5. Card expands forward in front of the envelope and gains dramatic luxury depth
+        openTl.to(enclosedCard, {
+          duration: 0.45,
+          scale: 1.12,
+          zIndex: 25,
+          boxShadow: "0 26px 65px rgba(50, 35, 70, 0.28)",
+          ease: "power2.out"
+        }, 1.3);
+
+        // 6. Hold for guest to view the emerged card, then crossfade to main invitation
+        var isStandalone = window.location.pathname.indexOf('intro.html') !== -1 || window.location.pathname.endsWith('/intro');
+
+        if (isStandalone) {
+          openTl.add(function () {
+            var params = new URLSearchParams(window.location.search);
+            params.set('skip_intro', 'true');
+            window.location.href = 'index.html?' + params.toString();
+          }, 2.3);
+        } else {
+          openTl.to(introEl, {
+            duration: 0.7,
+            opacity: 0,
+            ease: "power2.inOut",
+            onComplete: function () {
+              state.deliveryState = 'INVITATION_REVEALED';
+              introEl.classList.add('is-hidden');
+              introEl.style.display = 'none';
+              document.body.classList.remove('intro-active');
+            }
+          }, 2.1);
+        }
       } else {
         // Fallback without GSAP
         envelopeTopFlap.style.transform = 'rotateX(-180deg)';
         envelopeTopFlap.style.zIndex = '1';
-        enclosedCard.style.transform = 'translateY(-105px) scale(1.15)';
-        enclosedCard.style.zIndex = '15';
-      }
-
-      // Step 6: Reveal main invitation
-      var isStandalone = window.location.pathname.indexOf('intro.html') !== -1 || window.location.pathname.endsWith('/intro');
-
-      if (isStandalone) {
         setTimeout(function () {
-          var params = new URLSearchParams(window.location.search);
-          params.set('skip_intro', 'true');
-          window.location.href = 'index.html?' + params.toString();
-        }, 850);
-        return;
-      }
+          enclosedCard.style.transform = 'translateY(-125px) scale(1.12)';
+          enclosedCard.style.zIndex = '25';
+        }, 600);
 
-      // Crossfade intro overlay to reveal main wedding invitation
-      if (typeof gsap !== 'undefined') {
-        gsap.to(introEl, {
-          duration: 0.65,
-          opacity: 0,
-          ease: "power2.inOut",
-          delay: 0.85,
-          onComplete: function () {
+        var isStandalone = window.location.pathname.indexOf('intro.html') !== -1 || window.location.pathname.endsWith('/intro');
+        if (isStandalone) {
+          setTimeout(function () {
+            var params = new URLSearchParams(window.location.search);
+            params.set('skip_intro', 'true');
+            window.location.href = 'index.html?' + params.toString();
+          }, 2200);
+        } else {
+          setTimeout(function () {
             state.deliveryState = 'INVITATION_REVEALED';
             introEl.classList.add('is-hidden');
             introEl.style.display = 'none';
             document.body.classList.remove('intro-active');
-          }
-        });
-      } else {
-        setTimeout(function () {
-          state.deliveryState = 'INVITATION_REVEALED';
-          introEl.classList.add('is-hidden');
-          introEl.style.display = 'none';
-          document.body.classList.remove('intro-active');
-        }, 850);
+          }, 2200);
+        }
       }
     }
   }

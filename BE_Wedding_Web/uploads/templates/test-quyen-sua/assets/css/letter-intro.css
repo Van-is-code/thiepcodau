@@ -350,6 +350,7 @@ body.intro-active {
 
 /* Resting subtle breath pulse after ready */
 .wedding-letter-intro.is-ready-to-open:not(.is-opening) .physical-envelope {
+  perspective: 1200px;
   animation: envelopeShadowPulse 3.5s ease-in-out infinite alternate;
 }
 
