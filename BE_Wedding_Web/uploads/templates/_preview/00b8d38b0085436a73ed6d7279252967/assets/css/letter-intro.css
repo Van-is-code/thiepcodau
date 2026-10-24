@@ -1,4 +1,4 @@
-/* ==========================================================================
+﻿/* ==========================================================================
    WEDDING LETTER INTRO — DOVES DELIVER THE WEDDING LETTER
    Masterpiece Botanical Watercolor Stationery & 60 FPS GSAP Motion Engine
    Source of Truth: Reference Storyboard (media_1789570012744.jpg)
@@ -519,23 +519,23 @@ body.intro-active {
 /* Botanical Corner Flourishes on Envelope (Matching Reference Panel 4 & 5) */
 .envelope-corner-decor {
   position: absolute;
-  width: 72px;
-  height: 72px;
-  opacity: 0.82;
+  width: 78px;
+  height: 78px;
+  opacity: 0.92;
   pointer-events: none;
   z-index: 9;
   object-fit: contain;
 }
 
 .envelope-decor-bl {
-  bottom: 2px;
-  left: 2px;
+  bottom: 0px;
+  left: 0px;
   transform: none;
 }
 
 .envelope-decor-tr {
-  top: 2px;
-  right: 2px;
+  top: 0px;
+  right: 0px;
   transform: none;
 }
 
