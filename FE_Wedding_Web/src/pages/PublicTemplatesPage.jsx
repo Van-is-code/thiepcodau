@@ -649,6 +649,7 @@ export default function PublicTemplatesPage() {
   const [tab, setTab] = useState('all') // 'all', 'music'
   const [creatingId, setCreatingId] = useState('')
   const [promptLoginModal, setPromptLoginModal] = useState(null)
+  const [selectedTemplateForSlug, setSelectedTemplateForSlug] = useState(null)
 
   const token = localStorage.getItem('token')
 
@@ -694,6 +695,20 @@ export default function PublicTemplatesPage() {
     })
   }, [templates, search, tab])
 
+    const handleConfirmCreateWithSlug = async (slug) => {
+    const tpl = selectedTemplateForSlug
+    if (!tpl) return
+    try {
+      setCreatingId(tpl.id)
+      const res = await api.createDraftInvitation(tpl.id, { slug })
+      const invitation = res.data?.data || res.data
+      navigate('/editor/' + invitation.id)
+    } catch (err) {
+      alert(err?.response?.data?.message || err.message || 'Không thể tạo thiệp từ mẫu này')
+    } finally {
+      setCreatingId('')
+    }
+  }
   const handleUseTemplate = (tpl) => {
     if (creatingId) return
 
