@@ -1239,13 +1239,13 @@ button {
 
 .cd-stationery-eyebrow {
   font-family: var(--font-primary);
-  font-size: 11px;
+  font-size: clamp(13px, 3.6vw, 15px);
   font-weight: 700;
-  letter-spacing: 0.28em;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
   color: #2D587B;
   display: block;
-  margin-top: 8px;
+  margin-top: 6px;
   margin-bottom: 4px;
 }
 
@@ -1280,11 +1280,11 @@ button {
 
 .cd-stationery-date-row {
   font-family: var(--font-primary);
-  font-size: clamp(23px, 6.5vw, 27px);
-  font-weight: 700;
-  letter-spacing: 0.1em;
+  font-size: clamp(18px, 4.8vw, 21px);
+  font-weight: 600;
+  letter-spacing: 0.08em;
   color: #26435F;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -1315,12 +1315,12 @@ button {
 
 .cd-stationery-lead {
   font-family: var(--font-primary);
-  font-size: 9.5px;
+  font-size: clamp(11.5px, 3.1vw, 13px);
   font-weight: 600;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   color: #4A5568;
-  margin: 0 0 12px 0;
+  margin: 0 0 10px 0;
 }
 
 /* Front Envelope Pocket Overlay */
