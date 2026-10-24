@@ -628,22 +628,9 @@ body.intro-active {
   pointer-events: none;
 }
 
-.top-flap-inner-lining {
-  position: absolute;
-  inset: 0;
-  clip-path: polygon(0 0, 100% 0, 50% 100%);
-  background-color: #E6DCED;
-  background-image: url('../images/intro-envelope-lining.png');
-  background-size: cover;
-  background-position: center;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.25s ease;
-}
+.top-flap-inner-lining { display: none !important; }
 
-.wedding-letter-intro.is-opening .top-flap-inner-lining {
-  opacity: 1;
-}
+
 
 /* Crisp Lilac Wax Seal with Embossed Botanical Sprig */
 .wax-seal {
