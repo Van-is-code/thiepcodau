@@ -656,7 +656,8 @@ body.intro-active {
   border-top-left-radius: 6px;
   border-top-right-radius: 6px;
   border-top: 1px solid rgba(255, 255, 255, 0.95);
-  backface-visibility: hidden;
+  backface-visibility: visible;
+  -webkit-backface-visibility: visible;
 }
 
 .flap-crease-svg {

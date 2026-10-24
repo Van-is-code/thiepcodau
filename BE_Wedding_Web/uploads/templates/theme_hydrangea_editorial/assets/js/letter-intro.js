@@ -387,6 +387,14 @@
 
         // 2. Wax seal fades out softly as flap begins to pull open
         var waxSeal = document.getElementById('envelope-wax-seal');
+        if (recipientBox) {
+          openTl.to(recipientBox, {
+            duration: 0.25,
+            opacity: 0,
+            ease: "power1.in"
+          }, 0.08);
+        }
+
         if (waxSeal) {
           openTl.to(waxSeal, {
             duration: 0.25,
@@ -406,7 +414,7 @@
           onUpdate: function () {
             var rot = gsap.getProperty(envelopeTopFlap, "rotationX");
             if (rot <= -85) {
-              envelopeTopFlap.style.zIndex = "1";
+              envelopeTopFlap.style.zIndex = "5";
             } else {
               envelopeTopFlap.style.zIndex = "12";
             }
