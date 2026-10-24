@@ -922,7 +922,14 @@ const buildDomInjectScript = (editMode) => `
       if (key === 'bank_qr') imgEl.style.removeProperty('display');
 
       if (!item || !item.image_url) {
-        // Chưa có ảnh thật: ở chế độ sửa thì thay ảnh mẫu có sẵn trong file template bằng
+        // Chưa có ảnh thật:
+        // Nếu phần tử có data-preserve-default (ví dụ: ảnh mini polaroid đính kèm thiệp thư),
+        // giữ ảnh mẫu mặc định để không bị đè icon trống làm méo layout, nhưng vẫn cho phép bấm để đổi ảnh.
+        if (imgEl.hasAttribute('data-preserve-default') || (imgEl.closest && imgEl.closest('[data-preserve-default]'))) {
+          continue;
+        }
+
+        // Ở chế độ sửa thì thay ảnh mẫu có sẵn trong file template bằng
         // khung ảnh trống để chủ thiệp biết bấm vào đây tải ảnh lên; ở chế độ xem (khách
         // mời) thì GIỮ NGUYÊN ảnh mẫu, không lộ khung "chưa có ảnh" ra trước mặt khách.
         if (EDIT_MODE) {
