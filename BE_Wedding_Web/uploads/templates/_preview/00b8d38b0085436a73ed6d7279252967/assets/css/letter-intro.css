@@ -542,9 +542,9 @@ body.intro-active {
 /* Recipient Plaque (On Top Flap Face, above the wax seal) */
 .recipient-box {
   position: absolute;
-  top: 6px;
-  left: 6px;
-  right: 6px;
+  top: 14px;
+  left: 8px;
+  right: 8px;
   z-index: 6;
   text-align: center;
   padding: 0 4px;
@@ -563,35 +563,35 @@ body.intro-active {
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--intro-hydrangea-mid);
-  margin-bottom: 0px;
+  margin-bottom: 2px;
   line-height: 1.2;
 }
 
 .recipient-name {
   font-family: var(--intro-font-script, 'Alex Brush', cursive) !important;
-  font-size: clamp(20px, 5.2vw, 25px);
+  font-size: clamp(21px, 5.5vw, 26px);
   font-weight: 400;
   letter-spacing: 0.01em;
   color: var(--intro-hydrangea-deep, #4E3C64);
   text-transform: capitalize;
-  margin: 0 auto 1px;
-  line-height: 1.15;
+  margin: 0 auto 2px;
+  line-height: 1.2;
   white-space: normal;
   word-wrap: break-word;
-  max-width: 94%;
+  max-width: 92%;
   display: block;
 }
 
 .recipient-name.is-long {
-  font-size: clamp(17px, 4.5vw, 21px) !important;
-  line-height: 1.12;
+  font-size: clamp(17px, 4.4vw, 21px) !important;
+  line-height: 1.15;
 }
 
 .recipient-rule {
-  width: 24px;
+  width: 26px;
   height: 1px;
   background: linear-gradient(to right, transparent, rgba(122, 104, 144, 0.4), transparent);
-  margin: 2px auto 0;
+  margin: 3px auto 0;
 }
 
 /* Top Flap (Flips open in 3D, sits on top of front pocket until opened) */
