@@ -471,16 +471,38 @@ export default function EditorPage() {
 
   const openMusicPanel = openPanel(setMusicPanel)
 
-  // Sau khi quét + lưu QR (1 QR chung cả thiệp): cập nhật extra_data.bank + lưu ảnh QR
-  // vào mục Quà cưới (image_type: bank_qr) + đẩy vào iframe để hiện ngay.
+  // Sau khi quét + lưu QR mừng cưới (hỗ trợ cả cô dâu & chú rể + chọn chế độ hiển thị):
+  // Cập nhật extra_data.bank + đẩy vào iframe để hiển thị ngay lập tức.
   const handleBankSaved = async (info) => {
     setBankPanel(false)
-    setInvitation((prev) => ({ ...prev, extra_data: { ...(prev.extra_data || {}), bank: info.bank } }))
-    if (info.qrImage) {
-      const file = dataUriToFile(info.qrImage, 'bank-qr.png')
-      if (file) await saveImage('bank_qr', null, file)
+    const nextInv = {
+      ...invitation,
+      extra_data: { ...(invitation.extra_data || {}), bank: info.bank },
+      bank: info.bank,
     }
-    await modal.alert({ tone: 'success', title: 'Đã lưu QR', message: 'Mã QR & tài khoản ngân hàng đã lưu vào mục Quà cưới của thiệp.' })
+    if (info.bank?.groom && nextInv.groom) {
+      nextInv.groom = { ...nextInv.groom, ...info.bank.groom }
+    }
+    if (info.bank?.bride && nextInv.bride) {
+      nextInv.bride = { ...nextInv.bride, ...info.bank.bride }
+    }
+
+    setInvitation(nextInv)
+    pushToIframe(nextInv, pending)
+
+    // Đồng bộ ảnh QR nếu có dạng data URI
+    try {
+      if (info.groomQr && typeof info.groomQr === 'string' && info.groomQr.startsWith('data:image')) {
+        const fileGroom = dataUriToFile(info.groomQr, 'bank-qr-groom.png')
+        if (fileGroom) await saveImage('bank_qr', 0, fileGroom)
+      }
+      if (info.brideQr && typeof info.brideQr === 'string' && info.brideQr.startsWith('data:image')) {
+        const fileBride = dataUriToFile(info.brideQr, 'bank-qr-bride.png')
+        if (fileBride) await saveImage('bank_qr', 1, fileBride)
+      }
+    } catch (_err) {}
+
+    await modal.alert({ tone: 'success', title: 'Đã lưu QR mừng cưới', message: 'Mã QR & tài khoản ngân hàng đã được lưu và cập nhật vào thiệp.' })
   }
 
   // Sau khi lưu nhạc: cập nhật music_url + playlist + music_settings local + đẩy vào iframe.

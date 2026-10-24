@@ -209,8 +209,8 @@
     }
   }
 
-  /* ------------------------------------------------------------------ */
-  /* 4. Stationery Gift Popup Modal                                     */
+      /* ------------------------------------------------------------------ */
+  /* 4. Stationery Gift Popup Modal (Hộp quà mừng cưới)                */
   /* ------------------------------------------------------------------ */
   function initGiftModal() {
     var modal = document.getElementById('gift-modal');
@@ -221,10 +221,14 @@
     var accNum = document.getElementById('gift-modal-acc-num');
     var accName = document.getElementById('gift-modal-acc-name');
     var copyBtn = document.getElementById('gift-modal-copy-btn');
+    var tabsRow = document.querySelector('.recipient-switcher-row');
+    var tabBride = document.querySelector('.recipient-tab[data-recipient="bride"]');
+    var tabGroom = document.querySelector('.recipient-tab[data-recipient="groom"]');
     var tabs = document.querySelectorAll('.recipient-tab');
 
     if (!modal) return;
 
+    var currentRecipient = 'bride';
     var accounts = {
       bride: {
         qr: 'assets/images/qr_bride.png',
@@ -241,14 +245,15 @@
     };
 
     function switchRecipient(key) {
-      var data = accounts[key];
+      currentRecipient = key;
+      var data = accounts[key] || accounts.bride || accounts.groom;
       if (!data) return;
 
       if (qrImg) qrImg.src = data.qr;
-      if (bankName) bankName.textContent = data.bank;
-      if (accNum) accNum.textContent = data.acc;
-      if (accName) accName.textContent = data.name;
-      if (copyBtn) copyBtn.setAttribute('data-copy-account', data.acc);
+      if (bankName) bankName.textContent = data.bank || '';
+      if (accNum) accNum.textContent = data.acc || '';
+      if (accName) accName.textContent = data.name || '';
+      if (copyBtn) copyBtn.setAttribute('data-copy-account', data.acc || '');
 
       tabs.forEach(function (tab) {
         var isCurrent = tab.getAttribute('data-recipient') === key;
@@ -264,10 +269,120 @@
       });
     });
 
+    function updateGiftModal(data) {
+      var inv = data || window.invitationData || {};
+      var extraBank = (inv.extra_data && inv.extra_data.bank) || inv.bank || {};
+      var groomBank = extraBank.groom || {};
+      var brideBank = extraBank.bride || {};
+
+      // Detect QR images from invitation images array
+      var imgList = inv.images || inv.invitation_images || [];
+      var groomQrFromImages = null;
+      var brideQrFromImages = null;
+      for (var i = 0; i < imgList.length; i++) {
+        var im = imgList[i];
+        if (im && im.image_type === 'bank_qr' && im.image_url) {
+          if (im.sort_order === 1) brideQrFromImages = im.image_url;
+          else if (im.sort_order === 0) groomQrFromImages = im.image_url;
+          else if (!groomQrFromImages) groomQrFromImages = im.image_url;
+          else if (!brideQrFromImages) brideQrFromImages = im.image_url;
+        }
+      }
+
+      // Names & Tab Labels
+      var groomName = (inv.groom_name || (inv.groom && inv.groom.name_groom) || 'Chú Rể').trim();
+      var brideName = (inv.bride_name || (inv.bride && inv.bride.name_bride) || 'Cô Dâu').trim();
+      var groomShort = inv.groom_short_name || groomName.split(/\s+/).pop() || '';
+      var brideShort = inv.bride_short_name || brideName.split(/\s+/).pop() || '';
+
+      var groomTabLabel = 'Chú Rể';
+      if (groomShort && groomShort.toLowerCase() !== 'rể' && groomShort.toLowerCase() !== 'chú rể') {
+        groomTabLabel += ' ' + groomShort;
+      } else if (groomName && groomName.toLowerCase() !== 'chú rể') {
+        groomTabLabel += ' ' + groomName;
+      }
+
+      var brideTabLabel = 'Cô Dâu';
+      if (brideShort && brideShort.toLowerCase() !== 'dâu' && brideShort.toLowerCase() !== 'cô dâu') {
+        brideTabLabel += ' ' + brideShort;
+      } else if (brideName && brideName.toLowerCase() !== 'cô dâu') {
+        brideTabLabel += ' ' + brideName;
+      }
+
+      if (tabBride) tabBride.textContent = brideTabLabel;
+      if (tabGroom) tabGroom.textContent = groomTabLabel;
+
+      // Groom Account
+      var gQr = groomBank.qr_image || groomQrFromImages || 'assets/images/qr_groom.png';
+      var gBank = groomBank.bank_short_name || groomBank.bank_name || (inv.groom && inv.groom.bank_name) || (extraBank.bank_short_name || extraBank.bank_name) || 'VIETCOMBANK';
+      var gAcc = groomBank.bank_account_number || (inv.groom && inv.groom.bank_account_number) || (extraBank.bank_account_number) || '0071000889900';
+      var gName = groomBank.bank_account_name || (inv.groom && inv.groom.bank_account_name) || (extraBank.bank_account_name) || groomName.toUpperCase() || 'DUONG DUY NAM';
+
+      // Bride Account
+      var bQr = brideBank.qr_image || brideQrFromImages || 'assets/images/qr_bride.png';
+      var bBank = brideBank.bank_short_name || brideBank.bank_name || (inv.bride && inv.bride.bank_name) || (extraBank.bank_short_name || extraBank.bank_name) || 'TECHCOMBANK';
+      var bAcc = brideBank.bank_account_number || (inv.bride && inv.bride.bank_account_number) || (extraBank.bank_account_number) || '19033445566778';
+      var bName = brideBank.bank_account_name || (inv.bride && inv.bride.bank_account_name) || (extraBank.bank_account_name) || brideName.toUpperCase() || 'NGUYEN VAN ANH';
+
+      accounts = {
+        groom: { qr: gQr, bank: gBank, acc: gAcc, name: gName },
+        bride: { qr: bQr, bank: bBank, acc: bAcc, name: bName }
+      };
+
+      // Determine display mode: 'both' | 'groom' | 'bride'
+      var mode = extraBank.display_mode;
+      if (!mode) {
+        var hasRealGroom = Boolean(groomBank.bank_account_number || (inv.groom && inv.groom.bank_account_number));
+        var hasRealBride = Boolean(brideBank.bank_account_number || (inv.bride && inv.bride.bank_account_number));
+        if (hasRealGroom && !hasRealBride) mode = 'groom';
+        else if (hasRealBride && !hasRealGroom) mode = 'bride';
+        else mode = 'both';
+      }
+
+      if (mode === 'groom') {
+        // Chỉ hiển thị Chú rể: ẩn nút chuyển chọn ("không có cái chọn này"), hiển thị trực tiếp Chú rể
+        if (tabsRow) tabsRow.style.display = 'none';
+        switchRecipient('groom');
+      } else if (mode === 'bride') {
+        // Chỉ hiển thị Cô dâu: ẩn nút chuyển chọn ("không có cái chọn này"), hiển thị trực tiếp Cô dâu
+        if (tabsRow) tabsRow.style.display = 'none';
+        switchRecipient('bride');
+      } else {
+        // Hiển thị cả hai: có nút chọn (tabs switcher) để khách chọn người nhận
+        if (tabsRow) tabsRow.style.display = 'flex';
+        var nextActive = (currentRecipient === 'groom') ? 'groom' : 'bride';
+        switchRecipient(nextActive);
+      }
+    }
+
+    // Expose for external live update from templateEngine
+    window.__wwUpdateGiftModal = updateGiftModal;
+
+    // Run initially
+    updateGiftModal(window.invitationData);
+
+    // 1-Click Copy STK
+    if (copyBtn) {
+      copyBtn.addEventListener('click', function () {
+        var acc = copyBtn.getAttribute('data-copy-account') || (accNum ? accNum.textContent.trim() : '');
+        if (!acc) return;
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(acc).then(function () {
+            showToast('✓ Đã sao chép số tài khoản: ' + acc);
+          }).catch(function () {
+            prompt('Sao chép số tài khoản:', acc);
+          });
+        } else {
+          prompt('Sao chép số tài khoản:', acc);
+        }
+      });
+    }
+
     function openModal() {
       modal.classList.add('is-open');
       modal.setAttribute('aria-hidden', 'false');
       document.body.style.overflow = 'hidden';
+      updateGiftModal(window.invitationData);
     }
 
     function closeModal() {

@@ -166,6 +166,28 @@ export const buildMergedData = (invitation) => {
     data.wishes = invitation.wishes
   }
 
+  const extraBank = invitation?.extra_data?.bank || invitation?.bank || {}
+  data.bank = {
+    ...extraBank,
+    display_mode: extraBank.display_mode || 'both',
+    groom: {
+      bank_name: extraBank.groom?.bank_name || invitation?.groom?.bank_name || '',
+      bank_short_name: extraBank.groom?.bank_short_name || '',
+      bank_account_number: extraBank.groom?.bank_account_number || invitation?.groom?.bank_account_number || '',
+      bank_account_name: extraBank.groom?.bank_account_name || invitation?.groom?.bank_account_name || '',
+      qr_content: extraBank.groom?.qr_content || '',
+      qr_image: extraBank.groom?.qr_image || '',
+    },
+    bride: {
+      bank_name: extraBank.bride?.bank_name || invitation?.bride?.bank_name || '',
+      bank_short_name: extraBank.bride?.bank_short_name || '',
+      bank_account_number: extraBank.bride?.bank_account_number || invitation?.bride?.bank_account_number || '',
+      bank_account_name: extraBank.bride?.bank_account_name || invitation?.bride?.bank_account_name || '',
+      qr_content: extraBank.bride?.qr_content || '',
+      qr_image: extraBank.bride?.qr_image || '',
+    },
+  }
+
   return data
 }
 
@@ -905,6 +927,9 @@ const buildDomInjectScript = (editMode) => `
       // Nên xoá hẳn ảnh và ẩn ô đi ở chế độ xem; chế độ sửa thì hiện khung trống
       // để chủ thiệp biết chỗ cần tải mã QR lên.
       if (key === 'bank_qr' && (!item || !item.image_url)) {
+        if (imgEl.hasAttribute('data-preserve-default') || (imgEl.closest && imgEl.closest('[data-preserve-default]'))) {
+          continue;
+        }
         bgTarget.style.removeProperty('background-image');
         if (imgEl.tagName === 'IMG') {
           imgEl.removeAttribute('srcset');
@@ -980,6 +1005,11 @@ const buildDomInjectScript = (editMode) => `
     try { renderCeremonyCalendar(data); } catch (e) {}
     try { renderTimeline(data); } catch (e) {}
     try { renderQrPopup(data); } catch (e) {}
+    try {
+      if (typeof window.__wwUpdateGiftModal === 'function') {
+        window.__wwUpdateGiftModal(data);
+      }
+    } catch (e) {}
     try { updateCountdownTimer(data); } catch (e) {}
 
     var mSettings = data.music_settings || (data.extra_data && data.extra_data.music_settings) || {};

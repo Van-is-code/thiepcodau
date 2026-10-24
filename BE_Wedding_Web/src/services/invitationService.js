@@ -617,7 +617,7 @@ const setMusic = async (id, body, actor) => {
 	return withLockState(await findRaw(id));
 };
 
-// Lưu thông tin tài khoản ngân hàng mừng cưới (1 QR chung cho cả thiệp).
+// Lưu thông tin tài khoản ngân hàng mừng cưới (hỗ trợ cả 2 bên cô dâu - chú rể và chọn chế độ hiển thị).
 // Không tính vào hạn mức sửa; vẫn chặn khi thiệp đã khoá.
 const setBank = async (id, body, actor) => {
 	const item = await findRaw(id);
@@ -626,6 +626,23 @@ const setBank = async (id, body, actor) => {
 	ensureNotLocked(item, actor);
 
 	const bank = {
+		display_mode: body?.display_mode || 'both',
+		groom: body?.groom ? {
+			bank_name: String(body.groom.bank_name || '').trim(),
+			bank_short_name: String(body.groom.bank_short_name || '').trim(),
+			bank_account_number: String(body.groom.bank_account_number || '').trim(),
+			bank_account_name: String(body.groom.bank_account_name || '').trim(),
+			qr_content: String(body.groom.qr_content || '').trim(),
+			qr_image: String(body.groom.qr_image || ''),
+		} : null,
+		bride: body?.bride ? {
+			bank_name: String(body.bride.bank_name || '').trim(),
+			bank_short_name: String(body.bride.bank_short_name || '').trim(),
+			bank_account_number: String(body.bride.bank_account_number || '').trim(),
+			bank_account_name: String(body.bride.bank_account_name || '').trim(),
+			qr_content: String(body.bride.qr_content || '').trim(),
+			qr_image: String(body.bride.qr_image || ''),
+		} : null,
 		bank_name: String(body?.bank_name || '').trim(),
 		bank_short_name: String(body?.bank_short_name || '').trim(),
 		bank_account_number: String(body?.bank_account_number || '').trim(),
@@ -636,6 +653,27 @@ const setBank = async (id, body, actor) => {
 	item.extra_data = { ...(item.extra_data || {}), bank };
 	if (Invitation.rawAttributes.updated_at) item.updated_at = new Date();
 	await item.save();
+
+	// Đồng bộ thông tin ngân hàng sang bảng Groom / Bride nếu có
+	if (item.groom_id && bank.groom) {
+		const groom = await Groom.findByPk(item.groom_id);
+		if (groom) {
+			if (bank.groom.bank_name) groom.bank_name = bank.groom.bank_name;
+			if (bank.groom.bank_account_name) groom.bank_account_name = bank.groom.bank_account_name;
+			if (bank.groom.bank_account_number) groom.bank_account_number = bank.groom.bank_account_number;
+			await groom.save();
+		}
+	}
+	if (item.bride_id && bank.bride) {
+		const bride = await Bride.findByPk(item.bride_id);
+		if (bride) {
+			if (bank.bride.bank_name) bride.bank_name = bank.bride.bank_name;
+			if (bank.bride.bank_account_name) bride.bank_account_name = bank.bride.bank_account_name;
+			if (bank.bride.bank_account_number) bride.bank_account_number = bank.bride.bank_account_number;
+			await bride.save();
+		}
+	}
+
 	return withLockState(await findRaw(id));
 };
 
