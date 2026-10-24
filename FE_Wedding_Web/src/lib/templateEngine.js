@@ -151,6 +151,15 @@ export const buildMergedData = (invitation) => {
   addDateParts(data, invitation?.ceremony_date, 'ceremony')
   addDateParts(data, invitation?.reception_date, 'reception')
 
+  // Giờ lễ cưới (Lễ Thành Hôn): luôn giữ nguyên theo thiết lập của thiệp, không bị thay đổi theo khách mời
+  const explicitCeremonyTime = invitation?.ceremony_time || invitation?.extra_data?.ceremony_time
+  if (explicitCeremonyTime && String(explicitCeremonyTime).trim()) {
+    data.ceremony_time = String(explicitCeremonyTime).trim()
+  }
+  if (data.ceremony_weekday && data.ceremony_time) {
+    data.ceremony_time_weekday = `${data.ceremony_time}, ${data.ceremony_weekday}`
+  }
+
   // Giờ tiệc cưới: ưu tiên reception_time từ invitation/link riêng (?time=...) hoặc extra_data.
   // Tránh việc reception_date kiểu DATEONLY (UTC 00:00) ghi đè làm reception_time bị biến thành 00:00.
   const explicitRecTime = invitation?.reception_time || invitation?.extra_data?.reception_time
@@ -216,7 +225,7 @@ const CEREMONY_DATE_ALIASES = new Set([
 ])
 const RECEPTION_DATE_ALIASES = new Set([
   'reception_day', 'reception_month', 'reception_month_en', 'reception_year',
-  'reception_weekday', 'reception_time_weekday', 'reception_short', 'reception_month_num', 'reception_year_num', 'reception_time', 'reception_weekday_date', 'reception_full_date',
+  'reception_weekday', 'reception_time_weekday', 'reception_short', 'reception_month_num', 'reception_year_num', 'reception_weekday_date', 'reception_full_date',
 ])
 const INVITATION_TEXT_FIELDS = new Set([
   'title_vi', 'title_en', 'venue_address', 'map_url',
@@ -239,6 +248,7 @@ export const resolveWriteTarget = (fieldKey) => {
   // lên extra_data khi gộp dữ liệu).
   if (fieldKey === 'ceremony_date') return { scope: 'invitation', column: 'ceremony_date', widget: 'datetime' }
   if (fieldKey === 'reception_date') return { scope: 'invitation', column: 'reception_date', widget: 'date' }
+  if (fieldKey === 'reception_time') return { scope: 'extra_data', column: 'reception_time', widget: 'text' }
   if (CEREMONY_DATE_ALIASES.has(fieldKey)) return { scope: 'invitation', column: 'ceremony_date', widget: 'datetime' }
   if (RECEPTION_DATE_ALIASES.has(fieldKey)) return { scope: 'invitation', column: 'reception_date', widget: 'date' }
   if (INVITATION_TEXT_FIELDS.has(fieldKey)) return { scope: 'invitation', column: fieldKey, widget: 'text' }
@@ -814,13 +824,40 @@ const buildDomInjectScript = (editMode) => `
       }
     } catch (_e) {}
 
-    // Đồng bộ giờ tiệc vào các element hiển thị giờ
+    // Đồng bộ giờ tiệc vào các element hiển thị giờ tiệc cưới (CHỈ áp dụng cho TIỆC CƯỚI, tuyệt đối KHÔNG đè lên LỄ THÀNH HÔN)
     if (data.reception_time) {
-      var exactTimeEls = document.querySelectorAll('[data-field="reception_time"], .event-exact-time, #reception-time');
+      var exactTimeEls = document.querySelectorAll('[data-field="reception_time"], #reception-time');
       for (var etIdx = 0; etIdx < exactTimeEls.length; etIdx++) {
         var etEl = exactTimeEls[etIdx];
         if (etEl === document.activeElement) continue;
+        if (etEl.getAttribute('data-field') === 'ceremony_time') continue;
+        if (etEl.closest && (etEl.closest('[data-field="ceremony_time"]') || etEl.closest('.scene-ceremony'))) continue;
         etEl.textContent = data.reception_time;
+      }
+    }
+
+    // Đồng bộ giờ lễ vào các element hiển thị giờ Lễ Thành Hôn (giữ nguyên giờ lễ chính thức của thiệp, không bị thay đổi theo khách mời)
+    if (data.ceremony_time) {
+      var ceremonyTimeEls = document.querySelectorAll('[data-field="ceremony_time"], #ceremony-time');
+      for (var ctIdx = 0; ctIdx < ceremonyTimeEls.length; ctIdx++) {
+        var ctEl = ceremonyTimeEls[ctIdx];
+        if (ctEl === document.activeElement) continue;
+        if (ctEl.getAttribute('data-field') === 'reception_time') continue;
+        ctEl.textContent = data.ceremony_time;
+      }
+    }
+
+    // Xử lý các element có class .event-exact-time nhưng không có data-field
+    var exactFallbackEls = document.querySelectorAll('.event-exact-time:not([data-field])');
+    for (var efIdx = 0; efIdx < exactFallbackEls.length; efIdx++) {
+      var efEl = exactFallbackEls[efIdx];
+      if (efEl === document.activeElement) continue;
+      var parentNode = efEl.closest ? (efEl.closest('.event-moment-node') || efEl.closest('article') || efEl.closest('section')) : null;
+      var parentText = parentNode ? parentNode.textContent : '';
+      if (parentText.indexOf('TIỆC CƯỚI') !== -1 && data.reception_time) {
+        efEl.textContent = data.reception_time;
+      } else if (parentText.indexOf('LỄ THÀNH HÔN') !== -1 && data.ceremony_time) {
+        efEl.textContent = data.ceremony_time;
       }
     }
 
@@ -1696,16 +1733,20 @@ const EDIT_MODE_SCRIPT = `
 
     var mask = document.createElement('div');
     mask.className = 'ww-dp-mask';
-    var titleTxt = group === 'ceremony' ? 'Chọn ngày & giờ Lễ cưới' : 'Chọn ngày Đãi tiệc';
+    var titleTxt = group === 'ceremony' ? 'Chọn ngày & giờ Lễ cưới' : 'Chọn ngày & giờ Đãi tiệc';
+    var curTimeVal = '11:00';
+    if (group === 'ceremony') {
+      curTimeVal = (raw ? (pad(base.getUTCHours()) + ':' + pad(base.getUTCMinutes())) : '10:15');
+    } else {
+      curTimeVal = data.reception_time || (raw ? (pad(base.getUTCHours()) + ':' + pad(base.getUTCMinutes())) : '11:00');
+    }
     mask.innerHTML =
       '<div class="ww-dp">' +
         '<div class="ww-dp-hd"><span>' + titleTxt + '</span><button data-x>&times;</button></div>' +
         '<div class="ww-dp-bd">' +
           '<div class="ww-dp-nav"><button data-prev>&lsaquo;</button><span data-mlabel></span><button data-next>&rsaquo;</button></div>' +
           '<div class="ww-dp-grid" data-grid></div>' +
-          (group === 'ceremony'
-            ? '<div class="ww-dp-time">🕒 <input type="time" data-time value="' + hh + ':' + mi + '"></div>'
-            : '') +
+          '<div class="ww-dp-time">🕒 <input type="time" data-time value="' + curTimeVal + '"></div>' +
         '</div>' +
         '<div class="ww-dp-ft"><button class="ww-dp-cancel" data-x>Huỷ</button><button class="ww-dp-ok" data-ok>Xong</button></div>' +
       '</div>';
@@ -1737,12 +1778,14 @@ const EDIT_MODE_SCRIPT = `
       if (db) { sel = { y: viewY, m: viewM, d: Number(db.getAttribute('data-d')) }; draw(); return; }
       if (t.closest('[data-ok]')) {
         var t2 = mask.querySelector('[data-time]');
-        var parts = t2 ? String(t2.value || '16:00').split(':') : ['16', '00'];
+        var defaultTimeFallback = group === 'ceremony' ? '10:15' : '11:00';
+        var parts = t2 ? String(t2.value || defaultTimeFallback).split(':') : defaultTimeFallback.split(':');
         var iso = sel.y + '-' + pad(sel.m + 1) + '-' + pad(sel.d);
         if (group === 'ceremony') {
           post({ field: 'ceremony_date', kind: 'field', value: iso + 'T' + pad(parts[0]) + ':' + pad(parts[1]) + ':00Z' });
         } else {
           post({ field: 'reception_date', kind: 'field', value: iso });
+          post({ field: 'reception_time', kind: 'field', value: pad(parts[0]) + ':' + pad(parts[1]) });
         }
         mask.remove();
       }
