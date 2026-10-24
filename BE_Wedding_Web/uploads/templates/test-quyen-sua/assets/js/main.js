@@ -501,14 +501,21 @@
 
       // 1. Initial display from cache or preloaded wishes
       try {
-        var local = localStorage.getItem(storageKey);
-        if (local) {
-          var parsed = JSON.parse(local);
-          if (Array.isArray(parsed) && parsed.length > 0) {
-            renderEntries(sortWishesDesc(parsed));
+        if (Array.isArray(currentInv.wishes)) {
+          if (currentInv.wishes.length > 0) {
+            renderEntries(sortWishesDesc(currentInv.wishes));
+          } else {
+            renderEntries([]);
+            try { localStorage.removeItem(storageKey); } catch (e) {}
           }
-        } else if (Array.isArray(currentInv.wishes) && currentInv.wishes.length > 0) {
-          renderEntries(sortWishesDesc(currentInv.wishes));
+        } else {
+          var local = localStorage.getItem(storageKey);
+          if (local) {
+            var parsed = JSON.parse(local);
+            if (Array.isArray(parsed) && parsed.length > 0) {
+              renderEntries(sortWishesDesc(parsed));
+            }
+          }
         }
       } catch (e) {}
 
@@ -523,6 +530,7 @@
                 try { localStorage.setItem(storageKey, JSON.stringify(json.data)); } catch (e) {}
               } else {
                 renderEntries([]);
+                try { localStorage.removeItem(storageKey); } catch (e) {}
               }
             }
           })

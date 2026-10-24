@@ -380,9 +380,14 @@
         fetch(apiBase + '/api/messages-checkins/public/' + invId)
           .then(function (r) { return r.json(); })
           .then(function (json) {
-            if (json && json.success && Array.isArray(json.data) && json.data.length > 0) {
-              renderEntries(sortWishesDesc(json.data));
-              try { localStorage.setItem(storageKey, JSON.stringify(json.data)); } catch (e) {}
+            if (json && json.success && Array.isArray(json.data)) {
+              if (json.data.length > 0) {
+                renderEntries(sortWishesDesc(json.data));
+                try { localStorage.setItem(storageKey, JSON.stringify(json.data)); } catch (e) {}
+              } else {
+                renderEntries([]);
+                try { localStorage.removeItem(storageKey); } catch (e) {}
+              }
             }
           })
           .catch(function () {});
