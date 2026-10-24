@@ -827,7 +827,14 @@ const buildDomInjectScript = (editMode) => `
     if (effectiveGuestName && effectiveGuestName !== 'Quý khách' && effectiveGuestName !== 'QUÝ KHÁCH') {
       var guestName = effectiveGuestName;
       var guestNameUpper = guestName.toUpperCase();
-      var guestNameDisplay = (guestNameUpper === 'QUÝ KHÁCH') ? 'Quý Khách' : guestName;
+      var guestNameDisplay = guestName;
+      if (guestNameUpper === 'QUÝ KHÁCH') {
+        guestNameDisplay = 'Quý Khách';
+      } else if (guestName === guestNameUpper || guestName === guestName.toLowerCase()) {
+        guestNameDisplay = guestName.split(' ').map(function(w) {
+          return w ? (w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()) : '';
+        }).join(' ');
+      }
 
       // Gán vào các element đại diện cho tên khách
       var recipientEls = document.querySelectorAll('[data-field="guest_name"], #envelope-recipient-name, .recipient-name, .guest-name, #guest-name');
@@ -837,6 +844,11 @@ const buildDomInjectScript = (editMode) => `
         // Bìa phong bì và font chữ uốn lượn giữ hoa thường tự nhiên thay vì ép ALL-CAPS
         if (rEl.classList.contains('recipient-name') || rEl.id === 'envelope-recipient-name' || rEl.closest('.recipient-box')) {
           rEl.textContent = guestNameDisplay;
+          if (guestNameDisplay.length > 20) {
+            rEl.classList.add('is-long');
+          } else {
+            rEl.classList.remove('is-long');
+          }
         } else {
           rEl.textContent = guestNameUpper;
         }

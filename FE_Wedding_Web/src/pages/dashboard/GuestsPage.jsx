@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { api } from '../../api'
 import InvitationSelector from './InvitationSelector'
 import { invitationName, invitationPublicUrl, toArray } from './helpers'
@@ -12,6 +12,8 @@ import {
   IconX,
   IconSend,
   IconClock,
+  IconCopy,
+  IconCheck,
 } from '../../components/Icons'
 
 export default function GuestsPage() {
@@ -22,6 +24,18 @@ export default function GuestsPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [sharePayload, setSharePayload] = useState(null)
+  const [copiedId, setCopiedId] = useState('')
+  const copyTimerRef = React.useRef(null)
+
+  const handleCopyLink = async (url, id) => {
+    if (!url) return
+    try {
+      await navigator.clipboard.writeText(url)
+      setCopiedId(id)
+      if (copyTimerRef.current) clearTimeout(copyTimerRef.current)
+      copyTimerRef.current = setTimeout(() => setCopiedId(''), 2000)
+    } catch (_e) {}
+  }
 
   // Modal thêm khách mới
   const [showAddModal, setShowAddModal] = useState(false)
@@ -285,8 +299,8 @@ export default function GuestsPage() {
           <div className="gt-th">Tên Khách Mời</div>
           <div className="gt-th">Giờ Mời Tiệc</div>
           <div className="gt-th">Ghi Chú / Vai Trò</div>
-          <div className="gt-th">Link Thiệp Cá Nhân Hoá</div>
-          <div className="gt-th" style={{ textAlign: 'right', minWidth: 210 }}>Mời Nhanh & Thao Tác</div>
+          <div className="gt-th">Link Mời</div>
+          <div className="gt-th" style={{ textAlign: 'right', minWidth: 200 }}>Mời Nhanh & Thao Tác</div>
         </div>
         <div id="guest-table-body">
           {filtered.length === 0 ? (
@@ -381,7 +395,24 @@ export default function GuestsPage() {
                   </div>
 
                   <div className="gt-td">
-                    <span className="gt-url" title={personalUrl}>{personalUrl}</span>
+                    <button
+                      type="button"
+                      className={`btn-copy-chip${copiedId === g.id ? ' ok' : ''}`}
+                      onClick={() => handleCopyLink(personalUrl, g.id)}
+                      title={`Bấm để copy link: ${personalUrl}`}
+                    >
+                      {copiedId === g.id ? (
+                        <>
+                          <IconCheck size={12} color="#2e7d32" />
+                          <span style={{ color: '#2e7d32', fontWeight: 600 }}>Đã chép</span>
+                        </>
+                      ) : (
+                        <>
+                          <IconCopy size={12} />
+                          <span>Copy Link</span>
+                        </>
+                      )}
+                    </button>
                   </div>
 
                   <div className="gt-td" style={{ textAlign: 'right' }}>

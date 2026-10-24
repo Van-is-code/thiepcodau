@@ -1349,7 +1349,7 @@
 
 .gt-head {
   display: grid;
-  grid-template-columns: 1.2fr 1.1fr 1.3fr 1.8fr auto;
+  grid-template-columns: 2.2fr 1.1fr 1.4fr auto auto;
   gap: 12px;
   padding: 14px 20px;
   background: var(--bg-subtle);
@@ -1366,7 +1366,7 @@
 
 .gt-row {
   display: grid;
-  grid-template-columns: 1.2fr 1.1fr 1.3fr 1.8fr auto;
+  grid-template-columns: 2.2fr 1.1fr 1.4fr auto auto;
   gap: 12px;
   align-items: center;
   padding: 14px 20px;
@@ -1775,4 +1775,31 @@
   background: #0068ff;
   color: #fff !important;
   border-color: #0068ff;
+}
+
+.btn-copy-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  background: var(--bg-card, #fff);
+  border: 1px solid var(--border-subtle, #d8d0c7);
+  border-radius: 6px;
+  font-size: 12px;
+  color: var(--text-main, #333);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.btn-copy-chip:hover {
+  background: var(--bg-subtle, #f8f6f2);
+  border-color: var(--primary, #d97757);
+  color: var(--primary, #d97757);
+}
+
+.btn-copy-chip.ok {
+  background: #edf7ed;
+  border-color: #a5d6a7;
+  color: #2e7d32;
 }

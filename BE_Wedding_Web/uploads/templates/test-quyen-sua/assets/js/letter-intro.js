@@ -54,6 +54,11 @@
     }
     if (recipientEl) {
       recipientEl.textContent = state.recipientName;
+      if (state.recipientName && state.recipientName.length > 20) {
+        recipientEl.classList.add('is-long');
+      } else {
+        recipientEl.classList.remove('is-long');
+      }
     }
 
     // Lock background scroll during intro
