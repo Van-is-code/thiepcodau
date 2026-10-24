@@ -80,6 +80,22 @@ img {
   user-select: none;
 }
 
+/* Safety containment for decorative botanical assets */
+.botanical-sway,
+.botanical-sway-slow,
+.couple-botanical-corner img,
+.countdown-botanical-flourish img,
+.hero-hydrangea-drift,
+.hero-flow-branch,
+.transition-branch-img,
+.family-branch-left,
+.family-branch-right,
+.pocket-corner-sprig {
+  max-width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
 a {
   color: inherit;
   text-decoration: none;
@@ -232,27 +248,29 @@ button {
 
 .hero-hydrangea-wrapper {
   position: absolute;
-  top: -45px;
-  right: -55px;
-  width: 210px;
+  top: -24px;
+  right: -24px;
+  width: 120px;
+  height: 120px;
   pointer-events: none;
   z-index: 4;
 }
 
 .hero-hydrangea-drift {
   width: 100%;
-  opacity: 0.92;
-  filter: drop-shadow(0 14px 28px rgba(78, 60, 100, 0.16));
+  height: auto;
+  opacity: 0.88;
+  filter: drop-shadow(0 8px 18px rgba(78, 60, 100, 0.12));
 }
 
 .hero-branch-flow {
   position: absolute;
-  top: 90px;
-  right: -24px;
-  width: 75px;
+  top: 70px;
+  right: -14px;
+  width: 54px;
   pointer-events: none;
   z-index: 3;
-  opacity: 0.78;
+  opacity: 0.72;
   transform: rotate(-10deg);
 }
 
@@ -346,17 +364,18 @@ button {
 
 .cover-portrait-wrapper {
   position: relative;
-  width: 82%;
-  max-width: 320px;
-  margin: 0 auto 20px;
+  width: 72%;
+  max-width: 260px;
+  margin: 0 auto 18px;
 }
 
 .cover-portrait-frame {
   position: relative;
-  padding: 7px;
-  border: 1px solid rgba(122, 104, 144, 0.3);
+  padding: 6px;
+  border: 1px solid rgba(122, 104, 144, 0.28);
   background: var(--paper-white);
-  box-shadow: 0 16px 36px -10px rgba(52, 38, 68, 0.12);
+  box-shadow: 0 14px 30px -8px rgba(52, 38, 68, 0.12);
+  border-radius: 3px;
 }
 
 .cover-portrait-img {
@@ -364,13 +383,14 @@ button {
   aspect-ratio: 4 / 5;
   object-fit: cover;
   display: block;
+  border-radius: 2px;
 }
 
 .cover-branch-left {
   position: absolute;
   top: 15%;
-  left: -28px;
-  width: 72px;
+  left: -20px;
+  width: 54px;
   z-index: 5;
   pointer-events: none;
   opacity: 0.85;
@@ -381,8 +401,8 @@ button {
 .cover-branch-right {
   position: absolute;
   bottom: 10%;
-  right: -30px;
-  width: 76px;
+  right: -22px;
+  width: 58px;
   z-index: 5;
   pointer-events: none;
   opacity: 0.85;
@@ -422,12 +442,12 @@ button {
 
 .scene-transition-branch {
   position: absolute;
-  bottom: -36px;
-  left: 18px;
-  width: 80px;
+  bottom: -22px;
+  left: 14px;
+  width: 52px;
   pointer-events: none;
   z-index: 6;
-  opacity: 0.85;
+  opacity: 0.8;
 }
 
 .transition-branch-img {
@@ -442,7 +462,7 @@ button {
    SCENE 02: GIỚI THIỆU CÔ DÂU & CHÚ RỂ (COUPLE INTRODUCTION)
    ========================================================================== */
 .scene-couple-intro {
-  padding: 48px 16px 42px;
+  padding: 30px 14px 26px;
   position: relative;
   overflow: hidden;
   background-color: var(--paper-ivory);
@@ -455,17 +475,17 @@ button {
 }
 
 .couple-botanical-corner--tr {
-  top: -12px;
-  right: -24px;
-  width: 115px;
-  opacity: 0.6;
+  top: -8px;
+  right: -16px;
+  width: 72px;
+  opacity: 0.55;
 }
 
 .couple-botanical-corner--bl {
-  bottom: -20px;
-  left: -20px;
-  width: 105px;
-  opacity: 0.45;
+  bottom: -12px;
+  left: -14px;
+  width: 66px;
+  opacity: 0.4;
 }
 
 .couple-botanical-corner img {
@@ -474,7 +494,7 @@ button {
 }
 
 .couple-intro-container {
-  max-width: 375px;
+  max-width: 350px;
   margin: 0 auto;
   position: relative;
   z-index: 2;
@@ -490,12 +510,13 @@ button {
 
 .couple-card-row--groom {
   justify-content: flex-end;
-  padding-right: 6px;
+  padding-right: 4px;
 }
 
 .couple-card-row--bride {
   justify-content: flex-start;
-  padding-left: 6px;
+  padding-left: 4px;
+  margin-top: -26px;
 }
 
 .couple-info-col {
@@ -508,19 +529,19 @@ button {
 .couple-info-col--groom {
   align-items: flex-end;
   text-align: right;
-  padding-right: 18px;
+  padding-right: 14px;
 }
 
 .couple-info-col--bride {
   align-items: flex-start;
   text-align: left;
-  padding-left: 18px;
+  padding-left: 14px;
 }
 
 .couple-role-script {
   font-family: var(--font-script), 'Alex Brush', cursive;
-  font-size: 34px;
-  line-height: 1.05;
+  font-size: 27px;
+  line-height: 1;
   color: #2D587B;
   display: block;
   margin-bottom: 2px;
@@ -528,27 +549,27 @@ button {
 
 .couple-name-serif {
   font-family: var(--font-serif-accent), 'Cormorant Garamond', Georgia, serif;
-  font-size: 19px;
+  font-size: 16px;
   font-weight: 600;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   color: #1A344A;
   margin: 0;
-  line-height: 1.25;
+  line-height: 1.2;
 }
 
 .couple-photo-col {
-  flex: 0 0 156px;
-  max-width: 165px;
+  flex: 0 0 126px;
+  max-width: 130px;
 }
 
 .couple-polaroid-frame {
   background: #FFFFFF;
-  padding: 8px 8px 24px 8px;
+  padding: 6px 6px 18px 6px;
   border-radius: 3px;
   box-shadow: 
-    0 12px 28px rgba(45, 60, 80, 0.12),
-    0 2px 8px rgba(0, 0, 0, 0.05);
+    0 10px 22px rgba(45, 60, 80, 0.12),
+    0 2px 6px rgba(0, 0, 0, 0.04);
   transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.3, 1), box-shadow 0.4s ease;
   position: relative;
   box-sizing: border-box;
@@ -556,8 +577,8 @@ button {
 
 .couple-polaroid-frame:hover {
   box-shadow: 
-    0 16px 36px rgba(45, 60, 80, 0.16),
-    0 4px 12px rgba(0, 0, 0, 0.06);
+    0 14px 28px rgba(45, 60, 80, 0.15),
+    0 4px 10px rgba(0, 0, 0, 0.05);
 }
 
 .couple-polaroid-frame--groom {
@@ -591,8 +612,8 @@ button {
 /* Center Wax Seal Bridge */
 .couple-center-bridge {
   position: relative;
-  height: 20px;
-  margin: -14px 0;
+  height: 0px;
+  margin: -6px 0;
   z-index: 6;
   display: flex;
   justify-content: center;
@@ -601,13 +622,13 @@ button {
 }
 
 .couple-wax-seal-wrapper {
-  width: 50px;
-  height: 50px;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  filter: drop-shadow(0 6px 14px rgba(50, 35, 60, 0.24));
+  filter: drop-shadow(0 4px 10px rgba(50, 35, 60, 0.22));
 }
 
 .couple-seal-img {
@@ -1074,31 +1095,31 @@ button {
 }
 
 .cd-flourish--tl {
-  top: -15px;
-  left: -20px;
-  width: 95px;
-  opacity: 0.7;
-}
-
-.cd-flourish--tr {
-  top: 15px;
-  right: -10px;
-  width: 70px;
-  opacity: 0.85;
-}
-
-.cd-flourish--bl {
-  bottom: -15px;
-  left: -15px;
-  width: 80px;
+  top: -10px;
+  left: -14px;
+  width: 65px;
   opacity: 0.6;
 }
 
+.cd-flourish--tr {
+  top: 10px;
+  right: -8px;
+  width: 48px;
+  opacity: 0.75;
+}
+
+.cd-flourish--bl {
+  bottom: -10px;
+  left: -10px;
+  width: 54px;
+  opacity: 0.55;
+}
+
 .cd-flourish--br {
-  bottom: -20px;
-  right: -15px;
-  width: 90px;
-  opacity: 0.65;
+  bottom: -14px;
+  right: -10px;
+  width: 60px;
+  opacity: 0.6;
 }
 
 .countdown-botanical-flourish img {
@@ -1107,7 +1128,7 @@ button {
 }
 
 .countdown-envelope-container {
-  max-width: 360px;
+  max-width: 350px;
   margin: 0 auto;
   position: relative;
   z-index: 2;
@@ -1301,9 +1322,9 @@ button {
 .pocket-corner-sprig {
   position: absolute;
   bottom: 0;
-  width: 44px;
+  width: 32px;
   pointer-events: none;
-  opacity: 0.85;
+  opacity: 0.75;
 }
 
 .pocket-corner-sprig--bl {
@@ -2320,14 +2341,21 @@ button {
 }
 
 .finale-portrait-bleed {
-  width: 100%;
-  margin-bottom: 32px;
+  width: 250px;
+  max-width: 68%;
+  margin: 0 auto 24px;
+  padding: 6px;
+  background: var(--paper-white);
+  border-radius: 4px;
+  border: 1px solid rgba(122, 104, 144, 0.25);
+  box-shadow: 0 14px 32px rgba(50, 35, 60, 0.12);
 }
 
 .finale-portrait-bleed img {
   width: 100%;
   aspect-ratio: 4 / 5;
   object-fit: cover;
+  border-radius: 2px;
   display: block;
 }
 
@@ -2364,21 +2392,21 @@ button {
   color: var(--ink-muted);
   line-height: 1.7;
   max-width: 320px;
-  margin: 0 auto 32px;
+  margin: 0 auto 28px;
 }
 
 .finale-botanical-bottom {
   position: relative;
-  width: 110%;
-  margin-left: -5%;
+  width: 76%;
+  max-width: 270px;
+  margin: 0 auto -10px;
   pointer-events: none;
-  margin-bottom: -15px;
 }
 
 .finale-garland-img {
   width: 100%;
   display: block;
-  opacity: 0.92;
+  opacity: 0.85;
 }
 
 .stationery-hallmark {
