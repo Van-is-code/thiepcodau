@@ -11,6 +11,7 @@ import {
   IconTrash2,
   IconX,
   IconSend,
+  IconClock,
 } from '../../components/Icons'
 
 export default function GuestsPage() {
@@ -26,6 +27,7 @@ export default function GuestsPage() {
   const [showAddModal, setShowAddModal] = useState(false)
   const [newGuestName, setNewGuestName] = useState('')
   const [newGuestNote, setNewGuestNote] = useState('')
+  const [newGuestTime, setNewGuestTime] = useState('')
   const [addingGuest, setAddingGuest] = useState(false)
 
   useEffect(() => {
@@ -84,6 +86,42 @@ export default function GuestsPage() {
 
   const invitationLabel = useMemo(() => invitationName(invitation), [invitation])
 
+  const defaultReceptionTime = useMemo(() => {
+    if (!invitation) return '11:00'
+    const fromInv = invitation.reception_time || invitation.extra_data?.reception_time
+    if (fromInv && String(fromInv).trim()) return String(fromInv).trim()
+    return '11:00'
+  }, [invitation])
+
+  const getGuestTime = (g) => {
+    const urlStr = g?.privateInvitation?.url || g?.url || ''
+    if (urlStr) {
+      try {
+        const qIdx = urlStr.indexOf('?')
+        if (qIdx !== -1) {
+          const params = new URLSearchParams(urlStr.slice(qIdx))
+          const customTime = params.get('time') || params.get('t') || params.get('reception_time')
+          if (customTime) {
+            return {
+              time: customTime,
+              isCustom: true,
+            }
+          }
+        }
+      } catch (_e) {}
+    }
+    if (g?.reception_time) {
+      return {
+        time: g.reception_time,
+        isCustom: true,
+      }
+    }
+    return {
+      time: defaultReceptionTime,
+      isCustom: false,
+    }
+  }
+
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase()
     if (!q) return guests
@@ -132,16 +170,19 @@ export default function GuestsPage() {
     }
 
     setAddingGuest(true)
+    const customTime = newGuestTime.trim() || undefined
     try {
       const res = await api.createGuest({
         name: trimmed,
         description: newGuestNote.trim() || null,
         invitation_id: selectedId,
+        reception_time: customTime,
       })
       const created = res.data?.data || res.data
       setGuests((prev) => [created, ...prev])
       setNewGuestName('')
       setNewGuestNote('')
+      setNewGuestTime('')
       setShowAddModal(false)
     } catch (err) {
       alert(err?.response?.data?.message || err.message || 'Không thể tạo khách mời')
@@ -242,9 +283,10 @@ export default function GuestsPage() {
       <div className="gt-wrap">
         <div className="gt-head">
           <div className="gt-th">Tên Khách Mời</div>
+          <div className="gt-th">Giờ Mời Tiệc</div>
           <div className="gt-th">Ghi Chú / Vai Trò</div>
           <div className="gt-th">Link Thiệp Cá Nhân Hoá</div>
-          <div className="gt-th" style={{ textAlign: 'right', minWidth: 220 }}>Mời Nhanh & Thao Tác</div>
+          <div className="gt-th" style={{ textAlign: 'right', minWidth: 210 }}>Mời Nhanh & Thao Tác</div>
         </div>
         <div id="guest-table-body">
           {filtered.length === 0 ? (
@@ -287,6 +329,45 @@ export default function GuestsPage() {
                       </div>
                       <span className="gt-name">{g.name || 'Khách mời'}</span>
                     </div>
+                  </div>
+
+                  <div className="gt-td">
+                    {(() => {
+                      const guestTime = getGuestTime(g)
+                      return (
+                        <div
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: 5,
+                            padding: '3px 8px',
+                            borderRadius: 6,
+                            background: guestTime.isCustom ? '#fdf3ef' : '#f8f9fa',
+                            color: guestTime.isCustom ? '#c96547' : '#495057',
+                            fontSize: 12,
+                            fontWeight: guestTime.isCustom ? 600 : 500,
+                            border: `1px solid ${guestTime.isCustom ? 'rgba(217, 119, 87, 0.3)' : '#e9ecef'}`,
+                            whiteSpace: 'nowrap',
+                          }}
+                          title={guestTime.isCustom ? `Giờ mời tiệc riêng cho ${g.name || 'khách'}: ${guestTime.time}` : `Giờ mời tiệc chung của thiệp: ${guestTime.time}`}
+                        >
+                          <IconClock size={12} color={guestTime.isCustom ? '#d97757' : '#6c757d'} />
+                          <span>{guestTime.time}</span>
+                          <span
+                            style={{
+                              fontSize: 10,
+                              padding: '1px 4px',
+                              borderRadius: 4,
+                              background: guestTime.isCustom ? '#d97757' : 'transparent',
+                              color: guestTime.isCustom ? '#fff' : '#888',
+                              fontWeight: 600,
+                            }}
+                          >
+                            {guestTime.isCustom ? 'Riêng' : '(Chung)'}
+                          </span>
+                        </div>
+                      )
+                    })()}
                   </div>
 
                   <div className="gt-td">
@@ -421,6 +502,73 @@ export default function GuestsPage() {
                   autoFocus
                 />
               </div>
+              <div style={{ marginBottom: 14 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6, flexWrap: 'wrap', gap: 4 }}>
+                  <label style={{ fontSize: 13, fontWeight: 600, color: '#443731', display: 'flex', alignItems: 'center', gap: 5, margin: 0 }}>
+                    <IconClock size={14} color="#d97757" />
+                    <span>Giờ mời tiệc cưới (tuỳ chọn)</span>
+                  </label>
+                  <span style={{ fontSize: 11.5, color: '#777' }}>
+                    Mặc định của thiệp: <strong style={{ color: '#d97757' }}>{defaultReceptionTime}</strong>
+                  </span>
+                </div>
+                <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap' }}>
+                  <input
+                    type="time"
+                    style={{
+                      maxWidth: 130,
+                      padding: '7px 10px',
+                      border: '1px solid #d4c8be',
+                      borderRadius: 8,
+                      fontSize: 13.5,
+                      outline: 'none',
+                      background: '#fff'
+                    }}
+                    value={newGuestTime}
+                    onChange={(e) => setNewGuestTime(e.target.value)}
+                  />
+                  {['11:00', '11:30', '17:30', '18:00'].map((preset) => (
+                    <button
+                      key={preset}
+                      type="button"
+                      style={{
+                        padding: '6px 9px',
+                        fontSize: 11.5,
+                        borderRadius: 6,
+                        border: '1px solid',
+                        borderColor: newGuestTime === preset ? '#d97757' : '#d4c8be',
+                        background: newGuestTime === preset ? '#fdf3ef' : '#fff',
+                        color: newGuestTime === preset ? '#d97757' : '#555',
+                        cursor: 'pointer',
+                        fontWeight: newGuestTime === preset ? 600 : 400
+                      }}
+                      onClick={() => setNewGuestTime(preset)}
+                    >
+                      {preset}
+                    </button>
+                  ))}
+                  {newGuestTime && (
+                    <button
+                      type="button"
+                      style={{
+                        padding: '6px 8px',
+                        fontSize: 11.5,
+                        border: 'none',
+                        background: 'none',
+                        color: '#888',
+                        cursor: 'pointer',
+                      }}
+                      onClick={() => setNewGuestTime('')}
+                    >
+                      Mặc định ({defaultReceptionTime})
+                    </button>
+                  )}
+                </div>
+                <span style={{ fontSize: 11.5, color: '#888', marginTop: 4, display: 'block' }}>
+                  {newGuestTime ? `Khách này sẽ nhận được giờ mời riêng là: ${newGuestTime}` : `Mặc định mời theo giờ chung của thiệp: ${defaultReceptionTime}`}
+                </span>
+              </div>
+
               <div style={{ marginBottom: 20 }}>
                 <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#443731', marginBottom: 6 }}>
                   Ghi chú / Mối quan hệ (tuỳ chọn)

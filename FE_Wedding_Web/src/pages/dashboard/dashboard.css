@@ -1349,7 +1349,7 @@
 
 .gt-head {
   display: grid;
-  grid-template-columns: 1.2fr 1.4fr 2fr auto;
+  grid-template-columns: 1.2fr 1.1fr 1.3fr 1.8fr auto;
   gap: 12px;
   padding: 14px 20px;
   background: var(--bg-subtle);
@@ -1366,7 +1366,7 @@
 
 .gt-row {
   display: grid;
-  grid-template-columns: 1.2fr 1.4fr 2fr auto;
+  grid-template-columns: 1.2fr 1.1fr 1.3fr 1.8fr auto;
   gap: 12px;
   align-items: center;
   padding: 14px 20px;

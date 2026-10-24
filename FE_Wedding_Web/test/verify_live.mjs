@@ -166,3 +166,4 @@ const artifactDir = path.resolve('C:/Users/thanh/.gemini/antigravity/brain/9da78
   console.error('Verification failed:', err);
   process.exit(1);
 });
+
