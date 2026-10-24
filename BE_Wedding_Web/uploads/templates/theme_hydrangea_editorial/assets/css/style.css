@@ -1083,7 +1083,7 @@ button {
    SCENE 05: THE DAY IS COMING (OPEN ENVELOPE STATIONERY COUNTDOWN)
    ========================================================================== */
 .scene-countdown {
-  padding: 46px 14px 44px;
+  padding: 24px 10px 30px;
   position: relative;
   overflow: hidden;
   background-color: var(--paper-ivory);
@@ -1097,29 +1097,29 @@ button {
 
 .cd-flourish--tl {
   top: -10px;
-  left: -14px;
-  width: 70px;
+  left: -10px;
+  width: 60px;
   opacity: 0.65;
 }
 
 .cd-flourish--tr {
   top: 10px;
   right: -8px;
-  width: 52px;
+  width: 48px;
   opacity: 0.75;
 }
 
 .cd-flourish--bl {
   bottom: -10px;
-  left: -10px;
-  width: 54px;
+  left: -8px;
+  width: 50px;
   opacity: 0.55;
 }
 
 .cd-flourish--br {
-  bottom: -14px;
-  right: -10px;
-  width: 60px;
+  bottom: -10px;
+  right: -8px;
+  width: 54px;
   opacity: 0.6;
 }
 
@@ -1128,71 +1128,65 @@ button {
   display: block;
 }
 
+/* Envelope Container - Compact, NO giant top flap */
 .countdown-envelope-container {
-  max-width: 356px;
+  max-width: 334px;
   margin: 0 auto;
   position: relative;
   z-index: 2;
-  filter: drop-shadow(0 16px 36px rgba(50, 40, 65, 0.15));
+  filter: drop-shadow(0 12px 28px rgba(45, 35, 55, 0.12));
+  padding-top: 18px;
 }
 
-/* Open Top Flap with watercolor botanical lining */
-.countdown-top-flap {
-  position: relative;
-  width: 100%;
-  height: 82px;
-  margin-bottom: -1px;
+/* Envelope Back Collar (The open envelope backing behind the card) */
+.countdown-envelope-back {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 250px;
   z-index: 1;
+  border-radius: 0 0 6px 6px;
+  overflow: hidden;
 }
 
-.countdown-top-flap-svg {
+.countdown-envelope-back-svg {
   width: 100%;
   height: 100%;
   display: block;
 }
 
-/* Envelope Body Shell: Visible beige backing on left & right margins */
-.countdown-envelope-body {
-  position: relative;
-  width: 100%;
-  background: linear-gradient(178deg, #EAE2D3 0%, #DFD5C4 100%);
-  border-left: 1px solid rgba(126, 107, 148, 0.22);
-  border-right: 1px solid rgba(126, 107, 148, 0.22);
-  border-bottom: 1px solid rgba(126, 107, 148, 0.22);
-  border-radius: 0 0 6px 6px;
-  padding: 0 22px 24px 22px;
-  box-sizing: border-box;
-}
-
-/* Inner Stationery Letter Card: Sits inside the envelope backing */
+/* Inner Stationery Letter Card - Sticking OUT of the envelope pocket */
 .countdown-letter-card {
   position: relative;
   z-index: 2;
+  width: calc(100% - 36px);
+  margin: 0 auto;
   background: #FFFFFF;
   background-image: 
-    radial-gradient(circle at 50% 10%, #FFFFFF 0%, #FAF8F5 100%),
+    radial-gradient(circle at 50% 10%, #FFFFFF 0%, #FCFBF9 100%),
     linear-gradient(to bottom, #FFFFFF 0%, #F9F6F0 100%);
-  border-radius: 4px 4px 0 0;
-  border: 1px solid rgba(126, 107, 148, 0.22);
-  box-shadow: 0 4px 14px rgba(45, 35, 55, 0.06);
+  border-radius: 3px 3px 0 0;
+  border: 1px solid rgba(126, 107, 148, 0.18);
+  box-shadow: 0 4px 14px rgba(45, 35, 55, 0.08);
   text-align: center;
   box-sizing: border-box;
 }
 
 .countdown-letter-card-inner {
-  border: 1px solid rgba(126, 107, 148, 0.2);
-  border-radius: 3px;
-  padding: 18px 12px 135px 12px;
+  border: 1px solid rgba(126, 107, 148, 0.18);
+  border-radius: 2px;
+  padding: 14px 10px 125px 10px;
   position: relative;
 }
 
 /* Pinned Mini Polaroid on Top-Left Corner */
 .cd-pinned-polaroid {
   position: absolute;
-  top: -14px;
-  left: -14px;
+  top: -12px;
+  left: -12px;
   z-index: 5;
-  transform: rotate(-6deg);
+  transform: rotate(-5deg);
   transition: transform 0.3s ease;
 }
 
@@ -1202,11 +1196,11 @@ button {
 
 .cd-mini-polaroid-frame {
   background: #FFFFFF;
-  padding: 4px 4px 16px 4px;
+  padding: 3px 3px 12px 3px;
   border-radius: 2px;
-  box-shadow: 0 4px 14px rgba(45, 35, 55, 0.16);
-  width: 60px;
-  height: 72px;
+  box-shadow: 0 3px 10px rgba(45, 35, 55, 0.15);
+  width: 56px;
+  height: 68px;
   box-sizing: border-box;
 }
 
@@ -1220,9 +1214,9 @@ button {
 
 .cd-polaroid-sprig {
   position: absolute;
-  bottom: 0px;
-  right: -8px;
-  width: 24px;
+  bottom: -2px;
+  right: -7px;
+  width: 22px;
   pointer-events: none;
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.15));
 }
@@ -1231,37 +1225,38 @@ button {
   position: absolute;
   top: -4px;
   right: -4px;
-  width: 26px;
+  width: 24px;
   pointer-events: none;
-  opacity: 0.8;
+  opacity: 0.75;
   transform: rotate(35deg);
 }
 
+/* Eyebrow: SAVE THE DATE */
 .cd-stationery-eyebrow {
   font-family: var(--font-primary);
-  font-size: clamp(13px, 3.6vw, 15px);
+  font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: #2D587B;
   display: block;
-  margin-top: 6px;
-  margin-bottom: 4px;
+  margin-top: 4px;
+  margin-bottom: 2px;
 }
 
-/* Vertically stacked calligraphy couple names */
+/* Vertically Stacked Calligraphy Couple Names */
 .cd-stationery-couple {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  margin: 2px 0 8px 0;
+  margin: 1px 0 6px 0;
   line-height: 1.05;
 }
 
 .cd-stationery-couple .cd-couple-name {
   font-family: 'Alex Brush', cursive !important;
-  font-size: clamp(34px, 8.5vw, 40px);
+  font-size: clamp(30px, 7.5vw, 36px);
   color: #26435F;
   font-weight: 400;
   text-transform: capitalize;
@@ -1271,42 +1266,23 @@ button {
 
 .cd-stationery-couple .cd-couple-amp {
   font-family: 'Alex Brush', cursive !important;
-  font-size: 18px;
+  font-size: 16px;
   color: #5D728A;
   opacity: 0.7;
   margin: -4px 0 -2px 0;
   line-height: 1;
 }
 
-.cd-stationery-date-row {
-  font-family: var(--font-primary);
-  font-size: clamp(18px, 4.8vw, 21px);
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  color: #26435F;
-  margin-bottom: 6px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 6px;
-}
-
-.cd-dot {
-  color: #7E6C94;
-  opacity: 0.55;
-  margin: 0 2px;
-}
-
 .cd-stationery-dots {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 6px;
   color: #7E6C94;
-  opacity: 0.55;
-  font-size: 14px;
+  opacity: 0.5;
+  font-size: 12px;
   line-height: 1;
-  margin: 0 auto 10px;
+  margin: 0 auto 6px;
 }
 
 .cd-stationery-divider {
@@ -1315,12 +1291,57 @@ button {
 
 .cd-stationery-lead {
   font-family: var(--font-primary);
-  font-size: clamp(11.5px, 3.1vw, 13px);
+  font-size: 10.5px;
   font-weight: 600;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
   color: #4A5568;
-  margin: 0 0 10px 0;
+  margin: 0 0 8px 0;
+}
+
+/* Pure Countdown Row */
+.pure-countdown-row {
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+  gap: 6px;
+  margin-bottom: 2px;
+}
+
+.countdown-unit-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 40px;
+}
+
+.countdown-num {
+  font-family: var(--font-primary);
+  font-size: clamp(18px, 4.8vw, 21px);
+  font-weight: 700;
+  line-height: 1;
+  color: #1E374D;
+  letter-spacing: 0.03em;
+}
+
+.countdown-unit-label {
+  font-family: var(--font-primary);
+  font-size: 8.5px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  color: #5D728A;
+  margin-top: 3px;
+}
+
+.countdown-sep {
+  font-family: var(--font-primary);
+  font-size: 13px;
+  font-weight: 600;
+  color: #94A3B8;
+  opacity: 0.6;
+  line-height: 1;
+  align-self: flex-start;
+  margin-top: 2px;
 }
 
 /* Front Envelope Pocket Overlay */
@@ -1329,7 +1350,7 @@ button {
   left: 0;
   right: 0;
   bottom: 0;
-  height: 185px;
+  height: 155px;
   z-index: 4;
   pointer-events: none;
 }
@@ -1338,25 +1359,25 @@ button {
   width: 100%;
   height: 100%;
   display: block;
-  filter: drop-shadow(0 -4px 10px rgba(45, 35, 55, 0.1));
+  filter: drop-shadow(0 -3px 8px rgba(45, 35, 55, 0.1));
 }
 
 .countdown-pocket-seal {
   position: absolute;
-  top: 70px;
+  top: 64px;
   left: 50%;
   transform: translateX(-50%);
-  width: 52px;
-  height: 52px;
+  width: 48px;
+  height: 48px;
   z-index: 5;
-  filter: drop-shadow(0 4px 10px rgba(50, 35, 60, 0.25));
+  filter: drop-shadow(0 3px 8px rgba(50, 35, 60, 0.22));
 }
 
 .seal-sprig-bg {
   position: absolute;
-  top: -10px;
-  right: -10px;
-  width: 34px;
+  top: -8px;
+  right: -8px;
+  width: 30px;
   height: auto;
   transform: rotate(22deg);
   opacity: 0.85;
@@ -1375,7 +1396,7 @@ button {
 .pocket-corner-sprig {
   position: absolute;
   bottom: 0;
-  width: 36px;
+  width: 32px;
   pointer-events: none;
   opacity: 0.75;
 }
@@ -1386,51 +1407,6 @@ button {
 
 .pocket-corner-sprig--br {
   right: 0;
-}
-
-/* Four Balanced Units with Identical Visual Scale */
-.pure-countdown-row {
-  display: flex;
-  justify-content: center;
-  align-items: baseline;
-  gap: 8px;
-  margin-bottom: 4px;
-}
-
-.countdown-unit-box {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-width: 44px;
-}
-
-.countdown-num {
-  font-family: var(--font-primary);
-  font-size: clamp(20px, 5.5vw, 24px);
-  font-weight: 700;
-  line-height: 1;
-  color: #1E374D;
-  letter-spacing: 0.04em;
-}
-
-.countdown-unit-label {
-  font-family: var(--font-primary);
-  font-size: 9px;
-  font-weight: 600;
-  letter-spacing: 0.16em;
-  color: #5D728A;
-  margin-top: 4px;
-}
-
-.countdown-sep {
-  font-family: var(--font-primary);
-  font-size: 14px;
-  font-weight: 600;
-  color: #94A3B8;
-  opacity: 0.6;
-  line-height: 1;
-  align-self: flex-start;
-  margin-top: 3px;
 }
 
 .countdown-target-note {
