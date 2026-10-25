@@ -167,4 +167,13 @@ const setTitle = async (req, res) => {
 	}
 };
 
-module.exports = { getAll, getById, getBySlug, create, update, editorSave, changeTemplate, setMusic, setBank, remove, createDraft, checkSlug, setSlug, setTitle };
+const setShareSettings = async (req, res) => {
+	try {
+		const data = await invitationService.updateShareSettings(req.params.id, req.body, actorOf(req));
+		return res.status(200).json({ success: true, message: 'Đã cập nhật tiêu đề khi chia sẻ', data });
+	} catch (error) {
+		return res.status(error.status || 500).json({ success: false, message: error.message || 'Cập nhật tiêu đề chia sẻ thất bại' });
+	}
+};
+
+module.exports = { getAll, getById, getBySlug, create, update, editorSave, changeTemplate, setMusic, setBank, remove, createDraft, checkSlug, setSlug, setTitle, setShareSettings };

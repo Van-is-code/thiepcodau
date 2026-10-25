@@ -2,13 +2,15 @@ import React, { useState } from 'react'
 import { createPortal } from 'react-dom'
 import { IconCopy, IconCheck, IconX, IconRing } from '../../components/Icons'
 
-export default function QuickShareModal({ isOpen, onClose, url, recipientName }) {
+export default function QuickShareModal({ isOpen, onClose, url, recipientName, shareTitle }) {
   const [copied, setCopied] = useState(false)
 
   if (!isOpen || !url) return null
 
-  const nameStr = recipientName ? ` ${recipientName}` : ''
-  const message = `💍 Trân trọng kính mời${nameStr} đến tham dự lễ cưới của chúng tôi!\n\nXem thiệp mời tại: ${url}`
+  const greeting = recipientName
+    ? `Trân trọng kính mời ${recipientName}`
+    : 'Trân trọng kính mời bạn'
+  const message = `💍 ${greeting} đến tham dự lễ cưới của chúng tôi!\n\nXem thiệp mời tại: ${url}`
 
   const handleCopy = async () => {
     try {
@@ -27,7 +29,7 @@ export default function QuickShareModal({ isOpen, onClose, url, recipientName })
   const handleMessenger = async () => {
     if (navigator.share) {
       try {
-        await navigator.share({ title: 'Thiệp cưới', text: message, url })
+        await navigator.share({ title: shareTitle || 'Thiệp cưới', text: message, url })
         return
       } catch (_e) {}
     }

@@ -94,6 +94,7 @@ export const api = {
       : apiClient.post('/api/invitations/check-slug', { slug }),
   setInvitationSlug: (id, slug) => apiClient.patch(`/api/invitations/${id}/slug`, { slug }),
   setInvitationTitle: (id, title_vi) => apiClient.patch(`/api/invitations/${id}/title`, { title_vi }),
+  setInvitationShareSettings: (id, settings) => apiClient.patch(`/api/invitations/${id}/share-settings`, settings),
 
   // Templates
   getTemplates: () => apiClient.get('/api/invitation-templates'),

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useParams, useLocation, useNavigate } from 'react-router-dom'
 import { api } from '../api'
 import { buildIframeDocument, resolveTemplateUrl } from '../lib/templateEngine'
+import { privateShareTitle, publicShareTitle } from '../lib/shareMeta'
 import { IconHeart, IconSparkles, IconAlertCircle, IconRefreshCw, IconChevronLeft, IconEdit3 } from './Icons'
 
 const TemplateLoader = () => {
@@ -122,6 +123,14 @@ const TemplateLoader = () => {
           guest_id: resolvedGuestId || invData.guest_id || '',
           guest_note: resolvedGuestNote || invData.guest_note || '',
           reception_time: resolvedReceptionTime || invData.reception_time || '11:00',
+        }
+
+        // Hữu ích khi mở trực tiếp trong trình duyệt; các bot Zalo/Messenger nhận
+        // cùng tiêu đề từ thẻ Open Graph được FE server sinh trước khi React tải.
+        if (typeof document !== 'undefined') {
+          document.title = resolvedGuestName
+            ? privateShareTitle(invData, resolvedGuestName)
+            : publicShareTitle(invData)
         }
 
         setInvitation(enrichedInvitation)

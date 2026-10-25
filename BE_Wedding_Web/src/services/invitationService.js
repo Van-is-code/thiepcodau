@@ -1094,7 +1094,37 @@ const updateTitle = async (invitationId, titleVi, actor) => {
 	return withLockState(await findRaw(invitationId));
 };
 
+// Tiêu đề này dùng cho thẻ xem trước khi gửi link qua Zalo/Messenger/Facebook.
+// Lưu trong extra_data để không phải thay đổi schema invitation đang dùng ổn định.
+const updateShareSettings = async (invitationId, payload, actor) => {
+	const item = await findRaw(invitationId);
+	await ensureCanAccess(item, actor);
+
+	const clean = (value, fallback) => String(value ?? fallback).trim().replace(/\s+/g, ' ').slice(0, 160);
+	const publicTitle = clean(payload?.public_title ?? payload?.share_title_public, item.title_vi || 'Thiệp cưới');
+	const privateTitle = clean(
+		payload?.private_title ?? payload?.share_title_private,
+		'Mời {guest_name} đến chung vui cùng chúng tớ'
+	);
+	if (!publicTitle || !privateTitle) {
+		const err = new Error('Tiêu đề chia sẻ không được để trống.');
+		err.status = 400;
+		throw err;
+	}
+
+	const currentExtra = (typeof item.extra_data === 'object' && item.extra_data !== null) ? item.extra_data : {};
+	item.extra_data = {
+		...currentExtra,
+		share_title_public: publicTitle,
+		share_title_private: privateTitle
+	};
+	if (Invitation.rawAttributes.updated_at) item.updated_at = getNowValue(Invitation.rawAttributes.updated_at);
+	await item.save();
+
+	return withLockState(await findRaw(invitationId));
+};
+
 module.exports = {
 	getAll, getById, getBySlug, create, update, editorSave, changeTemplate, setMusic, setBank, remove, createDraft,
-	assertOwnMusic, checkSlugAvailability, updateSlug, cleanSlug, generateSlug, validateSlugFormat, updateTitle
+	assertOwnMusic, checkSlugAvailability, updateSlug, cleanSlug, generateSlug, validateSlugFormat, updateTitle, updateShareSettings
 };

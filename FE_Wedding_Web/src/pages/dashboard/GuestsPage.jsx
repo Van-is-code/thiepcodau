@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { api } from '../../api'
 import InvitationSelector from './InvitationSelector'
 import { invitationName, invitationPublicUrl, toArray } from './helpers'
+import { privateShareTitle } from '../../lib/shareMeta'
 import QuickShareModal from './QuickShareModal'
 import {
   IconUsers,
@@ -156,7 +157,7 @@ export default function GuestsPage() {
 
   const openShare = (url, name) => {
     if (!url) return
-    setSharePayload({ url, name: name || '' })
+    setSharePayload({ url, name: name || '', title: privateShareTitle(invitation, name) })
   }
 
   const closeShare = () => setSharePayload(null)
@@ -474,6 +475,7 @@ export default function GuestsPage() {
         onClose={closeShare}
         url={sharePayload?.url}
         recipientName={sharePayload?.name}
+        shareTitle={sharePayload?.title}
       />
 
       {/* Modal Thêm Khách Mời Nhanh */}

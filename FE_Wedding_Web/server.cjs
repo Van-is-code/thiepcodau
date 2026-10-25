@@ -41,6 +41,152 @@ const cacheCho = (duong) => (
   duong.startsWith('/assets/') ? 'public, max-age=31536000, immutable' : 'no-cache'
 );
 
+const boKyTuNguyHiem = (value) => String(value || '')
+  .replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
+
+const chuoiGon = (value, fallback = '') => String(value || '').trim().replace(/\s+/g, ' ').slice(0, 200) || fallback;
+
+const duLieuApi = (apiPath) => new Promise((resolve) => {
+  const request = http.request({
+    host: BE.host,
+    port: BE.port,
+    method: 'GET',
+    path: apiPath,
+    headers: { Accept: 'application/json' },
+  }, (response) => {
+    let body = '';
+    let tooLarge = false;
+    response.setEncoding('utf8');
+    response.on('data', (chunk) => {
+      if (body.length + chunk.length > 1024 * 1024) {
+        tooLarge = true;
+        response.destroy();
+        return;
+      }
+      body += chunk;
+    });
+    response.on('end', () => {
+      if (tooLarge || response.statusCode !== 200) return resolve(null);
+      try {
+        const parsed = JSON.parse(body);
+        resolve(parsed?.data || parsed || null);
+      } catch (_) {
+        resolve(null);
+      }
+    });
+  });
+  request.on('error', () => resolve(null));
+  request.setTimeout(2500, () => request.destroy());
+  request.end();
+});
+
+const originCua = (req) => {
+  const protoFromProxy = String(req.headers['x-forwarded-proto'] || '').split(',')[0].trim().toLowerCase();
+  const protocol = protoFromProxy === 'https' ? 'https' : 'http';
+  const host = String(req.headers['x-forwarded-host'] || req.headers.host || '').split(',')[0].trim();
+  // Không để Host header bất thường chui vào HTML sinh động.
+  const safeHost = /^[a-z0-9.:-]+$/i.test(host) ? host : 'localhost';
+  return `${protocol}://${safeHost}`;
+};
+
+const linkTuyetDoi = (url, origin) => {
+  const raw = String(url || '').trim();
+  if (!raw) return '';
+  if (/^https?:\/\//i.test(raw)) return raw;
+  return raw.startsWith('/') ? `${origin}${raw}` : `${origin}/${raw}`;
+};
+
+const laTrangThiepCongKhai = (urlPath) => {
+  const direct = urlPath.match(/^\/([^/]+)\/?$/);
+  const nested = urlPath.match(/^\/invitation\/([^/]+)\/?$/);
+  const skip = new Set(['', 'auth', 'login', 'dashboard', 'editor', 'pricing', 'profile', 'admin', 'ctv', 'pay', 'payment-success', 'templates', 'mau-thiep', 'preview']);
+  const slug = nested?.[1] || direct?.[1] || '';
+  if (!slug || skip.has(slug.toLowerCase()) || path.extname(slug)) return null;
+  try { return decodeURIComponent(slug).slice(0, 120); } catch (_) { return null; }
+};
+
+const metaChiaSe = async (req, slug) => {
+  const query = new URLSearchParams((req.url || '').split('?')[1] || '');
+  const guestToken = String(query.get('g') || '').trim().slice(0, 180);
+  const [invitation, guest] = await Promise.all([
+    duLieuApi(`/api/invitations/slug/${encodeURIComponent(slug)}`),
+    guestToken ? duLieuApi(`/api/guests/public?token=${encodeURIComponent(guestToken)}`) : Promise.resolve(null),
+  ]);
+  if (!invitation) return null;
+
+  const queryName = String(query.get('to') || query.get('guest') || '').trim().slice(0, 255);
+  const guestName = chuoiGon(guest?.name || queryName);
+  const extra = invitation.extra_data && typeof invitation.extra_data === 'object' ? invitation.extra_data : {};
+  const publicTitle = chuoiGon(extra.share_title_public || invitation.title_vi || invitation.title, 'Thiệp cưới');
+  const privateTemplate = chuoiGon(extra.share_title_private, 'Mời {guest_name} đến chung vui cùng chúng tớ');
+  const title = guestName
+    ? privateTemplate.replace(/\{\{?guest_name\}?\}|\{\{?name\}?\}/g, guestName)
+    : publicTitle;
+  const names = [invitation.groom?.name_groom, invitation.bride?.name_bride].filter(Boolean).join(' & ');
+  const description = guestName
+    ? `Trân trọng kính mời ${guestName} đến chung vui cùng chúng tôi.`
+    : (names ? `Trân trọng kính mời bạn đến chung vui cùng ${names}.` : 'Trân trọng kính mời bạn đến chung vui.');
+  const cover = Array.isArray(invitation.images)
+    ? (invitation.images.find((image) => image?.is_cover && image?.image_url) || invitation.images.find((image) => image?.image_url))
+    : null;
+  const origin = originCua(req);
+  const canonicalUrl = `${origin}${req.url || `/${slug}`}`;
+
+  return {
+    title: chuoiGon(title, publicTitle),
+    description: chuoiGon(description),
+    image: linkTuyetDoi(cover?.image_url, origin),
+    canonicalUrl,
+  };
+};
+
+const chenMetaChiaSe = (html, meta) => {
+  const title = boKyTuNguyHiem(meta.title);
+  const description = boKyTuNguyHiem(meta.description);
+  const canonicalUrl = boKyTuNguyHiem(meta.canonicalUrl);
+  const image = boKyTuNguyHiem(meta.image);
+  const tags = [
+    `<title>${title}</title>`,
+    `<meta name="description" content="${description}" />`,
+    `<link rel="canonical" href="${canonicalUrl}" />`,
+    '<meta property="og:type" content="website" />',
+    `<meta property="og:title" content="${title}" />`,
+    `<meta property="og:description" content="${description}" />`,
+    `<meta property="og:url" content="${canonicalUrl}" />`,
+    ...(image ? [`<meta property="og:image" content="${image}" />`] : []),
+    '<meta name="twitter:card" content="summary_large_image" />',
+    `<meta name="twitter:title" content="${title}" />`,
+    `<meta name="twitter:description" content="${description}" />`,
+    ...(image ? [`<meta name="twitter:image" content="${image}" />`] : []),
+  ].join('\n    ');
+  const withoutTitle = html.replace(/<title>[\s\S]*?<\/title>/i, '');
+  return withoutTitle.replace(/<\/head>/i, `    ${tags}\n  </head>`);
+};
+
+const guiTrangThiep = (req, res, index, slug) => {
+  const guiHtml = (html, meta) => {
+    const output = meta ? chenMetaChiaSe(html, meta) : html;
+    res.writeHead(200, {
+      'Content-Type': 'text/html; charset=utf-8',
+      'Content-Length': Buffer.byteLength(output),
+      'Cache-Control': 'no-cache',
+      'X-Content-Type-Options': 'nosniff',
+    });
+    res.end(output);
+  };
+
+  fs.readFile(index, 'utf8', (error, html) => {
+    if (error) {
+      res.writeHead(500, { 'Content-Type': 'text/plain; charset=utf-8' });
+      res.end('Khong the doc giao dien');
+      return;
+    }
+    metaChiaSe(req, slug)
+      .then((meta) => guiHtml(html, meta))
+      .catch(() => guiHtml(html, null));
+  });
+};
+
 // Chuyển tiếp sang backend, giữ cả phần thân (tải ảnh, tải nhạc).
 const chuyenTiep = (req, res, targetPath) => {
   let p = targetPath || req.url;
@@ -116,6 +262,10 @@ const server = http.createServer((req, res) => {
     res.end('Chua build giao dien. Chay: npm run build trong FE_Wedding_Web');
     return;
   }
+  // Bot của Messenger/Zalo/Facebook không chạy React, nên trả sẵn Open Graph
+  // theo thiệp và khách mời trước khi React nhận route để hiển thị nội dung.
+  const slug = req.method === 'GET' ? laTrangThiepCongKhai(urlPath) : null;
+  if (slug) return guiTrangThiep(req, res, index, slug);
   return guiTep(res, index, '/index.html');
 });
 

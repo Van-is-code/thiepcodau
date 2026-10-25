@@ -1,6 +1,12 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { api } from '../../api'
 import { invitationName, invitationPublicUrl, toArray } from './helpers'
+import {
+  DEFAULT_PRIVATE_SHARE_TITLE,
+  privateShareTitle,
+  privateShareTitleTemplate,
+  publicShareTitle,
+} from '../../lib/shareMeta'
 import InvitationSelector from './InvitationSelector'
 import QuickShareModal from './QuickShareModal'
 import ChangeSlugModal from '../../components/ChangeSlugModal'
@@ -27,6 +33,10 @@ export default function InvitePage() {
   const [copiedKey, setCopiedKey] = useState('')
   const [sharePayload, setSharePayload] = useState(null)
   const [showSlugModal, setShowSlugModal] = useState(false)
+  const [publicShareTitleDraft, setPublicShareTitleDraft] = useState('')
+  const [privateShareTitleDraft, setPrivateShareTitleDraft] = useState('')
+  const [savingShareSettings, setSavingShareSettings] = useState(false)
+  const [shareSettingsMessage, setShareSettingsMessage] = useState('')
 
   useEffect(() => {
     const loadInvitations = async () => {
@@ -71,6 +81,12 @@ export default function InvitePage() {
   const publicUrl = currentInvitation ? invitationPublicUrl(currentInvitation) : ''
   const displayName = currentInvitation ? invitationName(currentInvitation) : ''
 
+  useEffect(() => {
+    setPublicShareTitleDraft(publicShareTitle(currentInvitation))
+    setPrivateShareTitleDraft(privateShareTitleTemplate(currentInvitation))
+    setShareSettingsMessage('')
+  }, [currentInvitation?.id])
+
   const guestUrl = useMemo(() => {
     if (!publicUrl || !guestName.trim()) return ''
     const timeQuery = customReceptionTime.trim() ? `&time=${encodeURIComponent(customReceptionTime.trim())}` : ''
@@ -99,12 +115,51 @@ export default function InvitePage() {
     }
   }
 
-  const openShare = (url, name) => {
+  const openShare = (url, name, title) => {
     if (!url) return
-    setSharePayload({ url, name: name || '' })
+    setSharePayload({ url, name: name || '', title: title || '' })
   }
 
   const closeShare = () => setSharePayload(null)
+
+  const saveShareSettings = async () => {
+    if (!currentInvitation) return
+    const publicTitle = publicShareTitleDraft.trim()
+    const privateTitle = privateShareTitleDraft.trim()
+    if (!publicTitle || !privateTitle) {
+      setShareSettingsMessage('Vui lòng nhập đủ hai tiêu đề chia sẻ.')
+      return
+    }
+
+    setSavingShareSettings(true)
+    setShareSettingsMessage('')
+    try {
+      const res = await api.setInvitationShareSettings(currentInvitation.id, {
+        public_title: publicTitle,
+        private_title: privateTitle,
+      })
+      const updated = res.data?.data || res.data
+      setInvitations((prev) => prev.map((item) => (
+        String(item.id) === String(currentInvitation.id)
+          ? {
+              ...item,
+              ...updated,
+              extra_data: {
+                ...(item.extra_data || {}),
+                ...(updated?.extra_data || {}),
+                share_title_public: publicTitle,
+                share_title_private: privateTitle,
+              },
+            }
+          : item
+      )))
+      setShareSettingsMessage('Đã lưu. Link gửi mới sẽ dùng tiêu đề này.')
+    } catch (err) {
+      setShareSettingsMessage(err?.response?.data?.message || err.message || 'Không thể lưu tiêu đề chia sẻ.')
+    } finally {
+      setSavingShareSettings(false)
+    }
+  }
 
   const generateGuestUrl = async () => {
     const trimmed = guestName.trim()
@@ -167,6 +222,21 @@ export default function InvitePage() {
         onChange={setSelectedId}
       />
 
+      <div className="invite-link-settings">
+          <span>Đường dẫn thiệp</span>
+          <button
+            type="button"
+            className="btn-sm ghost"
+            style={{ padding: '8px 14px', display: 'inline-flex', alignItems: 'center', gap: 6, opacity: currentInvitation?.extra_data?.slug_customized ? 0.85 : 1 }}
+            onClick={() => setShowSlugModal(true)}
+            disabled={!currentInvitation}
+            title={currentInvitation?.extra_data?.slug_customized ? 'Đường dẫn thiệp đã được xác nhận và cố định (1 lần duy nhất)' : 'Thiết lập đường dẫn thiệp (chỉ được đặt 1 lần duy nhất)'}
+          >
+            <span>{currentInvitation?.extra_data?.slug_customized ? '🔒' : '🔗'}</span>
+            <span>{currentInvitation?.extra_data?.slug_customized ? 'Đường Dẫn Đã Cố Định' : 'Đổi Đường Dẫn (1 Lần)'}</span>
+          </button>
+      </div>
+
       <div className="inv-grid">
         {/* Panel 1: Link thiệp chung */}
         <section className="inv-panel">
@@ -180,17 +250,40 @@ export default function InvitePage() {
           <div className="inv-pb">
             <div className="url-disp">
               <span>{publicUrl || 'Chưa có link thiệp'}</span>
+            </div>
+            <div className="share-btns">
+              <button
+                type="button"
+                className="btn-quick-invite"
+                onClick={() => openShare(publicUrl, '', publicShareTitleDraft)}
+                disabled={!publicUrl}
+              >
+                <IconSend size={15} />
+                <span>Mời Nhanh</span>
+              </button>
               <button
                 type="button"
                 className="btn-sm ghost"
-                style={{ padding: '8px 14px', display: 'inline-flex', alignItems: 'center', gap: 6, opacity: currentInvitation?.extra_data?.slug_customized ? 0.85 : 1 }}
-                onClick={() => setShowSlugModal(true)}
-                disabled={!currentInvitation}
-                title={currentInvitation?.extra_data?.slug_customized ? "Đường dẫn thiệp đã được xác nhận và cố định (1 lần duy nhất)" : "Thiết lập đường dẫn thiệp (chỉ được đặt 1 lần duy nhất)"}
+                style={{ padding: '8px 14px' }}
+                onClick={() => handleCopy(publicUrl, 'public')}
+                disabled={!publicUrl}
               >
-                <span>{currentInvitation?.extra_data?.slug_customized ? '🔒' : '🔗'}</span>
-                <span>{currentInvitation?.extra_data?.slug_customized ? 'Đường Dẫn Đã Cố Định' : 'Đổi Đường Dẫn (1 Lần)'}</span>
+                {copiedKey === 'public' ? <><IconCheck size={14} color="#4f7e65" /><span style={{ color: '#4f7e65' }}>Đã copy</span></> : <><IconCopy size={14} /><span>Copy Link</span></>}
               </button>
+            </div>
+            <div className="share-title-field">
+              <label htmlFor="public-share-title">Tiêu đề hiển thị khi gửi link chung</label>
+              <input
+                id="public-share-title"
+                value={publicShareTitleDraft}
+                maxLength={160}
+                onChange={(e) => {
+                  setPublicShareTitleDraft(e.target.value)
+                  setShareSettingsMessage('')
+                }}
+                placeholder="VD: Thiệp cưới Minh Hằng & Đăng Chiến"
+              />
+              <p>Đây là dòng thay cho “Wedding Invitation - Thiệp Cưới” trên thẻ xem trước.</p>
             </div>
           </div>
         </section>
@@ -231,6 +324,20 @@ export default function InvitePage() {
                   <span>{isSavingGuest ? 'Đang lưu…' : 'Tạo Link'}</span>
                 </button>
               </div>
+            </div>
+            <div className="share-title-field">
+              <label htmlFor="private-share-title">Tiêu đề hiển thị khi gửi link riêng</label>
+              <input
+                id="private-share-title"
+                value={privateShareTitleDraft}
+                maxLength={160}
+                onChange={(e) => {
+                  setPrivateShareTitleDraft(e.target.value)
+                  setShareSettingsMessage('')
+                }}
+                placeholder={DEFAULT_PRIVATE_SHARE_TITLE}
+              />
+              <p>Dùng <code>{'{guest_name}'}</code> để tự chèn tên khách. Xem trước: <strong>{privateShareTitle({ extra_data: { share_title_private: privateShareTitleDraft } }, guestName || 'Vân')}</strong></p>
             </div>
             <div className="fld" style={{ marginTop: 14 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6, flexWrap: 'wrap', gap: 6 }}>
@@ -343,7 +450,7 @@ export default function InvitePage() {
                   <button
                     type="button"
                     className="btn-quick-invite"
-                    onClick={() => openShare(activeGuestUrl, guestName)}
+                    onClick={() => openShare(activeGuestUrl, guestName, privateShareTitle({ extra_data: { share_title_private: privateShareTitleDraft } }, guestName))}
                   >
                     <IconSend size={15} />
                     <span>Mời Nhanh</span>
@@ -373,12 +480,25 @@ export default function InvitePage() {
         </section>
       </div>
 
+      <div className="share-settings-save">
+        <button
+          type="button"
+          className="btn-main"
+          onClick={saveShareSettings}
+          disabled={!currentInvitation || savingShareSettings}
+        >
+          {savingShareSettings ? 'Đang lưu…' : 'Lưu tiêu đề chia sẻ'}
+        </button>
+        {shareSettingsMessage && <span className={shareSettingsMessage.startsWith('Đã') ? 'ok' : 'error'}>{shareSettingsMessage}</span>}
+      </div>
+
       {/* Share Modal Popup */}
       <QuickShareModal
         isOpen={!!sharePayload}
         onClose={closeShare}
         url={sharePayload?.url}
         recipientName={sharePayload?.name}
+        shareTitle={sharePayload?.title}
       />
 
       {/* Change Slug Modal */}
