@@ -15,6 +15,7 @@ import {
   IconMessageCircle,
   IconCalendar,
   IconUser,
+  IconChevronDown,
 } from '../../components/Icons'
 
 const STATUS_CFG = {
@@ -34,6 +35,8 @@ export default function CheckinsPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [activeRow, setActiveRow] = useState(null)
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false)
+  const [detailItem, setDetailItem] = useState(null)
 
   useEffect(() => {
     const loadInvitations = async () => {
@@ -235,7 +238,19 @@ export default function CheckinsPage() {
 
       {/* Filter Toolbar */}
       <div className="ci-filter">
-        <div className="ci-fbody">
+        <button
+          type="button"
+          className={`mobile-filter-toggle${mobileFiltersOpen ? ' open' : ''}`}
+          onClick={() => setMobileFiltersOpen((open) => !open)}
+          aria-expanded={mobileFiltersOpen}
+        >
+          <span>
+            <strong>Bộ lọc phản hồi</strong>
+            <small>{statusFilter === 'all' ? 'Tất cả trạng thái' : (STATUS_CFG[statusFilter]?.label || 'Đang lọc')}</small>
+          </span>
+          <IconChevronDown size={18} />
+        </button>
+        <div className={`ci-fbody${mobileFiltersOpen ? ' mobile-open' : ''}`}>
           <div className="ci-ff" style={{ flex: '1 1 200px' }}>
             <label>Tìm kiếm khách / lời chúc</label>
             <div style={{ position: 'relative' }}>
@@ -347,7 +362,10 @@ export default function CheckinsPage() {
                 <div
                   key={item.id}
                   className={`ci-row${activeRow === item.id ? ' active' : ''}`}
-                  onClick={() => setActiveRow(activeRow === item.id ? null : item.id)}
+                  onClick={() => {
+                    setActiveRow(item.id)
+                    setDetailItem(item)
+                  }}
                 >
                   <div className="ci-td ci-person">
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -428,7 +446,23 @@ export default function CheckinsPage() {
               : '—'
 
             return (
-              <article className={`mobile-checkin-card ${cfg.cls}`} key={`mobile-${item.id}`}>
+              <article
+                className={`mobile-checkin-card ${cfg.cls}`}
+                key={`mobile-${item.id}`}
+                role="button"
+                tabIndex={0}
+                onClick={() => {
+                  setActiveRow(item.id)
+                  setDetailItem(item)
+                }}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault()
+                    setActiveRow(item.id)
+                    setDetailItem(item)
+                  }
+                }}
+              >
                 <div className="mobile-checkin-head">
                   <div className="mobile-checkin-avatar">{guestName.charAt(0).toUpperCase()}</div>
                   <div className="mobile-checkin-name">
@@ -453,6 +487,59 @@ export default function CheckinsPage() {
           })
         )}
       </div>
+
+      {detailItem && <CheckinDetailModal item={detailItem} onClose={() => setDetailItem(null)} />}
+    </div>
+  )
+}
+
+function CheckinDetailModal({ item, onClose }) {
+  const statusKey = normalizeCheckinStatus(item)
+  const cfg = STATUS_CFG[statusKey] || STATUS_CFG.maybe
+  const StatusIcon = cfg.Icon
+  const guestName = item.name || item.name_guest || item.guest_name || 'Khách mời'
+  const message = item.content || item.message || item.messages || ''
+  const guestCount = item.count || item.number_of_attendees || item.guests || 1
+  const timeDisplay = item.date || item.created_at
+    ? new Date(item.date || item.created_at).toLocaleString('vi-VN', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit', year: 'numeric' })
+    : '—'
+
+  return (
+    <div className="ci-modal-ov show" onClick={(event) => event.target === event.currentTarget && onClose()}>
+      <section className="ci-modal-box" role="dialog" aria-modal="true" aria-label={`Chi tiết phản hồi của ${guestName}`}>
+        <div className="ci-modal-top" />
+        <div className="ci-modal-hd">
+          <div>
+            <div className="ci-modal-name">{guestName}</div>
+            <span className={`ci-badge ${cfg.cls}`}><StatusIcon size={14} /> {cfg.label}</span>
+          </div>
+          <button type="button" className="ci-modal-x" onClick={onClose} aria-label="Đóng chi tiết">
+            <IconX size={17} />
+          </button>
+        </div>
+        <div className="ci-modal-bd">
+          <div className="ci-mrow">
+            <div className="ci-mlbl">Lời chúc</div>
+            <div className={`ci-mval${message ? '' : ' empty'}`}>{message || 'Khách chưa để lại lời chúc.'}</div>
+          </div>
+          <div className="ci-mrow ci-mval2g">
+            <div>
+              <div className="ci-mlbl">Số người</div>
+              <div className="ci-mval">{statusKey === 'no' ? 'Không tham dự' : `${guestCount} người`}</div>
+            </div>
+            <div>
+              <div className="ci-mlbl">Thời gian gửi</div>
+              <div className="ci-mval">{timeDisplay}</div>
+            </div>
+          </div>
+          {item.guest_type && item.guest_type !== 'ca_hai' && (
+            <div className="ci-mrow">
+              <div className="ci-mlbl">Nhóm khách</div>
+              <div className="ci-mval">{item.guest_type === 'nha_trai' ? 'Khách nhà trai' : 'Khách nhà gái'}</div>
+            </div>
+          )}
+        </div>
+      </section>
     </div>
   )
 }

@@ -98,12 +98,6 @@ export default function InvitationsPage() {
       .catch(() => setSlot(null))
   }, [])
 
-  useEffect(() => {
-    if (!openId && items[0]?.id) {
-      setOpenId(String(items[0].id))
-    }
-  }, [items, openId])
-
   const quota = useMemo(() => ({ remain: slot, warn: slot !== null && slot <= 1 }), [slot])
 
   const handleCopyLink = (slug) => {
