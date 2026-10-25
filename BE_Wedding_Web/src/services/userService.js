@@ -12,7 +12,10 @@ const DUMMY_HASH = '$2b$12$C6UzMDM.H6dfI/f/IKcEe.9x7cL4z9r5gJmN0mCFwOLhUEpLqLmXK
 const buildToken = (user) => {
 	// Secret lấy từ config/env.js — nơi đã từ chối khởi động nếu secret là placeholder.
 	const secret = env.jwtSecret;
-	const expiresIn = process.env.JWT_EXPIRES_IN || process.env.JWT_EXPIRE || '7d';
+	// Phiên đăng nhập được lưu ở localStorage. Đặt mặc định 30 ngày để người dùng
+	// không phải đăng nhập lại sau vài ngày, nhưng vẫn có thời hạn hữu hạn khi
+	// token bị lộ. Biến môi trường vẫn có thể giảm thời gian này nếu cần.
+	const expiresIn = process.env.JWT_EXPIRES_IN || process.env.JWT_EXPIRE || '30d';
 
 	return jwt.sign(
 		{

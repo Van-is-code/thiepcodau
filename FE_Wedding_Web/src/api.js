@@ -7,12 +7,12 @@ import axios from 'axios'
 // nhà: bản build KHÔNG dính cứng tên miền nào, nên thêm hay đổi tên miền về sau
 // đều không phải dựng lại giao diện.
 //
-// Dùng chữ "same-origin" chứ không dùng chuỗi rỗng: đặt biến rỗng ở dòng lệnh
-// thì Vite coi như chưa đặt và rơi về địa chỉ mặc định — lỗi này rất khó thấy
-// vì bản build vẫn chạy, chỉ là gọi nhầm sang máy chủ khác.
+// Dùng chữ "same-origin" chứ không dùng chuỗi rỗng. Khi không cấu hình biến
+// môi trường, mặc định luôn là cùng tên miền đang mở trang. Điều này tránh việc
+// bản build production gọi nhầm API cũ/không còn hoạt động và báo “Failed to fetch”.
 const RAW_API_URL = import.meta.env.VITE_API_URL
 export const API_BASE = RAW_API_URL === undefined
-  ? 'https://api.thiepcuoi.me'
+  ? ''
   : (RAW_API_URL === 'same-origin' ? '' : String(RAW_API_URL).replace(/\/+$/, ''))
 
 const apiClient = axios.create({
