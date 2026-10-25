@@ -26,6 +26,7 @@ import {
 } from '../../components/Icons'
 import { CTV_ADMIN_TABS, CtvAdminTab } from './AdminCtvTabs'
 import MusicManager from './MusicManager'
+import '../dashboard/backoffice-responsive.css'
 
 const TABS = [
   { id: 'overview', label: 'Tổng Quan', Icon: IconSparkles },
@@ -74,29 +75,29 @@ export default function AdminPage() {
   }
 
   return (
-    <div style={S.page}>
-      <header style={S.header}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+    <div className="admin-page" style={S.page}>
+      <header className="admin-header" style={S.header}>
+        <div className="admin-brand-group" style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
           <div style={S.logoBadge}>
             <IconShield size={22} color="#fff" />
           </div>
-          <div>
-            <div style={S.brand}>Wedding · Quản Trị Hệ Thống</div>
-            <div style={S.sub}>Cấp tài khoản, quản lý hạn mức & mở khoá sửa thiệp</div>
+          <div className="admin-brand-copy">
+            <div className="admin-brand" style={S.brand}>Wedding · Quản Trị Hệ Thống</div>
+            <div className="admin-sub" style={S.sub}>Cấp tài khoản, quản lý hạn mức & mở khoá sửa thiệp</div>
           </div>
         </div>
-        <button style={S.btnGhost} onClick={() => navigate('/dashboard')}>
+        <button className="admin-back" style={S.btnGhost} onClick={() => navigate('/dashboard')}>
           <IconChevronLeft size={15} />
           <span>Về Trang Khách</span>
         </button>
       </header>
 
-      <nav style={S.tabs}>
+      <nav className="admin-tabs" style={S.tabs}>
         {TABS.map((t) => {
           const TabIcon = t.Icon
           const isOn = tab === t.id
           return (
-            <button key={t.id} style={{ ...S.tab, ...(isOn ? S.tabOn : {}) }} onClick={() => setTab(t.id)}>
+            <button className="admin-tab" key={t.id} style={{ ...S.tab, ...(isOn ? S.tabOn : {}) }} onClick={() => setTab(t.id)}>
               <TabIcon size={16} />
               <span>{t.label}</span>
             </button>
@@ -104,7 +105,7 @@ export default function AdminPage() {
         })}
       </nav>
 
-      <div style={S.body}>
+      <div className="admin-body" style={S.body}>
         {tab === 'overview' && <Overview />}
         {tab === 'users' && <Users />}
         {tab === 'invitations' && <Invitations />}
@@ -157,7 +158,7 @@ function Overview() {
       </div>
 
       <h3 style={S.h3}>Thiệp Cưới Mới Tạo Gần Đây</h3>
-      <div style={S.tableWrap}>
+      <div className="admin-table-wrap" style={S.tableWrap}>
         <table style={S.table}>
           <thead>
             <tr>
@@ -363,7 +364,7 @@ function Users() {
 
       {err && <div style={S.err}>⚠️ {err}</div>}
 
-      <div style={S.tableWrap}>
+      <div className="admin-table-wrap" style={S.tableWrap}>
         <table style={S.table}>
           <thead>
             <tr>
@@ -661,7 +662,7 @@ function Invitations() {
 
       {err && <div style={S.err}>⚠️ {err}</div>}
 
-      <div style={S.tableWrap}>
+      <div className="admin-table-wrap" style={S.tableWrap}>
         <table style={S.table}>
           <thead>
             <tr>
@@ -785,7 +786,7 @@ function Templates() {
 
       {err && <div style={S.err}>⚠️ {err}</div>}
 
-      <div style={S.tableWrap}>
+      <div className="admin-table-wrap" style={S.tableWrap}>
         <table style={S.table}>
           <thead>
             <tr>

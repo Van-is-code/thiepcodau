@@ -317,6 +317,38 @@ const css = `
       flex-direction: column;
     }
   }
+
+  @media (max-width: 480px) {
+    .profile-content {
+      padding: 18px 14px calc(30px + env(safe-area-inset-bottom));
+    }
+    .profile-mobile-tabs {
+      margin: 0 -2px 18px;
+      padding: 2px 2px 6px;
+    }
+    .profile-mobile-tab-btn {
+      min-height: 40px;
+      padding: 8px 13px;
+    }
+    .profile-hero {
+      gap: 16px;
+      margin-bottom: 20px;
+      padding: 22px 16px;
+    }
+    .profile-hero-text h1 {
+      font-size: 27px;
+    }
+    .profile-cards-grid {
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+    .profile-card {
+      padding: 20px 16px;
+    }
+    .profile-card h3 {
+      font-size: 19px;
+    }
+  }
 `
 
 export default function Profile() {

@@ -349,7 +349,7 @@ export default function CheckinsPage() {
                   className={`ci-row${activeRow === item.id ? ' active' : ''}`}
                   onClick={() => setActiveRow(activeRow === item.id ? null : item.id)}
                 >
-                  <div className="ci-td">
+                  <div className="ci-td ci-person">
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                       <div
                         style={{
@@ -379,26 +379,26 @@ export default function CheckinsPage() {
                     </div>
                   </div>
 
-                  <div className="ci-td">
+                  <div className="ci-td" data-label="Xác nhận">
                     <span className={`ci-badge ${cfg.cls}`}>
                       <Icon size={13} />
                       <span>{cfg.label}</span>
                     </span>
                   </div>
 
-                  <div className="ci-td">
+                  <div className="ci-td" data-label="Lời chúc">
                     <div className="ci-msg" title={message}>
                       {message || <span style={{ color: 'var(--text-placeholder)', fontStyle: 'italic' }}>Không để lại lời nhắn</span>}
                     </div>
                   </div>
 
-                  <div className="ci-td">
+                  <div className="ci-td" data-label="Đi kèm">
                     <span style={{ fontSize: 13, color: 'var(--text-main)', fontWeight: 500 }}>
                       {statusKey === 'no' ? '0 người' : `${guestCount} người`}
                     </span>
                   </div>
 
-                  <div className="ci-td" style={{ textAlign: 'right', fontSize: 12, color: 'var(--text-subtle)' }}>
+                  <div className="ci-td" data-label="Thời gian" style={{ textAlign: 'right', fontSize: 12, color: 'var(--text-subtle)' }}>
                     {timeDisplay}
                   </div>
                 </div>

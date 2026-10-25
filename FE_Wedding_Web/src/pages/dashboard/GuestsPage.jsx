@@ -323,7 +323,7 @@ export default function GuestsPage() {
 
               return (
                 <div key={g.id} className="gt-row">
-                  <div className="gt-td">
+                  <div className="gt-td gt-person">
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                       <div
                         style={{
@@ -346,7 +346,7 @@ export default function GuestsPage() {
                     </div>
                   </div>
 
-                  <div className="gt-td">
+                  <div className="gt-td" data-label="Giờ mời">
                     {(() => {
                       const guestTime = getGuestTime(g)
                       return (
@@ -385,7 +385,7 @@ export default function GuestsPage() {
                     })()}
                   </div>
 
-                  <div className="gt-td">
+                  <div className="gt-td" data-label="Ghi chú">
                     <span className="gt-note">
                       {noteText ? (
                         noteText
@@ -395,7 +395,7 @@ export default function GuestsPage() {
                     </span>
                   </div>
 
-                  <div className="gt-td">
+                  <div className="gt-td" data-label="Đường dẫn">
                     <button
                       type="button"
                       className={`btn-copy-chip${copiedId === g.id ? ' ok' : ''}`}
@@ -416,7 +416,7 @@ export default function GuestsPage() {
                     </button>
                   </div>
 
-                  <div className="gt-td" style={{ textAlign: 'right' }}>
+                  <div className="gt-td gt-actions-cell" data-label="Thao tác" style={{ textAlign: 'right' }}>
                     <div className="gt-acts" style={{ justifyContent: 'flex-end', gap: 6, flexWrap: 'wrap' }}>
                       {/* Nút Mời Nhanh -> mở popup Messenger, Zalo, Copy Link */}
                       <button

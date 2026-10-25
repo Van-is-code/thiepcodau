@@ -634,6 +634,93 @@ const css = `
     }
   }
 
+  @media (max-width: 560px) {
+    .pub-header {
+      gap: 8px;
+      padding: 10px 14px;
+    }
+    .pub-brand {
+      min-width: 0;
+      gap: 8px;
+    }
+    .pub-brand-title {
+      max-width: 132px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: 16px;
+    }
+    .pub-btn-login {
+      min-height: 42px;
+      padding: 8px 13px;
+    }
+    .pub-hero {
+      padding: 38px 16px 26px;
+    }
+    .pub-hero-title {
+      font-size: clamp(29px, 9vw, 36px);
+    }
+    .pub-hero-sub {
+      margin-bottom: 20px;
+      font-size: 14px;
+    }
+    .pub-toolbar,
+    .pub-grid-wrap {
+      padding-left: 16px;
+      padding-right: 16px;
+    }
+    .pub-toolbar {
+      margin-bottom: 22px;
+      gap: 12px;
+    }
+    .pub-search-box {
+      min-width: 0;
+    }
+    .pub-tabs {
+      width: 100%;
+    }
+    .pub-tab-btn {
+      min-height: 40px;
+      flex: 1;
+      justify-content: center;
+      padding: 7px 9px;
+      font-size: 12px;
+    }
+    .pub-grid {
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+    .pub-card-body {
+      padding: 16px;
+    }
+    .pub-modal-backdrop {
+      align-items: flex-end;
+      padding: 10px;
+    }
+    .pub-modal {
+      max-height: calc(100dvh - 20px);
+      overflow-y: auto;
+      padding: 26px 20px;
+      border-radius: 18px;
+    }
+  }
+
+  @media (max-width: 430px) {
+    .pub-brand-title,
+    .pub-btn-login span {
+      display: none;
+    }
+    .pub-btn-login {
+      width: 42px;
+      justify-content: center;
+      padding: 0;
+    }
+    .pub-hero-badge {
+      font-size: 10px;
+      letter-spacing: 0.06em;
+    }
+  }
+
   @keyframes fadeIn {
     from { opacity: 0; }
     to { opacity: 1; }
@@ -736,12 +823,12 @@ export default function PublicTemplatesPage() {
 
           <div className="pub-nav">
             {token ? (
-              <button className="pub-btn-login" onClick={() => navigate('/dashboard')}>
+              <button className="pub-btn-login" onClick={() => navigate('/dashboard')} aria-label="Trang quản lý thiệp">
                 <IconUser size={16} />
                 <span>Trang Quản Lý Thiệp</span>
               </button>
             ) : (
-              <button className="pub-btn-login" onClick={() => navigate('/auth')}>
+              <button className="pub-btn-login" onClick={() => navigate('/auth')} aria-label="Đăng nhập">
                 <IconLock size={15} />
                 <span>Đăng Nhập</span>
               </button>

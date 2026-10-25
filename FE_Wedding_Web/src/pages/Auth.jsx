@@ -428,6 +428,31 @@ const css = `
       box-shadow: var(--shadow-sm);
     }
   }
+
+  @media (max-width: 480px) {
+    .auth-form-panel {
+      min-height: 100dvh;
+      align-items: flex-start;
+      padding: 24px 14px;
+    }
+    .auth-card {
+      border-radius: 18px;
+      padding: 28px 18px;
+    }
+    .auth-card-head {
+      margin-bottom: 22px;
+    }
+    .auth-card-title {
+      font-size: 27px;
+    }
+    .auth-input-wrap input {
+      min-height: 46px;
+      font-size: 16px;
+    }
+    .auth-submit-btn {
+      min-height: 46px;
+    }
+  }
 `
 
 export default function Auth({ onLogin }) {

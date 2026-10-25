@@ -1,0 +1,107 @@
+@media (max-width: 768px) {
+  .admin-header {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    align-items: flex-start !important;
+    gap: 10px !important;
+    padding: 13px 14px !important;
+  }
+
+  .admin-brand-group,
+  .ctv-brand-group {
+    min-width: 0;
+    gap: 10px !important;
+  }
+
+  .admin-brand-copy,
+  .ctv-brand-copy {
+    min-width: 0;
+  }
+
+  .admin-brand,
+  .ctv-brand {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .admin-sub,
+  .ctv-sub {
+    display: none;
+  }
+
+  .admin-back,
+  .ctv-back {
+    min-height: 42px;
+    flex: 0 0 auto;
+    padding: 8px 12px !important;
+  }
+
+  .admin-tabs,
+  .ctv-tabs {
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+  }
+
+  .admin-tabs {
+    position: sticky;
+    top: 67px;
+    z-index: 20;
+    gap: 0 !important;
+    padding: 0 8px !important;
+  }
+
+  .admin-tabs::-webkit-scrollbar,
+  .ctv-tabs::-webkit-scrollbar { display: none; }
+
+  .admin-tab,
+  .ctv-tab {
+    min-height: 44px;
+    flex: 0 0 auto;
+    padding: 10px 12px !important;
+  }
+
+  .admin-body {
+    padding: 20px 14px calc(32px + env(safe-area-inset-bottom)) !important;
+  }
+
+  .admin-table-wrap {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .admin-table-wrap table { min-width: 620px; }
+
+  .ctv-page {
+    padding: 14px 12px calc(30px + env(safe-area-inset-bottom)) !important;
+  }
+
+  .ctv-header {
+    align-items: flex-start !important;
+    gap: 10px !important;
+    margin-bottom: 12px !important;
+  }
+
+  .ctv-tabs {
+    margin: 0 -2px 14px !important;
+    padding: 0 2px 3px;
+  }
+
+  .ctv-locked {
+    align-items: flex-start !important;
+    line-height: 1.45;
+  }
+}
+
+@media (max-width: 420px) {
+  .admin-brand { font-size: 16px !important; }
+  .admin-back span { display: none; }
+  .admin-back { width: 42px; justify-content: center; padding: 0 !important; }
+  .ctv-back { font-size: 0 !important; width: 42px; justify-content: center; padding: 0 !important; }
+  .ctv-back svg { width: 18px; height: 18px; }
+  .admin-tab span,
+  .ctv-tab span { font-size: 12px; }
+}

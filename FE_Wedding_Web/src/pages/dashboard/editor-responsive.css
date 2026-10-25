@@ -1,0 +1,125 @@
+@media (max-width: 768px) {
+  .editor-page {
+    height: 100dvh !important;
+    min-height: 100dvh;
+  }
+
+  .editor-topbar,
+  .preview-topbar {
+    gap: 10px !important;
+    padding: 9px 12px !important;
+  }
+
+  .editor-left {
+    flex: 1 1 calc(100% - 120px) !important;
+    min-width: 0 !important;
+    gap: 8px !important;
+  }
+
+  .editor-back,
+  .preview-back {
+    width: 40px;
+    height: 40px;
+    min-height: 40px !important;
+    justify-content: center;
+    padding: 0 !important;
+    flex: 0 0 auto;
+  }
+
+  .editor-back span,
+  .preview-back span {
+    display: none;
+  }
+
+  .editor-title-wrap,
+  .preview-title-wrap {
+    min-width: 0;
+    flex: 1;
+  }
+
+  .editor-title,
+  .preview-title {
+    min-width: 0;
+    font-size: 13px !important;
+  }
+
+  .editor-center-status {
+    order: 3;
+    flex: 1 1 100%;
+    min-width: 0;
+  }
+
+  .editor-center-status > span {
+    display: block !important;
+    width: 100%;
+    overflow: hidden;
+    text-align: center;
+    text-overflow: ellipsis;
+    white-space: nowrap !important;
+  }
+
+  .editor-actions {
+    order: 4;
+    width: 100%;
+    overflow-x: auto;
+    padding: 2px 0 4px;
+    gap: 8px !important;
+    scrollbar-width: none;
+  }
+
+  .editor-actions::-webkit-scrollbar { display: none; }
+
+  .editor-action,
+  .editor-view-link {
+    min-height: 42px;
+    flex: 0 0 auto;
+    padding: 8px 13px !important;
+  }
+
+  .editor-lockbar {
+    align-items: flex-start !important;
+    padding: 9px 14px !important;
+    line-height: 1.45;
+  }
+
+  .preview-topbar {
+    flex-wrap: wrap;
+  }
+
+  .preview-title-wrap {
+    order: 3;
+    flex-basis: 100%;
+  }
+
+  .preview-create {
+    min-height: 42px !important;
+    margin-left: auto;
+    padding: 8px 14px !important;
+    font-size: 12px !important;
+  }
+
+  .preview-frame,
+  .editor-frame {
+    min-height: 0;
+  }
+}
+
+@media (max-width: 390px) {
+  .editor-action > span:not(:first-child),
+  .editor-view-link span {
+    display: none;
+  }
+
+  .editor-action,
+  .editor-view-link {
+    width: 42px;
+    justify-content: center;
+    padding: 8px !important;
+  }
+
+  .preview-create span {
+    max-width: 148px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}

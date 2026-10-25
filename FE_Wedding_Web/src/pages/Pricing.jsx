@@ -8,20 +8,21 @@ import {
   IconMail,
   IconHeart,
 } from '../components/Icons'
+import './dashboard/simple-page-responsive.css'
 
 export default function Pricing() {
   const navigate = useNavigate()
 
   return (
-    <div style={S.root}>
-      <div style={S.card}>
+    <div className="pricing-page" style={S.root}>
+      <div className="pricing-card" style={S.card}>
         <div style={S.bar} />
-        <div style={S.body}>
+        <div className="pricing-body" style={S.body}>
           <div style={S.iconBox}>
             <IconCreditCard size={28} color="#d97757" />
           </div>
 
-          <h1 style={S.title}>Thêm Lượt Tạo Thiệp Cưới</h1>
+          <h1 className="pricing-title" style={S.title}>Thêm Lượt Tạo Thiệp Cưới</h1>
 
           <p style={S.lead}>
             Hiện hệ thống chưa mở thanh toán trực tuyến tự động. Để được cấp thêm <strong>lượt tạo thiệp</strong> hoặc mở khoá sửa thiệp cưới, quý khách vui lòng <strong>liên hệ trực tiếp Quản trị viên</strong>.
@@ -42,7 +43,7 @@ export default function Pricing() {
             </div>
           </div>
 
-          <button style={S.btn} onClick={() => navigate('/dashboard')}>
+          <button className="pricing-btn" style={S.btn} onClick={() => navigate('/dashboard')}>
             <IconChevronLeft size={16} />
             <span>Quay Lại Dashboard</span>
           </button>

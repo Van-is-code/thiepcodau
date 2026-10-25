@@ -8,6 +8,7 @@ import {
   IconEye,
   IconSparkles,
 } from '../../components/Icons'
+import './editor-responsive.css'
 
 export default function TemplatePreviewPage() {
   const { templateId } = useParams()
@@ -137,19 +138,19 @@ export default function TemplatePreviewPage() {
   }
 
   return (
-    <div style={S.wrap}>
-      <header style={S.topbar}>
-        <button style={S.backBtn} onClick={handleBack}>
+    <div className="preview-page" style={S.wrap}>
+      <header className="preview-topbar" style={S.topbar}>
+        <button className="preview-back" style={S.backBtn} onClick={handleBack}>
           <IconChevronLeft size={16} />
           <span>Danh Sách Mẫu</span>
         </button>
 
-        <div style={S.titleWrap}>
+        <div className="preview-title-wrap" style={S.titleWrap}>
           <IconEye size={16} color="#c9a96e" />
-          <span style={S.title}>Xem trước: {template?.template_name}</span>
+          <span className="preview-title" style={S.title}>Xem trước: {template?.template_name}</span>
         </div>
 
-        <button style={S.createBtn} disabled={creating} onClick={handleUseTemplate}>
+        <button className="preview-create" style={S.createBtn} disabled={creating} onClick={handleUseTemplate}>
           {creating ? (
             <span>Đang tạo thiệp...</span>
           ) : (
@@ -163,6 +164,7 @@ export default function TemplatePreviewPage() {
 
       <iframe
         srcDoc={template ? buildIframeDocument(html, { template }) : ''}
+        className="preview-frame"
         style={S.iframe}
         sandbox="allow-scripts allow-same-origin allow-popups"
         title="Xem trước mẫu thiệp cưới"
@@ -178,4 +180,73 @@ export default function TemplatePreviewPage() {
       )}
     </div>
   )
+}
+
+const S = {
+  wrap: {
+    display: 'flex',
+    flexDirection: 'column',
+    width: '100%',
+    height: '100dvh',
+    background: '#1f1917',
+    fontFamily: "'Plus Jakarta Sans', sans-serif",
+  },
+  topbar: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 14,
+    padding: '10px 18px',
+    background: 'rgba(31, 25, 23, 0.96)',
+    borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+    color: '#fff',
+    flexShrink: 0,
+  },
+  backBtn: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: 5,
+    minHeight: 38,
+    padding: '6px 14px',
+    border: '1px solid rgba(255, 255, 255, 0.18)',
+    borderRadius: 9999,
+    background: 'rgba(255, 255, 255, 0.08)',
+    color: '#fff',
+    cursor: 'pointer',
+    fontSize: 12.5,
+    fontWeight: 500,
+    whiteSpace: 'nowrap',
+  },
+  titleWrap: { display: 'flex', alignItems: 'center', gap: 6, minWidth: 0, overflow: 'hidden' },
+  title: { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: 14, fontWeight: 600 },
+  createBtn: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    minHeight: 38,
+    padding: '8px 18px',
+    border: 'none',
+    borderRadius: 9999,
+    background: 'linear-gradient(135deg, #e58d6f 0%, #c96547 100%)',
+    color: '#fff',
+    cursor: 'pointer',
+    fontSize: 13,
+    fontWeight: 600,
+    whiteSpace: 'nowrap',
+    boxShadow: '0 4px 14px rgba(217, 119, 87, 0.35)',
+  },
+  iframe: { flex: 1, width: '100%', border: 'none', background: '#fff' },
+  center: {
+    width: '100%', minHeight: '100dvh', display: 'flex', alignItems: 'center', justifyContent: 'center',
+    padding: 20, background: '#fcfaf7', fontFamily: "'Plus Jakarta Sans', sans-serif",
+  },
+  loadingCard: {
+    maxWidth: 420, padding: '36px 32px', border: '1px solid #ede5db', borderRadius: 20,
+    background: '#fff', textAlign: 'center', boxShadow: '0 10px 30px rgba(31, 25, 23, 0.08)',
+  },
+  btnBack: {
+    padding: '10px 22px', border: 'none', borderRadius: 9999, background: '#d97757', color: '#fff',
+    cursor: 'pointer', fontSize: 13, fontWeight: 600,
+  },
 }

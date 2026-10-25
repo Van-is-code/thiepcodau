@@ -89,6 +89,34 @@ const css = `
     justify-content: center;
     flex-wrap: wrap;
   }
+
+  @media (max-width: 480px) {
+    .payment-success-page {
+      min-height: 100dvh;
+      padding: 14px;
+    }
+    .payment-success-card {
+      border-radius: 18px;
+      padding: 28px 18px;
+    }
+    .payment-success-title {
+      font-size: 23px;
+    }
+    .payment-success-info-box {
+      padding: 14px;
+    }
+    .payment-success-meta {
+      align-items: flex-start;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .payment-success-actions .btn-main,
+    .payment-success-actions .btn-ghost {
+      width: 100%;
+      min-height: 44px;
+      justify-content: center;
+    }
+  }
 `
 
 const asMoney = (value) => {

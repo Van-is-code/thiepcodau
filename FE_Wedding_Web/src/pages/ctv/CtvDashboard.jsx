@@ -7,6 +7,7 @@ import {
   IconChevronLeft, IconPlus, IconSearch, IconQrCode, IconRefreshCw, IconCopy,
   IconExternalLink, IconCheckCircle, IconAlertCircle, IconEdit3, IconX, IconTrash2, IconKey, IconLock,
 } from '../../components/Icons'
+import '../dashboard/backoffice-responsive.css'
 
 const money = (v) => `${Number(v || 0).toLocaleString('vi-VN')} ₫`
 const payUrl = (u) => (!u ? '' : /^https?:\/\//i.test(u) ? u : `${window.location.origin}${u}`)
@@ -58,30 +59,30 @@ export default function CtvDashboard() {
   }
 
   return (
-    <div style={S.page}>
-      <header style={S.header}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+    <div className="ctv-page" style={S.page}>
+      <header className="ctv-header" style={S.header}>
+        <div className="ctv-brand-group" style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
           <div style={S.logo}><IconUsers size={22} color="#fff" /></div>
-          <div>
-            <div style={S.brand}>CTV · {me?.profile?.display_name || 'Cộng tác viên'}</div>
-            <div style={S.sub}>
+          <div className="ctv-brand-copy">
+            <div className="ctv-brand" style={S.brand}>CTV · {me?.profile?.display_name || 'Cộng tác viên'}</div>
+            <div className="ctv-sub" style={S.sub}>
               Thiệp lẻ {money(me?.profile?.single_price)} · Combo {money(me?.profile?.combo_price)} · HH {pct(me?.profile?.commission_rate)}
             </div>
           </div>
         </div>
-        <button style={S.btnGhost} onClick={() => navigate('/dashboard')}><IconChevronLeft size={15} /> Trang khách</button>
+        <button className="ctv-back" style={S.btnGhost} onClick={() => navigate('/dashboard')}><IconChevronLeft size={15} /> Trang khách</button>
       </header>
 
       {me?.profile?.status === 'locked' && (
-        <div style={S.lockedBar}><IconAlertCircle size={16} /> Tài khoản CTV của bạn đang bị khoá. Bạn không thể tạo khách / tạo đơn / rút tiền. Liên hệ quản trị viên.</div>
+        <div className="ctv-locked" style={S.lockedBar}><IconAlertCircle size={16} /> Tài khoản CTV của bạn đang bị khoá. Bạn không thể tạo khách / tạo đơn / rút tiền. Liên hệ quản trị viên.</div>
       )}
 
-      <nav style={S.tabs}>
+      <nav className="ctv-tabs" style={S.tabs}>
         {TABS.map((t) => {
           const On = t.Icon
           const active = tab === t.id
           return (
-            <button key={t.id} style={{ ...S.tab, ...(active ? S.tabOn : {}) }}
+            <button className="ctv-tab" key={t.id} style={{ ...S.tab, ...(active ? S.tabOn : {}) }}
               onClick={() => { setTab(t.id); setDetailId(null) }}>
               <On size={16} /> <span>{t.label}</span>
             </button>
@@ -89,7 +90,7 @@ export default function CtvDashboard() {
         })}
       </nav>
 
-      <div style={S.body}>
+      <div className="ctv-body" style={S.body}>
         {tab === 'overview' && <Overview me={me} />}
         {tab === 'customers' && !detailId && <Customers onOpen={setDetailId} locked={me?.profile?.status === 'locked'} />}
         {tab === 'customers' && detailId && (

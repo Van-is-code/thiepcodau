@@ -14,6 +14,7 @@ import {
   IconCreditCard,
   IconLogOut,
   IconSparkles,
+  IconX,
 } from '../../components/Icons'
 import './dashboard.css'
 
@@ -47,6 +48,7 @@ export default function DashboardLayout({ onLogout }) {
   const navigate = useNavigate()
   const modal = useModal()
   const [profile, setProfile] = useState(null)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   useEffect(() => {
     api.getProfile()
@@ -86,8 +88,14 @@ export default function DashboardLayout({ onLogout }) {
   }
 
   return (
-    <div className="lay">
-      <aside className="sb">
+    <div className={`lay${mobileMenuOpen ? ' mobile-nav-open' : ''}`}>
+      <button
+        type="button"
+        className="mobile-nav-scrim"
+        aria-label="Đóng menu"
+        onClick={() => setMobileMenuOpen(false)}
+      />
+      <aside className={`sb${mobileMenuOpen ? ' mobile-open' : ''}`}>
         <div className="sb-brand">
           <div className="sb-logo-badge">
             <IconHeart size={20} color="#fff" />
@@ -110,6 +118,7 @@ export default function DashboardLayout({ onLogout }) {
                     to={item.to}
                     end={item.to === '/dashboard'}
                     className={({ isActive }) => `nav-it${isActive ? ' on' : ''}`}
+                    onClick={() => setMobileMenuOpen(false)}
                   >
                     <span className="nav-icon">
                       <ItemIcon size={17} />
@@ -125,7 +134,7 @@ export default function DashboardLayout({ onLogout }) {
             <div className="nav-grp">
               <div className="nav-lbl">Hệ Thống</div>
               {isAdmin && (
-                <NavLink to="/admin" className={({ isActive }) => `nav-it${isActive ? ' on' : ''}`}>
+                <NavLink to="/admin" className={({ isActive }) => `nav-it${isActive ? ' on' : ''}`} onClick={() => setMobileMenuOpen(false)}>
                   <span className="nav-icon">
                     <IconShield size={17} />
                   </span>
@@ -133,7 +142,7 @@ export default function DashboardLayout({ onLogout }) {
                 </NavLink>
               )}
               {isCtv && (
-                <NavLink to="/ctv" className={({ isActive }) => `nav-it${isActive ? ' on' : ''}`}>
+                <NavLink to="/ctv" className={({ isActive }) => `nav-it${isActive ? ' on' : ''}`} onClick={() => setMobileMenuOpen(false)}>
                   <span className="nav-icon">
                     <IconUsers size={17} />
                   </span>
@@ -168,6 +177,21 @@ export default function DashboardLayout({ onLogout }) {
       </aside>
 
       <main className="main">
+        <header className="mobile-bar">
+          <div className="mobile-brand">
+            <div className="mobile-brand-mark"><IconHeart size={17} color="#fff" /></div>
+            <span>Wedding Invitation</span>
+          </div>
+          <button
+            type="button"
+            className="mobile-menu-btn"
+            aria-label={mobileMenuOpen ? 'Đóng menu' : 'Mở menu'}
+            aria-expanded={mobileMenuOpen}
+            onClick={() => setMobileMenuOpen((open) => !open)}
+          >
+            {mobileMenuOpen ? <IconX size={21} /> : <span aria-hidden="true">☰</span>}
+          </button>
+        </header>
         <div className="ptabs">
           {topTabs.map((tab) => {
             const TabIcon = tab.Icon

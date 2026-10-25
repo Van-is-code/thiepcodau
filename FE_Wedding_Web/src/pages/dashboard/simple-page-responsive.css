@@ -1,0 +1,73 @@
+@media (max-width: 520px) {
+  .pricing-page,
+  .pay-page {
+    min-height: 100dvh !important;
+    align-items: flex-start !important;
+    padding: 14px !important;
+  }
+
+  .pricing-card,
+  .pay-card {
+    margin: auto 0;
+    border-radius: 18px !important;
+  }
+
+  .pricing-body {
+    padding: 28px 18px !important;
+  }
+
+  .pricing-title {
+    font-size: 26px !important;
+  }
+
+  .pricing-btn,
+  .pay-btn {
+    width: 100%;
+    min-height: 46px;
+  }
+
+  .pay-body {
+    padding: 22px 18px 24px !important;
+  }
+
+  .pay-summary {
+    padding: 12px 14px !important;
+  }
+
+  .pay-row {
+    align-items: flex-start !important;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .pay-row > span:last-child {
+    text-align: left !important;
+    word-break: break-word;
+  }
+
+  .pay-qr {
+    width: min(220px, 100%) !important;
+    height: auto !important;
+  }
+
+  .public-owner-toolbar {
+    top: 8px !important;
+    right: 8px !important;
+  }
+
+  .public-owner-edit {
+    width: 42px;
+    height: 42px;
+    min-height: 42px;
+    justify-content: center;
+    padding: 0 !important;
+  }
+
+  .public-owner-edit span {
+    display: none;
+  }
+
+  .public-invitation-frame {
+    height: 100dvh !important;
+  }
+}

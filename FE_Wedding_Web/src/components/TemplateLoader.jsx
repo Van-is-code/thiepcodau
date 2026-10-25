@@ -4,6 +4,7 @@ import { api } from '../api'
 import { buildIframeDocument, resolveTemplateUrl } from '../lib/templateEngine'
 import { privateShareTitle, publicShareTitle } from '../lib/shareMeta'
 import { IconHeart, IconSparkles, IconAlertCircle, IconRefreshCw, IconChevronLeft, IconEdit3 } from './Icons'
+import '../pages/dashboard/simple-page-responsive.css'
 
 const TemplateLoader = () => {
   const { slug } = useParams()
@@ -258,9 +259,10 @@ const TemplateLoader = () => {
   return (
     <>
       {isOwner && (
-        <div style={styles.ownerToolbar}>
+        <div className="public-owner-toolbar" style={styles.ownerToolbar}>
           <button
             onClick={() => navigate(`/editor/${invitation.id}`)}
+            className="public-owner-edit"
             style={styles.ownerEditBtn}
             title="Mở trình chỉnh sửa nội dung và ảnh trên thiệp này"
           >
@@ -272,6 +274,7 @@ const TemplateLoader = () => {
       <iframe
         key={iframeKey}
         srcDoc={buildIframeDocument(templateContent, invitation)}
+        className="public-invitation-frame"
         style={{
           width: '100%',
           height: '100vh',

@@ -9,6 +9,7 @@ import {
   IconExternalLink,
   IconHeart,
 } from '../components/Icons'
+import './dashboard/simple-page-responsive.css'
 
 const money = (v) => `${Number(v || 0).toLocaleString('vi-VN')} ₫`
 const qrImg = (data) =>
@@ -61,10 +62,10 @@ export default function PayPage() {
   }
 
   return (
-    <div style={S.page}>
-      <div style={S.card}>
+    <div className="pay-page" style={S.page}>
+      <div className="pay-card" style={S.card}>
         <div style={S.bar} />
-        <div style={S.body}>
+        <div className="pay-body" style={S.body}>
           <div style={S.brand}>
             <div style={S.logo}><IconHeart size={18} color="#fff" /></div>
             <span>Thiệp Cưới Đẹp</span>
@@ -78,7 +79,7 @@ export default function PayPage() {
 
           {data && (
             <>
-              <div style={S.summary}>
+              <div className="pay-summary" style={S.summary}>
                 <Row k="Dịch vụ" v={PRODUCT_LABEL[data.product_code] || data.product_code} />
                 {data.customer_name && <Row k="Khách hàng" v={data.customer_name} />}
                 {data.ctv_name && <Row k="Cộng tác viên" v={data.ctv_name} />}
@@ -90,13 +91,14 @@ export default function PayPage() {
                   <IconCheckCircle size={34} color="#4f7e65" />
                   <h2 style={S.h2}>Đã thanh toán</h2>
                   <p style={S.muted}>Tài khoản của bạn đã được kích hoạt. Bạn có thể đăng nhập để tạo &amp; chỉnh sửa thiệp.</p>
-                  <a href="/auth" style={S.btn}>Đăng nhập</a>
+                  <a className="pay-btn" href="/auth" style={S.btn}>Đăng nhập</a>
                 </div>
               )}
 
               {data.status === 'pending' && data.checkout && (
                 <div style={S.state}>
                   <img
+                    className="pay-qr"
                     src={qrImg(data.checkout.qr || data.checkout.checkoutUrl)}
                     alt="Mã QR thanh toán"
                     width={220}
@@ -104,7 +106,7 @@ export default function PayPage() {
                     style={S.qr}
                   />
                   <p style={S.muted}>Quét mã bằng app ngân hàng, hoặc bấm nút bên dưới.</p>
-                  <a href={data.checkout.checkoutUrl} target="_blank" rel="noreferrer" style={S.btn}>
+                  <a className="pay-btn" href={data.checkout.checkoutUrl} target="_blank" rel="noreferrer" style={S.btn}>
                     <IconExternalLink size={15} /> Mở trang thanh toán payOS
                   </a>
                   <p style={S.tiny}>
@@ -121,7 +123,7 @@ export default function PayPage() {
                   <IconAlertCircle size={30} color="#c9902f" />
                   <h2 style={S.h2}>Mã thanh toán đã hết hạn</h2>
                   <p style={S.muted}>Bấm để tạo lại mã QR / link thanh toán mới cho đúng đơn hàng này.</p>
-                  <button onClick={refresh} disabled={busy} style={S.btn}>
+                  <button className="pay-btn" onClick={refresh} disabled={busy} style={S.btn}>
                     <IconRefreshCw size={15} /> {busy ? 'Đang tạo…' : 'Tạo lại mã thanh toán'}
                   </button>
                 </div>
@@ -153,7 +155,7 @@ export default function PayPage() {
 
 function Row({ k, v }) {
   return (
-    <div style={S.row}>
+    <div className="pay-row" style={S.row}>
       <span style={S.rowK}>{k}</span>
       <span style={S.rowV}>{v}</span>
     </div>

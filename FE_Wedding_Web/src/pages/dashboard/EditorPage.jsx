@@ -29,6 +29,7 @@ import ChangeSlugModal from '../../components/ChangeSlugModal'
 import ImageCropper from '../../components/ImageCropper'
 import ImagePickerModal from '../../components/ImagePickerModal'
 import EditorTourGuide from '../../components/EditorTourGuide'
+import './editor-responsive.css'
 
 // data:image/png;base64,... -> File (để upload QR sinh ra làm ảnh thiệp)
 function dataUriToFile(uri, name) {
@@ -551,15 +552,15 @@ export default function EditorPage() {
   }
 
   return (
-    <div style={S.wrap}>
-      <header style={S.topbar}>
-        <div style={S.left}>
-          <button style={S.backBtn} onClick={() => navigate('/dashboard')}>
+    <div className="editor-page" style={S.wrap}>
+      <header className="editor-topbar" style={S.topbar}>
+        <div className="editor-left" style={S.left}>
+          <button className="editor-back" style={S.backBtn} onClick={() => navigate('/dashboard')}>
             <IconChevronLeft size={16} />
             <span>Danh Sách Thiệp</span>
           </button>
 
-          <div style={S.titleWrap}>
+          <div className="editor-title-wrap" style={S.titleWrap}>
             <IconHeart size={16} color="#d97757" />
             {isEditingTitle ? (
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
@@ -620,6 +621,7 @@ export default function EditorPage() {
               </div>
             ) : (
               <span
+                className="editor-title"
                 style={{ ...S.title, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 6 }}
                 onClick={() => {
                   setTitleDraft(invitation?.title_vi || invitation?.title || '')
@@ -634,7 +636,7 @@ export default function EditorPage() {
           </div>
         </div>
 
-        <div style={S.centerStatus}>
+        <div className="editor-center-status" style={S.centerStatus}>
           {locked ? (
             <span style={S.lockBadge}>
               <IconLock size={14} />
@@ -661,13 +663,14 @@ export default function EditorPage() {
           )}
         </div>
 
-        <div style={S.rightActions}>
-          <button style={S.tplBtn} onClick={openMusicPanel} disabled={locked} title="Cài đặt nhạc nền và ghi âm lời chúc">
+        <div className="editor-actions" style={S.rightActions}>
+          <button className="editor-action" style={S.tplBtn} onClick={openMusicPanel} disabled={locked} title="Cài đặt nhạc nền và ghi âm lời chúc">
             <IconMusic size={15} />
             <span>Âm Thanh & Nhạc</span>
           </button>
 
           <button
+            className="editor-action"
             style={{ ...S.tplBtn, background: '#fdf6ee', borderColor: '#f2ded0', color: '#c96547', fontWeight: 700 }}
             onClick={() => setShowTour(true)}
             title="Xem hướng dẫn sử dụng cách sửa thiệp"
@@ -676,12 +679,13 @@ export default function EditorPage() {
             <span>Hướng Dẫn</span>
           </button>
 
-          <button style={S.tplBtn} onClick={openBankPanel} disabled={locked}>
+          <button className="editor-action" style={S.tplBtn} onClick={openBankPanel} disabled={locked}>
             <IconQrCode size={15} />
             <span>QR Ngân Hàng</span>
           </button>
 
           <button
+            className="editor-action"
             style={S.tplBtn}
             onClick={() => galleryUploadRef.current?.click()}
             disabled={locked}
@@ -691,12 +695,13 @@ export default function EditorPage() {
             <span>Thêm Ảnh Album</span>
           </button>
 
-          <button style={S.tplBtn} onClick={handleChangeTemplate} disabled={locked}>
+          <button className="editor-action" style={S.tplBtn} onClick={handleChangeTemplate} disabled={locked}>
             <IconPalette size={15} />
             <span>Đổi Mẫu</span>
           </button>
 
           <button
+            className="editor-action"
             style={S.tplBtn}
             onClick={() => setChangeSlugModalOpen(true)}
             title="Tuỳ chỉnh link thiệp cưới (slug) không lo trùng lặp"
@@ -706,6 +711,7 @@ export default function EditorPage() {
           </button>
 
           <button
+            className="editor-action editor-save"
             style={{ ...S.saveBtn, opacity: !dirty || locked || saveStatus === 'saving' ? 0.5 : 1 }}
             onClick={handleSave}
             disabled={!dirty || locked || saveStatus === 'saving'}
@@ -715,7 +721,7 @@ export default function EditorPage() {
           </button>
 
           {invitation?.invitation_slug && (
-            <a style={S.viewLink} href={`/${invitation.invitation_slug}`} target="_blank" rel="noreferrer">
+            <a className="editor-view-link" style={S.viewLink} href={`/${invitation.invitation_slug}`} target="_blank" rel="noreferrer">
               <IconExternalLink size={15} />
               <span>Xem Thiệp</span>
             </a>
@@ -724,7 +730,7 @@ export default function EditorPage() {
       </header>
 
       {locked && (
-        <div style={S.lockBar}>
+        <div className="editor-lockbar" style={S.lockBar}>
           <IconLock size={15} />
           <span>{lockNote(lockState)} — Bạn và khách vẫn có thể xem và chia sẻ thiệp bình thường.</span>
         </div>
@@ -735,6 +741,7 @@ export default function EditorPage() {
         ref={iframeRef}
         srcDoc={iframeDoc}
         onLoad={handleIframeLoad}
+        className="editor-frame"
         style={S.iframe}
         sandbox="allow-scripts allow-same-origin allow-popups allow-modals allow-forms allow-downloads"
         title="Trình sửa thiệp cưới"
