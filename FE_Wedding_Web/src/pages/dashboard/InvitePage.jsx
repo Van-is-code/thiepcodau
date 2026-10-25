@@ -45,6 +45,7 @@ export default function InvitePage() {
   const [shareSettingsMessage, setShareSettingsMessage] = useState('')
   const [shareSettingsSection, setShareSettingsSection] = useState('')
   const [publicLinkWarning, setPublicLinkWarning] = useState('')
+  const [mobileInviteMode, setMobileInviteMode] = useState('public')
 
   useEffect(() => {
     const loadInvitations = async () => {
@@ -272,6 +273,206 @@ export default function InvitePage() {
             <span>{currentInvitation?.extra_data?.slug_customized ? '🔒' : '🔗'}</span>
             <span>{currentInvitation?.extra_data?.slug_customized ? 'Đường Dẫn Đã Cố Định' : 'Đổi Đường Dẫn (1 Lần)'}</span>
           </button>
+      </div>
+
+      <div className="mobile-invite-workflow">
+        <div className="mobile-invite-switch" role="tablist" aria-label="Loại lời mời">
+          <button
+            type="button"
+            role="tab"
+            aria-selected={mobileInviteMode === 'public'}
+            className={mobileInviteMode === 'public' ? 'on' : ''}
+            onClick={() => setMobileInviteMode('public')}
+          >
+            <IconSend size={17} /> Gửi link chung
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={mobileInviteMode === 'private'}
+            className={mobileInviteMode === 'private' ? 'on' : ''}
+            onClick={() => setMobileInviteMode('private')}
+          >
+            <IconUsers size={17} /> Mời riêng
+          </button>
+        </div>
+
+        {mobileInviteMode === 'public' ? (
+          <section className="mobile-invite-card">
+            <div className="mobile-invite-card-head">
+              <span className="mobile-invite-kicker">Dành cho nhóm chat & mạng xã hội</span>
+              <h2>Link thiệp chung</h2>
+              <p>Gửi một lần cho tất cả khách mời.</p>
+            </div>
+            <div className="mobile-link-display">{publicUrl || 'Chưa có link thiệp'}</div>
+            {publicLinkWarning && <div className="public-link-warning">{publicLinkWarning}</div>}
+            <div className="mobile-link-actions">
+              <button
+                type="button"
+                className="mobile-primary-action"
+                onClick={() => openShare(publicUrl, '', publicShareTitleDraft)}
+                disabled={!publicUrl}
+              >
+                <IconSend size={18} /> Mời nhanh
+              </button>
+              <button
+                type="button"
+                className={`mobile-secondary-action${copiedKey === 'public' ? ' ok' : ''}`}
+                onClick={() => handleCopy(publicUrl, 'public')}
+                disabled={!publicUrl}
+              >
+                {copiedKey === 'public' ? <IconCheck size={18} /> : <IconCopy size={18} />}
+                {copiedKey === 'public' ? 'Đã sao chép' : 'Sao chép'}
+              </button>
+            </div>
+
+            <details className="mobile-advanced-settings">
+              <summary>Tùy chỉnh tiêu đề khi chia sẻ</summary>
+              <div className="mobile-settings-body">
+                <label htmlFor="mobile-public-share-title">Tiêu đề hiển thị</label>
+                <input
+                  id="mobile-public-share-title"
+                  value={publicShareTitleDraft}
+                  maxLength={160}
+                  onChange={(e) => {
+                    setPublicShareTitleDraft(e.target.value)
+                    setShareSettingsMessage('')
+                  }}
+                />
+                <label htmlFor="mobile-public-share-description">Mô tả</label>
+                <textarea
+                  id="mobile-public-share-description"
+                  rows={3}
+                  value={publicShareDescriptionDraft}
+                  maxLength={300}
+                  onChange={(e) => {
+                    setPublicShareDescriptionDraft(e.target.value)
+                    setShareSettingsMessage('')
+                  }}
+                />
+                <button type="button" className="mobile-save-settings" onClick={() => saveShareSettings('public')} disabled={!currentInvitation || savingShareSettings}>
+                  {savingShareSettings ? 'Đang lưu…' : 'Lưu nội dung chia sẻ'}
+                </button>
+                {shareSettingsSection === 'public' && shareSettingsMessage && <p className="mobile-settings-message">{shareSettingsMessage}</p>}
+              </div>
+            </details>
+          </section>
+        ) : (
+          <section className="mobile-invite-card mobile-private-card">
+            <div className="mobile-invite-card-head">
+              <span className="mobile-invite-kicker">Thiệp được xưng tên từng người</span>
+              <h2>Tạo lời mời riêng</h2>
+              <p>Nhập tên, tạo link và gửi ngay trong một luồng.</p>
+            </div>
+
+            <div className="mobile-field">
+              <label htmlFor="mobile-guest-name">Tên khách mời</label>
+              <input
+                id="mobile-guest-name"
+                placeholder="Ví dụ: Chị Vân"
+                value={guestName}
+                onChange={(e) => {
+                  setGuestName(e.target.value)
+                  setGuestLinkVisible(false)
+                  setGuestSaveSuccess(false)
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') generateGuestUrl()
+                }}
+              />
+            </div>
+
+            <div className="mobile-field">
+              <label htmlFor="mobile-guest-note">Ghi chú <span>(không bắt buộc)</span></label>
+              <input id="mobile-guest-note" placeholder="Bạn thân, đồng nghiệp…" value={guestNote} onChange={(e) => setGuestNote(e.target.value)} />
+            </div>
+
+            <div className="mobile-field">
+              <label htmlFor="mobile-guest-time">Giờ mời riêng <span>mặc định {defaultReceptionTime}</span></label>
+              <div className="mobile-time-row">
+                <input
+                  id="mobile-guest-time"
+                  type="time"
+                  value={customReceptionTime}
+                  onChange={(e) => {
+                    setCustomReceptionTime(e.target.value)
+                    setGuestLinkVisible(false)
+                    setGuestSaveSuccess(false)
+                  }}
+                />
+                <div className="mobile-time-chips">
+                  {['11:00', '11:30', '17:30', '18:00'].map((preset) => (
+                    <button
+                      key={preset}
+                      type="button"
+                      className={customReceptionTime === preset ? 'on' : ''}
+                      onClick={() => {
+                        setCustomReceptionTime(preset)
+                        setGuestLinkVisible(false)
+                        setGuestSaveSuccess(false)
+                      }}
+                    >
+                      {preset}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <button type="button" className="mobile-create-invite" onClick={generateGuestUrl} disabled={isSavingGuest}>
+              <IconSparkles size={18} /> {isSavingGuest ? 'Đang tạo lời mời…' : 'Tạo link mời riêng'}
+            </button>
+
+            {guestLinkVisible && activeGuestUrl && (
+              <div className="mobile-created-invite">
+                <div className="mobile-created-check"><IconCheck size={18} /> {guestSaveSuccess ? 'Đã lưu khách mời' : 'Link mời đã sẵn sàng'}</div>
+                <strong>Kính mời {guestName || 'quý khách'}</strong>
+                <span>{customReceptionTime ? `Giờ mời riêng: ${customReceptionTime}` : `Giờ mời theo thiệp: ${defaultReceptionTime}`}</span>
+                <div className="mobile-link-display">{activeGuestUrl}</div>
+                <div className="mobile-link-actions">
+                  <button type="button" className="mobile-primary-action" onClick={() => openShare(activeGuestUrl, guestName, privateShareTitle({ extra_data: { share_title_private: privateShareTitleDraft } }, guestName))}>
+                    <IconSend size={18} /> Mời ngay
+                  </button>
+                  <button type="button" className={`mobile-secondary-action${copiedKey === 'guest' ? ' ok' : ''}`} onClick={() => handleCopy(activeGuestUrl, 'guest')}>
+                    {copiedKey === 'guest' ? <IconCheck size={18} /> : <IconCopy size={18} />}
+                    {copiedKey === 'guest' ? 'Đã sao chép' : 'Sao chép'}
+                  </button>
+                </div>
+              </div>
+            )}
+
+            <details className="mobile-advanced-settings">
+              <summary>Tùy chỉnh lời mời riêng</summary>
+              <div className="mobile-settings-body">
+                <label htmlFor="mobile-private-share-title">Tiêu đề <code>{'{guest_name}'}</code></label>
+                <input
+                  id="mobile-private-share-title"
+                  value={privateShareTitleDraft}
+                  maxLength={160}
+                  onChange={(e) => {
+                    setPrivateShareTitleDraft(e.target.value)
+                    setShareSettingsMessage('')
+                  }}
+                />
+                <label htmlFor="mobile-private-share-description">Mô tả <code>{'{guest_name}'}</code></label>
+                <textarea
+                  id="mobile-private-share-description"
+                  rows={3}
+                  value={privateShareDescriptionDraft}
+                  maxLength={300}
+                  onChange={(e) => {
+                    setPrivateShareDescriptionDraft(e.target.value)
+                    setShareSettingsMessage('')
+                  }}
+                />
+                <button type="button" className="mobile-save-settings" onClick={() => saveShareSettings('private')} disabled={!currentInvitation || savingShareSettings}>
+                  {savingShareSettings ? 'Đang lưu…' : 'Lưu nội dung chia sẻ'}
+                </button>
+                {shareSettingsSection === 'private' && shareSettingsMessage && <p className="mobile-settings-message">{shareSettingsMessage}</p>}
+              </div>
+            </details>
+          </section>
+        )}
       </div>
 
       <div className="inv-grid">

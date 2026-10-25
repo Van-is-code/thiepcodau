@@ -17,6 +17,12 @@
   display: none;
 }
 
+.mobile-guest-list,
+.mobile-checkin-list,
+.mobile-invite-workflow {
+  display: none;
+}
+
 /* Sidebar Styling */
 .sb {
   width: 250px;
@@ -2241,6 +2247,17 @@
     padding: 7px 12px;
   }
 
+  .guests-header-actions,
+  .checkins-header-actions {
+    width: 100%;
+  }
+
+  .guests-header-actions .btn-main,
+  .checkins-header-actions .btn-main {
+    flex: 1;
+    justify-content: center;
+  }
+
   .inv-hd {
     align-items: flex-start;
     gap: 11px;
@@ -2443,6 +2460,453 @@
 
   .ci-fbody .ci-ff:first-child { grid-column: 1 / -1; }
   .ci-fbody .btn-sm { width: 100%; min-height: 40px; }
+
+  /* ----------------------------------------------------------------------
+     Mobile-native guest management and RSVP. Desktop tables are replaced
+     by touch-first cards so information and actions never compete for space.
+     ---------------------------------------------------------------------- */
+  .desktop-guest-table,
+  .ci-twrap,
+  .inv-grid {
+    display: none;
+  }
+
+  .mobile-guest-list,
+  .mobile-checkin-list {
+    display: grid;
+    gap: 12px;
+  }
+
+  .mobile-guest-card,
+  .mobile-checkin-card {
+    overflow: hidden;
+    border: 1px solid var(--border-subtle);
+    border-radius: 20px;
+    background: var(--bg-card);
+    box-shadow: 0 7px 22px rgba(50, 37, 29, 0.06);
+  }
+
+  .mobile-guest-card { padding: 16px; }
+
+  .mobile-guest-head,
+  .mobile-checkin-head {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+  }
+
+  .mobile-guest-avatar,
+  .mobile-checkin-avatar {
+    display: inline-flex;
+    width: 44px;
+    height: 44px;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    border-radius: 15px;
+    background: var(--primary-light);
+    color: var(--primary);
+    font-size: 16px;
+    font-weight: 700;
+  }
+
+  .mobile-guest-title,
+  .mobile-checkin-name {
+    display: flex;
+    min-width: 0;
+    flex: 1;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .mobile-guest-title strong,
+  .mobile-checkin-name strong {
+    overflow: hidden;
+    color: var(--text-main);
+    font-size: 16px;
+    font-weight: 700;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .mobile-guest-title span,
+  .mobile-checkin-name span {
+    overflow: hidden;
+    color: var(--text-muted);
+    font-size: 12px;
+    line-height: 1.3;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .mobile-icon-action,
+  .mobile-delete-action {
+    display: inline-flex;
+    width: 44px;
+    height: 44px;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    border: 1px solid var(--border-subtle);
+    border-radius: 14px;
+    background: var(--bg-subtle);
+    color: var(--text-main);
+  }
+
+  .mobile-delete-action {
+    width: 48px;
+    background: #fff4f1;
+    border-color: #f4d5cf;
+    color: #c04938;
+  }
+
+  .mobile-guest-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin: 15px 0;
+    padding: 10px 11px;
+    border-radius: 13px;
+    background: var(--bg-subtle);
+    color: var(--text-muted);
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .mobile-guest-meta span {
+    display: inline-flex;
+    min-width: 0;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .mobile-guest-meta .is-custom {
+    color: var(--primary);
+  }
+
+  .mobile-card-actions,
+  .mobile-link-actions {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.92fr) 48px;
+    gap: 8px;
+  }
+
+  .mobile-primary-action,
+  .mobile-secondary-action,
+  .mobile-save-settings,
+  .mobile-create-invite {
+    display: inline-flex;
+    min-height: 48px;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: 0;
+    border-radius: 14px;
+    padding: 10px 13px;
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: transform 0.16s ease, box-shadow 0.16s ease;
+  }
+
+  .mobile-primary-action,
+  .mobile-create-invite,
+  .mobile-save-settings {
+    background: var(--primary-gradient);
+    color: #fff;
+    box-shadow: 0 7px 15px rgba(217, 119, 87, 0.24);
+  }
+
+  .mobile-secondary-action {
+    border: 1px solid var(--border-subtle);
+    background: var(--bg-card);
+    color: var(--text-main);
+  }
+
+  .mobile-secondary-action.ok {
+    border-color: #a8d6af;
+    background: #edf8ef;
+    color: #2e7d32;
+  }
+
+  .mobile-primary-action:active,
+  .mobile-secondary-action:active,
+  .mobile-create-invite:active,
+  .mobile-save-settings:active {
+    transform: scale(0.97);
+  }
+
+  .mobile-empty-state {
+    display: flex;
+    min-height: 210px;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 7px;
+    padding: 28px 20px;
+    border: 1px dashed var(--border-subtle);
+    border-radius: 20px;
+    background: var(--bg-card);
+    color: var(--text-muted);
+    text-align: center;
+  }
+
+  .mobile-empty-state strong { color: var(--text-main); font-size: 15px; }
+  .mobile-empty-state span { font-size: 12.5px; line-height: 1.5; }
+  .mobile-empty-icon {
+    display: inline-flex;
+    width: 52px;
+    height: 52px;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 4px;
+    border-radius: 18px;
+    background: var(--primary-light);
+    color: var(--primary);
+  }
+
+  .mobile-checkin-card { padding: 16px; }
+  .mobile-checkin-card.yes { border-left: 4px solid var(--sage); }
+  .mobile-checkin-card.no { border-left: 4px solid #c04938; }
+  .mobile-checkin-card.maybe { border-left: 4px solid var(--gold); }
+
+  .mobile-status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    flex: 0 0 auto;
+    border-radius: 999px;
+    padding: 6px 9px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .mobile-status-pill.yes { background: rgba(79, 126, 101, 0.14); color: var(--sage); }
+  .mobile-status-pill.no { background: rgba(192, 73, 56, 0.11); color: #c04938; }
+  .mobile-status-pill.maybe { background: var(--gold-light); color: var(--gold-dark); }
+
+  .mobile-checkin-message {
+    margin: 15px 0 13px;
+    padding: 12px 13px;
+    border-radius: 13px;
+    background: var(--bg-subtle);
+    color: var(--text-main);
+    font-size: 13px;
+    line-height: 1.55;
+  }
+
+  .mobile-checkin-message.empty { color: var(--text-subtle); font-style: italic; }
+
+  .mobile-checkin-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 9px;
+    color: var(--text-subtle);
+    font-size: 11.5px;
+    font-weight: 600;
+  }
+
+  .mobile-checkin-footer span {
+    display: inline-flex;
+    min-width: 0;
+    align-items: center;
+    gap: 5px;
+  }
+
+  /* The invitation screen behaves like two focused mobile flows, not two columns. */
+  .mobile-invite-workflow { display: block; }
+
+  .mobile-invite-switch {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5px;
+    margin-bottom: 14px;
+    padding: 5px;
+    border-radius: 16px;
+    background: #eee7df;
+  }
+
+  .mobile-invite-switch button {
+    display: inline-flex;
+    min-height: 46px;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    border: 0;
+    border-radius: 12px;
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .mobile-invite-switch button.on {
+    background: var(--bg-card);
+    color: var(--primary);
+    box-shadow: 0 3px 10px rgba(50, 37, 29, 0.1);
+  }
+
+  .mobile-invite-card {
+    overflow: hidden;
+    padding: 18px;
+    border: 1px solid var(--border-subtle);
+    border-radius: 22px;
+    background: var(--bg-card);
+    box-shadow: 0 9px 25px rgba(50, 37, 29, 0.07);
+  }
+
+  .mobile-private-card { border-color: rgba(217, 119, 87, 0.25); }
+
+  .mobile-invite-card-head { margin-bottom: 17px; }
+  .mobile-invite-kicker {
+    display: block;
+    margin-bottom: 5px;
+    color: var(--primary);
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .mobile-invite-card h2 {
+    margin: 0;
+    color: var(--text-main);
+    font-size: 21px;
+    line-height: 1.2;
+  }
+
+  .mobile-invite-card-head p {
+    margin: 6px 0 0;
+    color: var(--text-muted);
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .mobile-link-display {
+    overflow: hidden;
+    margin: 12px 0;
+    padding: 13px;
+    border: 1px solid #eadfd4;
+    border-radius: 14px;
+    background: #fbf8f4;
+    color: #5c524c;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 11px;
+    line-height: 1.45;
+    overflow-wrap: anywhere;
+  }
+
+  .mobile-link-actions { grid-template-columns: 1fr 1fr; }
+
+  .mobile-field { margin-top: 14px; }
+  .mobile-field label,
+  .mobile-settings-body label {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 7px;
+    color: var(--text-main);
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .mobile-field label span { color: var(--text-subtle); font-size: 11px; font-weight: 500; }
+
+  .mobile-field input,
+  .mobile-settings-body input,
+  .mobile-settings-body textarea {
+    width: 100%;
+    min-height: 48px;
+    border: 1px solid var(--border-subtle);
+    border-radius: 13px;
+    padding: 11px 12px;
+    background: var(--bg-card);
+    color: var(--text-main);
+    font-family: inherit;
+    font-size: 16px;
+    outline: none;
+  }
+
+  .mobile-settings-body textarea { min-height: 86px; resize: vertical; }
+  .mobile-field input:focus,
+  .mobile-settings-body input:focus,
+  .mobile-settings-body textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(217, 119, 87, 0.12); }
+
+  .mobile-time-row { display: grid; grid-template-columns: 104px 1fr; gap: 8px; }
+  .mobile-time-row > input { min-width: 0; }
+  .mobile-time-chips { display: flex; flex-wrap: wrap; gap: 6px; align-content: center; }
+  .mobile-time-chips button {
+    min-height: 34px;
+    border: 1px solid var(--border-subtle);
+    border-radius: 9px;
+    padding: 5px 8px;
+    background: var(--bg-card);
+    color: var(--text-muted);
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .mobile-time-chips button.on { border-color: var(--primary); background: var(--primary-light); color: var(--primary); }
+
+  .mobile-create-invite { width: 100%; margin-top: 18px; font-size: 14px; }
+
+  .mobile-created-invite {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-top: 16px;
+    padding: 14px;
+    border: 1px solid #b8dcbf;
+    border-radius: 16px;
+    background: #f4fbf4;
+  }
+
+  .mobile-created-invite strong { color: var(--text-main); font-size: 15px; }
+  .mobile-created-invite > span { color: var(--text-muted); font-size: 12px; }
+  .mobile-created-check { display: inline-flex; align-items: center; gap: 6px; color: #2e7d32; font-size: 12px; font-weight: 700; }
+  .mobile-created-invite .mobile-link-display { margin: 7px 0; background: #fff; }
+
+  .mobile-advanced-settings {
+    margin-top: 15px;
+    border-top: 1px solid var(--border-subtle);
+  }
+
+  .mobile-advanced-settings summary {
+    display: flex;
+    min-height: 52px;
+    align-items: center;
+    color: var(--text-main);
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 700;
+    list-style: none;
+  }
+
+  .mobile-advanced-settings summary::-webkit-details-marker { display: none; }
+  .mobile-advanced-settings summary::after { content: '+'; margin-left: auto; color: var(--primary); font-size: 22px; font-weight: 400; }
+  .mobile-advanced-settings[open] summary::after { content: '–'; }
+
+  .mobile-settings-body {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-bottom: 4px;
+  }
+
+  .mobile-settings-body label:not(:first-child) { margin-top: 6px; }
+  .mobile-settings-body code { color: var(--primary); font-size: 11px; }
+  .mobile-save-settings { width: 100%; margin-top: 5px; }
+  .mobile-settings-message { margin: 0; color: var(--sage); font-size: 12px; line-height: 1.45; }
+
+  .guest-add-overlay { align-items: flex-end !important; padding: 0 !important; }
+  .guest-add-dialog {
+    max-height: min(86dvh, 720px);
+    overflow-y: auto;
+    border-radius: 24px 24px 0 0 !important;
+    padding: 22px 18px calc(24px + env(safe-area-inset-bottom)) !important;
+  }
 
   .share-box,
   .ci-modal-box {

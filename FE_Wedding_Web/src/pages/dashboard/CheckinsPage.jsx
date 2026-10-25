@@ -174,7 +174,7 @@ export default function CheckinsPage() {
             Cập nhật thời gian thực khi khách gửi lời chúc hoặc xác nhận tham dự. Tự động đồng bộ liên tục.
           </p>
         </div>
-        <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+        <div className="checkins-header-actions" style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
           <button
             type="button"
             className="btn-main"
@@ -406,6 +406,52 @@ export default function CheckinsPage() {
             })
           )}
         </div>
+      </div>
+
+      <div className="mobile-checkin-list" aria-live="polite">
+        {visible.length === 0 ? (
+          <div className="mobile-empty-state">
+            <div className="mobile-empty-icon"><IconMessageCircle size={26} /></div>
+            <strong>Chưa có phản hồi phù hợp</strong>
+            <span>Phản hồi của khách sẽ xuất hiện tại đây ngay khi gửi.</span>
+          </div>
+        ) : (
+          visible.map((item) => {
+            const statusKey = normalizeCheckinStatus(item)
+            const cfg = STATUS_CFG[statusKey] || STATUS_CFG.maybe
+            const StatusIcon = cfg.Icon
+            const guestName = item.name || item.name_guest || item.guest_name || 'Khách mời'
+            const message = item.content || item.message || item.messages || ''
+            const guestCount = item.count || item.number_of_attendees || item.guests || 1
+            const timeDisplay = item.date || item.created_at
+              ? new Date(item.date || item.created_at).toLocaleDateString('vi-VN', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit' })
+              : '—'
+
+            return (
+              <article className={`mobile-checkin-card ${cfg.cls}`} key={`mobile-${item.id}`}>
+                <div className="mobile-checkin-head">
+                  <div className="mobile-checkin-avatar">{guestName.charAt(0).toUpperCase()}</div>
+                  <div className="mobile-checkin-name">
+                    <strong>{guestName}</strong>
+                    {item.guest_type && item.guest_type !== 'ca_hai' && (
+                      <span>{item.guest_type === 'nha_trai' ? 'Khách nhà trai' : 'Khách nhà gái'}</span>
+                    )}
+                  </div>
+                  <span className={`mobile-status-pill ${cfg.cls}`}><StatusIcon size={14} /> {cfg.label}</span>
+                </div>
+
+                <div className={`mobile-checkin-message${message ? '' : ' empty'}`}>
+                  {message || 'Khách chưa để lại lời chúc.'}
+                </div>
+
+                <div className="mobile-checkin-footer">
+                  <span><IconUsers size={15} /> {statusKey === 'no' ? 'Không tham dự' : `${guestCount} người tham dự`}</span>
+                  <span><IconCalendar size={15} /> {timeDisplay}</span>
+                </div>
+              </article>
+            )
+          })
+        )}
       </div>
     </div>
   )

@@ -236,7 +236,7 @@ export default function GuestsPage() {
           <h1 className="ph-t">Quản Lý Khách Mời</h1>
           <p className="ph-d">Theo dõi danh sách khách mời cá nhân hoá và gửi link mời nhanh qua Messenger, Zalo.</p>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        <div className="guests-header-actions" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <div className="quota-badge">
             <span>Tổng số:</span>
             <strong>{guests.length}</strong> khách
@@ -295,7 +295,70 @@ export default function GuestsPage() {
         </span>
       </div>
 
-      <div className="gt-wrap">
+      <div className="mobile-guest-list" aria-live="polite">
+        {filtered.length === 0 ? (
+          <div className="mobile-empty-state">
+            <div className="mobile-empty-icon"><IconUsers size={26} /></div>
+            <strong>Chưa có khách mời phù hợp</strong>
+            <span>Thêm khách mới hoặc đổi từ khóa tìm kiếm để tiếp tục.</span>
+          </div>
+        ) : (
+          filtered.map((g) => {
+            const personalUrl = getPersonalUrl(g)
+            const noteText = g.description || g.note || ''
+            const guestTime = getGuestTime(g)
+
+            return (
+              <article className="mobile-guest-card" key={`mobile-${g.id}`}>
+                <div className="mobile-guest-head">
+                  <div className="mobile-guest-avatar">{String(g.name || 'K').charAt(0).toUpperCase()}</div>
+                  <div className="mobile-guest-title">
+                    <strong>{g.name || 'Khách mời'}</strong>
+                    <span>{noteText || 'Thiệp mời cá nhân hóa'}</span>
+                  </div>
+                  <button
+                    type="button"
+                    className="mobile-icon-action"
+                    onClick={() => window.open(personalUrl, '_blank', 'noopener,noreferrer')}
+                    aria-label={`Mở thiệp của ${g.name || 'khách mời'}`}
+                  >
+                    <IconExternalLink size={18} />
+                  </button>
+                </div>
+
+                <div className="mobile-guest-meta">
+                  <span><IconClock size={15} /> {guestTime.time}</span>
+                  <span className={guestTime.isCustom ? 'is-custom' : ''}>{guestTime.isCustom ? 'Giờ riêng' : 'Theo giờ chung'}</span>
+                </div>
+
+                <div className="mobile-card-actions">
+                  <button type="button" className="mobile-primary-action" onClick={() => openShare(personalUrl, g.name)}>
+                    <IconSend size={17} /> <span>Mời ngay</span>
+                  </button>
+                  <button
+                    type="button"
+                    className={`mobile-secondary-action${copiedId === g.id ? ' ok' : ''}`}
+                    onClick={() => handleCopyLink(personalUrl, g.id)}
+                  >
+                    {copiedId === g.id ? <IconCheck size={17} /> : <IconCopy size={17} />}
+                    <span>{copiedId === g.id ? 'Đã chép' : 'Sao chép'}</span>
+                  </button>
+                  <button
+                    type="button"
+                    className="mobile-delete-action"
+                    onClick={() => handleDeleteGuest(g.id, g.name)}
+                    aria-label={`Xóa ${g.name || 'khách mời'}`}
+                  >
+                    <IconTrash2 size={17} />
+                  </button>
+                </div>
+              </article>
+            )
+          })
+        )}
+      </div>
+
+      <div className="gt-wrap desktop-guest-table">
         <div className="gt-head">
           <div className="gt-th">Tên Khách Mời</div>
           <div className="gt-th">Giờ Mời Tiệc</div>
@@ -481,6 +544,7 @@ export default function GuestsPage() {
       {/* Modal Thêm Khách Mời Nhanh */}
       {showAddModal && (
         <div
+          className="guest-add-overlay"
           style={{
             position: 'fixed',
             inset: 0,
@@ -495,6 +559,7 @@ export default function GuestsPage() {
           onClick={(e) => e.target === e.currentTarget && setShowAddModal(false)}
         >
           <div
+            className="guest-add-dialog"
             style={{
               background: '#fff',
               borderRadius: 20,
