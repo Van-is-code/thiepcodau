@@ -64,6 +64,27 @@ export default function EditorPage() {
   const [musicPanel, setMusicPanel] = useState(false)
   const [changeTemplateModalOpen, setChangeTemplateModalOpen] = useState(false)
   const [changeSlugModalOpen, setChangeSlugModalOpen] = useState(false)
+  const [isEditingTitle, setIsEditingTitle] = useState(false)
+  const [titleDraft, setTitleDraft] = useState('')
+  const [savingTitle, setSavingTitle] = useState(false)
+
+  const handleSaveTitle = async () => {
+    const trimmed = titleDraft.trim()
+    if (!trimmed || !invitation?.id) {
+      setIsEditingTitle(false)
+      return
+    }
+    setSavingTitle(true)
+    try {
+      await api.setInvitationTitle(invitation.id, trimmed)
+      setInvitation((prev) => ({ ...prev, title_vi: trimmed, title: trimmed }))
+      setIsEditingTitle(false)
+    } catch (err) {
+      alert(err?.response?.data?.message || 'Lỗi khi lưu tiêu đề')
+    } finally {
+      setSavingTitle(false)
+    }
+  }
   const [showTour, setShowTour] = useState(() => {
     try {
       return !localStorage.getItem('has_seen_editor_tour_v1')
@@ -540,7 +561,76 @@ export default function EditorPage() {
 
           <div style={S.titleWrap}>
             <IconHeart size={16} color="#d97757" />
-            <span style={S.title}>{invitation?.title_vi || 'Thiệp cưới của bạn'}</span>
+            {isEditingTitle ? (
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                <input
+                  autoFocus
+                  style={{
+                    fontSize: 13.5,
+                    fontWeight: 600,
+                    padding: '2px 8px',
+                    borderRadius: 4,
+                    border: '1px solid #d97757',
+                    outline: 'none',
+                    height: 26,
+                    background: '#fff',
+                    color: '#2c2523',
+                  }}
+                  value={titleDraft}
+                  onChange={(e) => setTitleDraft(e.target.value)}
+                  onKeyDown={async (e) => {
+                    if (e.key === 'Enter') await handleSaveTitle()
+                    if (e.key === 'Escape') setIsEditingTitle(false)
+                  }}
+                  disabled={savingTitle}
+                />
+                <button
+                  type="button"
+                  style={{
+                    padding: '2px 8px',
+                    height: 26,
+                    fontSize: 12,
+                    background: '#d97757',
+                    color: '#fff',
+                    border: 'none',
+                    borderRadius: 4,
+                    cursor: 'pointer',
+                    fontWeight: 600,
+                  }}
+                  onClick={handleSaveTitle}
+                  disabled={savingTitle}
+                >
+                  {savingTitle ? '...' : 'Lưu'}
+                </button>
+                <button
+                  type="button"
+                  style={{
+                    padding: '2px 6px',
+                    height: 26,
+                    fontSize: 12,
+                    background: '#eee',
+                    border: 'none',
+                    borderRadius: 4,
+                    cursor: 'pointer',
+                  }}
+                  onClick={() => setIsEditingTitle(false)}
+                >
+                  ✕
+                </button>
+              </div>
+            ) : (
+              <span
+                style={{ ...S.title, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 6 }}
+                onClick={() => {
+                  setTitleDraft(invitation?.title_vi || invitation?.title || '')
+                  setIsEditingTitle(true)
+                }}
+                title="Bấm để đổi tiêu đề thiệp"
+              >
+                {invitation?.title_vi || 'Thiệp cưới của bạn'}
+                <IconEdit3 size={13} style={{ opacity: 0.6 }} />
+              </span>
+            )}
           </div>
         </div>
 

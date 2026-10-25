@@ -25,6 +25,8 @@ router.patch('/:id/bank', invitationController.setBank);
 // Đổi slug đường dẫn thiệp
 router.post('/:id/check-slug', invitationController.checkSlug);
 router.patch('/:id/slug', invitationController.setSlug);
+// Đổi tiêu đề thiệp (không tính vào hạn mức)
+router.patch('/:id/title', invitationController.setTitle);
 router.put('/:id', invitationController.update);
 router.patch('/:id', invitationController.update);
 router.delete('/:id', invitationController.remove);

@@ -93,6 +93,7 @@ export const api = {
       ? apiClient.post(`/api/invitations/${id}/check-slug`, { slug })
       : apiClient.post('/api/invitations/check-slug', { slug }),
   setInvitationSlug: (id, slug) => apiClient.patch(`/api/invitations/${id}/slug`, { slug }),
+  setInvitationTitle: (id, title_vi) => apiClient.patch(`/api/invitations/${id}/title`, { title_vi }),
 
   // Templates
   getTemplates: () => apiClient.get('/api/invitation-templates'),

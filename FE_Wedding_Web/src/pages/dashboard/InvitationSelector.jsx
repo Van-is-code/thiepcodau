@@ -3,12 +3,14 @@ import { IconChevronDown, IconCheck, IconMail } from '../../components/Icons'
 
 const getInvDisplayName = (inv) => {
   if (!inv) return 'Chọn thiệp cưới'
+  if (inv.title_vi && String(inv.title_vi).trim()) return String(inv.title_vi).trim()
+  if (inv.title && String(inv.title).trim()) return String(inv.title).trim()
   const groom = inv.groom?.name_groom || inv.groom_name || (typeof inv.groom === 'string' ? inv.groom : '') || ''
   const bride = inv.bride?.name_bride || inv.bride_name || (typeof inv.bride === 'string' ? inv.bride : '') || ''
   if (groom && bride) return `${groom} & ${bride}`
   if (groom) return groom
   if (bride) return bride
-  return inv.title_vi || inv.title || 'Thiệp cưới'
+  return 'Thiệp cưới'
 }
 
 export default function InvitationSelector({ invitations, selectedId, onChange }) {

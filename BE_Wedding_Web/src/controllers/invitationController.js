@@ -157,4 +157,14 @@ const setSlug = async (req, res) => {
 	}
 };
 
-module.exports = { getAll, getById, getBySlug, create, update, editorSave, changeTemplate, setMusic, setBank, remove, createDraft, checkSlug, setSlug };
+const setTitle = async (req, res) => {
+	try {
+		const title = req.body.title_vi || req.body.title || '';
+		const data = await invitationService.updateTitle(req.params.id, title, actorOf(req));
+		return res.status(200).json({ success: true, message: 'Đã cập nhật tiêu đề thiệp', data });
+	} catch (error) {
+		return res.status(error.status || 500).json({ success: false, message: error.message || 'Cập nhật tiêu đề thất bại' });
+	}
+};
+
+module.exports = { getAll, getById, getBySlug, create, update, editorSave, changeTemplate, setMusic, setBank, remove, createDraft, checkSlug, setSlug, setTitle };

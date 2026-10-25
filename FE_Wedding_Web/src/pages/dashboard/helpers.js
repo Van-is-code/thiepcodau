@@ -19,8 +19,10 @@ export const formatDate = (value) => {
 }
 
 export const invitationName = (inv) => {
-  const groom = inv?.groom?.name_groom || inv?.groom || "Chua cap nhat"
-  const bride = inv?.bride?.name_bride || inv?.bride || "Chua cap nhat"
+  if (inv?.title_vi && String(inv.title_vi).trim()) return String(inv.title_vi).trim()
+  if (inv?.title && String(inv.title).trim()) return String(inv.title).trim()
+  const groom = inv?.groom?.name_groom || inv?.groom || "Chưa cập nhật"
+  const bride = inv?.bride?.name_bride || inv?.bride || "Chưa cập nhật"
   return `${groom} & ${bride}`
 }
 

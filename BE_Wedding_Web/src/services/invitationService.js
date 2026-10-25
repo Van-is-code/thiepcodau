@@ -1,8 +1,9 @@
 const { randomUUID } = require('crypto');
 const fs = require('fs');
 const path = require('path');
+const { Op } = require('sequelize');
 const sequelize = require('../config/db');
-const { Invitation, InvitationTemplate, Groom, Bride, InvitationImage, MessageCheckin, User, Customer, CtvProfile } = require('../models');
+const { Invitation, InvitationTemplate, Groom, Bride, InvitationImage, MessageCheckin, User, Customer, CtvProfile, PrivateInvitation, Guest } = require('../models');
 const { isUuid } = require('../utils/isUuid');
 const { computeEditDeadline, getLockState, lockMessage } = require('../utils/editLock');
 const entitlementService = require('./entitlementService');
@@ -1073,7 +1074,27 @@ const updateSlug = async (invitationId, desiredSlug, actor) => {
 	};
 };
 
+const updateTitle = async (invitationId, titleVi, actor) => {
+	const item = await findRaw(invitationId);
+	await ensureCanAccess(item, actor);
+
+	const cleanTitle = String(titleVi ?? '').trim();
+	if (!cleanTitle) {
+		const err = new Error('Tiêu đề thiệp không được để trống.');
+		err.status = 400;
+		throw err;
+	}
+
+	item.title_vi = cleanTitle;
+	if (Invitation.rawAttributes.updated_at) {
+		item.updated_at = getNowValue(Invitation.rawAttributes.updated_at);
+	}
+	await item.save();
+
+	return withLockState(await findRaw(invitationId));
+};
+
 module.exports = {
 	getAll, getById, getBySlug, create, update, editorSave, changeTemplate, setMusic, setBank, remove, createDraft,
-	assertOwnMusic, checkSlugAvailability, updateSlug, cleanSlug, generateSlug, validateSlugFormat
+	assertOwnMusic, checkSlugAvailability, updateSlug, cleanSlug, generateSlug, validateSlugFormat, updateTitle
 };

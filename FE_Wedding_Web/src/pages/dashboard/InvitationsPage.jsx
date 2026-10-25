@@ -30,6 +30,50 @@ export default function InvitationsPage() {
   const [activeTab, setActiveTab] = useState('thiep')
   const [slot, setSlot] = useState(null)
   const [copiedSlug, setCopiedSlug] = useState('')
+  const [editingTitleId, setEditingTitleId] = useState('')
+  const [titleDraft, setTitleDraft] = useState('')
+  const [savingTitle, setSavingTitle] = useState(false)
+  const [titleSuccessId, setTitleSuccessId] = useState('')
+  const [titleError, setTitleError] = useState('')
+
+  const handleStartEditTitle = (inv) => {
+    setEditingTitleId(String(inv.id))
+    setTitleDraft(inv.title_vi || inv.title || '')
+    setTitleError('')
+  }
+
+  const handleCancelEditTitle = () => {
+    setEditingTitleId('')
+    setTitleDraft('')
+    setTitleError('')
+  }
+
+  const handleSaveTitle = async (invId) => {
+    const trimmed = titleDraft.trim()
+    if (!trimmed) {
+      setTitleError('Tiêu đề thiệp không được để trống')
+      return
+    }
+    setSavingTitle(true)
+    setTitleError('')
+    try {
+      await api.setInvitationTitle(invId, trimmed)
+      setItems((prev) =>
+        prev.map((item) =>
+          String(item.id) === String(invId)
+            ? { ...item, title_vi: trimmed, title: trimmed }
+            : item
+        )
+      )
+      setEditingTitleId('')
+      setTitleSuccessId(String(invId))
+      setTimeout(() => setTitleSuccessId(''), 2500)
+    } catch (err) {
+      setTitleError(err?.response?.data?.message || err.message || 'Lỗi khi lưu tiêu đề')
+    } finally {
+      setSavingTitle(false)
+    }
+  }
 
   useEffect(() => {
     const run = async () => {
@@ -275,8 +319,76 @@ export default function InvitationsPage() {
                           </div>
                         </div>
                         <div className="fld full">
-                          <label>Tiêu đề thiệp</label>
-                          <input value={inv.title_vi || inv.title || ''} readOnly />
+                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
+                            <label style={{ margin: 0 }}>Tiêu đề thiệp</label>
+                            {editingTitleId === String(inv.id) ? (
+                              <div style={{ display: 'flex', gap: 6 }}>
+                                <button
+                                  type="button"
+                                  className="btn-main"
+                                  style={{ padding: '3px 12px', fontSize: 12, height: 26, borderRadius: 'var(--radius-sm)' }}
+                                  onClick={() => handleSaveTitle(inv.id)}
+                                  disabled={savingTitle}
+                                >
+                                  {savingTitle ? 'Đang lưu...' : 'Lưu'}
+                                </button>
+                                <button
+                                  type="button"
+                                  className="btn-ghost"
+                                  style={{ padding: '3px 10px', fontSize: 12, height: 26, borderRadius: 'var(--radius-sm)' }}
+                                  onClick={handleCancelEditTitle}
+                                  disabled={savingTitle}
+                                >
+                                  Huỷ
+                                </button>
+                              </div>
+                            ) : (
+                              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                                {titleSuccessId === String(inv.id) && (
+                                  <span style={{ fontSize: 12, color: '#4f7e65', display: 'inline-flex', alignItems: 'center', gap: 3 }}>
+                                    <IconCheck size={12} /> Đã lưu
+                                  </span>
+                                )}
+                                <button
+                                  type="button"
+                                  className="btn-ghost"
+                                  style={{ padding: '2px 8px', fontSize: 12, height: 24, display: 'inline-flex', alignItems: 'center', gap: 4, borderRadius: 'var(--radius-sm)' }}
+                                  onClick={() => handleStartEditTitle(inv)}
+                                >
+                                  <IconEdit3 size={12} />
+                                  <span>Đổi tiêu đề</span>
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                          {editingTitleId === String(inv.id) ? (
+                            <>
+                              <input
+                                autoFocus
+                                value={titleDraft}
+                                onChange={(e) => setTitleDraft(e.target.value)}
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter') handleSaveTitle(inv.id)
+                                  if (e.key === 'Escape') handleCancelEditTitle()
+                                }}
+                                placeholder="Nhập tiêu đề thiệp cưới..."
+                                style={{ borderColor: 'var(--color-primary)', background: '#fff' }}
+                              />
+                              {titleError && (
+                                <div style={{ fontSize: 12, color: 'var(--color-danger, #dc2626)', marginTop: 4 }}>
+                                  {titleError}
+                                </div>
+                              )}
+                            </>
+                          ) : (
+                            <input
+                              value={inv.title_vi || inv.title || ''}
+                              readOnly
+                              onClick={() => handleStartEditTitle(inv)}
+                              style={{ cursor: 'pointer' }}
+                              title="Bấm để đổi tiêu đề thiệp"
+                            />
+                          )}
                         </div>
                         <div className="fld">
                           <label>Ngày tổ chức hôn lễ</label>
