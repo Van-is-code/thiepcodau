@@ -22,16 +22,16 @@ const sidebarGroups = [
   {
     label: 'Thiệp Cưới',
     items: [
-      { to: '/dashboard', label: 'Thiệp Cưới', Icon: IconMail },
-      { to: '/dashboard/templates', label: 'Kho Mẫu Templates', Icon: IconPalette },
+      { to: '/dashboard', label: 'Thiệp Cưới', mobileLabel: 'Thiệp', Icon: IconMail },
+      { to: '/dashboard/templates', label: 'Kho Mẫu Templates', mobileLabel: 'Mẫu', Icon: IconPalette },
     ],
   },
   {
     label: 'Khách Mời & RSVP',
     items: [
-      { to: '/dashboard/invite', label: 'Tạo Link Mời', Icon: IconSend },
-      { to: '/dashboard/guests', label: 'Danh Sách Khách', Icon: IconUsers },
-      { to: '/dashboard/checkins', label: 'Xác Nhận Tham Dự', Icon: IconCheckSquare },
+      { to: '/dashboard/invite', label: 'Tạo Link Mời', mobileLabel: 'Mời', Icon: IconSend },
+      { to: '/dashboard/guests', label: 'Danh Sách Khách', mobileLabel: 'Khách', Icon: IconUsers },
+      { to: '/dashboard/checkins', label: 'Xác Nhận Tham Dự', mobileLabel: 'RSVP', Icon: IconCheckSquare },
     ],
   },
   {
@@ -95,7 +95,7 @@ export default function DashboardLayout({ onLogout }) {
         aria-label="Đóng menu"
         onClick={() => setMobileMenuOpen(false)}
       />
-      <aside className={`sb${mobileMenuOpen ? ' mobile-open' : ''}`}>
+      <aside className={`sb${mobileMenuOpen ? ' mobile-open' : ''}`} aria-label="Điều hướng chính">
         <div className="sb-brand">
           <div className="sb-logo-badge">
             <IconHeart size={20} color="#fff" />
@@ -104,6 +104,14 @@ export default function DashboardLayout({ onLogout }) {
             <div className="sb-mark">Wedding</div>
             <div className="sb-sub">Invitation App</div>
           </div>
+          <button
+            type="button"
+            className="mobile-drawer-close"
+            aria-label="Đóng menu"
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            <IconX size={21} />
+          </button>
         </div>
 
         <nav>
@@ -213,6 +221,25 @@ export default function DashboardLayout({ onLogout }) {
           <Outlet />
         </section>
       </main>
+
+      <nav className="mobile-bottom-nav" aria-label="Điều hướng nhanh">
+        {topTabs.map((tab) => {
+          const TabIcon = tab.Icon
+          return (
+            <NavLink
+              key={tab.to}
+              to={tab.to}
+              end={tab.to === '/dashboard'}
+              aria-label={tab.label}
+              className={({ isActive }) => `mobile-bottom-item${isActive ? ' on' : ''}`}
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              <span className="mobile-bottom-icon"><TabIcon size={20} /></span>
+              <span>{tab.mobileLabel || tab.label}</span>
+            </NavLink>
+          )
+        })}
+      </nav>
     </div>
   )
 }
