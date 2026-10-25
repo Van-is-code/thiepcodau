@@ -1106,17 +1106,28 @@ const updateShareSettings = async (invitationId, payload, actor) => {
 		payload?.private_title ?? payload?.share_title_private,
 		'Mời {guest_name} đến chung vui cùng chúng tớ'
 	);
-	if (!publicTitle || !privateTitle) {
-		const err = new Error('Tiêu đề chia sẻ không được để trống.');
+	const currentExtra = (typeof item.extra_data === 'object' && item.extra_data !== null) ? item.extra_data : {};
+	const cleanDescription = (value, fallback) => String(value ?? fallback).trim().replace(/\s+/g, ' ').slice(0, 300);
+	const hasPublicDescription = Object.prototype.hasOwnProperty.call(payload || {}, 'public_description') || Object.prototype.hasOwnProperty.call(payload || {}, 'share_description_public');
+	const hasPrivateDescription = Object.prototype.hasOwnProperty.call(payload || {}, 'private_description') || Object.prototype.hasOwnProperty.call(payload || {}, 'share_description_private');
+	const publicDescription = hasPublicDescription
+		? cleanDescription(payload?.public_description ?? payload?.share_description_public, '')
+		: cleanDescription(currentExtra.share_description_public, '');
+	const privateDescription = hasPrivateDescription
+		? cleanDescription(payload?.private_description ?? payload?.share_description_private, '')
+		: cleanDescription(currentExtra.share_description_private, '');
+	if (!publicTitle || !privateTitle || (hasPublicDescription && !publicDescription) || (hasPrivateDescription && !privateDescription)) {
+		const err = new Error('Tiêu đề và mô tả chia sẻ không được để trống.');
 		err.status = 400;
 		throw err;
 	}
 
-	const currentExtra = (typeof item.extra_data === 'object' && item.extra_data !== null) ? item.extra_data : {};
 	item.extra_data = {
 		...currentExtra,
 		share_title_public: publicTitle,
-		share_title_private: privateTitle
+		share_title_private: privateTitle,
+		...(publicDescription ? { share_description_public: publicDescription } : {}),
+		...(privateDescription ? { share_description_private: privateDescription } : {})
 	};
 	if (Invitation.rawAttributes.updated_at) item.updated_at = getNowValue(Invitation.rawAttributes.updated_at);
 	await item.save();

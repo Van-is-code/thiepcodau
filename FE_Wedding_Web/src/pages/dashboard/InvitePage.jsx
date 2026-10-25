@@ -2,9 +2,13 @@ import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { api } from '../../api'
 import { invitationName, invitationPublicUrl, toArray } from './helpers'
 import {
+  DEFAULT_PRIVATE_SHARE_DESCRIPTION,
   DEFAULT_PRIVATE_SHARE_TITLE,
+  privateShareDescription,
+  privateShareDescriptionTemplate,
   privateShareTitle,
   privateShareTitleTemplate,
+  publicShareDescription,
   publicShareTitle,
 } from '../../lib/shareMeta'
 import InvitationSelector from './InvitationSelector'
@@ -35,6 +39,8 @@ export default function InvitePage() {
   const [showSlugModal, setShowSlugModal] = useState(false)
   const [publicShareTitleDraft, setPublicShareTitleDraft] = useState('')
   const [privateShareTitleDraft, setPrivateShareTitleDraft] = useState('')
+  const [publicShareDescriptionDraft, setPublicShareDescriptionDraft] = useState('')
+  const [privateShareDescriptionDraft, setPrivateShareDescriptionDraft] = useState('')
   const [savingShareSettings, setSavingShareSettings] = useState(false)
   const [shareSettingsMessage, setShareSettingsMessage] = useState('')
 
@@ -84,6 +90,8 @@ export default function InvitePage() {
   useEffect(() => {
     setPublicShareTitleDraft(publicShareTitle(currentInvitation))
     setPrivateShareTitleDraft(privateShareTitleTemplate(currentInvitation))
+    setPublicShareDescriptionDraft(publicShareDescription(currentInvitation))
+    setPrivateShareDescriptionDraft(privateShareDescriptionTemplate(currentInvitation))
     setShareSettingsMessage('')
   }, [currentInvitation?.id])
 
@@ -126,8 +134,10 @@ export default function InvitePage() {
     if (!currentInvitation) return
     const publicTitle = publicShareTitleDraft.trim()
     const privateTitle = privateShareTitleDraft.trim()
-    if (!publicTitle || !privateTitle) {
-      setShareSettingsMessage('Vui lòng nhập đủ hai tiêu đề chia sẻ.')
+    const publicDescription = publicShareDescriptionDraft.trim()
+    const privateDescription = privateShareDescriptionDraft.trim()
+    if (!publicTitle || !privateTitle || !publicDescription || !privateDescription) {
+      setShareSettingsMessage('Vui lòng nhập đủ tiêu đề và mô tả chia sẻ.')
       return
     }
 
@@ -137,6 +147,8 @@ export default function InvitePage() {
       const res = await api.setInvitationShareSettings(currentInvitation.id, {
         public_title: publicTitle,
         private_title: privateTitle,
+        public_description: publicDescription,
+        private_description: privateDescription,
       })
       const updated = res.data?.data || res.data
       setInvitations((prev) => prev.map((item) => (
@@ -149,6 +161,8 @@ export default function InvitePage() {
                 ...(updated?.extra_data || {}),
                 share_title_public: publicTitle,
                 share_title_private: privateTitle,
+                share_description_public: publicDescription,
+                share_description_private: privateDescription,
               },
             }
           : item
@@ -285,6 +299,20 @@ export default function InvitePage() {
               />
               <p>Đây là dòng thay cho “Wedding Invitation - Thiệp Cưới” trên thẻ xem trước.</p>
             </div>
+            <div className="share-title-field">
+              <label htmlFor="public-share-description">Mô tả hiển thị khi gửi link chung</label>
+              <textarea
+                id="public-share-description"
+                rows={2}
+                value={publicShareDescriptionDraft}
+                maxLength={300}
+                onChange={(e) => {
+                  setPublicShareDescriptionDraft(e.target.value)
+                  setShareSettingsMessage('')
+                }}
+                placeholder="VD: Trân trọng kính mời bạn đến chung vui cùng chúng tôi."
+              />
+            </div>
           </div>
         </section>
 
@@ -338,6 +366,21 @@ export default function InvitePage() {
                 placeholder={DEFAULT_PRIVATE_SHARE_TITLE}
               />
               <p>Dùng <code>{'{guest_name}'}</code> để tự chèn tên khách. Xem trước: <strong>{privateShareTitle({ extra_data: { share_title_private: privateShareTitleDraft } }, guestName || 'Vân')}</strong></p>
+            </div>
+            <div className="share-title-field">
+              <label htmlFor="private-share-description">Mô tả hiển thị khi gửi link riêng</label>
+              <textarea
+                id="private-share-description"
+                rows={2}
+                value={privateShareDescriptionDraft}
+                maxLength={300}
+                onChange={(e) => {
+                  setPrivateShareDescriptionDraft(e.target.value)
+                  setShareSettingsMessage('')
+                }}
+                placeholder={DEFAULT_PRIVATE_SHARE_DESCRIPTION}
+              />
+              <p>Dùng <code>{'{guest_name}'}</code>. Xem trước: <strong>{privateShareDescription({ extra_data: { share_description_private: privateShareDescriptionDraft } }, guestName || 'Vân')}</strong></p>
             </div>
             <div className="fld" style={{ marginTop: 14 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6, flexWrap: 'wrap', gap: 6 }}>

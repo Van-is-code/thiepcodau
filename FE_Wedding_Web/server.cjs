@@ -123,9 +123,17 @@ const metaChiaSe = async (req, slug) => {
     ? privateTemplate.replace(/\{\{?guest_name\}?\}|\{\{?name\}?\}/g, guestName)
     : publicTitle;
   const names = [invitation.groom?.name_groom, invitation.bride?.name_bride].filter(Boolean).join(' & ');
+  const publicDescription = chuoiGon(
+    extra.share_description_public,
+    names ? `Trân trọng kính mời bạn đến chung vui cùng ${names}.` : 'Trân trọng kính mời bạn đến chung vui.'
+  );
+  const privateDescriptionTemplate = chuoiGon(
+    extra.share_description_private,
+    'Trân trọng kính mời {guest_name} đến chung vui cùng chúng tôi.'
+  );
   const description = guestName
-    ? `Trân trọng kính mời ${guestName} đến chung vui cùng chúng tôi.`
-    : (names ? `Trân trọng kính mời bạn đến chung vui cùng ${names}.` : 'Trân trọng kính mời bạn đến chung vui.');
+    ? privateDescriptionTemplate.replace(/\{\{?guest_name\}?\}|\{\{?name\}?\}/g, guestName)
+    : publicDescription;
   // QR mừng cưới không phù hợp để hiện thành ảnh xem trước khi gửi link.
   const shareImages = Array.isArray(invitation.images)
     ? invitation.images.filter((image) => image?.image_url && image?.image_type !== 'bank_qr')
