@@ -126,9 +126,11 @@ const metaChiaSe = async (req, slug) => {
   const description = guestName
     ? `Trân trọng kính mời ${guestName} đến chung vui cùng chúng tôi.`
     : (names ? `Trân trọng kính mời bạn đến chung vui cùng ${names}.` : 'Trân trọng kính mời bạn đến chung vui.');
-  const cover = Array.isArray(invitation.images)
-    ? (invitation.images.find((image) => image?.is_cover && image?.image_url) || invitation.images.find((image) => image?.image_url))
-    : null;
+  // QR mừng cưới không phù hợp để hiện thành ảnh xem trước khi gửi link.
+  const shareImages = Array.isArray(invitation.images)
+    ? invitation.images.filter((image) => image?.image_url && image?.image_type !== 'bank_qr')
+    : [];
+  const cover = shareImages.find((image) => image.is_cover) || shareImages[0] || null;
   const origin = originCua(req);
   const canonicalUrl = `${origin}${req.url || `/${slug}`}`;
 
