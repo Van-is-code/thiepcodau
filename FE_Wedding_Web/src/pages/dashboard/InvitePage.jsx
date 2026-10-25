@@ -530,7 +530,7 @@ export default function InvitePage() {
           onClick={saveShareSettings}
           disabled={!currentInvitation || savingShareSettings}
         >
-          {savingShareSettings ? 'Đang lưu…' : 'Lưu tiêu đề chia sẻ'}
+          {savingShareSettings ? 'Đang lưu…' : 'Lưu nội dung chia sẻ'}
         </button>
         {shareSettingsMessage && <span className={shareSettingsMessage.startsWith('Đã') ? 'ok' : 'error'}>{shareSettingsMessage}</span>}
       </div>
