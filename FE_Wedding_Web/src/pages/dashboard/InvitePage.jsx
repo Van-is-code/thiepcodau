@@ -43,6 +43,8 @@ export default function InvitePage() {
   const [privateShareDescriptionDraft, setPrivateShareDescriptionDraft] = useState('')
   const [savingShareSettings, setSavingShareSettings] = useState(false)
   const [shareSettingsMessage, setShareSettingsMessage] = useState('')
+  const [shareSettingsSection, setShareSettingsSection] = useState('')
+  const [publicLinkWarning, setPublicLinkWarning] = useState('')
 
   useEffect(() => {
     const loadInvitations = async () => {
@@ -95,6 +97,25 @@ export default function InvitePage() {
     setShareSettingsMessage('')
   }, [currentInvitation?.id])
 
+  useEffect(() => {
+    const slug = currentInvitation?.invitation_slug || currentInvitation?.slug || ''
+    if (!slug) {
+      setPublicLinkWarning('')
+      return
+    }
+    let cancelled = false
+    api.getInvitationBySlug(slug)
+      .then(() => {
+        if (!cancelled) setPublicLinkWarning('')
+      })
+      .catch((error) => {
+        if (!cancelled && error?.response?.status === 404) {
+          setPublicLinkWarning('Đường dẫn này chưa có thiệp công khai. Link gửi ra sẽ chỉ hiện preview mặc định; hãy kiểm tra hoặc đổi đường dẫn thiệp.')
+        }
+      })
+    return () => { cancelled = true }
+  }, [currentInvitation?.id, currentInvitation?.invitation_slug, currentInvitation?.slug])
+
   const guestUrl = useMemo(() => {
     if (!publicUrl || !guestName.trim()) return ''
     const timeQuery = customReceptionTime.trim() ? `&time=${encodeURIComponent(customReceptionTime.trim())}` : ''
@@ -130,18 +151,20 @@ export default function InvitePage() {
 
   const closeShare = () => setSharePayload(null)
 
-  const saveShareSettings = async () => {
+  const saveShareSettings = async (section) => {
     if (!currentInvitation) return
     const publicTitle = publicShareTitleDraft.trim()
     const privateTitle = privateShareTitleDraft.trim()
     const publicDescription = publicShareDescriptionDraft.trim()
     const privateDescription = privateShareDescriptionDraft.trim()
     if (!publicTitle || !privateTitle || !publicDescription || !privateDescription) {
+      setShareSettingsSection(section)
       setShareSettingsMessage('Vui lòng nhập đủ tiêu đề và mô tả chia sẻ.')
       return
     }
 
     setSavingShareSettings(true)
+    setShareSettingsSection(section)
     setShareSettingsMessage('')
     try {
       const res = await api.setInvitationShareSettings(currentInvitation.id, {
@@ -265,7 +288,8 @@ export default function InvitePage() {
             <div className="url-disp">
               <span>{publicUrl || 'Chưa có link thiệp'}</span>
             </div>
-            <div className="share-btns">
+            {publicLinkWarning && <div className="public-link-warning">{publicLinkWarning}</div>}
+            <div className="share-btns public-link-actions">
               <button
                 type="button"
                 className="btn-quick-invite"
@@ -312,6 +336,19 @@ export default function InvitePage() {
                 }}
                 placeholder="VD: Trân trọng kính mời bạn đến chung vui cùng chúng tôi."
               />
+            </div>
+            <div className="share-settings-inline">
+              <button
+                type="button"
+                className="btn-main"
+                onClick={() => saveShareSettings('public')}
+                disabled={!currentInvitation || savingShareSettings}
+              >
+                {savingShareSettings ? 'Đang lưu…' : 'Lưu nội dung chia sẻ'}
+              </button>
+              {shareSettingsSection === 'public' && shareSettingsMessage && (
+                <span className={shareSettingsMessage.startsWith('Đã') ? 'ok' : 'error'}>{shareSettingsMessage}</span>
+              )}
             </div>
           </div>
         </section>
@@ -381,6 +418,19 @@ export default function InvitePage() {
                 placeholder={DEFAULT_PRIVATE_SHARE_DESCRIPTION}
               />
               <p>Dùng <code>{'{guest_name}'}</code>. Xem trước: <strong>{privateShareDescription({ extra_data: { share_description_private: privateShareDescriptionDraft } }, guestName || 'Vân')}</strong></p>
+            </div>
+            <div className="share-settings-inline">
+              <button
+                type="button"
+                className="btn-main"
+                onClick={() => saveShareSettings('private')}
+                disabled={!currentInvitation || savingShareSettings}
+              >
+                {savingShareSettings ? 'Đang lưu…' : 'Lưu nội dung chia sẻ'}
+              </button>
+              {shareSettingsSection === 'private' && shareSettingsMessage && (
+                <span className={shareSettingsMessage.startsWith('Đã') ? 'ok' : 'error'}>{shareSettingsMessage}</span>
+              )}
             </div>
             <div className="fld" style={{ marginTop: 14 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6, flexWrap: 'wrap', gap: 6 }}>
@@ -521,18 +571,6 @@ export default function InvitePage() {
             </div>
           </div>
         </section>
-      </div>
-
-      <div className="share-settings-save">
-        <button
-          type="button"
-          className="btn-main"
-          onClick={saveShareSettings}
-          disabled={!currentInvitation || savingShareSettings}
-        >
-          {savingShareSettings ? 'Đang lưu…' : 'Lưu nội dung chia sẻ'}
-        </button>
-        {shareSettingsMessage && <span className={shareSettingsMessage.startsWith('Đã') ? 'ok' : 'error'}>{shareSettingsMessage}</span>}
       </div>
 
       {/* Share Modal Popup */}

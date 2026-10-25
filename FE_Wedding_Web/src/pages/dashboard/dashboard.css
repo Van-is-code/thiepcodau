@@ -1044,10 +1044,45 @@
 .share-settings-save .ok { color: #2e7d32; }
 .share-settings-save .error { color: #c04938; }
 
+.share-settings-inline {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.share-settings-inline span {
+  font-size: 12px;
+}
+
+.share-settings-inline .ok { color: #2e7d32; }
+.share-settings-inline .error { color: #c04938; }
+
+.public-link-actions .btn-quick-invite,
+.public-link-actions .btn-sm {
+  min-height: 42px;
+}
+
+.public-link-warning {
+  margin-top: 10px;
+  padding: 9px 11px;
+  border: 1px solid rgba(192, 73, 56, 0.28);
+  border-radius: var(--radius-sm);
+  background: #fff4f1;
+  color: #a63a2c;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
 @media (max-width: 760px) {
   .inv-grid { grid-template-columns: 1fr; }
   .invite-link-settings { justify-content: space-between; margin-top: 0; }
   .share-settings-save { align-items: flex-start; flex-direction: column; }
+  .public-link-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .public-link-actions .btn-quick-invite,
+  .public-link-actions .btn-sm { justify-content: center; width: 100%; }
+  .share-settings-inline { align-items: flex-start; flex-direction: column; }
+  .share-settings-inline .btn-main { width: 100%; justify-content: center; min-height: 44px; }
 }
 
 .inv-panel {
