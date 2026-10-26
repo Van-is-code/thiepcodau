@@ -1125,7 +1125,7 @@ button {
   top: 0;
   left: 50%;
   width: 100%;
-  height: 150px;
+  height: 185px;
   z-index: 2;
   transform: translateX(-50%);
 }
@@ -1142,14 +1142,13 @@ button {
   width: 100%;
   height: 100%;
   box-sizing: border-box;
-  z-index: 3;
 }
 
 /* This is the back of the same envelope, not a separate panel behind the card. */
 .countdown-envelope-body::before {
   content: '';
   position: absolute;
-  top: 94px;
+  top: 108px;
   right: 0;
   bottom: 0;
   left: 0;
@@ -2472,6 +2471,19 @@ button {
   white-space: nowrap;
 }
 
+.invitation-contact-brand {
+  flex: 0 0 auto;
+  padding-right: 6px;
+  border-right: 1px solid rgba(122, 104, 144, 0.23);
+  color: var(--hydrangea-deep);
+  font-family: var(--font-primary);
+  font-size: 8.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  white-space: nowrap;
+}
+
 .invitation-contact-links {
   display: flex;
   flex: 0 0 auto;
@@ -2532,6 +2544,12 @@ button {
   .invitation-contact-label {
     font-size: 7px;
     letter-spacing: 0.06em;
+  }
+
+  .invitation-contact-brand {
+    padding-right: 4px;
+    font-size: 7.5px;
+    letter-spacing: 0.04em;
   }
 
   .invitation-contact a {
