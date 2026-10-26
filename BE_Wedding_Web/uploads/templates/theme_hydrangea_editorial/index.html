@@ -414,19 +414,18 @@
         <img src="assets/images/flower2-decoration.webp" alt="" class="countdown-envelope-sprig countdown-envelope-sprig--right">
       </div>
 
-      <!-- The back flap is visible above and around the card: this is the missing 'nắp thư'. -->
-      <div class="countdown-top-flap" aria-hidden="true">
-        <svg class="countdown-top-flap-svg" viewBox="0 0 340 190" preserveAspectRatio="none">
-          <defs>
-            <linearGradient id="countdownFlapPaper" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="#FFFDF8"/>
-              <stop offset="100%" stop-color="#EFE2CF"/>
-            </linearGradient>
-          </defs>
-          <path d="M1,185 L170,4 L339,185 Z" fill="url(#countdownFlapPaper)" stroke="rgba(128, 103, 125, 0.3)" stroke-width="1"/>
-          <path d="M9,181 L170,14 L331,181" fill="none" stroke="rgba(255,255,255,0.86)" stroke-width="1.2"/>
-        </svg>
-      </div>
+      <!-- One continuous envelope back: outer silhouette + an inset fold line, never separate wings. -->
+      <svg class="countdown-envelope-back" viewBox="0 0 340 430" preserveAspectRatio="none" aria-hidden="true">
+        <defs>
+          <linearGradient id="countdownEnvelopePaper" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#FFFDF8"/>
+            <stop offset="100%" stop-color="#ECE0CF"/>
+          </linearGradient>
+        </defs>
+        <path d="M1,114 L170,3 L339,114 L339,429 L1,429 Z" fill="url(#countdownEnvelopePaper)" stroke="rgba(132, 111, 115, 0.26)" stroke-width="1"/>
+        <path d="M7,114 L170,9 L333,114" fill="none" stroke="rgba(255,255,255,0.86)" stroke-width="1.2"/>
+        <path d="M2,177 L170,27 L338,177" fill="none" stroke="rgba(128, 103, 125, 0.19)" stroke-width="1"/>
+      </svg>
 
       <!-- The pocket is deliberately kept separate from the card so it reads as a real envelope. -->
       <div class="countdown-envelope-body">
