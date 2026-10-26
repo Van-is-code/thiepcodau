@@ -172,6 +172,7 @@ button {
   position: relative;
   padding: 64px 20px;
   z-index: 2;
+  background: transparent;
 }
 
 .section-eyebrow {
@@ -1041,6 +1042,14 @@ button {
   overflow: hidden;
   /* Continue the stationery canvas; a solid section background created visible cut lines. */
   background-color: transparent;
+}
+
+/* Botanical raster details inherit the independently chosen soft-decoration tint. */
+.couple-botanical-corner img,
+.countdown-botanical-flourish img,
+.countdown-envelope-sprig,
+.finale-garland-img {
+  filter: var(--botanical-filter, none);
 }
 
 .countdown-botanical-flourish {
@@ -2342,7 +2351,8 @@ button {
 .editorial-finale {
   position: relative;
   text-align: center;
-  padding-bottom: max(6px, env(safe-area-inset-bottom));
+  padding-bottom: 0;
+  background: transparent;
   overflow: hidden;
 }
 
@@ -2437,6 +2447,8 @@ button {
   max-width: calc(100% - 28px);
   margin: 4px auto 0;
   text-align: center;
+  position: relative;
+  top: -12px;
 }
 
 .invitation-contact-maker {

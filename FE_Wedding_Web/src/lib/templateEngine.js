@@ -213,6 +213,12 @@ export const buildMergedData = (invitation) => {
   const customAccentColor = invitation?.extra_data?.accent_color ?? invitation?.accent_color
   data.accent_color = (customAccentColor && /^#[0-9a-fA-F]{6}$/.test(String(customAccentColor).trim())) ? String(customAccentColor).trim() : ''
 
+  const customDecorColor = invitation?.extra_data?.decor_color ?? invitation?.decor_color
+  data.decor_color = (customDecorColor && /^#[0-9a-fA-F]{6}$/.test(String(customDecorColor).trim())) ? String(customDecorColor).trim() : ''
+
+  const customTextColor = invitation?.extra_data?.text_color ?? invitation?.text_color
+  data.text_color = (customTextColor && /^#[0-9a-fA-F]{6}$/.test(String(customTextColor).trim())) ? String(customTextColor).trim() : ''
+
   data.invitation_id = invitation?.id || ''
   data.api_base = API_BASE || (typeof window !== 'undefined' ? window.location.origin : '')
   data.guest_name = invitation?.guest_name || ''
@@ -277,7 +283,7 @@ export const resolveWriteTarget = (fieldKey) => {
   if (fieldKey === 'groom_short_name') return { scope: 'extra_data', column: 'groom_short_name', widget: 'text' }
   if (fieldKey === 'bride_short_name') return { scope: 'extra_data', column: 'bride_short_name', widget: 'text' }
   if (fieldKey === 'couple_names') return { scope: 'extra_data', column: 'couple_names', widget: 'text' }
-  if (['show_rsvp', 'allow_wishes', 'show_wishes_list', 'show_gift_box', 'background_image', 'background_color', 'accent_color'].includes(fieldKey)) return { scope: 'extra_data', column: fieldKey, widget: 'text' }
+  if (['show_rsvp', 'allow_wishes', 'show_wishes_list', 'show_gift_box', 'background_image', 'background_color', 'accent_color', 'decor_color', 'text_color'].includes(fieldKey)) return { scope: 'extra_data', column: fieldKey, widget: 'text' }
   if (GROOM_NAME_ALIASES.has(fieldKey)) return { scope: 'groom', column: 'name_groom', widget: 'text' }
   if (BRIDE_NAME_ALIASES.has(fieldKey)) return { scope: 'bride', column: 'name_bride', widget: 'text' }
   // Field GỐC (không phải alias hiển thị) mà chính openDateInput() và nút "Chọn ngày cưới"

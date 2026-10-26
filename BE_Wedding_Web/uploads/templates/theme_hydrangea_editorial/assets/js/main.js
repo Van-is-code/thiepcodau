@@ -222,45 +222,71 @@
     var d = data || window.invitationData || {};
     var extra = d.extra_data || {};
 
-    // One editable accent controls the former lavender/mauve ink and its soft paper shadows.
-    // Strict HEX validation keeps the value safe before it is written into a stylesheet.
-    var accentColor = String(extra.accent_color || d.accent_color || '').trim();
-    accentColor = /^#[0-9a-fA-F]{6}$/.test(accentColor) ? accentColor : '';
-    var accentStyleEl = document.getElementById('theme-custom-accent-color-style');
-    if (accentColor) {
-      var accentRgb = {
-        r: parseInt(accentColor.slice(1, 3), 16),
-        g: parseInt(accentColor.slice(3, 5), 16),
-        b: parseInt(accentColor.slice(5, 7), 16)
+    // The soft botanical tint and the text ink are deliberately independent.
+    // `accent_color` remains a legacy fallback for invitations saved before this split.
+    var normalizeHex = function (value) {
+      var color = String(value || '').trim();
+      return /^#[0-9a-fA-F]{6}$/.test(color) ? color : '';
+    };
+    var legacyAccentColor = normalizeHex(extra.accent_color || d.accent_color);
+    var decorColor = normalizeHex(extra.decor_color || d.decor_color || legacyAccentColor);
+    var textColor = normalizeHex(extra.text_color || d.text_color);
+    var themeStyleEl = document.getElementById('theme-custom-color-style');
+    if (decorColor || textColor) {
+      var hexToRgb = function (hex) {
+        return { r: parseInt(hex.slice(1, 3), 16), g: parseInt(hex.slice(3, 5), 16), b: parseInt(hex.slice(5, 7), 16) };
       };
-      var mixColor = function (target, amount) {
-        var tr = parseInt(target.slice(1, 3), 16);
-        var tg = parseInt(target.slice(3, 5), 16);
-        var tb = parseInt(target.slice(5, 7), 16);
+      var mixHex = function (source, target, amount) {
+        var sourceRgb = hexToRgb(source);
+        var targetRgb = hexToRgb(target);
         var toHex = function (value) { return Math.round(value).toString(16).padStart(2, '0'); };
-        return '#' + toHex(accentRgb.r + (tr - accentRgb.r) * amount) + toHex(accentRgb.g + (tg - accentRgb.g) * amount) + toHex(accentRgb.b + (tb - accentRgb.b) * amount);
+        return '#' + toHex(sourceRgb.r + (targetRgb.r - sourceRgb.r) * amount) + toHex(sourceRgb.g + (targetRgb.g - sourceRgb.g) * amount) + toHex(sourceRgb.b + (targetRgb.b - sourceRgb.b) * amount);
       };
-      if (!accentStyleEl) {
-        accentStyleEl = document.createElement('style');
-        accentStyleEl.id = 'theme-custom-accent-color-style';
-        document.head.appendChild(accentStyleEl);
+      var hueOf = function (rgb) {
+        var r = rgb.r / 255;
+        var g = rgb.g / 255;
+        var b = rgb.b / 255;
+        var max = Math.max(r, g, b);
+        var min = Math.min(r, g, b);
+        var delta = max - min;
+        if (!delta) return 0;
+        var hue = max === r ? ((g - b) / delta) % 6 : (max === g ? (b - r) / delta + 2 : (r - g) / delta + 4);
+        return Math.round(hue * 60 + (hue < 0 ? 360 : 0));
+      };
+      if (!themeStyleEl) {
+        themeStyleEl = document.createElement('style');
+        themeStyleEl.id = 'theme-custom-color-style';
+        document.head.appendChild(themeStyleEl);
       }
-      accentStyleEl.textContent =
-        ':root { ' +
-        '--hydrangea-subtle:' + mixColor('#FFFFFF', 0.92) + ' !important; ' +
-        '--hydrangea-tint:' + mixColor('#FFFFFF', 0.82) + ' !important; ' +
-        '--hydrangea-pale:' + mixColor('#FFFFFF', 0.68) + ' !important; ' +
-        '--hydrangea-mid:' + accentColor + ' !important; ' +
-        '--hydrangea-deep:' + mixColor('#241D21', 0.36) + ' !important; ' +
-        '--hydrangea-dark:' + mixColor('#241D21', 0.56) + ' !important; ' +
-        '--sage-accent:' + accentColor + ' !important; ' +
-        '--hairline-rule:rgba(' + accentRgb.r + ',' + accentRgb.g + ',' + accentRgb.b + ',0.22) !important; ' +
-        '--envelope-shadow:rgba(' + accentRgb.r + ',' + accentRgb.g + ',' + accentRgb.b + ',0.14) !important; ' +
-        '--envelope-edge-shadow:rgba(' + accentRgb.r + ',' + accentRgb.g + ',' + accentRgb.b + ',0.07) !important; ' +
-        '--letter-shadow:rgba(' + accentRgb.r + ',' + accentRgb.g + ',' + accentRgb.b + ',0.13) !important; ' +
-        '}';
-    } else if (accentStyleEl) {
-      accentStyleEl.remove();
+
+      var css = ':root { ';
+      if (decorColor) {
+        var decorRgb = hexToRgb(decorColor);
+        var isOriginalLavender = decorColor.toUpperCase() === '#D5C7E2';
+        // The source florals are already lavender. Rotating their native hue directly
+        // keeps sage soft and botanical rather than shifting it into a cold blue.
+        var rotate = hueOf(decorRgb) - 23;
+        var botanicalFilter = isOriginalLavender ? 'none' : 'hue-rotate(' + rotate + 'deg) saturate(0.72) brightness(1.04)';
+        css +=
+          '--hydrangea-subtle:' + mixHex(decorColor, '#FFFFFF', 0.80) + ' !important; ' +
+          '--hydrangea-tint:' + mixHex(decorColor, '#FFFFFF', 0.55) + ' !important; ' +
+          '--hydrangea-pale:' + decorColor + ' !important; ' +
+          '--sage-accent:' + mixHex(decorColor, '#52654C', 0.60) + ' !important; ' +
+          '--hairline-rule:rgba(' + decorRgb.r + ',' + decorRgb.g + ',' + decorRgb.b + ',0.42) !important; ' +
+          '--envelope-shadow:rgba(' + decorRgb.r + ',' + decorRgb.g + ',' + decorRgb.b + ',0.24) !important; ' +
+          '--envelope-edge-shadow:rgba(' + decorRgb.r + ',' + decorRgb.g + ',' + decorRgb.b + ',0.12) !important; ' +
+          '--letter-shadow:rgba(' + decorRgb.r + ',' + decorRgb.g + ',' + decorRgb.b + ',0.20) !important; ' +
+          '--botanical-filter:' + botanicalFilter + ' !important; ';
+      }
+      if (textColor) {
+        css +=
+          '--hydrangea-mid:' + textColor + ' !important; ' +
+          '--hydrangea-deep:' + mixHex(textColor, '#241D21', 0.36) + ' !important; ' +
+          '--hydrangea-dark:' + mixHex(textColor, '#241D21', 0.56) + ' !important; ';
+      }
+      themeStyleEl.textContent = css + '}';
+    } else if (themeStyleEl) {
+      themeStyleEl.remove();
     }
 
     var showRsvp = (extra.show_rsvp !== undefined) ? Boolean(extra.show_rsvp) : (d.show_rsvp !== undefined ? Boolean(d.show_rsvp) : true);

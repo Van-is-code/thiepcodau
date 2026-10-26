@@ -23,12 +23,19 @@ const PRESET_COLORS = [
   { name: 'Xám tro nhẹ', hex: '#F4F3F1', border: '#dcdad6' },
 ]
 
-const PRESET_ACCENT_COLORS = [
+const PRESET_DECOR_COLORS = [
   { name: 'Xanh sage (gợi ý với ảnh trắng – xanh lá)', hex: '#71866E', border: '#b9c8b6' },
   { name: 'Xanh olive dịu', hex: '#86956E', border: '#c7cfb8' },
-  { name: 'Lavender nguyên bản', hex: '#7A6890', border: '#c5bad1' },
+  { name: 'Lavender nguyên bản', hex: '#D5C7E2', border: '#d8cfdf' },
   { name: 'Hồng mauve nhạt', hex: '#A77D8C', border: '#d6bbc4' },
   { name: 'Nâu rosewood', hex: '#8B665B', border: '#cdb6ad' },
+]
+
+const PRESET_TEXT_COLORS = [
+  { name: 'Tím lavender nguyên bản', hex: '#7A6890', border: '#c5bad1' },
+  { name: 'Xanh sage đậm', hex: '#5F765C', border: '#afbdac' },
+  { name: 'Nâu rosewood', hex: '#7B5B52', border: '#cbb5ad' },
+  { name: 'Xám than dịu', hex: '#5E625D', border: '#bfc2bd' },
 ]
 
 export default function DisplaySettingsPanel({ invitation, onSaved, onClose }) {
@@ -60,10 +67,14 @@ export default function DisplaySettingsPanel({ invitation, onSaved, onClose }) {
     extra.background_color || invitation?.background_color || defaultBgColor
   )
 
-  // Màu nhấn là tông lavender/mauve đang áp dụng cho chữ, viền mảnh và bóng giấy.
-  const defaultAccentColor = '#7A6890'
-  const [accentColor, setAccentColor] = useState(
-    extra.accent_color || invitation?.accent_color || defaultAccentColor
+  // Tách màu họa tiết mờ (hoa/lá/viền/bóng) khỏi màu chữ để hai phần không đổi lẫn nhau.
+  const defaultDecorColor = '#D5C7E2'
+  const [decorColor, setDecorColor] = useState(
+    extra.decor_color || invitation?.decor_color || extra.accent_color || invitation?.accent_color || defaultDecorColor
+  )
+  const defaultTextColor = '#7A6890'
+  const [textColor, setTextColor] = useState(
+    extra.text_color || invitation?.text_color || defaultTextColor
   )
 
   const [saving, setSaving] = useState(false)
@@ -81,7 +92,8 @@ export default function DisplaySettingsPanel({ invitation, onSaved, onClose }) {
       show_wishes_list: Boolean(showWishesList),
       show_gift_box: Boolean(showGiftBox),
       background_color: String(bgColor || defaultBgColor).trim(),
-      accent_color: String(accentColor || defaultAccentColor).trim(),
+      decor_color: String(decorColor || defaultDecorColor).trim(),
+      text_color: String(textColor || defaultTextColor).trim(),
     }
 
     try {
@@ -233,51 +245,51 @@ export default function DisplaySettingsPanel({ invitation, onSaved, onClose }) {
             </div>
           </div>
 
-          {/* Section: Màu nhấn (Lavender/Mauve) */}
+          {/* Section: Màu họa tiết và màu chữ */}
           <div style={S.sectionCard}>
             <div style={S.sectionTitleRow}>
               <div style={{ ...S.sectionIconWrap, background: '#edf3e9' }}>
                 <IconPalette size={16} color="#71866E" />
               </div>
               <div style={{ flex: 1 }}>
-                <h4 style={S.sectionTitle}>Màu nhấn của thiệp</h4>
+                <h4 style={S.sectionTitle}>Màu họa tiết &amp; màu chữ</h4>
                 <p style={S.sectionDesc}>
-                  Tông lavender/mauve đang dùng cho chữ, viền mảnh và bóng mờ. Với ảnh trắng – xanh lá, nên chọn xanh sage dịu.
+                  Tách riêng tông lavender mờ của hoa/lá, viền và bóng giấy khỏi màu chữ để chỉnh đúng ý.
                 </p>
               </div>
             </div>
 
             <div style={S.colorBox}>
               <div style={S.colorPickerRow}>
-                <label style={S.colorSwatchLabel} title="Bấm để chọn màu nhấn">
+                <label style={S.colorSwatchLabel} title="Bấm để chọn màu họa tiết mờ">
                   <div
                     style={{
                       ...S.colorSwatchPreview,
-                      backgroundColor: accentColor || defaultAccentColor,
+                      backgroundColor: decorColor || defaultDecorColor,
                     }}
                   />
                   <input
                     type="color"
-                    value={accentColor.startsWith('#') && accentColor.length === 7 ? accentColor : defaultAccentColor}
-                    onChange={(e) => setAccentColor(e.target.value)}
+                    value={decorColor.startsWith('#') && decorColor.length === 7 ? decorColor : defaultDecorColor}
+                    onChange={(e) => setDecorColor(e.target.value)}
                     style={S.hiddenColorInput}
                   />
                 </label>
 
                 <div style={{ flex: 1 }}>
-                  <label style={S.inputLabel}>Mã màu nhấn (HEX):</label>
+                  <label style={S.inputLabel}>Màu họa tiết mờ (HEX):</label>
                   <div style={S.inputRow}>
                     <input
                       type="text"
-                      value={accentColor}
+                      value={decorColor}
                       placeholder="#71866E"
-                      onChange={(e) => setAccentColor(e.target.value)}
+                      onChange={(e) => setDecorColor(e.target.value)}
                       style={S.colorTextInput}
                     />
                     <button
                       type="button"
                       style={S.btnResetColor}
-                      onClick={() => setAccentColor(defaultAccentColor)}
+                      onClick={() => setDecorColor(defaultDecorColor)}
                       title="Đặt lại lavender nguyên bản"
                     >
                       <IconRefreshCw size={13} />
@@ -290,8 +302,8 @@ export default function DisplaySettingsPanel({ invitation, onSaved, onClose }) {
               <div style={S.presetWrap}>
                 <span style={S.presetLabel}>Gợi ý phù hợp bộ ảnh trắng – xanh lá:</span>
                 <div style={S.presetGrid}>
-                  {PRESET_ACCENT_COLORS.map((p) => {
-                    const isSelected = (accentColor || '').toUpperCase() === p.hex.toUpperCase()
+                  {PRESET_DECOR_COLORS.map((p) => {
+                    const isSelected = (decorColor || '').toUpperCase() === p.hex.toUpperCase()
                     return (
                       <button
                         key={p.hex}
@@ -302,7 +314,73 @@ export default function DisplaySettingsPanel({ invitation, onSaved, onClose }) {
                           borderColor: isSelected ? '#342644' : p.border,
                           outline: isSelected ? '2px solid #342644' : 'none',
                         }}
-                        onClick={() => setAccentColor(p.hex)}
+                        onClick={() => setDecorColor(p.hex)}
+                        title={`${p.name} (${p.hex})`}
+                      >
+                        {isSelected && <IconCheck size={12} color="#ffffff" />}
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
+
+              <div style={S.colorDivider} />
+
+              <div style={S.colorPickerRow}>
+                <label style={S.colorSwatchLabel} title="Bấm để chọn màu chữ">
+                  <div
+                    style={{
+                      ...S.colorSwatchPreview,
+                      backgroundColor: textColor || defaultTextColor,
+                    }}
+                  />
+                  <input
+                    type="color"
+                    value={textColor.startsWith('#') && textColor.length === 7 ? textColor : defaultTextColor}
+                    onChange={(e) => setTextColor(e.target.value)}
+                    style={S.hiddenColorInput}
+                  />
+                </label>
+
+                <div style={{ flex: 1 }}>
+                  <label style={S.inputLabel}>Màu chữ (HEX):</label>
+                  <div style={S.inputRow}>
+                    <input
+                      type="text"
+                      value={textColor}
+                      placeholder="#7A6890"
+                      onChange={(e) => setTextColor(e.target.value)}
+                      style={S.colorTextInput}
+                    />
+                    <button
+                      type="button"
+                      style={S.btnResetColor}
+                      onClick={() => setTextColor(defaultTextColor)}
+                      title="Đặt lại màu chữ nguyên bản"
+                    >
+                      <IconRefreshCw size={13} />
+                      <span>Gốc</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div style={S.presetWrap}>
+                <span style={S.presetLabel}>Màu chữ gợi ý:</span>
+                <div style={S.presetGrid}>
+                  {PRESET_TEXT_COLORS.map((p) => {
+                    const isSelected = (textColor || '').toUpperCase() === p.hex.toUpperCase()
+                    return (
+                      <button
+                        key={p.hex}
+                        type="button"
+                        style={{
+                          ...S.presetBtn,
+                          backgroundColor: p.hex,
+                          borderColor: isSelected ? '#342644' : p.border,
+                          outline: isSelected ? '2px solid #342644' : 'none',
+                        }}
+                        onClick={() => setTextColor(p.hex)}
                         title={`${p.name} (${p.hex})`}
                       >
                         {isSelected && <IconCheck size={12} color="#ffffff" />}
@@ -658,6 +736,11 @@ const S = {
     background: '#ffffff',
     color: '#1f1917',
     outline: 'none',
+  },
+  colorDivider: {
+    height: 1,
+    width: '100%',
+    background: '#ece5dc',
   },
   btnResetColor: {
     display: 'inline-flex',

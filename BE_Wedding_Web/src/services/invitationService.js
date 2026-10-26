@@ -708,6 +708,8 @@ const setDisplaySettings = async (id, body, actor) => {
 		show_gift_box: body.show_gift_box !== undefined ? Boolean(body.show_gift_box) : (curExtra.show_gift_box ?? true),
 		background_color: body.background_color !== undefined ? String(body.background_color || '').trim() : (curExtra.background_color || ''),
 		accent_color: body.accent_color !== undefined ? normalizeAccentColor(body.accent_color) : normalizeAccentColor(curExtra.accent_color),
+		decor_color: body.decor_color !== undefined ? normalizeAccentColor(body.decor_color) : normalizeAccentColor(curExtra.decor_color),
+		text_color: body.text_color !== undefined ? normalizeAccentColor(body.text_color) : normalizeAccentColor(curExtra.text_color),
 		background_image: body.background_image !== undefined ? String(body.background_image || '').trim() : (curExtra.background_image || '')
 	};
 

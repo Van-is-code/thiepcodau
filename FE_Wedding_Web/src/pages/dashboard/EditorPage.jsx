@@ -485,7 +485,8 @@ export default function EditorPage() {
       show_wishes_list: settings.show_wishes_list,
       show_gift_box: settings.show_gift_box,
       background_color: settings.background_color,
-      accent_color: settings.accent_color,
+      decor_color: settings.decor_color,
+      text_color: settings.text_color,
     }
     const nextInv = {
       ...invitation,
@@ -495,7 +496,8 @@ export default function EditorPage() {
       show_wishes_list: settings.show_wishes_list,
       show_gift_box: settings.show_gift_box,
       background_color: settings.background_color,
-      accent_color: settings.accent_color,
+      decor_color: settings.decor_color,
+      text_color: settings.text_color,
     }
     setInvitation(nextInv)
     pushToIframe(nextInv, pending)
