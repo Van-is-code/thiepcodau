@@ -29,6 +29,25 @@ const getBySlug = async (req, res) => {
 	}
 };
 
+const getOgImage = async (req, res) => {
+	try {
+		const buffer = await invitationService.getOgImageBuffer(req.params.invitation_slug);
+		if (!buffer) {
+			return res.status(404).send('Image not found');
+		}
+		res.removeHeader('X-Frame-Options');
+		res.removeHeader('Content-Security-Policy');
+		res.removeHeader('Cross-Origin-Opener-Policy');
+		res.setHeader('Access-Control-Allow-Origin', '*');
+		res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+		res.setHeader('Content-Type', 'image/jpeg');
+		res.setHeader('Cache-Control', 'public, max-age=86400');
+		return res.end(buffer);
+	} catch (error) {
+		return res.status(500).send('Failed to generate preview image');
+	}
+};
+
 const create = async (req, res) => {
 	try {
 		const data = await invitationService.create(req.body, req.user?.id);
@@ -176,4 +195,4 @@ const setShareSettings = async (req, res) => {
 	}
 };
 
-module.exports = { getAll, getById, getBySlug, create, update, editorSave, changeTemplate, setMusic, setBank, remove, createDraft, checkSlug, setSlug, setTitle, setShareSettings };
+module.exports = { getAll, getById, getBySlug, getOgImage, create, update, editorSave, changeTemplate, setMusic, setBank, remove, createDraft, checkSlug, setSlug, setTitle, setShareSettings };

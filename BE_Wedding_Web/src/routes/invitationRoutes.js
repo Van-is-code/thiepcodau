@@ -6,6 +6,8 @@ const router = express.Router();
 
 // Route công khai: trang thiệp mà khách mời xem không cần đăng nhập.
 // Phải khai báo TRƯỚC router.use(authenticate) bên dưới.
+router.get('/slug/:invitation_slug/og-image.jpg', invitationController.getOgImage);
+router.get('/slug/:invitation_slug/og-image', invitationController.getOgImage);
 router.get('/slug/:invitation_slug', invitationController.getBySlug);
 
 router.use(authenticate);

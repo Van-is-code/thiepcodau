@@ -125,8 +125,8 @@ const IMMUTABLE_YEAR = 'public, max-age=31536000, immutable';
 const STATIC_MEDIA_OPTS = {
   etag: true,
   lastModified: true,
-  setHeaders: (res) => {
-    userContentHeaders(res);
+  setHeaders: (res, filePath) => {
+    userContentHeaders(res, filePath);
     res.setHeader('Cache-Control', IMMUTABLE_YEAR);
   },
 };
@@ -146,6 +146,7 @@ app.use('/templates', (req, res, next) => {
 app.use('/templates', express.static(path.join(process.cwd(), 'uploads', 'templates'), {
   etag: true,
   setHeaders: function (res, filePath) {
+    userContentHeaders(res, filePath);
     if (/\.(html|js|css)$/i.test(filePath)) {
       res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
       res.setHeader('Pragma', 'no-cache');

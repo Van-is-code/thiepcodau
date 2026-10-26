@@ -221,24 +221,37 @@ const metaChiaSe = async (req, slug) => {
     }
   }
 
-  const cleanPath = (rawImageUrl || '').split('?')[0].toLowerCase();
-  let imageType = 'image/jpeg';
-  if (cleanPath.endsWith('.png')) imageType = 'image/png';
-  else if (cleanPath.endsWith('.webp')) imageType = 'image/webp';
-  else if (cleanPath.endsWith('.gif')) imageType = 'image/gif';
-
   const origin = originCua(req);
   const canonicalUrl = `${origin}${req.url || `/${slug}`}`;
-
   const siteName = coupleNames || 'Thiệp Cưới Online';
+
+  // Kích thước chuẩn cho Open Graph:
+  // Nếu ảnh gốc là ngang (landscape): 1200 x 630
+  // Nếu ảnh gốc là dọc (portrait) hoặc vuông: 1000 x 1000 (chuẩn thẻ vuông Messenger di động)
+  let targetWidth = 1000;
+  let targetHeight = 1000;
+  if (chosenImg && chosenImg.width && chosenImg.height) {
+    if (Number(chosenImg.width) >= Number(chosenImg.height) * 1.15) {
+      targetWidth = 1200;
+      targetHeight = 630;
+    } else {
+      targetWidth = 1000;
+      targetHeight = 1000;
+    }
+  }
+
+  // Dùng endpoint chuyên dụng /api/invitations/slug/:slug/og-image.jpg
+  // Tự động smart-crop cô dâu chú rể, JPEG chuẩn, không bao giờ dính CSP sandbox hay SAMEORIGIN
+  const imageVersion = chosenImg?.id ? String(chosenImg.id).slice(0, 8) : '1';
+  const ogImageUrl = `${origin}/api/invitations/slug/${encodeURIComponent(slug)}/og-image.jpg?v=${imageVersion}`;
 
   return {
     title: chuoiGon(title, defaultPublicTitle),
     description: chuoiGon(description, defaultPublicDescription),
-    image: linkTuyetDoi(rawImageUrl, origin),
-    imageType,
-    imageWidth,
-    imageHeight,
+    image: ogImageUrl,
+    imageType: 'image/jpeg',
+    imageWidth: targetWidth,
+    imageHeight: targetHeight,
     canonicalUrl,
     siteName,
   };
@@ -252,12 +265,7 @@ const chenMetaChiaSe = (html, meta) => {
   const imageType = boKyTuNguyHiem(meta.imageType || 'image/jpeg');
   const siteName = boKyTuNguyHiem(meta.siteName || 'Thiệp Cưới Online');
 
-  // KHÔNG đặt og:image:width và og:image:height nếu ảnh là dạng dọc (height > width)
-  // vì Facebook scraper có quy tắc nghiêm ngặt: nếu width < height trong thẻ meta,
-  // Facebook sẽ đánh dấu ảnh không đúng tỉ lệ card và từ chối tải ảnh hoàn toàn.
-  // Khi không khai báo width/height cứng, Facebook sẽ tự tải ảnh về và căn chỉnh hiển thị.
-  const isLandscapeOrSquare = Number(meta.imageWidth) >= Number(meta.imageHeight);
-  const dimensionTags = (image && isLandscapeOrSquare && meta.imageWidth && meta.imageHeight) ? [
+  const dimensionTags = (image && meta.imageWidth && meta.imageHeight) ? [
     `<meta property="og:image:width" content="${meta.imageWidth}" />`,
     `<meta property="og:image:height" content="${meta.imageHeight}" />`,
   ] : [];
@@ -351,7 +359,12 @@ const chuyenTiep = (req, res, targetPath) => {
     headers: { ...req.headers, host: `${BE.host}:${BE.port}` },
   };
   const ra = http.request(opts, (tl) => {
-    res.writeHead(tl.statusCode || 502, tl.headers);
+    const headers = { ...tl.headers };
+    delete headers['x-frame-options'];
+    delete headers['cross-origin-opener-policy'];
+    if (!headers['access-control-allow-origin']) headers['access-control-allow-origin'] = '*';
+    if (!headers['cross-origin-resource-policy']) headers['cross-origin-resource-policy'] = 'cross-origin';
+    res.writeHead(tl.statusCode || 502, headers);
     tl.pipe(res);
   });
   ra.on('error', (e) => {

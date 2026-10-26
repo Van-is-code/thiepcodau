@@ -89,10 +89,20 @@ const globalApiLimiter = makeLimiter({
 });
 
 // Header cho thư mục tĩnh chứa file người dùng tải lên: cấm trình duyệt đoán kiểu
-// nội dung và cấm mọi script chạy từ origin này (chống XSS lưu trữ qua file .html/.svg).
-const userContentHeaders = (res) => {
+// nội dung. Cho phép nhúng cross-origin và không chặn các crawler (Facebook, Zalo, Twitter).
+// Chỉ đặt CSP sandbox cho file nguy hiểm (không phải ảnh/audio).
+const userContentHeaders = (res, filePath) => {
+  res.removeHeader('X-Frame-Options');
+  res.removeHeader('Cross-Origin-Opener-Policy');
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
   res.setHeader('X-Content-Type-Options', 'nosniff');
-  res.setHeader('Content-Security-Policy', "default-src 'none'; img-src 'self' data:; media-src 'self'; style-src 'unsafe-inline'; sandbox");
+  const isImageOrMedia = filePath && /\.(jpe?g|png|webp|gif|avif|svg|mp3|m4a|wav|ogg)$/i.test(filePath);
+  if (!isImageOrMedia && filePath) {
+    res.setHeader('Content-Security-Policy', "default-src 'none'; sandbox");
+  } else {
+    res.removeHeader('Content-Security-Policy');
+  }
   res.setHeader('Content-Disposition', 'inline');
 };
 

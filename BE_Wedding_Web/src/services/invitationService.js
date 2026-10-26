@@ -1,6 +1,11 @@
 const { randomUUID } = require('crypto');
 const fs = require('fs');
+const fsp = require('fs/promises');
 const path = require('path');
+const http = require('http');
+const https = require('https');
+const sharp = require('sharp');
+const storageService = require('./storageService');
 const { Op } = require('sequelize');
 const sequelize = require('../config/db');
 const { Invitation, InvitationTemplate, Groom, Bride, InvitationImage, MessageCheckin, User, Customer, CtvProfile, PrivateInvitation, Guest } = require('../models');
@@ -1135,7 +1140,137 @@ const updateShareSettings = async (invitationId, payload, actor) => {
 	return withLockState(await findRaw(invitationId));
 };
 
+// Cache buffer ảnh Open Graph trong bộ nhớ: key `${slug}:${version}` -> { buffer, expiresAt }
+const ogImageCache = new Map();
+const OG_CACHE_TTL_MS = 60 * 60 * 1000; // 1 giờ
+
+const downloadUrlBuffer = (url) => new Promise((resolve, reject) => {
+	const client = url.startsWith('https') ? https : http;
+	const req = client.get(url, (res) => {
+		if (res.statusCode !== 200) {
+			return reject(new Error(`Download failed with status ${res.statusCode}`));
+		}
+		const chunks = [];
+		res.on('data', (c) => chunks.push(c));
+		res.on('end', () => resolve(Buffer.concat(chunks)));
+	});
+	req.on('error', reject);
+	req.setTimeout(5000, () => req.destroy());
+});
+
+const getOgImageBuffer = async (slug) => {
+	const item = await getBySlug(slug);
+	if (!item) return null;
+
+	// 1. Tìm ảnh đại diện đẹp nhất
+	const allImages = Array.isArray(item.images) ? item.images : [];
+	const validUserImages = allImages.filter((img) => img?.image_url && img?.image_type !== 'bank_qr');
+	const chosenImg = validUserImages.find((img) => img.is_cover)
+		|| validUserImages.find((img) => img.image_type === 'cover')
+		|| validUserImages.find((img) => ['gallery', 'story', 'hero'].includes(img.image_type))
+		|| validUserImages[0]
+		|| null;
+
+	const version = chosenImg?.id ? String(chosenImg.id).slice(0, 8) : 'default';
+	const cacheKey = `${slug}:${version}`;
+	const now = Date.now();
+	const cached = ogImageCache.get(cacheKey);
+	if (cached && cached.expiresAt > now) {
+		return cached.buffer;
+	}
+
+	let rawImageUrl = '';
+	if (chosenImg) {
+		const jpegVariants = Array.isArray(chosenImg.variants?.jpeg) ? chosenImg.variants.jpeg : [];
+		const bestJpeg = jpegVariants.length > 0 ? jpegVariants[jpegVariants.length - 1] : null;
+		rawImageUrl = bestJpeg?.url || chosenImg.image_url;
+	} else if (item.extra_data?.share_image) {
+		rawImageUrl = item.extra_data.share_image;
+	} else if (item.template?.thumbnail_url) {
+		rawImageUrl = item.template.thumbnail_url;
+	} else {
+		rawImageUrl = '/templates/theme_hydrangea_editorial/assets/images/52ed9a3f-608e-403c-98a9-9cf73747e2a8.jpg';
+	}
+
+	// 2. Tải buffer ảnh gốc
+	let sourceBuffer = null;
+	try {
+		if (rawImageUrl.startsWith('http://') || rawImageUrl.startsWith('https://')) {
+			sourceBuffer = await downloadUrlBuffer(rawImageUrl);
+		} else {
+			let clean = rawImageUrl.replace(/^\/+/, '');
+			if (clean.startsWith('uploads/')) {
+				const key = clean.slice('uploads/'.length);
+				sourceBuffer = await storageService.getObject(key);
+			} else if (clean.startsWith('templates/')) {
+				const tPath = path.join(process.cwd(), 'uploads', clean);
+				if (fs.existsSync(tPath)) {
+					sourceBuffer = await fsp.readFile(tPath);
+				} else {
+					const directPath = path.join(process.cwd(), clean);
+					if (fs.existsSync(directPath)) {
+						sourceBuffer = await fsp.readFile(directPath);
+					}
+				}
+			} else {
+				const p = path.join(process.cwd(), clean);
+				if (fs.existsSync(p)) {
+					sourceBuffer = await fsp.readFile(p);
+				}
+			}
+		}
+	} catch (_) {}
+
+	// Fallback ảnh cưới mặc định nếu không đọc được ảnh người dùng
+	if (!sourceBuffer) {
+		const fallbackPath = path.join(process.cwd(), 'uploads', 'templates', 'theme_hydrangea_editorial', 'assets', 'images', '52ed9a3f-608e-403c-98a9-9cf73747e2a8.jpg');
+		if (fs.existsSync(fallbackPath)) {
+			sourceBuffer = await fsp.readFile(fallbackPath);
+		}
+	}
+
+	if (!sourceBuffer) return null;
+
+	// 3. Xử lý ảnh bằng sharp chuẩn Facebook/Messenger/Zalo
+	const metadata = await sharp(sourceBuffer).metadata();
+	const width = metadata.width || 1000;
+	const height = metadata.height || 1000;
+
+	let targetW = 1000;
+	let targetH = 1000;
+	let positionOption = 'top';
+
+	if (width >= height * 1.15) {
+		targetW = 1200;
+		targetH = 630;
+		positionOption = 'center';
+	} else {
+		targetW = 1000;
+		targetH = 1000;
+		positionOption = sharp.strategy?.attention || 'top';
+	}
+
+	const resultBuffer = await sharp(sourceBuffer)
+		.resize(targetW, targetH, {
+			fit: 'cover',
+			position: positionOption,
+		})
+		.jpeg({
+			quality: 90,
+			progressive: true,
+		})
+		.toBuffer();
+
+	ogImageCache.set(cacheKey, {
+		buffer: resultBuffer,
+		expiresAt: now + OG_CACHE_TTL_MS,
+	});
+
+	return resultBuffer;
+};
+
 module.exports = {
 	getAll, getById, getBySlug, create, update, editorSave, changeTemplate, setMusic, setBank, remove, createDraft,
-	assertOwnMusic, checkSlugAvailability, updateSlug, cleanSlug, generateSlug, validateSlugFormat, updateTitle, updateShareSettings
+	assertOwnMusic, checkSlugAvailability, updateSlug, cleanSlug, generateSlug, validateSlugFormat, updateTitle, updateShareSettings,
+	getOgImageBuffer
 };
