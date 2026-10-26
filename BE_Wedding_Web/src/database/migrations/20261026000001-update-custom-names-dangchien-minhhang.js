@@ -31,7 +31,7 @@ module.exports = {
       // 2. Viết hoa chuẩn cho tên chú rể và cô dâu
       if (inv.groom_id) {
         await queryInterface.sequelize.query(`
-          UPDATE grooms
+          UPDATE groom
           SET name_groom = 'Đăng Chiến'
           WHERE id = :groomId;
         `, {
@@ -41,7 +41,7 @@ module.exports = {
 
       if (inv.bride_id) {
         await queryInterface.sequelize.query(`
-          UPDATE brides
+          UPDATE bride
           SET name_bride = 'Minh Hằng'
           WHERE id = :brideId;
         `, {
