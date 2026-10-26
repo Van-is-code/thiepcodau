@@ -205,7 +205,7 @@ const getBySlug = async (invitationSlug) => {
 		include: [
 			{
 				model: InvitationTemplate, as: 'template', required: false,
-				attributes: ['id', 'template_code', 'template_name', 'html_path', 'schema', 'has_music_box', 'manifest']
+				attributes: ['id', 'template_code', 'template_name', 'html_path', 'schema', 'has_music_box', 'manifest', 'thumbnail_url']
 			},
 			{ model: Groom, as: 'groom', required: false, attributes: publicPersonAttrs(Groom) },
 			{ model: Bride, as: 'bride', required: false, attributes: publicPersonAttrs(Bride) },

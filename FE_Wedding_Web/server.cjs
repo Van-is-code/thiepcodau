@@ -81,11 +81,13 @@ const duLieuApi = (apiPath) => new Promise((resolve) => {
 });
 
 const originCua = (req) => {
-  const protoFromProxy = String(req.headers['x-forwarded-proto'] || '').split(',')[0].trim().toLowerCase();
-  const protocol = protoFromProxy === 'https' ? 'https' : 'http';
   const host = String(req.headers['x-forwarded-host'] || req.headers.host || '').split(',')[0].trim();
+  const protoFromProxy = String(req.headers['x-forwarded-proto'] || '').split(',')[0].trim().toLowerCase();
+  const isCfHttps = String(req.headers['cf-visitor'] || '').includes('https');
+  const isHttps = protoFromProxy === 'https' || isCfHttps || host.endsWith('thiepminh.io.vn');
+  const protocol = isHttps ? 'https' : 'http';
   // Không để Host header bất thường chui vào HTML sinh động.
-  const safeHost = /^[a-z0-9.:-]+$/i.test(host) ? host : 'localhost';
+  const safeHost = /^[a-z0-9.:-]+$/i.test(host) ? host : 'thiepminh.io.vn';
   return `${protocol}://${safeHost}`;
 };
 
@@ -94,6 +96,20 @@ const linkTuyetDoi = (url, origin) => {
   if (!raw) return '';
   if (/^https?:\/\//i.test(raw)) return raw;
   return raw.startsWith('/') ? `${origin}${raw}` : `${origin}/${raw}`;
+};
+
+const dinhDangNgay = (dateVal) => {
+  if (!dateVal) return '';
+  try {
+    const d = new Date(dateVal);
+    if (isNaN(d.getTime())) return '';
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
+  } catch (_) {
+    return '';
+  }
 };
 
 const laTrangThiepCongKhai = (urlPath) => {
@@ -117,35 +133,110 @@ const metaChiaSe = async (req, slug) => {
   const queryName = String(query.get('to') || query.get('guest') || '').trim().slice(0, 255);
   const guestName = chuoiGon(guest?.name || queryName);
   const extra = invitation.extra_data && typeof invitation.extra_data === 'object' ? invitation.extra_data : {};
-  const publicTitle = chuoiGon(extra.share_title_public || invitation.title_vi || invitation.title, 'Thiệp cưới');
-  const privateTemplate = chuoiGon(extra.share_title_private, 'Mời {guest_name} đến chung vui cùng chúng tớ');
+
+  // Tên cặp đôi: ưu tiên tên đã ghép custom hoặc tên chú rể & cô dâu
+  const coupleNames = chuoiGon(extra.couple_names)
+    || [invitation.groom?.name_groom, invitation.bride?.name_bride].filter(Boolean).join(' & ');
+
+  // Ngày cưới: format YYYY-MM-DD theo chuẩn ảnh mẫu ("Our wedding date: 2026-09-21")
+  const weddingDateStr = dinhDangNgay(invitation.ceremony_date || invitation.reception_date);
+
+  // Câu chúc / lời mời / lời cảm ơn
+  const weddingWish = chuoiGon(
+    invitation.thank_you_message || invitation.extra_notes,
+    'Sự hiện diện của quý khách là niềm hạnh phúc và vinh dự to lớn cho gia đình chúng tôi!'
+  );
+
+  // Tiêu đề & mô tả công khai mặc định:
+  // Đúng chuẩn mẫu ảnh người dùng gửi:
+  // Title: "Đăng Chiến & Minh Hằng Wedding site!"
+  // Description: "Đăng Chiến & Minh Hằng - Our wedding date: 2026-11-16 | Sự hiện diện của quý khách..."
+  const defaultPublicTitle = coupleNames ? `${coupleNames} Wedding site!` : chuoiGon(invitation.title_vi || invitation.title, 'Thiệp Cưới Online');
+  const defaultPublicDescription = coupleNames
+    ? (weddingDateStr
+        ? `${coupleNames} - Our wedding date: ${weddingDateStr} | ${weddingWish}`
+        : `${coupleNames} | ${weddingWish}`)
+    : weddingWish;
+
+  const publicTitle = chuoiGon(extra.share_title_public, defaultPublicTitle);
+  const publicDescription = chuoiGon(extra.share_description_public, defaultPublicDescription);
+
+  // Tiêu đề & mô tả riêng cho khách mời (khi có ?to=... hoặc ?g=...)
+  const defaultPrivateTitle = coupleNames
+    ? `Mời {guest_name} đến chung vui cùng ${coupleNames}`
+    : 'Mời {guest_name} đến chung vui cùng chúng tôi';
+  const defaultPrivateDescription = coupleNames
+    ? (weddingDateStr
+        ? `Trân trọng kính mời {guest_name} đến chung vui cùng ${coupleNames} vào ngày ${weddingDateStr}. Sự hiện diện của {guest_name} là niềm hạnh phúc to lớn của gia đình chúng tôi!`
+        : `Trân trọng kính mời {guest_name} đến chung vui cùng ${coupleNames}. Sự hiện diện của {guest_name} là niềm hạnh phúc to lớn của gia đình chúng tôi!`)
+    : 'Trân trọng kính mời {guest_name} đến chung vui cùng gia đình chúng tôi.';
+
+  const privateTitleTemplate = chuoiGon(extra.share_title_private, defaultPrivateTitle);
+  const privateDescriptionTemplate = chuoiGon(extra.share_description_private, defaultPrivateDescription);
+
   const title = guestName
-    ? privateTemplate.replace(/\{\{?guest_name\}?\}|\{\{?name\}?\}/g, guestName)
+    ? privateTitleTemplate.replace(/\{\{?guest_name\}?}|\{\{?name\}?}/g, guestName)
     : publicTitle;
-  const names = [invitation.groom?.name_groom, invitation.bride?.name_bride].filter(Boolean).join(' & ');
-  const publicDescription = chuoiGon(
-    extra.share_description_public,
-    names ? `Trân trọng kính mời bạn đến chung vui cùng ${names}.` : 'Trân trọng kính mời bạn đến chung vui.'
-  );
-  const privateDescriptionTemplate = chuoiGon(
-    extra.share_description_private,
-    'Trân trọng kính mời {guest_name} đến chung vui cùng chúng tôi.'
-  );
   const description = guestName
-    ? privateDescriptionTemplate.replace(/\{\{?guest_name\}?\}|\{\{?name\}?\}/g, guestName)
+    ? privateDescriptionTemplate.replace(/\{\{?guest_name\}?}|\{\{?name\}?}/g, guestName)
     : publicDescription;
-  // QR mừng cưới không phù hợp để hiện thành ảnh xem trước khi gửi link.
-  const shareImages = Array.isArray(invitation.images)
-    ? invitation.images.filter((image) => image?.image_url && image?.image_type !== 'bank_qr')
-    : [];
-  const cover = shareImages.find((image) => image.is_cover) || shareImages[0] || null;
+
+  // Tìm ảnh đẹp nhất để hiển thị thẻ xem trước (Open Graph preview image)
+  // Ưu tiên:
+  // 1. Ảnh đánh dấu cover (is_cover = true)
+  // 2. Ảnh loại 'cover'
+  // 3. Ảnh album 'gallery', 'story', 'hero' (ảnh đôi)
+  // 4. Bất kỳ ảnh nào tải lên (khác bank_qr)
+  // 5. Ảnh thumbnail_url của template
+  // 6. Ảnh mặc định theo template_code (vd ảnh mẫu cưới Hydrangea / Blue Botanical)
+  const allImages = Array.isArray(invitation.images) ? invitation.images : [];
+  const validUserImages = allImages.filter((img) => img?.image_url && img?.image_type !== 'bank_qr');
+
+  const chosenImg = validUserImages.find((img) => img.is_cover)
+    || validUserImages.find((img) => img.image_type === 'cover')
+    || validUserImages.find((img) => ['gallery', 'story', 'hero'].includes(img.image_type))
+    || validUserImages[0]
+    || null;
+
+  let rawImageUrl = '';
+  let imageWidth = 1200;
+  let imageHeight = 800;
+
+  if (chosenImg) {
+    const jpegVariants = Array.isArray(chosenImg.variants?.jpeg) ? chosenImg.variants.jpeg : [];
+    const bestJpeg = jpegVariants.length > 0 ? jpegVariants[jpegVariants.length - 1] : null;
+    rawImageUrl = bestJpeg?.url || chosenImg.image_url;
+    imageWidth = bestJpeg?.width || chosenImg.width || 1200;
+    imageHeight = bestJpeg?.height || chosenImg.height || 800;
+  } else if (extra.share_image) {
+    rawImageUrl = extra.share_image;
+  } else if (invitation.template?.thumbnail_url) {
+    rawImageUrl = invitation.template.thumbnail_url;
+  } else {
+    const code = invitation.template?.template_code;
+    if (code === 'theme_blue_botanical_masterpiece') {
+      rawImageUrl = '/templates/theme_blue_botanical_masterpiece/assets/images/couple/52ed9a3f-608e-403c-98a9-9cf73747e2a8.jpg';
+    } else {
+      rawImageUrl = '/templates/theme_hydrangea_editorial/assets/images/52ed9a3f-608e-403c-98a9-9cf73747e2a8.jpg';
+    }
+  }
+
+  const cleanPath = (rawImageUrl || '').split('?')[0].toLowerCase();
+  let imageType = 'image/jpeg';
+  if (cleanPath.endsWith('.png')) imageType = 'image/png';
+  else if (cleanPath.endsWith('.webp')) imageType = 'image/webp';
+  else if (cleanPath.endsWith('.gif')) imageType = 'image/gif';
+
   const origin = originCua(req);
   const canonicalUrl = `${origin}${req.url || `/${slug}`}`;
 
   return {
-    title: chuoiGon(title, publicTitle),
-    description: chuoiGon(description),
-    image: linkTuyetDoi(cover?.image_url, origin),
+    title: chuoiGon(title, defaultPublicTitle),
+    description: chuoiGon(description, defaultPublicDescription),
+    image: linkTuyetDoi(rawImageUrl, origin),
+    imageType,
+    imageWidth,
+    imageHeight,
     canonicalUrl,
   };
 };
@@ -155,22 +246,51 @@ const chenMetaChiaSe = (html, meta) => {
   const description = boKyTuNguyHiem(meta.description);
   const canonicalUrl = boKyTuNguyHiem(meta.canonicalUrl);
   const image = boKyTuNguyHiem(meta.image);
+  const imageType = boKyTuNguyHiem(meta.imageType || 'image/jpeg');
+  const imageWidth = boKyTuNguyHiem(meta.imageWidth || '1200');
+  const imageHeight = boKyTuNguyHiem(meta.imageHeight || '800');
+  const siteName = 'Thiệp Cưới Online';
+
   const tags = [
     `<title>${title}</title>`,
     `<meta name="description" content="${description}" />`,
     `<link rel="canonical" href="${canonicalUrl}" />`,
+
+    // Open Graph / Facebook / Zalo
     '<meta property="og:type" content="website" />',
+    `<meta property="og:site_name" content="${siteName}" />`,
+    `<meta property="og:url" content="${canonicalUrl}" />`,
     `<meta property="og:title" content="${title}" />`,
     `<meta property="og:description" content="${description}" />`,
-    `<meta property="og:url" content="${canonicalUrl}" />`,
-    ...(image ? [`<meta property="og:image" content="${image}" />`] : []),
+    ...(image ? [
+      `<meta property="og:image" content="${image}" />`,
+      `<meta property="og:image:secure_url" content="${image}" />`,
+      `<meta property="og:image:type" content="${imageType}" />`,
+      `<meta property="og:image:width" content="${imageWidth}" />`,
+      `<meta property="og:image:height" content="${imageHeight}" />`,
+      `<meta property="og:image:alt" content="${title}" />`,
+    ] : []),
+
+    // Twitter Card / Messenger / Telegram (summary_large_image kích hoạt ảnh preview to)
     '<meta name="twitter:card" content="summary_large_image" />',
+    `<meta name="twitter:url" content="${canonicalUrl}" />`,
     `<meta name="twitter:title" content="${title}" />`,
     `<meta name="twitter:description" content="${description}" />`,
-    ...(image ? [`<meta name="twitter:image" content="${image}" />`] : []),
+    ...(image ? [
+      `<meta name="twitter:image" content="${image}" />`,
+      `<meta name="twitter:image:alt" content="${title}" />`,
+    ] : []),
+
+    // Zalo hints
+    `<meta property="zalo:title" content="${title}" />`,
+    `<meta property="zalo:description" content="${description}" />`,
+    ...(image ? [`<meta property="zalo:image" content="${image}" />`] : []),
   ].join('\n    ');
+
   const withoutTitle = html.replace(/<title>[\s\S]*?<\/title>/i, '');
-  return withoutTitle.replace(/<\/head>/i, `    ${tags}\n  </head>`);
+  const cleanHead = withoutTitle.replace(/<meta\s+(?:property|name)=["'](?:og:|twitter:|zalo:)[^>]*>/gi, '');
+  const withPrefix = cleanHead.replace(/<head>/i, '<head prefix="og: https://ogp.me/ns#">');
+  return withPrefix.replace(/<\/head>/i, `    ${tags}\n  </head>`);
 };
 
 const guiTrangThiep = (req, res, index, slug) => {

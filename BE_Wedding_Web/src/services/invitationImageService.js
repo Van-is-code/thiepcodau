@@ -140,7 +140,7 @@ const create = async (payload, actor, file) => {
       image_alt: String(payload.image_alt || '').slice(0, 255) || 'Ảnh thiệp cưới',
       image_type: imageType,
       sort_order: Number.parseInt(payload.sort_order, 10) || 0,
-      is_cover: String(payload.is_cover) === 'true' || payload.is_cover === true,
+      is_cover: payload.is_cover !== undefined ? (String(payload.is_cover) === 'true' || payload.is_cover === true) : imageType === 'cover',
       storage_driver: stored.storage_driver,
       storage_key: stored.key,
       width: stored.width,
@@ -261,7 +261,7 @@ const attachFromStorage = async (payload, actor) => {
       image_alt: String(payload.image_alt || '').slice(0, 255) || 'Ảnh thiệp cưới',
       image_type: IMAGE_TYPES.has(payload.image_type) ? payload.image_type : 'gallery',
       sort_order: Number.parseInt(payload.sort_order, 10) || 0,
-      is_cover: String(payload.is_cover) === 'true' || payload.is_cover === true,
+      is_cover: payload.is_cover !== undefined ? (String(payload.is_cover) === 'true' || payload.is_cover === true) : payload.image_type === 'cover',
       created_at: new Date(),
       ...chung,
     });
