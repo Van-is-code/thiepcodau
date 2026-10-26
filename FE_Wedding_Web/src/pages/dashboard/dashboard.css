@@ -3297,6 +3297,66 @@
   }
   .mobile-guest-card { min-height: 118px; }
   .mobile-checkin-card { min-height: 86px; }
+
+  /* Template library: each item is a compact horizontal chooser, not a
+     poster-sized card. The preview keeps its 9:16 proportion as a thumbnail. */
+  .templates-page .ph-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
+    gap: 10px;
+  }
+  .templates-page .ph-row > div:last-child:not(:first-child) { width: auto; }
+  .templates-page .ph-d { display: none; }
+  .templates-page .quota-badge { min-height: 32px; padding: 5px 9px; font-size: 10.5px; }
+
+  .templates-page .tpl-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .templates-page .tpl-card {
+    display: grid;
+    grid-template-columns: 102px minmax(0, 1fr);
+    min-height: 158px;
+    border-radius: 17px;
+  }
+  .templates-page .tpl-prev {
+    height: 158px;
+    min-height: 158px;
+    padding: 9px;
+  }
+  .templates-page .tp-inner { padding: 7px; }
+  .templates-page .tp-ew { font-size: 6px; letter-spacing: 0.09em; }
+  .templates-page .tp-names { font-size: 12px; line-height: 1.23; }
+  .templates-page .tp-amp { margin: 2px 0; font-size: 13px; }
+  .templates-page .tp-div { width: 24px; margin: 7px auto; }
+  .templates-page .tp-date { font-size: 6px; letter-spacing: 0.1em; }
+  .templates-page .tpl-info { min-width: 0; padding: 13px 12px; }
+  .templates-page .tpl-name {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    font-size: 13px;
+    line-height: 1.35;
+  }
+  .templates-page .tpl-style {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    margin: 4px 0 10px;
+    font-size: 10.5px;
+    line-height: 1.4;
+  }
+  .templates-page .tpl-acts { flex-direction: row; gap: 6px; }
+  .templates-page .tpl-acts .btn-sm { min-height: 38px; padding: 6px 10px; }
+  .templates-page .tpl-acts .btn-sm.ghost {
+    width: 38px;
+    min-width: 38px;
+    padding: 0;
+  }
+  .templates-page .tpl-acts .btn-sm.ghost span { display: none; }
 }
 
 @media (max-width: 420px) {

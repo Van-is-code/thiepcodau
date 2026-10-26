@@ -69,7 +69,7 @@ export default function TemplatesPage() {
   }
 
   return (
-    <div className="pg">
+    <div className="pg templates-page">
       <div className="ph-row">
         <div>
           <p className="ph-ew">
