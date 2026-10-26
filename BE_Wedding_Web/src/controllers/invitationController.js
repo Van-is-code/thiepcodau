@@ -41,6 +41,7 @@ const getOgImage = async (req, res) => {
 		res.setHeader('Access-Control-Allow-Origin', '*');
 		res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
 		res.setHeader('Content-Type', 'image/jpeg');
+		res.setHeader('Content-Length', buffer.length);
 		res.setHeader('Cache-Control', 'public, max-age=86400');
 		return res.end(buffer);
 	} catch (error) {

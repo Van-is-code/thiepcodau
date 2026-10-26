@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { api } from '../../api'
-import { invitationName, invitationPublicUrl, toArray } from './helpers'
+import { invitationName, invitationPublicUrl, invitationShareUrl, toArray } from './helpers'
 import {
   DEFAULT_PRIVATE_SHARE_DESCRIPTION,
   DEFAULT_PRIVATE_SHARE_TITLE,
@@ -88,6 +88,7 @@ export default function InvitePage() {
   }, [currentInvitation])
 
   const publicUrl = currentInvitation ? invitationPublicUrl(currentInvitation) : ''
+  const publicShareUrl = currentInvitation ? invitationShareUrl(currentInvitation) : ''
   const displayName = currentInvitation ? invitationName(currentInvitation) : ''
 
   useEffect(() => {
@@ -310,16 +311,16 @@ export default function InvitePage() {
               <button
                 type="button"
                 className="mobile-primary-action"
-                onClick={() => openShare(publicUrl, '', publicShareTitleDraft)}
-                disabled={!publicUrl}
+                onClick={() => openShare(publicShareUrl, '', publicShareTitleDraft)}
+                disabled={!publicShareUrl}
               >
                 <IconSend size={18} /> Mời nhanh
               </button>
               <button
                 type="button"
                 className={`mobile-secondary-action${copiedKey === 'public' ? ' ok' : ''}`}
-                onClick={() => handleCopy(publicUrl, 'public')}
-                disabled={!publicUrl}
+                onClick={() => handleCopy(publicShareUrl, 'public')}
+                disabled={!publicShareUrl}
               >
                 {copiedKey === 'public' ? <IconCheck size={18} /> : <IconCopy size={18} />}
                 {copiedKey === 'public' ? 'Đã sao chép' : 'Sao chép'}
@@ -494,8 +495,8 @@ export default function InvitePage() {
               <button
                 type="button"
                 className="btn-quick-invite"
-                onClick={() => openShare(publicUrl, '', publicShareTitleDraft)}
-                disabled={!publicUrl}
+                onClick={() => openShare(publicShareUrl, '', publicShareTitleDraft)}
+                disabled={!publicShareUrl}
               >
                 <IconSend size={15} />
                 <span>Mời Nhanh</span>
@@ -504,8 +505,8 @@ export default function InvitePage() {
                 type="button"
                 className="btn-sm ghost"
                 style={{ padding: '8px 14px' }}
-                onClick={() => handleCopy(publicUrl, 'public')}
-                disabled={!publicUrl}
+                onClick={() => handleCopy(publicShareUrl, 'public')}
+                disabled={!publicShareUrl}
               >
                 {copiedKey === 'public' ? <><IconCheck size={14} color="#4f7e65" /><span style={{ color: '#4f7e65' }}>Đã copy</span></> : <><IconCopy size={14} /><span>Copy Link</span></>}
               </button>

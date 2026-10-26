@@ -46,6 +46,10 @@ const boKyTuNguyHiem = (value) => String(value || '')
 
 const chuoiGon = (value, fallback = '') => String(value || '').trim().replace(/\s+/g, ' ').slice(0, 200) || fallback;
 
+// Cache tạm thời dữ liệu thiệp để crawler gọi dồn dập không bị nghẽn DB và không bao giờ bị timeout
+const invMetaCache = new Map(); // slug -> { data, expiresAt }
+const META_CACHE_TTL_MS = 25 * 1000; // 25 giây
+
 const duLieuApi = (apiPath) => new Promise((resolve) => {
   const request = http.request({
     host: BE.host,
@@ -58,7 +62,7 @@ const duLieuApi = (apiPath) => new Promise((resolve) => {
     let tooLarge = false;
     response.setEncoding('utf8');
     response.on('data', (chunk) => {
-      if (body.length + chunk.length > 1024 * 1024) {
+      if (body.length + chunk.length > 2 * 1024 * 1024) {
         tooLarge = true;
         response.destroy();
         return;
@@ -76,9 +80,28 @@ const duLieuApi = (apiPath) => new Promise((resolve) => {
     });
   });
   request.on('error', () => resolve(null));
-  request.setTimeout(2500, () => request.destroy());
+  request.setTimeout(6000, () => {
+    try { request.destroy(); } catch (_) {}
+    resolve(null);
+  });
   request.end();
 });
+
+const layDuLieuThiep = async (slug) => {
+  const now = Date.now();
+  const cached = invMetaCache.get(slug);
+  if (cached && cached.expiresAt > now && cached.data) {
+    return cached.data;
+  }
+  const data = await duLieuApi(`/api/invitations/slug/${encodeURIComponent(slug)}`);
+  if (data) {
+    invMetaCache.set(slug, { data, expiresAt: now + META_CACHE_TTL_MS });
+  } else if (cached?.data) {
+    // Nếu backend bận đột xuất nhưng trong cache có bản ghi trước đó, dùng luôn bản cũ
+    return cached.data;
+  }
+  return data;
+};
 
 const originCua = (req) => {
   const host = String(req.headers['x-forwarded-host'] || req.headers.host || '').split(',')[0].trim();
@@ -125,7 +148,7 @@ const metaChiaSe = async (req, slug) => {
   const query = new URLSearchParams((req.url || '').split('?')[1] || '');
   const guestToken = String(query.get('g') || '').trim().slice(0, 180);
   const [invitation, guest] = await Promise.all([
-    duLieuApi(`/api/invitations/slug/${encodeURIComponent(slug)}`),
+    layDuLieuThiep(slug),
     guestToken ? duLieuApi(`/api/guests/public?token=${encodeURIComponent(guestToken)}`) : Promise.resolve(null),
   ]);
   if (!invitation) return null;
@@ -241,9 +264,13 @@ const metaChiaSe = async (req, slug) => {
   }
 
   // Dùng endpoint chuyên dụng /api/invitations/slug/:slug/og-image.jpg
-  // Tự động smart-crop cô dâu chú rể, JPEG chuẩn, không bao giờ dính CSP sandbox hay SAMEORIGIN
-  const imageVersion = chosenImg?.id ? String(chosenImg.id).slice(0, 8) : '1';
-  const ogImageUrl = `${origin}/api/invitations/slug/${encodeURIComponent(slug)}/og-image.jpg?v=${imageVersion}`;
+  // Tính fingerprint duy nhất từ mã băm nội dung của file ảnh, thời điểm cập nhật và ID
+  const urlMatch = String(chosenImg?.image_url || '').match(/\/([^/?#]+)\.[a-z0-9]+$/i);
+  const contentHash = urlMatch ? urlMatch[1].slice(0, 16) : '';
+  const imgTime = chosenImg?.updated_at ? new Date(chosenImg.updated_at).getTime().toString(36) : '';
+  const invTime = invitation.updated_at ? new Date(invitation.updated_at).getTime().toString(36) : '';
+  const imageVersion = `${contentHash || chosenImg?.id?.slice(0, 8) || 'v'}_${imgTime || invTime || '1'}`;
+  const ogImageUrl = `${origin}/api/invitations/slug/${encodeURIComponent(slug)}/og-image.jpg?v=${encodeURIComponent(imageVersion)}`;
 
   return {
     title: chuoiGon(title, defaultPublicTitle),
@@ -320,8 +347,21 @@ const chenMetaChiaSe = (html, meta) => {
 };
 
 const guiTrangThiep = (req, res, index, slug) => {
+  const origin = originCua(req);
+  const canonicalUrl = `${origin}${req.url || `/${slug}`}`;
+  const fallbackMeta = {
+    title: 'Thiệp Cưới Online',
+    description: 'Trân trọng kính mời quý khách đến chung vui cùng gia đình chúng tôi. Xin chân thành cảm ơn!',
+    canonicalUrl,
+    siteName: 'Thiệp Cưới Online',
+    image: `${origin}/api/invitations/slug/${encodeURIComponent(slug)}/og-image.jpg?v=fb`,
+    imageType: 'image/jpeg',
+    imageWidth: 1000,
+    imageHeight: 1000,
+  };
+
   const guiHtml = (html, meta) => {
-    const output = meta ? chenMetaChiaSe(html, meta) : html;
+    const output = chenMetaChiaSe(html, meta || fallbackMeta);
     res.writeHead(200, {
       'Content-Type': 'text/html; charset=utf-8',
       'Content-Length': Buffer.byteLength(output),
@@ -340,8 +380,8 @@ const guiTrangThiep = (req, res, index, slug) => {
       return;
     }
     metaChiaSe(req, slug)
-      .then((meta) => guiHtml(html, meta))
-      .catch(() => guiHtml(html, null));
+      .then((meta) => guiHtml(html, meta || fallbackMeta))
+      .catch(() => guiHtml(html, fallbackMeta));
   });
 };
 

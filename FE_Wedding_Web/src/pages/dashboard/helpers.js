@@ -34,6 +34,13 @@ export const invitationPublicUrl = (inv) => {
   return `${window.location.origin}/${slug}`
 }
 
+export const invitationShareUrl = (inv) => {
+  const slug = invitationSlug(inv)
+  if (!slug) return ""
+  const time = inv?.updated_at ? new Date(inv.updated_at).getTime().toString(36) : ''
+  return time ? `${window.location.origin}/${slug}?v=${time}` : `${window.location.origin}/${slug}`
+}
+
 export const normalizeCheckinStatus = (item) => {
   const raw = String(item?.attending_status || item?.confirm_attendance || item?.attend || item?.status || "").toLowerCase().trim()
   if (!raw) return "maybe"

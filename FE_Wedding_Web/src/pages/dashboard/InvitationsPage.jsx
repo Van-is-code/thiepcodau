@@ -100,9 +100,10 @@ export default function InvitationsPage() {
 
   const quota = useMemo(() => ({ remain: slot, warn: slot !== null && slot <= 1 }), [slot])
 
-  const handleCopyLink = (slug) => {
+  const handleCopyLink = (slug, inv) => {
     if (!slug) return
-    const url = `${window.location.origin}/${slug}`
+    const time = inv?.updated_at ? new Date(inv.updated_at).getTime().toString(36) : ''
+    const url = time ? `${window.location.origin}/${slug}?v=${time}` : `${window.location.origin}/${slug}`
     navigator.clipboard.writeText(url)
     setCopiedSlug(slug)
     setTimeout(() => setCopiedSlug(''), 2000)
@@ -311,7 +312,7 @@ export default function InvitationsPage() {
                               type="button"
                               className="btn-copy"
                               style={{ marginLeft: 'auto', flexShrink: 0, whiteSpace: 'nowrap' }}
-                              onClick={() => handleCopyLink(slug)}
+                              onClick={() => handleCopyLink(slug, inv)}
                             >
                               {copiedSlug === slug ? (
                                 <>

@@ -1171,7 +1171,12 @@ const getOgImageBuffer = async (slug) => {
 		|| validUserImages[0]
 		|| null;
 
-	const version = chosenImg?.id ? String(chosenImg.id).slice(0, 8) : 'default';
+	// Fingerprint dựa trên mã băm nội dung của file ảnh, thời điểm cập nhật và ID thiệp
+	const urlMatch = String(chosenImg?.image_url || '').match(/\/([^/?#]+)\.[a-z0-9]+$/i);
+	const contentHash = urlMatch ? urlMatch[1].slice(0, 16) : '';
+	const imgTime = chosenImg?.updated_at ? new Date(chosenImg.updated_at).getTime().toString(36) : '';
+	const invTime = item.updated_at ? new Date(item.updated_at).getTime().toString(36) : '';
+	const version = `${contentHash || chosenImg?.id?.slice(0, 8) || 'v'}_${imgTime || invTime || '1'}`;
 	const cacheKey = `${slug}:${version}`;
 	const now = Date.now();
 	const cached = ogImageCache.get(cacheKey);
@@ -1199,23 +1204,17 @@ const getOgImageBuffer = async (slug) => {
 			sourceBuffer = await downloadUrlBuffer(rawImageUrl);
 		} else {
 			let clean = rawImageUrl.replace(/^\/+/, '');
-			if (clean.startsWith('uploads/')) {
+			// Thử đọc trực tiếp từ thư mục local trước (nhanh nhất và không phụ thuộc network)
+			const directPath = path.join(process.cwd(), clean);
+			if (fs.existsSync(directPath)) {
+				sourceBuffer = await fsp.readFile(directPath);
+			} else if (clean.startsWith('uploads/')) {
 				const key = clean.slice('uploads/'.length);
 				sourceBuffer = await storageService.getObject(key);
 			} else if (clean.startsWith('templates/')) {
 				const tPath = path.join(process.cwd(), 'uploads', clean);
 				if (fs.existsSync(tPath)) {
 					sourceBuffer = await fsp.readFile(tPath);
-				} else {
-					const directPath = path.join(process.cwd(), clean);
-					if (fs.existsSync(directPath)) {
-						sourceBuffer = await fsp.readFile(directPath);
-					}
-				}
-			} else {
-				const p = path.join(process.cwd(), clean);
-				if (fs.existsSync(p)) {
-					sourceBuffer = await fsp.readFile(p);
 				}
 			}
 		}
@@ -1232,34 +1231,47 @@ const getOgImageBuffer = async (slug) => {
 	if (!sourceBuffer) return null;
 
 	// 3. Xử lý ảnh bằng sharp chuẩn Facebook/Messenger/Zalo
-	const metadata = await sharp(sourceBuffer).metadata();
-	const width = metadata.width || 1000;
-	const height = metadata.height || 1000;
+	let resultBuffer = null;
+	try {
+		const metadata = await sharp(sourceBuffer).metadata();
+		const width = metadata.width || 1000;
+		const height = metadata.height || 1000;
 
-	let targetW = 1000;
-	let targetH = 1000;
-	let positionOption = 'top';
+		let targetW = 1000;
+		let targetH = 1000;
+		let positionOption = 'top';
 
-	if (width >= height * 1.15) {
-		targetW = 1200;
-		targetH = 630;
-		positionOption = 'center';
-	} else {
-		targetW = 1000;
-		targetH = 1000;
-		positionOption = sharp.strategy?.attention || 'top';
+		if (width >= height * 1.15) {
+			targetW = 1200;
+			targetH = 630;
+			positionOption = 'center';
+		} else {
+			targetW = 1000;
+			targetH = 1000;
+			positionOption = sharp.strategy?.attention || 'top';
+		}
+
+		resultBuffer = await sharp(sourceBuffer)
+			.resize(targetW, targetH, {
+				fit: 'cover',
+				position: positionOption,
+			})
+			.jpeg({
+				quality: 90,
+				progressive: true,
+			})
+			.toBuffer();
+	} catch (_) {
+		// Fallback an toàn nếu attention strategy lỗi
+		try {
+			resultBuffer = await sharp(sourceBuffer)
+				.resize(1000, 1000, { fit: 'cover', position: 'top' })
+				.jpeg({ quality: 85, progressive: true })
+				.toBuffer();
+		} catch (__e) {
+			resultBuffer = sourceBuffer;
+		}
 	}
-
-	const resultBuffer = await sharp(sourceBuffer)
-		.resize(targetW, targetH, {
-			fit: 'cover',
-			position: positionOption,
-		})
-		.jpeg({
-			quality: 90,
-			progressive: true,
-		})
-		.toBuffer();
 
 	ogImageCache.set(cacheKey, {
 		buffer: resultBuffer,
