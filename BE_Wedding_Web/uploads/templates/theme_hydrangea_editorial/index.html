@@ -406,19 +406,19 @@
       <img src="assets/images/intro-env-sprig-tr.png" alt="" class="botanical-sway">
     </div>
 
-                <!-- Envelope Container with visible top flap peak ("chóp thư") -->
+                <!-- Open stationery envelope: back flap, letter card and front pocket -->
     <div class="countdown-envelope-container">
-      <!-- Open Top Flap ("Chóp thư" nhô lên ở giữa) -->
+      <!-- Back flap stays behind the card so the construction reads as one envelope -->
       <div class="countdown-top-flap" aria-hidden="true">
-        <svg class="countdown-top-flap-svg" viewBox="0 0 334 48" preserveAspectRatio="none">
+        <svg class="countdown-top-flap-svg" viewBox="0 0 340 92" preserveAspectRatio="none">
           <defs>
-            <clipPath id="chopThuClip">
-              <polygon points="0,48 167,0 334,48"/>
-            </clipPath>
+            <linearGradient id="countdownFlapPaper" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#FBF8F1"/>
+              <stop offset="100%" stop-color="#E9DECD"/>
+            </linearGradient>
           </defs>
-          <polygon points="0,48 167,0 334,48" fill="#E8DEC4" stroke="rgba(126, 107, 148, 0.22)" stroke-width="1"/>
-          <image href="assets/images/intro-envelope-lining.png" x="0" y="0" width="334" height="48" preserveAspectRatio="xMidYMid slice" clip-path="url(#chopThuClip)" opacity="0.85"/>
-          <polyline points="2,47 167,2 332,47" fill="none" stroke="rgba(255,255,255,0.45)" stroke-width="1.2" clip-path="url(#chopThuClip)"/>
+          <path d="M1,91 L170,2 L339,91 Z" fill="url(#countdownFlapPaper)" stroke="rgba(104, 85, 122, 0.28)" stroke-width="1"/>
+          <path d="M8,89 L170,9 L332,89" fill="none" stroke="rgba(255,255,255,0.8)" stroke-width="1"/>
         </svg>
       </div>
 
@@ -491,18 +491,17 @@
 
         <!-- Front Envelope Pocket Overlay -->
         <div class="countdown-front-pocket" aria-hidden="true">
-          <svg class="countdown-pocket-svg" viewBox="0 0 334 155" preserveAspectRatio="none">
+          <svg class="countdown-pocket-svg" viewBox="0 0 340 168" preserveAspectRatio="none">
             <defs>
-              <linearGradient id="pocketGradChopThu" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stop-color="#EAE2D3"/>
-                <stop offset="100%" stop-color="#DFD4C4"/>
+              <linearGradient id="countdownPocketPaper" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#F4EDE2"/>
+                <stop offset="100%" stop-color="#E3D7C8"/>
               </linearGradient>
             </defs>
-            <!-- Deep V pocket shape -->
-            <path d="M0,20 L167,88 L334,20 L334,155 L0,155 Z" fill="url(#pocketGradChopThu)" stroke="rgba(126, 107, 148, 0.2)" stroke-width="1"/>
-            <!-- Diagonal stitched fold lines meeting at V center -->
-            <line x1="0" y1="155" x2="167" y2="88" stroke="rgba(126, 107, 148, 0.35)" stroke-width="1.1" stroke-dasharray="3 3"/>
-            <line x1="334" y1="155" x2="167" y2="88" stroke="rgba(126, 107, 148, 0.35)" stroke-width="1.1" stroke-dasharray="3 3"/>
+            <!-- Continuous V-pocket: the top fold and both bottom folds meet precisely -->
+            <path d="M0.5,1 L170,87 L339.5,1 L339.5,167.5 L0.5,167.5 Z" fill="url(#countdownPocketPaper)" stroke="rgba(104, 85, 122, 0.28)" stroke-width="1"/>
+            <path d="M1,1 L170,87 L339,1" fill="none" stroke="rgba(255,255,255,0.72)" stroke-width="1.25"/>
+            <path d="M1,167 L170,87 L339,167" fill="none" stroke="rgba(126, 107, 148, 0.3)" stroke-width="1"/>
           </svg>
 
           <!-- Centered Cream/Champagne Wax Seal Stamp -->
