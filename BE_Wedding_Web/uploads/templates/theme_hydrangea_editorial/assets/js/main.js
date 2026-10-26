@@ -222,6 +222,47 @@
     var d = data || window.invitationData || {};
     var extra = d.extra_data || {};
 
+    // One editable accent controls the former lavender/mauve ink and its soft paper shadows.
+    // Strict HEX validation keeps the value safe before it is written into a stylesheet.
+    var accentColor = String(extra.accent_color || d.accent_color || '').trim();
+    accentColor = /^#[0-9a-fA-F]{6}$/.test(accentColor) ? accentColor : '';
+    var accentStyleEl = document.getElementById('theme-custom-accent-color-style');
+    if (accentColor) {
+      var accentRgb = {
+        r: parseInt(accentColor.slice(1, 3), 16),
+        g: parseInt(accentColor.slice(3, 5), 16),
+        b: parseInt(accentColor.slice(5, 7), 16)
+      };
+      var mixColor = function (target, amount) {
+        var tr = parseInt(target.slice(1, 3), 16);
+        var tg = parseInt(target.slice(3, 5), 16);
+        var tb = parseInt(target.slice(5, 7), 16);
+        var toHex = function (value) { return Math.round(value).toString(16).padStart(2, '0'); };
+        return '#' + toHex(accentRgb.r + (tr - accentRgb.r) * amount) + toHex(accentRgb.g + (tg - accentRgb.g) * amount) + toHex(accentRgb.b + (tb - accentRgb.b) * amount);
+      };
+      if (!accentStyleEl) {
+        accentStyleEl = document.createElement('style');
+        accentStyleEl.id = 'theme-custom-accent-color-style';
+        document.head.appendChild(accentStyleEl);
+      }
+      accentStyleEl.textContent =
+        ':root { ' +
+        '--hydrangea-subtle:' + mixColor('#FFFFFF', 0.92) + ' !important; ' +
+        '--hydrangea-tint:' + mixColor('#FFFFFF', 0.82) + ' !important; ' +
+        '--hydrangea-pale:' + mixColor('#FFFFFF', 0.68) + ' !important; ' +
+        '--hydrangea-mid:' + accentColor + ' !important; ' +
+        '--hydrangea-deep:' + mixColor('#241D21', 0.36) + ' !important; ' +
+        '--hydrangea-dark:' + mixColor('#241D21', 0.56) + ' !important; ' +
+        '--sage-accent:' + accentColor + ' !important; ' +
+        '--hairline-rule:rgba(' + accentRgb.r + ',' + accentRgb.g + ',' + accentRgb.b + ',0.22) !important; ' +
+        '--envelope-shadow:rgba(' + accentRgb.r + ',' + accentRgb.g + ',' + accentRgb.b + ',0.14) !important; ' +
+        '--envelope-edge-shadow:rgba(' + accentRgb.r + ',' + accentRgb.g + ',' + accentRgb.b + ',0.07) !important; ' +
+        '--letter-shadow:rgba(' + accentRgb.r + ',' + accentRgb.g + ',' + accentRgb.b + ',0.13) !important; ' +
+        '}';
+    } else if (accentStyleEl) {
+      accentStyleEl.remove();
+    }
+
     var showRsvp = (extra.show_rsvp !== undefined) ? Boolean(extra.show_rsvp) : (d.show_rsvp !== undefined ? Boolean(d.show_rsvp) : true);
     var allowWishes = (extra.allow_wishes !== undefined) ? Boolean(extra.allow_wishes) : (d.allow_wishes !== undefined ? Boolean(d.allow_wishes) : true);
     var showWishesList = (extra.show_wishes_list !== undefined) ? Boolean(extra.show_wishes_list) : (d.show_wishes_list !== undefined ? Boolean(d.show_wishes_list) : true);

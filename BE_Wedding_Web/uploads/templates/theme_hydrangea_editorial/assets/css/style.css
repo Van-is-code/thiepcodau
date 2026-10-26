@@ -419,7 +419,7 @@ button {
   padding: 30px 14px 26px;
   position: relative;
   overflow: hidden;
-  background-color: var(--paper-ivory);
+  background-color: transparent;
 }
 
 .couple-botanical-corner {
@@ -1039,7 +1039,8 @@ button {
   padding: 24px 10px 30px;
   position: relative;
   overflow: hidden;
-  background-color: var(--paper-ivory);
+  /* Continue the stationery canvas; a solid section background created visible cut lines. */
+  background-color: transparent;
 }
 
 .countdown-botanical-flourish {
@@ -1089,7 +1090,7 @@ button {
   margin: 0 auto;
   position: relative;
   z-index: 2;
-  filter: drop-shadow(0 14px 24px rgba(75, 58, 66, 0.14));
+  filter: drop-shadow(0 14px 24px var(--envelope-shadow, rgba(75, 58, 66, 0.14)));
 }
 
 .countdown-envelope-sprigs {
@@ -1128,7 +1129,7 @@ button {
   width: 100%;
   height: 100%;
   z-index: 1;
-  filter: drop-shadow(0 2px 3px rgba(84, 63, 72, 0.07));
+  filter: drop-shadow(0 2px 3px var(--envelope-edge-shadow, rgba(84, 63, 72, 0.07)));
 }
 
 .countdown-envelope-body {
@@ -1149,7 +1150,7 @@ button {
   transform: translateX(-50%);
   background: #fbfaf6 url('../images/khung-trang-tri-02.png') center / 100% 100% no-repeat;
   border-radius: 3px;
-  box-shadow: 0 5px 14px rgba(67, 49, 56, 0.13);
+  box-shadow: 0 5px 14px var(--letter-shadow, rgba(67, 49, 56, 0.13));
   text-align: center;
   box-sizing: border-box;
 }
@@ -2341,7 +2342,7 @@ button {
 .editorial-finale {
   position: relative;
   text-align: center;
-  padding-bottom: 14px;
+  padding-bottom: max(6px, env(safe-area-inset-bottom));
   overflow: hidden;
 }
 
@@ -2408,14 +2409,14 @@ button {
   color: var(--ink-muted);
   line-height: 1.7;
   max-width: 320px;
-  margin: 0 auto 28px;
+  margin: 0 auto 20px;
 }
 
 .finale-botanical-bottom {
   position: relative;
   width: 76%;
   max-width: 270px;
-  margin: 0 auto -10px;
+  margin: 0 auto -12px;
   pointer-events: none;
 }
 
@@ -2425,16 +2426,39 @@ button {
   opacity: 0.85;
 }
 
-/* A single compact maker line at the very bottom of the invitation. */
+/* Compact maker credit at the very bottom of the invitation. */
 .invitation-contact {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: fit-content;
+  max-width: calc(100% - 28px);
+  margin: 4px auto 0;
+  text-align: center;
+}
+
+.invitation-contact-maker {
+  font-family: var(--font-primary);
+  font-size: 8.5px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  color: var(--hydrangea-deep);
+  white-space: nowrap;
+}
+
+.invitation-contact-maker span {
+  color: var(--hydrangea-mid);
+  padding: 0 2px;
+}
+
+.invitation-contact-actions {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 7px;
-  width: fit-content;
-  max-width: calc(100% - 28px);
-  margin: 9px auto 0;
-  text-align: left;
+  white-space: nowrap;
 }
 
 .invitation-contact-label {
@@ -2444,18 +2468,6 @@ button {
   font-weight: 600;
   letter-spacing: 0.1em;
   color: var(--ink-faint);
-  white-space: nowrap;
-}
-
-.invitation-contact-brand {
-  flex: 0 0 auto;
-  padding-right: 6px;
-  border-right: 1px solid rgba(122, 104, 144, 0.23);
-  color: var(--hydrangea-deep);
-  font-family: var(--font-primary);
-  font-size: 8.5px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
   line-height: 1;
   white-space: nowrap;
 }
@@ -2517,15 +2529,18 @@ button {
     gap: 5px;
   }
 
+  .invitation-contact-maker {
+    font-size: 7.5px;
+    letter-spacing: 0.04em;
+  }
+
+  .invitation-contact-actions {
+    gap: 5px;
+  }
+
   .invitation-contact-label {
     font-size: 7px;
     letter-spacing: 0.06em;
-  }
-
-  .invitation-contact-brand {
-    padding-right: 4px;
-    font-size: 7.5px;
-    letter-spacing: 0.04em;
   }
 
   .invitation-contact a {

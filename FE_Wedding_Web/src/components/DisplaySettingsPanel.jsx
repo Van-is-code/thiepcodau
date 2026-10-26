@@ -23,6 +23,14 @@ const PRESET_COLORS = [
   { name: 'Xám tro nhẹ', hex: '#F4F3F1', border: '#dcdad6' },
 ]
 
+const PRESET_ACCENT_COLORS = [
+  { name: 'Xanh sage (gợi ý với ảnh trắng – xanh lá)', hex: '#71866E', border: '#b9c8b6' },
+  { name: 'Xanh olive dịu', hex: '#86956E', border: '#c7cfb8' },
+  { name: 'Lavender nguyên bản', hex: '#7A6890', border: '#c5bad1' },
+  { name: 'Hồng mauve nhạt', hex: '#A77D8C', border: '#d6bbc4' },
+  { name: 'Nâu rosewood', hex: '#8B665B', border: '#cdb6ad' },
+]
+
 export default function DisplaySettingsPanel({ invitation, onSaved, onClose }) {
   const extra = invitation?.extra_data || {}
 
@@ -52,6 +60,12 @@ export default function DisplaySettingsPanel({ invitation, onSaved, onClose }) {
     extra.background_color || invitation?.background_color || defaultBgColor
   )
 
+  // Màu nhấn là tông lavender/mauve đang áp dụng cho chữ, viền mảnh và bóng giấy.
+  const defaultAccentColor = '#7A6890'
+  const [accentColor, setAccentColor] = useState(
+    extra.accent_color || invitation?.accent_color || defaultAccentColor
+  )
+
   const [saving, setSaving] = useState(false)
   const [err, setErr] = useState('')
 
@@ -67,6 +81,7 @@ export default function DisplaySettingsPanel({ invitation, onSaved, onClose }) {
       show_wishes_list: Boolean(showWishesList),
       show_gift_box: Boolean(showGiftBox),
       background_color: String(bgColor || defaultBgColor).trim(),
+      accent_color: String(accentColor || defaultAccentColor).trim(),
     }
 
     try {
@@ -210,6 +225,87 @@ export default function DisplaySettingsPanel({ invitation, onSaved, onClose }) {
                         title={`${p.name} (${p.hex})`}
                       >
                         {isSelected && <IconCheck size={12} color={p.hex === '#FFFFFF' ? '#1f1917' : '#342644'} />}
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Section: Màu nhấn (Lavender/Mauve) */}
+          <div style={S.sectionCard}>
+            <div style={S.sectionTitleRow}>
+              <div style={{ ...S.sectionIconWrap, background: '#edf3e9' }}>
+                <IconPalette size={16} color="#71866E" />
+              </div>
+              <div style={{ flex: 1 }}>
+                <h4 style={S.sectionTitle}>Màu nhấn của thiệp</h4>
+                <p style={S.sectionDesc}>
+                  Tông lavender/mauve đang dùng cho chữ, viền mảnh và bóng mờ. Với ảnh trắng – xanh lá, nên chọn xanh sage dịu.
+                </p>
+              </div>
+            </div>
+
+            <div style={S.colorBox}>
+              <div style={S.colorPickerRow}>
+                <label style={S.colorSwatchLabel} title="Bấm để chọn màu nhấn">
+                  <div
+                    style={{
+                      ...S.colorSwatchPreview,
+                      backgroundColor: accentColor || defaultAccentColor,
+                    }}
+                  />
+                  <input
+                    type="color"
+                    value={accentColor.startsWith('#') && accentColor.length === 7 ? accentColor : defaultAccentColor}
+                    onChange={(e) => setAccentColor(e.target.value)}
+                    style={S.hiddenColorInput}
+                  />
+                </label>
+
+                <div style={{ flex: 1 }}>
+                  <label style={S.inputLabel}>Mã màu nhấn (HEX):</label>
+                  <div style={S.inputRow}>
+                    <input
+                      type="text"
+                      value={accentColor}
+                      placeholder="#71866E"
+                      onChange={(e) => setAccentColor(e.target.value)}
+                      style={S.colorTextInput}
+                    />
+                    <button
+                      type="button"
+                      style={S.btnResetColor}
+                      onClick={() => setAccentColor(defaultAccentColor)}
+                      title="Đặt lại lavender nguyên bản"
+                    >
+                      <IconRefreshCw size={13} />
+                      <span>Gốc</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div style={S.presetWrap}>
+                <span style={S.presetLabel}>Gợi ý phù hợp bộ ảnh trắng – xanh lá:</span>
+                <div style={S.presetGrid}>
+                  {PRESET_ACCENT_COLORS.map((p) => {
+                    const isSelected = (accentColor || '').toUpperCase() === p.hex.toUpperCase()
+                    return (
+                      <button
+                        key={p.hex}
+                        type="button"
+                        style={{
+                          ...S.presetBtn,
+                          backgroundColor: p.hex,
+                          borderColor: isSelected ? '#342644' : p.border,
+                          outline: isSelected ? '2px solid #342644' : 'none',
+                        }}
+                        onClick={() => setAccentColor(p.hex)}
+                        title={`${p.name} (${p.hex})`}
+                      >
+                        {isSelected && <IconCheck size={12} color="#ffffff" />}
                       </button>
                     )
                   })}

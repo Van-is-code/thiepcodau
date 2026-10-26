@@ -696,6 +696,10 @@ const setDisplaySettings = async (id, body, actor) => {
 	await ensureCustomerActivated(item.users_id, actor);
 
 	const curExtra = (typeof item.extra_data === 'object' && item.extra_data !== null) ? item.extra_data : {};
+	const normalizeAccentColor = (value) => {
+		const color = String(value || '').trim();
+		return /^#[0-9a-fA-F]{6}$/.test(color) ? color.toUpperCase() : '';
+	};
 	const nextExtra = {
 		...curExtra,
 		show_rsvp: body.show_rsvp !== undefined ? Boolean(body.show_rsvp) : (curExtra.show_rsvp ?? true),
@@ -703,6 +707,7 @@ const setDisplaySettings = async (id, body, actor) => {
 		show_wishes_list: body.show_wishes_list !== undefined ? Boolean(body.show_wishes_list) : (curExtra.show_wishes_list ?? true),
 		show_gift_box: body.show_gift_box !== undefined ? Boolean(body.show_gift_box) : (curExtra.show_gift_box ?? true),
 		background_color: body.background_color !== undefined ? String(body.background_color || '').trim() : (curExtra.background_color || ''),
+		accent_color: body.accent_color !== undefined ? normalizeAccentColor(body.accent_color) : normalizeAccentColor(curExtra.accent_color),
 		background_image: body.background_image !== undefined ? String(body.background_image || '').trim() : (curExtra.background_image || '')
 	};
 
