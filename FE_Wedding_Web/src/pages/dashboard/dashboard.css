@@ -3206,18 +3206,25 @@
   .mobile-advanced-settings { margin-top: 10px; }
   .mobile-advanced-settings summary { min-height: 44px; font-size: 12px; }
 
-  /* Page heads become a small toolbar on phones. The full labels remain on
-     desktop; the icons retain accessible labels for screen readers. */
+  /* Page heads become a stable two-column toolbar on phones. This deliberately
+     stays in normal layout flow so browser-specific absolute positioning can
+     never cover a title. */
   .guests-page .ph-row,
-  .checkins-page .ph-row { position: relative; display: block !important; padding-right: 48px; }
+  .checkins-page .ph-row {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) 40px;
+    align-items: start;
+    gap: 10px;
+    padding-right: 0;
+  }
   .guests-page .ph-d,
   .checkins-page .ph-d { display: none; }
   .guests-page .ph-row > .guests-header-actions,
   .checkins-page .ph-row > .checkins-header-actions {
-    position: absolute;
-    top: 2px;
-    right: 0;
-    width: auto;
+    position: static;
+    width: 40px !important;
+    min-width: 40px;
+    justify-self: end;
   }
   .guests-page .quota-badge { display: none; }
   .mobile-header-icon-action {
@@ -3233,13 +3240,38 @@
   .mobile-header-icon-action > span { display: none; }
   .mobile-header-icon-action svg { width: 18px; height: 18px; }
 
-  /* Four RSVP counters fit in one compact, glanceable row. */
+  /* One continuous RSVP summary strip reads faster than four separate boxes. */
   .checkins-page .ci-stats {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 5px;
+    display: flex;
+    gap: 0;
+    overflow: hidden;
+    padding: 5px;
+    border: 1px solid var(--border-subtle);
+    border-radius: 19px;
+    background: var(--bg-card);
+    box-shadow: 0 5px 16px rgba(50, 37, 29, 0.06);
     margin-bottom: 9px;
   }
-  .checkins-page .ci-sc { min-height: 66px; padding: 7px; border-radius: 12px; }
+  .checkins-page .ci-sc {
+    position: relative;
+    min-width: 0;
+    min-height: 62px;
+    flex: 1 1 0;
+    padding: 7px 8px;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+  .checkins-page .ci-sc + .ci-sc::before {
+    position: absolute;
+    top: 10px;
+    bottom: 10px;
+    left: 0;
+    width: 1px;
+    background: var(--border-subtle);
+    content: '';
+  }
   .checkins-page .ci-sc-h { gap: 3px; }
   .checkins-page .ci-sc-lbl { font-size: 0; letter-spacing: 0; }
   .checkins-page .ci-sc-lbl::after {
@@ -3280,7 +3312,7 @@
   .ci-sc { min-height: 73px; padding: 9px; }
   .ci-sc-v { margin-top: 6px; font-size: 20px; }
   .ci-sc-s { display: none; }
-  .checkins-page .ci-sc { min-height: 66px; padding: 7px; }
+  .checkins-page .ci-sc { min-height: 62px; padding: 7px 8px; }
   .mobile-invite-card h2 { font-size: 18px; }
   .mobile-invite-card-head p { display: -webkit-box; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 1; }
   .ci-fbody { grid-template-columns: 1fr; }
