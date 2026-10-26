@@ -2532,12 +2532,16 @@
 
   .mobile-guest-list,
   .mobile-checkin-list {
-    display: grid;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    align-content: flex-start;
     gap: 12px;
   }
 
   .mobile-guest-card,
   .mobile-checkin-card {
+    flex: 0 0 auto;
     overflow: hidden;
     border: 1px solid var(--border-subtle);
     border-radius: 20px;
@@ -3201,6 +3205,63 @@
   .mobile-created-invite { margin-top: 11px; padding: 11px; }
   .mobile-advanced-settings { margin-top: 10px; }
   .mobile-advanced-settings summary { min-height: 44px; font-size: 12px; }
+
+  /* Page heads become a small toolbar on phones. The full labels remain on
+     desktop; the icons retain accessible labels for screen readers. */
+  .guests-page .ph-row,
+  .checkins-page .ph-row { position: relative; display: block !important; padding-right: 48px; }
+  .guests-page .ph-d,
+  .checkins-page .ph-d { display: none; }
+  .guests-page .ph-row > .guests-header-actions,
+  .checkins-page .ph-row > .checkins-header-actions {
+    position: absolute;
+    top: 2px;
+    right: 0;
+    width: auto;
+  }
+  .guests-page .quota-badge { display: none; }
+  .mobile-header-icon-action {
+    width: 40px;
+    min-width: 40px;
+    height: 40px;
+    min-height: 40px !important;
+    padding: 0 !important;
+    border-radius: 13px !important;
+  }
+  .mobile-header-icon-action > span { display: none; }
+  .mobile-header-icon-action svg { width: 18px; height: 18px; }
+
+  /* Four RSVP counters fit in one compact, glanceable row. */
+  .checkins-page .ci-stats {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 5px;
+    margin-bottom: 9px;
+  }
+  .checkins-page .ci-sc { min-height: 66px; padding: 7px; border-radius: 12px; }
+  .checkins-page .ci-sc-h { gap: 3px; }
+  .checkins-page .ci-sc-lbl { font-size: 0; letter-spacing: 0; }
+  .checkins-page .ci-sc-lbl::after {
+    content: attr(data-mobile-label);
+    color: var(--text-subtle);
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+  .checkins-page .ci-sc-i { width: 20px; height: 20px; border-radius: 7px; }
+  .checkins-page .ci-sc-i svg { width: 11px; height: 11px; }
+  .checkins-page .ci-sc-v { margin-top: 6px; font-size: 20px; }
+  .checkins-page .ci-sc-s { display: none; }
+
+  /* A RSVP card is a preview. Tapping it opens the complete message. */
+  .mobile-checkin-message {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-height: 1.35;
+  }
+  .mobile-guest-card { min-height: 118px; }
+  .mobile-checkin-card { min-height: 86px; }
 }
 
 @media (max-width: 420px) {
@@ -3209,12 +3270,14 @@
   .mobile-bottom-item { font-size: 9.5px; }
   .tpl-grid { grid-template-columns: 1fr; }
   .ci-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .checkins-page .ci-stats { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .ph-d { -webkit-line-clamp: 1; font-size: 11.5px; }
   .ph-t { font-size: 24px; }
   .quota-badge { font-size: 10.5px; }
   .ci-sc { min-height: 73px; padding: 9px; }
   .ci-sc-v { margin-top: 6px; font-size: 20px; }
   .ci-sc-s { display: none; }
+  .checkins-page .ci-sc { min-height: 66px; padding: 7px; }
   .mobile-invite-card h2 { font-size: 18px; }
   .mobile-invite-card-head p { display: -webkit-box; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 1; }
   .ci-fbody { grid-template-columns: 1fr; }

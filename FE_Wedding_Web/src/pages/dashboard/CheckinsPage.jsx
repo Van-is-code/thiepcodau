@@ -165,7 +165,7 @@ export default function CheckinsPage() {
   }
 
   return (
-    <div className="pg">
+    <div className="pg checkins-page">
       <div className="ph-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 14 }}>
         <div>
           <p className="ph-ew">
@@ -180,13 +180,15 @@ export default function CheckinsPage() {
         <div className="checkins-header-actions" style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
           <button
             type="button"
-            className="btn-main"
+            className="btn-main mobile-header-icon-action"
             style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 16px', fontSize: 13.5 }}
             onClick={exportCSV}
             disabled={visible.length === 0}
+            aria-label="Xuất danh sách CSV"
+            title="Xuất danh sách CSV"
           >
             <IconDownload size={14} />
-            <span>Xuất Danh Sách CSV</span>
+            <span className="mobile-header-action-label">Xuất Danh Sách CSV</span>
           </button>
         </div>
       </div>
@@ -197,7 +199,7 @@ export default function CheckinsPage() {
       <div className="ci-stats">
         <div className="ci-sc total">
           <div className="ci-sc-h">
-            <span className="ci-sc-lbl">Tổng Phản Hồi</span>
+            <span className="ci-sc-lbl" data-mobile-label="Tổng">Tổng Phản Hồi</span>
             <span className="ci-sc-i"><IconUsers size={16} /></span>
           </div>
           <div className="ci-sc-v">{stats.total}</div>
@@ -206,7 +208,7 @@ export default function CheckinsPage() {
 
         <div className="ci-sc yes">
           <div className="ci-sc-h">
-            <span className="ci-sc-lbl">Sẽ Đến Tham Dự</span>
+            <span className="ci-sc-lbl" data-mobile-label="Đến">Sẽ Đến Tham Dự</span>
             <span className="ci-sc-i"><IconCheckCircle size={16} /></span>
           </div>
           <div className="ci-sc-v">{stats.yes}</div>
@@ -217,7 +219,7 @@ export default function CheckinsPage() {
 
         <div className="ci-sc no">
           <div className="ci-sc-h">
-            <span className="ci-sc-lbl">Không Thể Đến</span>
+            <span className="ci-sc-lbl" data-mobile-label="Bận">Không Thể Đến</span>
             <span className="ci-sc-i"><IconX size={16} /></span>
           </div>
           <div className="ci-sc-v">{stats.no}</div>
@@ -228,7 +230,7 @@ export default function CheckinsPage() {
 
         <div className="ci-sc maybe">
           <div className="ci-sc-h">
-            <span className="ci-sc-lbl">Chưa Xác Nhận Rõ</span>
+            <span className="ci-sc-lbl" data-mobile-label="Chờ">Chưa Xác Nhận Rõ</span>
             <span className="ci-sc-i"><IconHelpCircle size={16} /></span>
           </div>
           <div className="ci-sc-v">{stats.maybe}</div>

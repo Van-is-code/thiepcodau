@@ -226,7 +226,7 @@ export default function GuestsPage() {
   }
 
   return (
-    <div className="pg">
+    <div className="pg guests-page">
       <div className="ph-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 14 }}>
         <div>
           <p className="ph-ew">
@@ -243,9 +243,11 @@ export default function GuestsPage() {
           </div>
           <button
             type="button"
-            className="btn-main"
+            className="btn-main mobile-header-icon-action"
             style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 16px', fontSize: 13.5 }}
             onClick={() => setShowAddModal(true)}
+            aria-label="Thêm khách mời"
+            title="Thêm khách mời"
           >
             <IconPlus size={14} />
             <span>Thêm Khách Mới</span>
