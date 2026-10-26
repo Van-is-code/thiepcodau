@@ -1081,114 +1081,96 @@ button {
   display: block;
 }
 
-/* Open envelope: every fold shares the same centre line and side edges. */
+/* Keepsake envelope: photos and a note emerge naturally from a real paper pocket. */
 .countdown-envelope-container {
   width: min(100%, 340px);
+  height: 425px;
   margin: 0 auto;
   position: relative;
   z-index: 2;
-  filter: drop-shadow(0 14px 26px rgba(45, 35, 55, 0.14));
+  filter: drop-shadow(0 14px 24px rgba(75, 58, 66, 0.14));
 }
 
-/* Tall back flap: it is intentionally tucked behind the card. */
-.countdown-top-flap {
-  position: relative;
-  width: 100%;
-  height: 92px;
-  margin-bottom: -55px;
-  z-index: 1;
-}
-
-.countdown-top-flap-svg {
-  width: 100%;
-  height: 100%;
-  display: block;
-}
-
-/* The backing peeks evenly around the stationery card. */
 .countdown-envelope-body {
   position: relative;
   width: 100%;
-  background: linear-gradient(180deg, #F1E9DC 0%, #E2D5C5 100%);
-  border: 1px solid rgba(104, 85, 122, 0.25);
-  border-radius: 5px 5px 8px 8px;
-  padding: 0 10px;
+  height: 100%;
   box-sizing: border-box;
-  z-index: 2;
 }
 
-/* Inner Stationery Letter Card - Sticking OUT of the envelope pocket */
+/* A smaller paper note, not a tall card pretending to be an envelope. */
 .countdown-letter-card {
-  position: relative;
+  position: absolute;
+  top: 30px;
+  left: 50%;
   z-index: 3;
-  width: 100%;
-  background: #FFFFFF;
-  background-image: 
-    radial-gradient(circle at 50% 10%, #FFFFFF 0%, #FCFBF9 100%),
-    linear-gradient(to bottom, #FFFFFF 0%, #F9F6F0 100%);
-  border-radius: 4px 4px 2px 2px;
-  border: 1px solid rgba(104, 85, 122, 0.22);
-  box-shadow: 0 8px 18px rgba(45, 35, 55, 0.12);
+  width: 250px;
+  height: 300px;
+  transform: translateX(-50%);
+  background: #fbfaf6 url('../images/khung-trang-tri-02.png') center / 100% 100% no-repeat;
+  border-radius: 3px;
+  box-shadow: 0 5px 14px rgba(67, 49, 56, 0.13);
   text-align: center;
   box-sizing: border-box;
 }
 
 .countdown-letter-card-inner {
-  border: 1px solid rgba(126, 107, 148, 0.16);
-  border-radius: 2px;
-  padding: 15px 12px 128px;
+  padding: 22px 12px 100px;
   position: relative;
 }
 
-/* Pinned Mini Polaroid on Top-Left Corner */
+/* Memories overlap the note with intentionally imperfect angles. */
 .cd-pinned-polaroid {
   position: absolute;
-  top: -10px;
-  left: -10px;
-  z-index: 5;
-  transform: rotate(-5deg);
+  z-index: 6;
   transition: transform 0.3s ease;
 }
 
-.cd-pinned-polaroid:hover {
-  transform: rotate(-1deg) scale(1.05);
+.cd-pinned-polaroid--left {
+  top: -22px;
+  left: -58px;
+  transform: rotate(-8deg);
+}
+
+.cd-pinned-polaroid--right {
+  top: -52px;
+  right: -84px;
+  transform: rotate(9deg);
+}
+
+.cd-pinned-polaroid--left:hover {
+  transform: rotate(-4deg) translateY(-3px) scale(1.03);
+}
+
+.cd-pinned-polaroid--right:hover {
+  transform: rotate(5deg) translateY(-3px) scale(1.03);
 }
 
 .cd-mini-polaroid-frame {
   background: #FFFFFF;
-  padding: 3px 3px 12px 3px;
-  border-radius: 2px;
-  box-shadow: 0 3px 10px rgba(45, 35, 55, 0.15);
-  width: 56px;
-  height: 68px;
+  padding: 5px 5px 17px;
+  border-radius: 1px;
+  box-shadow: 0 5px 13px rgba(54, 37, 45, 0.2);
+  width: 96px;
+  height: 125px;
   box-sizing: border-box;
+  display: flex;
+}
+
+.cd-pinned-polaroid--right .cd-mini-polaroid-frame {
+  width: 126px;
+  height: 164px;
 }
 
 .cd-mini-photo {
   width: 100%;
-  height: 100%;
+  height: auto;
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
   object-fit: cover;
   display: block;
   border-radius: 1px;
-}
-
-.cd-polaroid-sprig {
-  position: absolute;
-  bottom: -2px;
-  right: -7px;
-  width: 22px;
-  pointer-events: none;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.15));
-}
-
-.cd-card-sprig-tr {
-  position: absolute;
-  top: -4px;
-  right: -4px;
-  width: 24px;
-  pointer-events: none;
-  opacity: 0.75;
-  transform: rotate(35deg);
 }
 
 /* Eyebrow: SAVE THE DATE */
@@ -1200,8 +1182,7 @@ button {
   text-transform: uppercase;
   color: var(--hydrangea-mid);
   display: block;
-  margin-top: 4px;
-  margin-bottom: 2px;
+  margin: 0 0 4px;
 }
 
 /* Vertically Stacked Calligraphy Couple Names */
@@ -1210,13 +1191,13 @@ button {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  margin: 1px 0 6px 0;
+  margin: 0 0 4px;
   line-height: 1.05;
 }
 
 .cd-stationery-couple .cd-couple-name {
   font-family: 'Alex Brush', cursive !important;
-  font-size: clamp(30px, 7.5vw, 36px);
+  font-size: clamp(27px, 7vw, 32px);
   color: var(--hydrangea-deep);
   font-weight: 400;
   text-transform: capitalize;
@@ -1229,7 +1210,7 @@ button {
   font-size: 16px;
   color: var(--hydrangea-mid);
   opacity: 0.85;
-  margin: -4px 0 -2px 0;
+  margin: -5px 0 -3px;
   line-height: 1;
 }
 
@@ -1242,7 +1223,7 @@ button {
   opacity: 0.55;
   font-size: 12px;
   line-height: 1;
-  margin: 0 auto 6px;
+  margin: 0 auto 4px;
 }
 
 .cd-stationery-divider {
@@ -1256,7 +1237,7 @@ button {
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--hydrangea-mid);
-  margin: 0 0 8px 0;
+  margin: 0 0 6px;
 }
 
 /* Pure Countdown Row */
@@ -1264,20 +1245,20 @@ button {
   display: flex;
   justify-content: center;
   align-items: baseline;
-  gap: 6px;
-  margin-bottom: 2px;
+  gap: 5px;
+  margin: 0;
 }
 
 .countdown-unit-box {
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-width: 40px;
+  min-width: 38px;
 }
 
 .countdown-num {
   font-family: var(--font-primary);
-  font-size: clamp(18px, 4.8vw, 21px);
+  font-size: clamp(17px, 4.5vw, 20px);
   font-weight: 700;
   line-height: 1;
   color: var(--hydrangea-deep);
@@ -1310,16 +1291,16 @@ button {
   left: 0;
   right: 0;
   bottom: 0;
-  height: 168px;
-  z-index: 4;
+  height: 209px;
+  z-index: 7;
   pointer-events: none;
 }
 
-.countdown-pocket-svg {
+.countdown-pocket-paper {
   width: 100%;
   height: 100%;
   display: block;
-  filter: drop-shadow(0 -2px 6px rgba(45, 35, 55, 0.08));
+  object-fit: cover;
 }
 
 .countdown-pocket-seal {
@@ -1327,21 +1308,10 @@ button {
   top: 63px;
   left: 50%;
   transform: translateX(-50%);
-  width: 48px;
-  height: 48px;
-  z-index: 5;
-  filter: drop-shadow(0 3px 8px rgba(50, 35, 60, 0.22));
-}
-
-.seal-sprig-bg {
-  position: absolute;
-  top: -8px;
-  right: -8px;
-  width: 30px;
-  height: auto;
-  transform: rotate(22deg);
-  opacity: 0.85;
-  pointer-events: none;
+  width: 74px;
+  height: 74px;
+  z-index: 2;
+  filter: drop-shadow(0 4px 8px rgba(67, 49, 35, 0.24));
 }
 
 .seal-pocket-img {
