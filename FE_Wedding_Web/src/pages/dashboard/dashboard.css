@@ -2355,6 +2355,8 @@
     min-height: 46px;
     padding: 12px 11px;
     font-size: 12px;
+    flex-shrink: 0;
+    white-space: nowrap;
   }
 
   .dsec {
@@ -3011,8 +3013,7 @@
   }
 
   .mobile-guest-list,
-  .mobile-checkin-list,
-  .inv-list {
+  .mobile-checkin-list {
     height: clamp(255px, 40dvh, 360px);
     overflow-y: auto;
     overscroll-behavior: contain;
@@ -3117,11 +3118,16 @@
 
   .inv-list {
     display: flex;
-    gap: 9px;
+    flex-direction: column;
+    gap: 12px;
+    height: auto;
+    max-height: none;
+    overflow: visible;
     margin-top: 4px;
+    width: 100%;
   }
 
-  .inv-card { flex: 0 0 auto; border-radius: 16px; }
+  .inv-card { width: 100%; max-width: 100%; box-sizing: border-box; border-radius: 16px; overflow: hidden; }
   .inv-hd { min-height: 72px; padding: 11px 12px; }
   .inv-dot { width: 34px; height: 34px; border-radius: 11px; }
   .inv-dot svg { width: 18px; height: 18px; }

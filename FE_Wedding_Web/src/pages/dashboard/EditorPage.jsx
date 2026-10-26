@@ -21,6 +21,7 @@ import {
   IconQrCode,
   IconMusic,
   IconHelpCircle,
+  IconEdit3,
 } from '../../components/Icons'
 import BankQrPanel from '../../components/BankQrPanel'
 import MusicPanel from '../../components/MusicPanel'

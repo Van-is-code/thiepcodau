@@ -280,22 +280,36 @@ export default function InvitationsPage() {
                             style={{
                               display: 'flex',
                               alignItems: 'center',
-                              height: 42,
-                              padding: '0 13px',
+                              minHeight: 42,
+                              padding: '6px 12px',
                               background: 'var(--bg-subtle)',
                               border: '1px solid var(--border-subtle)',
                               borderRadius: 'var(--radius-md)',
                               gap: 8,
+                              boxSizing: 'border-box',
+                              width: '100%',
                             }}
                           >
-                            <span style={{ fontSize: 12, color: 'var(--text-subtle)' }}>{window.location.origin}/</span>
-                            <span style={{ fontSize: 13.5, color: 'var(--text-main)', fontWeight: 600, fontFamily: 'Courier New, monospace' }}>
-                              {slug || 'chua-co-slug'}
-                            </span>
+                            <div
+                              style={{
+                                flex: 1,
+                                minWidth: 0,
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                                whiteSpace: 'nowrap',
+                                fontSize: 13,
+                                fontFamily: 'Courier New, monospace',
+                                color: 'var(--text-main)',
+                              }}
+                              title={`${window.location.origin}/${slug || ''}`}
+                            >
+                              <span style={{ fontSize: 12, color: 'var(--text-subtle)' }}>{window.location.origin}/</span>
+                              <strong>{slug || 'chua-co-slug'}</strong>
+                            </div>
                             <button
                               type="button"
                               className="btn-copy"
-                              style={{ marginLeft: 'auto' }}
+                              style={{ marginLeft: 'auto', flexShrink: 0, whiteSpace: 'nowrap' }}
                               onClick={() => handleCopyLink(slug)}
                             >
                               {copiedSlug === slug ? (
@@ -313,7 +327,7 @@ export default function InvitationsPage() {
                           </div>
                         </div>
                         <div className="fld full">
-                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
+                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6, flexWrap: 'wrap', gap: 6 }}>
                             <label style={{ margin: 0 }}>Tiêu đề thiệp</label>
                             {editingTitleId === String(inv.id) ? (
                               <div style={{ display: 'flex', gap: 6 }}>
