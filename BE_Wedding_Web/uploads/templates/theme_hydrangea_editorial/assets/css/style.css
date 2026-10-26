@@ -2459,6 +2459,76 @@ button {
   margin-top: 12px;
 }
 
+/* A quiet maker credit: useful when needed, visually secondary to the invitation. */
+.invitation-contact {
+  width: min(100% - 48px, 248px);
+  margin: 16px auto 2px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(122, 104, 144, 0.16);
+  text-align: center;
+}
+
+.invitation-contact-label {
+  display: block;
+  font-family: var(--font-primary);
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  color: var(--ink-faint);
+}
+
+.invitation-contact-links {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  margin-top: 8px;
+}
+
+.invitation-contact a {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 25px;
+  padding: 0 9px;
+  border: 1px solid rgba(122, 104, 144, 0.2);
+  border-radius: 999px;
+  color: var(--hydrangea-mid);
+  background: rgba(255, 255, 255, 0.38);
+  font-family: var(--font-primary);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.invitation-contact a span {
+  display: inline-grid;
+  width: 12px;
+  height: 12px;
+  place-items: center;
+  border-radius: 50%;
+  color: #fff;
+  background: var(--hydrangea-mid);
+  font-family: Arial, sans-serif;
+  font-size: 8px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.invitation-contact a:hover,
+.invitation-contact a:focus-visible {
+  border-color: var(--hydrangea-mid);
+  background: rgba(234, 226, 237, 0.7);
+  color: var(--hydrangea-deep);
+}
+
+.invitation-contact a:hover span,
+.invitation-contact a:focus-visible span {
+  background: var(--hydrangea-deep);
+}
+
 /* ==========================================================================
    LIGHTBOX MODAL & UTILITIES
    ========================================================================== */
