@@ -226,6 +226,27 @@
     var allowWishes = (extra.allow_wishes !== undefined) ? Boolean(extra.allow_wishes) : (d.allow_wishes !== undefined ? Boolean(d.allow_wishes) : true);
     var showWishesList = (extra.show_wishes_list !== undefined) ? Boolean(extra.show_wishes_list) : (d.show_wishes_list !== undefined ? Boolean(d.show_wishes_list) : true);
     var showGiftBox = (extra.show_gift_box !== undefined) ? Boolean(extra.show_gift_box) : (d.show_gift_box !== undefined ? Boolean(d.show_gift_box) : true);
+    var bgColor = extra.background_color || d.background_color || '';
+    var bgColorStyleEl = document.getElementById('theme-custom-bg-color-style');
+    if (bgColor) {
+      if (!bgColorStyleEl) {
+        bgColorStyleEl = document.createElement('style');
+        bgColorStyleEl.id = 'theme-custom-bg-color-style';
+        document.head.appendChild(bgColorStyleEl);
+      }
+      bgColorStyleEl.textContent =
+        ':root { ' +
+        '  --paper-ivory: ' + bgColor + ' !important; ' +
+        '  --paper-cream: ' + bgColor + ' !important; ' +
+        '} ' +
+        'body, .editorial-canvas, .editorial-scene, .scene-hero, .scene-couple, .scene-events, .scene-calendar, .scene-gallery, .scene-blessing, .editorial-finale, .stationery-form { ' +
+        '  background-color: ' + bgColor + ' !important; ' +
+        '  background-image: none !important; ' +
+        '}';
+    } else if (bgColorStyleEl) {
+      bgColorStyleEl.remove();
+    }
+
     var bgImage = extra.background_image || d.background_image || '';
 
     // Áp dụng ảnh nền tuỳ biến
@@ -270,13 +291,41 @@
 
     // Điều kiện: nếu cả 1 (RSVP) và 2 (gửi lời chúc + danh sách lời chúc) đều tắt, mà 3 (hộp quà) bật:
     if (rsvpOff && wishesAllOff && showGiftBox) {
-      if (blessingSection) blessingSection.style.display = 'none';
-      if (galleryGiftBlock) galleryGiftBlock.style.display = 'block';
+      var isEditMode = (typeof window.__weddingWebEditMode !== 'undefined' && window.__weddingWebEditMode);
+      if (isEditMode) {
+        if (blessingSection) {
+          blessingSection.style.removeProperty('display');
+          blessingSection.style.opacity = '0.4';
+          var oldBanner = blessingSection.querySelector('.ww-off-banner-blessing');
+          if (!oldBanner) {
+            blessingSection.insertAdjacentHTML('afterbegin', '<div class="ww-off-banner ww-off-banner-blessing" data-edit-blessing style="cursor:pointer;margin:16px auto;max-width:420px;text-align:center;padding:10px 16px;background:#fff4eb;border:1px dashed #e28a55;border-radius:10px;color:#a04b1e;font-size:12px;font-weight:600;">⚠️ Phần Lời chúc & Xác nhận tham gia đang TẮT (khách xem sẽ không thấy). Bấm để cài đặt hoặc bật lại.</div>');
+          }
+        }
+      } else {
+        if (blessingSection) blessingSection.style.display = 'none';
+      }
+      if (galleryGiftBlock) {
+        galleryGiftBlock.style.display = 'block';
+        galleryGiftBlock.setAttribute('data-edit-blessing', 'true');
+      }
     } else if (rsvpOff && wishesAllOff && !showGiftBox) {
       if (blessingSection) blessingSection.style.display = 'none';
       if (galleryGiftBlock) galleryGiftBlock.style.display = 'none';
     } else {
-      if (blessingSection) blessingSection.style.display = '';
+      if (blessingSection) {
+        blessingSection.style.display = '';
+        blessingSection.style.removeProperty('opacity');
+        var bannerBl = blessingSection.querySelector('.ww-off-banner-blessing');
+        if (bannerBl) bannerBl.remove();
+
+        var isEditMode = (typeof window.__weddingWebEditMode !== 'undefined' && window.__weddingWebEditMode);
+        if (isEditMode) {
+          var bHeader = blessingSection.querySelector('.blessing-header');
+          if (bHeader && !bHeader.querySelector('.ww-blessing-edit-badge')) {
+            bHeader.insertAdjacentHTML('beforeend', '<div style="margin-top:12px;margin-bottom:8px;"><button type="button" class="ww-blessing-edit-badge" data-edit-blessing style="cursor:pointer;display:inline-flex;align-items:center;gap:6px;padding:6px 16px;background:rgba(255,255,255,0.9);border:1px solid #d9cebe;border-radius:20px;font-size:12px;color:#6e5845;font-weight:600;box-shadow:0 2px 6px rgba(0,0,0,0.05);transition:all .2s ease;">💌 Bật/Tắt Lời chúc &amp; Tham dự</button></div>');
+          }
+        }
+      }
       if (galleryGiftBlock) galleryGiftBlock.style.display = 'none';
 
       // Chi tiết từng khối trong blessing:

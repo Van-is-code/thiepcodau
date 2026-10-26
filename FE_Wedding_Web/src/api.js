@@ -88,6 +88,8 @@ export const api = {
   },
   // Tài khoản ngân hàng mừng cưới (1 QR chung) — KHÔNG tính vào hạn mức.
   setInvitationBank: (id, bank) => apiClient.patch(`/api/invitations/${id}/bank`, bank),
+  setInvitationDisplaySettings: (id, payload) => apiClient.patch(`/api/invitations/${id}/display-settings`, payload),
+  setDisplaySettings: (id, payload) => apiClient.patch(`/api/invitations/${id}/display-settings`, payload),
   checkInvitationSlug: (id, slug) =>
     id && id !== 'new'
       ? apiClient.post(`/api/invitations/${id}/check-slug`, { slug })

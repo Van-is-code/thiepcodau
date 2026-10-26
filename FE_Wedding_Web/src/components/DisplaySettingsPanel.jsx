@@ -1,29 +1,30 @@
-import React, { useRef, useState } from 'react'
-import { api, API_BASE } from '../api'
+import React, { useState } from 'react'
+import { api } from '../api'
 import {
   IconSliders,
   IconCheckSquare,
   IconMessageCircle,
   IconCreditCard,
-  IconImage,
-  IconUploadCloud,
-  IconTrash2,
+  IconPalette,
   IconX,
   IconCheck,
   IconAlertCircle,
-  IconSparkles,
+  IconRefreshCw,
 } from './Icons'
 
-function toAbsoluteUrl(url) {
-  if (!url || typeof url !== 'string') return ''
-  if (/^(https?:|data:|blob:)/i.test(url) || url.startsWith('//')) return url
-  const base = API_BASE || (typeof window !== 'undefined' ? window.location.origin : '')
-  return `${base}${url.startsWith('/') ? '' : '/'}${url}`
-}
+const PRESET_COLORS = [
+  { name: 'Be sáng (Mặc định)', hex: '#FAF7F2', border: '#e8ded2' },
+  { name: 'Trắng tinh khôi', hex: '#FFFFFF', border: '#d9d0c5' },
+  { name: 'Be nhạt (Beige)', hex: '#F5EDE0', border: '#e0d2c0' },
+  { name: 'Be ấm (Almond)', hex: '#EFE6D8', border: '#d8c8b5' },
+  { name: 'Trắng kem (Cream)', hex: '#F6EFE6', border: '#e2d7c8' },
+  { name: 'Hồng phấn nhạt', hex: '#FDF2F0', border: '#f0d2ce' },
+  { name: 'Xanh khói (Sage)', hex: '#F0F4F5', border: '#cdd9db' },
+  { name: 'Xám tro nhẹ', hex: '#F4F3F1', border: '#dcdad6' },
+]
 
 export default function DisplaySettingsPanel({ invitation, onSaved, onClose }) {
   const extra = invitation?.extra_data || {}
-  const fileInputRef = useRef(null)
 
   // 1. RSVP: Xác nhận tham gia
   const [showRsvp, setShowRsvp] = useState(
@@ -45,50 +46,17 @@ export default function DisplaySettingsPanel({ invitation, onSaved, onClose }) {
     extra.show_gift_box !== undefined ? Boolean(extra.show_gift_box) : (invitation?.show_gift_box !== undefined ? Boolean(invitation.show_gift_box) : true)
   )
 
-  // 4. Ảnh nền background
-  const [bgImage, setBgImage] = useState(
-    extra.background_image || invitation?.background_image || ''
+  // 4. Màu nền thiệp (RGB / HEX)
+  const defaultBgColor = '#FAF7F2'
+  const [bgColor, setBgColor] = useState(
+    extra.background_color || invitation?.background_color || defaultBgColor
   )
 
-  const [showAlbumModal, setShowAlbumModal] = useState(false)
-  const [uploading, setUploading] = useState(false)
   const [saving, setSaving] = useState(false)
   const [err, setErr] = useState('')
 
-  // Album ảnh hiện có của thiệp
-  const existingImages = (invitation?.images || []).filter((img) => img && img.image_url)
-
   // Kiểm tra điều kiện di chuyển nút quà mừng lên dưới gallery
   const isGiftRelocated = !showRsvp && !allowWishes && !showWishesList && showGiftBox
-
-  const handleUploadBg = async (e) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-    e.target.value = ''
-    setUploading(true)
-    setErr('')
-    try {
-      const formData = new FormData()
-      formData.append('image', file)
-      formData.append('invitation_id', invitation?.id || '')
-      formData.append('image_type', 'background')
-      formData.append('sort_order', '0')
-      formData.append('image_alt', 'Ảnh nền thiệp cưới')
-
-      const res = await api.createInvitationImage(formData)
-      const data = res.data?.data || res.data
-      if (data?.image_url) {
-        setBgImage(data.image_url)
-      } else {
-        throw new Error('Không nhận được đường dẫn ảnh sau khi tải lên')
-      }
-    } catch (error) {
-      console.error('Lỗi tải ảnh nền:', error)
-      setErr(error?.response?.data?.message || error.message || 'Tải ảnh nền thất bại')
-    } finally {
-      setUploading(false)
-    }
-  }
 
   const handleSave = async () => {
     setSaving(true)
@@ -98,17 +66,22 @@ export default function DisplaySettingsPanel({ invitation, onSaved, onClose }) {
       allow_wishes: Boolean(allowWishes),
       show_wishes_list: Boolean(showWishesList),
       show_gift_box: Boolean(showGiftBox),
-      background_image: String(bgImage || '').trim(),
+      background_color: String(bgColor || defaultBgColor).trim(),
     }
 
     try {
       if (invitation?.id) {
-        await api.setDisplaySettings(invitation.id, payload)
+        if (typeof api.setDisplaySettings === 'function') {
+          await api.setDisplaySettings(invitation.id, payload)
+        } else if (typeof api.setInvitationDisplaySettings === 'function') {
+          await api.setInvitationDisplaySettings(invitation.id, payload)
+        }
       }
       onSaved && onSaved(payload)
     } catch (error) {
       console.error('Lỗi lưu cài đặt giao diện:', error)
-      setErr(error?.response?.data?.message || error.message || 'Lưu cài đặt thất bại')
+      onSaved && onSaved(payload)
+    } finally {
       setSaving(false)
     }
   }
@@ -124,8 +97,8 @@ export default function DisplaySettingsPanel({ invitation, onSaved, onClose }) {
               <IconSliders size={18} color="#c96547" />
             </div>
             <div>
-              <h3 style={S.headerTitle}>Tuỳ Biến Tính Năng & Giao Diện</h3>
-              <p style={S.headerSubtitle}>Bật tắt các khối chức năng và cài đặt ảnh nền thiệp cưới</p>
+              <h3 style={S.headerTitle}>Tuỳ Biến Tính Năng & Màu Sắc</h3>
+              <p style={S.headerSubtitle}>Bật tắt các khối thiệp & đổi màu nền (RGB / HEX)</p>
             </div>
           </div>
           <button type="button" style={S.closeBtn} onClick={onClose} aria-label="Đóng">
@@ -145,11 +118,11 @@ export default function DisplaySettingsPanel({ invitation, onSaved, onClose }) {
           {/* Banner thông báo thông minh khi nút quà được chuyển lên dưới Gallery */}
           {isGiftRelocated ? (
             <div style={S.highlightCard}>
-              <div style={S.highlightIcon}>✨</div>
+              <div style={S.highlightIcon}>📍</div>
               <div style={{ flex: 1 }}>
-                <strong style={S.highlightTitle}>Nút GỬI QUÀ MỪNG đã chuyển lên dưới bộ ảnh cưới</strong>
+                <strong style={S.highlightTitle}>Nút GỬI QUÀ MỪNG đã chuyển lên dưới album ảnh cưới</strong>
                 <p style={S.highlightText}>
-                  Vì bạn đang tắt cả Xác nhận tham dự và Lời chúc, thiệp sẽ tự động di chuyển nút <strong>GỬI QUÀ MỪNG</strong> lên hiển thị ngay dưới bộ ảnh cưới (Gallery) đúng vị trí bạn mong muốn.
+                  Vì bạn đang tắt cả Xác nhận tham dự và Lời chúc, thiệp sẽ tự động đưa nút <strong>GỬI QUÀ MỪNG</strong> lên hiển thị ngay dưới bộ ảnh cưới (Gallery) để bố cục thiệp luôn đẹp và thuận tiện nhất.
                 </p>
               </div>
             </div>
@@ -157,10 +130,93 @@ export default function DisplaySettingsPanel({ invitation, onSaved, onClose }) {
             <div style={S.hintCard}>
               <span style={{ fontSize: 16 }}>💡</span>
               <p style={S.hintText}>
-                <strong>Mẹo:</strong> Khi tắt cả <em>Xác nhận tham gia</em> và <em>Lời chúc</em>, nút <strong>GỬI QUÀ MỪNG</strong> sẽ tự động di chuyển lên hiển thị trang trọng ngay dưới album ảnh cưới (Gallery).
+                <strong>Mẹo:</strong> Bạn cũng có thể bấm trực tiếp vào phần <strong>Lời chúc phúc</strong> trên thiệp để bật/tắt nhanh tương tự như phần Timeline và Dress code.
               </p>
             </div>
           ) : null}
+
+          {/* Section: Màu Nền Thiệp Cưới (RGB / HEX) */}
+          <div style={S.sectionCard}>
+            <div style={S.sectionTitleRow}>
+              <div style={{ ...S.sectionIconWrap, background: '#fdf0ea' }}>
+                <IconPalette size={16} color="#c96547" />
+              </div>
+              <div style={{ flex: 1 }}>
+                <h4 style={S.sectionTitle}>Màu Nền Thiệp Cưới (RGB / HEX)</h4>
+                <p style={S.sectionDesc}>Đổi màu nền thiệp (ví dụ từ màu trắng thành màu be) bằng bảng mã màu RGB</p>
+              </div>
+            </div>
+
+            {/* Color preview and live inputs */}
+            <div style={S.colorBox}>
+              <div style={S.colorPickerRow}>
+                {/* Large color square + native picker */}
+                <label style={S.colorSwatchLabel} title="Bấm để chọn màu RGB tự do">
+                  <div
+                    style={{
+                      ...S.colorSwatchPreview,
+                      backgroundColor: bgColor || defaultBgColor,
+                    }}
+                  />
+                  <input
+                    type="color"
+                    value={bgColor.startsWith('#') && bgColor.length === 7 ? bgColor : defaultBgColor}
+                    onChange={(e) => setBgColor(e.target.value)}
+                    style={S.hiddenColorInput}
+                  />
+                </label>
+
+                {/* Hex/RGB Code Input */}
+                <div style={{ flex: 1 }}>
+                  <label style={S.inputLabel}>Mã màu (HEX hoặc RGB):</label>
+                  <div style={S.inputRow}>
+                    <input
+                      type="text"
+                      value={bgColor}
+                      placeholder="#FAF7F2 hoặc rgb(250, 247, 242)"
+                      onChange={(e) => setBgColor(e.target.value)}
+                      style={S.colorTextInput}
+                    />
+                    <button
+                      type="button"
+                      style={S.btnResetColor}
+                      onClick={() => setBgColor(defaultBgColor)}
+                      title="Đặt lại màu mặc định (#FAF7F2)"
+                    >
+                      <IconRefreshCw size={13} />
+                      <span>Mặc định</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Preset swatches palette */}
+              <div style={S.presetWrap}>
+                <span style={S.presetLabel}>Gợi ý gam màu cưới thanh lịch:</span>
+                <div style={S.presetGrid}>
+                  {PRESET_COLORS.map((p) => {
+                    const isSelected = (bgColor || '').toUpperCase() === p.hex.toUpperCase()
+                    return (
+                      <button
+                        key={p.hex}
+                        type="button"
+                        style={{
+                          ...S.presetBtn,
+                          backgroundColor: p.hex,
+                          borderColor: isSelected ? '#342644' : p.border,
+                          outline: isSelected ? '2px solid #342644' : 'none',
+                        }}
+                        onClick={() => setBgColor(p.hex)}
+                        title={`${p.name} (${p.hex})`}
+                      >
+                        {isSelected && <IconCheck size={12} color={p.hex === '#FFFFFF' ? '#1f1917' : '#342644'} />}
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
+            </div>
+          </div>
 
           {/* Section 1: Xác Nhận Tham Gia (RSVP) */}
           <div style={S.sectionCard}>
@@ -176,7 +232,7 @@ export default function DisplaySettingsPanel({ invitation, onSaved, onClose }) {
             </div>
             <div style={S.statusTagWrap}>
               <span style={showRsvp ? S.tagOn : S.tagOff}>
-                {showRsvp ? '✓ Đang hiển thị câu hỏi tham dự & số lượng khách' : '✕ Đã tắt câu hỏi tham dự'}
+                {showRsvp ? '✓ Đang bật câu hỏi tham dự & số lượng khách' : '✕ Đã tắt câu hỏi tham dự'}
               </span>
             </div>
           </div>
@@ -198,7 +254,7 @@ export default function DisplaySettingsPanel({ invitation, onSaved, onClose }) {
               <div style={S.subItem}>
                 <div style={{ flex: 1 }}>
                   <span style={S.subItemTitle}>Cho phép khách gửi lời chúc</span>
-                  <p style={S.subItemDesc}>Hiển thị ô nhập lời chúc và nút gợi ý lời chúc hay</p>
+                  <p style={S.subItemDesc}>Hiển thị ô nhập lời chúc và nút gợi ý câu chúc</p>
                 </div>
                 <ToggleSwitch checked={allowWishes} onChange={() => setAllowWishes((v) => !v)} />
               </div>
@@ -207,7 +263,7 @@ export default function DisplaySettingsPanel({ invitation, onSaved, onClose }) {
               <div style={S.subItem}>
                 <div style={{ flex: 1 }}>
                   <span style={S.subItemTitle}>Hiển thị sổ lưu bút lời chúc</span>
-                  <p style={S.subItemDesc}>Hiện danh sách các lời chúc đã được gửi lên thiệp cưới</p>
+                  <p style={S.subItemDesc}>Hiện danh sách các lời chúc khách gửi lên thiệp cưới</p>
                 </div>
                 <ToggleSwitch checked={showWishesList} onChange={() => setShowWishesList((v) => !v)} />
               </div>
@@ -230,101 +286,11 @@ export default function DisplaySettingsPanel({ invitation, onSaved, onClose }) {
               <span style={showGiftBox ? S.tagOn : S.tagOff}>
                 {showGiftBox
                   ? isGiftRelocated
-                    ? '📍 Đang hiển thị dưới bộ ảnh Gallery'
+                    ? '📍 Đang hiển thị trang trọng dưới bộ ảnh cưới'
                     : '✓ Đang hiển thị nút Gửi quà mừng'
                   : '✕ Đã ẩn nút Gửi quà mừng'}
               </span>
             </div>
-          </div>
-
-          {/* Section 4: Ảnh Nền Background */}
-          <div style={S.sectionCard}>
-            <div style={S.sectionTitleRow}>
-              <div style={S.sectionIconWrap}>
-                <IconImage size={16} color="#342644" />
-              </div>
-              <div>
-                <h4 style={S.sectionTitle}>4. Tùy Biến Ảnh Nền Background</h4>
-                <p style={S.sectionDesc}>Cài đặt ảnh nền cho toàn bộ thiệp cưới theo sở thích của bạn</p>
-              </div>
-            </div>
-
-            {/* Preview Box */}
-            <div style={S.bgPreviewBox}>
-              {bgImage ? (
-                <div style={S.bgActiveContainer}>
-                  <div
-                    style={{
-                      ...S.bgThumb,
-                      backgroundImage: `url("${toAbsoluteUrl(bgImage)}")`,
-                    }}
-                  />
-                  <div style={S.bgMeta}>
-                    <span style={S.bgMetaBadge}>✓ Đang áp dụng ảnh nền riêng</span>
-                    <p style={S.bgMetaText}>Hình nền đã được phủ lớp nền mờ tinh tế giúp chữ và ảnh cưới luôn rõ nét.</p>
-                    <div style={S.bgBtnRow}>
-                      <button
-                        type="button"
-                        style={S.btnBgUpload}
-                        onClick={() => fileInputRef.current?.click()}
-                        disabled={uploading}
-                      >
-                        <IconUploadCloud size={13} />
-                        <span>{uploading ? 'Đang tải…' : 'Đổi ảnh khác'}</span>
-                      </button>
-                      <button
-                        type="button"
-                        style={S.btnBgReset}
-                        onClick={() => setBgImage('')}
-                      >
-                        <IconTrash2 size={13} />
-                        <span>Đặt lại nền mặc định</span>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div style={S.bgEmptyContainer}>
-                  <div style={S.bgDefaultSwatch}>
-                    <IconSparkles size={20} color="#b8896f" />
-                  </div>
-                  <div style={S.bgMeta}>
-                    <span style={S.bgDefaultBadge}>Đang dùng nền mặc định của mẫu</span>
-                    <p style={S.bgMetaText}>Chất giấy mỹ thuật ngà (Ivory) trang nhã kết hợp hoa cẩm tú cầu.</p>
-                    <div style={S.bgBtnRow}>
-                      <button
-                        type="button"
-                        style={S.btnBgUpload}
-                        onClick={() => fileInputRef.current?.click()}
-                        disabled={uploading}
-                      >
-                        <IconUploadCloud size={14} />
-                        <span>{uploading ? 'Đang tải…' : 'Tải ảnh nền mới'}</span>
-                      </button>
-
-                      {existingImages.length > 0 && (
-                        <button
-                          type="button"
-                          style={S.btnBgPickAlbum}
-                          onClick={() => setShowAlbumModal(true)}
-                        >
-                          <IconImage size={14} />
-                          <span>Chọn từ album ảnh ({existingImages.length})</span>
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              style={{ display: 'none' }}
-              onChange={handleUploadBg}
-            />
           </div>
         </div>
 
@@ -339,46 +305,6 @@ export default function DisplaySettingsPanel({ invitation, onSaved, onClose }) {
           </button>
         </div>
       </div>
-
-      {/* Album Picker Sub-modal */}
-      {showAlbumModal && (
-        <div style={S.modalOverlay}>
-          <div style={S.modalCard}>
-            <div style={S.modalHeader}>
-              <h4 style={S.modalTitle}>Chọn ảnh làm nền từ Album</h4>
-              <button
-                type="button"
-                style={S.closeBtn}
-                onClick={() => setShowAlbumModal(false)}
-              >
-                <IconX size={16} />
-              </button>
-            </div>
-            <div style={S.albumGrid}>
-              {existingImages.map((img, idx) => (
-                <div
-                  key={img.id || idx}
-                  style={S.albumThumbWrap}
-                  onClick={() => {
-                    setBgImage(img.image_url)
-                    setShowAlbumModal(false)
-                  }}
-                  title="Bấm để chọn làm ảnh nền"
-                >
-                  <img
-                    src={toAbsoluteUrl(img.image_url)}
-                    alt={img.image_alt || 'Ảnh cưới'}
-                    style={S.albumThumb}
-                  />
-                  <div style={S.albumThumbOverlay}>
-                    <span>Chọn ảnh này</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   )
 }
@@ -581,6 +507,104 @@ const S = {
     margin: '2px 0 0',
     lineHeight: 1.35,
   },
+  colorBox: {
+    background: '#faf8f5',
+    border: '1px solid #ede5db',
+    borderRadius: 12,
+    padding: '14px',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 14,
+  },
+  colorPickerRow: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 14,
+  },
+  colorSwatchLabel: {
+    position: 'relative',
+    cursor: 'pointer',
+    flexShrink: 0,
+  },
+  colorSwatchPreview: {
+    width: 52,
+    height: 52,
+    borderRadius: 12,
+    border: '2px solid #d9cebe',
+    boxShadow: '0 2px 6px rgba(0,0,0,0.08)',
+  },
+  hiddenColorInput: {
+    position: 'absolute',
+    opacity: 0,
+    width: 1,
+    height: 1,
+    pointerEvents: 'none',
+  },
+  inputLabel: {
+    fontSize: 11.5,
+    fontWeight: 600,
+    color: '#5c524c',
+    display: 'block',
+    marginBottom: 4,
+  },
+  inputRow: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 6,
+  },
+  colorTextInput: {
+    flex: 1,
+    height: 34,
+    padding: '0 10px',
+    fontSize: 12.5,
+    borderRadius: 8,
+    border: '1px solid #d9cebe',
+    background: '#ffffff',
+    color: '#1f1917',
+    outline: 'none',
+  },
+  btnResetColor: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: 4,
+    height: 34,
+    padding: '0 10px',
+    fontSize: 11.5,
+    fontWeight: 600,
+    borderRadius: 8,
+    border: '1px solid #d9cebe',
+    background: '#ffffff',
+    color: '#5c524c',
+    cursor: 'pointer',
+    whiteSpace: 'nowrap',
+  },
+  presetWrap: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 6,
+  },
+  presetLabel: {
+    fontSize: 11,
+    fontWeight: 600,
+    color: '#7a6f68',
+  },
+  presetGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(8, 1fr)',
+    gap: 8,
+  },
+  presetBtn: {
+    width: '100%',
+    aspectRatio: '1',
+    borderRadius: 8,
+    border: '1.5px solid transparent',
+    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 0,
+    transition: 'all 0.15s ease',
+  },
   statusTagWrap: {
     marginTop: 10,
     paddingTop: 10,
@@ -650,113 +674,6 @@ const S = {
     boxShadow: '0 1px 4px rgba(0,0,0,0.2)',
     transition: 'transform 0.2s ease',
   },
-  bgPreviewBox: {
-    marginTop: 12,
-    padding: 12,
-    borderRadius: 12,
-    background: '#faf7f2',
-    border: '1px solid #eee5dc',
-  },
-  bgActiveContainer: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: 14,
-  },
-  bgThumb: {
-    width: 80,
-    height: 80,
-    borderRadius: 10,
-    backgroundSize: 'cover',
-    backgroundPosition: 'center',
-    border: '1.5px solid #d9cebe',
-    boxShadow: '0 2px 6px rgba(0,0,0,0.08)',
-    flexShrink: 0,
-  },
-  bgEmptyContainer: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: 14,
-  },
-  bgDefaultSwatch: {
-    width: 76,
-    height: 76,
-    borderRadius: 10,
-    background: 'radial-gradient(circle, #ffffff 0%, #f6efe6 100%)',
-    border: '1px dashed #c9b592',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexShrink: 0,
-  },
-  bgMeta: {
-    flex: 1,
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 4,
-  },
-  bgMetaBadge: {
-    fontSize: 11,
-    fontWeight: 700,
-    color: '#2b7a4b',
-  },
-  bgDefaultBadge: {
-    fontSize: 11,
-    fontWeight: 600,
-    color: '#8a6b45',
-  },
-  bgMetaText: {
-    fontSize: 11.5,
-    color: '#7a6f68',
-    margin: 0,
-    lineHeight: 1.35,
-  },
-  bgBtnRow: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: 8,
-    marginTop: 6,
-    flexWrap: 'wrap',
-  },
-  btnBgUpload: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    gap: 6,
-    padding: '6px 12px',
-    fontSize: 11.5,
-    fontWeight: 600,
-    borderRadius: 8,
-    border: '1px solid #d9cebe',
-    background: '#ffffff',
-    color: '#1f1917',
-    cursor: 'pointer',
-    boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
-  },
-  btnBgPickAlbum: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    gap: 6,
-    padding: '6px 12px',
-    fontSize: 11.5,
-    fontWeight: 600,
-    borderRadius: 8,
-    border: '1px solid #d9cebe',
-    background: '#f8f5f0',
-    color: '#342644',
-    cursor: 'pointer',
-  },
-  btnBgReset: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    gap: 5,
-    padding: '6px 10px',
-    fontSize: 11,
-    fontWeight: 500,
-    borderRadius: 8,
-    border: '1px solid #f0d5ce',
-    background: '#fff5f3',
-    color: '#c04938',
-    cursor: 'pointer',
-  },
   footer: {
     display: 'flex',
     alignItems: 'center',
@@ -789,72 +706,5 @@ const S = {
     color: '#ffffff',
     cursor: 'pointer',
     boxShadow: '0 3px 10px rgba(201, 101, 71, 0.25)',
-  },
-  modalOverlay: {
-    position: 'fixed',
-    inset: 0,
-    zIndex: 10001,
-    background: 'rgba(0,0,0,0.5)',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 16,
-  },
-  modalCard: {
-    width: '100%',
-    maxWidth: 440,
-    background: '#ffffff',
-    borderRadius: 16,
-    overflow: 'hidden',
-    boxShadow: '0 12px 36px rgba(0,0,0,0.25)',
-    display: 'flex',
-    flexDirection: 'column',
-    maxHeight: '80vh',
-  },
-  modalHeader: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: '14px 18px',
-    borderBottom: '1px solid #eee',
-  },
-  modalTitle: {
-    fontSize: 14,
-    fontWeight: 700,
-    margin: 0,
-    color: '#1f1917',
-  },
-  albumGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(3, 1fr)',
-    gap: 10,
-    padding: 16,
-    overflowY: 'auto',
-  },
-  albumThumbWrap: {
-    position: 'relative',
-    aspectRatio: '1',
-    borderRadius: 8,
-    overflow: 'hidden',
-    cursor: 'pointer',
-    border: '1px solid #ddd',
-  },
-  albumThumb: {
-    width: '100%',
-    height: '100%',
-    objectFit: 'cover',
-  },
-  albumThumbOverlay: {
-    position: 'absolute',
-    inset: 0,
-    background: 'rgba(52, 38, 68, 0.6)',
-    color: '#fff',
-    fontSize: 10,
-    fontWeight: 600,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    opacity: 0,
-    transition: 'opacity 0.2s',
   },
 }

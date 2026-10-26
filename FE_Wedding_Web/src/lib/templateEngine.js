@@ -207,6 +207,9 @@ export const buildMergedData = (invitation) => {
   const customBgImage = invitation?.extra_data?.background_image ?? invitation?.background_image
   data.background_image = customBgImage ? toAbsoluteMediaUrl(String(customBgImage).trim()) : ''
 
+  const customBgColor = invitation?.extra_data?.background_color ?? invitation?.background_color
+  data.background_color = (customBgColor && typeof customBgColor === 'string' && customBgColor.trim()) ? customBgColor.trim() : ''
+
   data.invitation_id = invitation?.id || ''
   data.api_base = API_BASE || (typeof window !== 'undefined' ? window.location.origin : '')
   data.guest_name = invitation?.guest_name || ''
@@ -271,7 +274,7 @@ export const resolveWriteTarget = (fieldKey) => {
   if (fieldKey === 'groom_short_name') return { scope: 'extra_data', column: 'groom_short_name', widget: 'text' }
   if (fieldKey === 'bride_short_name') return { scope: 'extra_data', column: 'bride_short_name', widget: 'text' }
   if (fieldKey === 'couple_names') return { scope: 'extra_data', column: 'couple_names', widget: 'text' }
-  if (['show_rsvp', 'allow_wishes', 'show_wishes_list', 'show_gift_box', 'background_image'].includes(fieldKey)) return { scope: 'extra_data', column: fieldKey, widget: 'text' }
+  if (['show_rsvp', 'allow_wishes', 'show_wishes_list', 'show_gift_box', 'background_image', 'background_color'].includes(fieldKey)) return { scope: 'extra_data', column: fieldKey, widget: 'text' }
   if (GROOM_NAME_ALIASES.has(fieldKey)) return { scope: 'groom', column: 'name_groom', widget: 'text' }
   if (BRIDE_NAME_ALIASES.has(fieldKey)) return { scope: 'bride', column: 'name_bride', widget: 'text' }
   // Field GỐC (không phải alias hiển thị) mà chính openDateInput() và nút "Chọn ngày cưới"
@@ -1193,6 +1196,40 @@ const buildDomInjectScript = (editMode) => `
       }
     } catch (e) {}
 
+    if (EDIT_MODE) {
+      try {
+        var blSec = document.getElementById('blessing') || document.querySelector('.scene-blessing');
+        if (blSec) {
+          var bHdr = blSec.querySelector('.blessing-header');
+          if (bHdr && !bHdr.querySelector('.ww-blessing-edit-badge')) {
+            bHdr.insertAdjacentHTML('beforeend', '<div style="margin-top:12px;margin-bottom:8px;"><button type="button" class="ww-blessing-edit-badge" data-edit-blessing style="cursor:pointer;display:inline-flex;align-items:center;gap:6px;padding:6px 16px;background:rgba(255,255,255,0.9);border:1px solid #d9cebe;border-radius:20px;font-size:12px;color:#6e5845;font-weight:600;box-shadow:0 2px 6px rgba(0,0,0,0.05);transition:all .2s ease;">💌 Bật/Tắt Lời chúc &amp; Tham dự</button></div>');
+          }
+        }
+      } catch (_e) {}
+    }
+
+    // Áp dụng màu nền background (RGB / HEX)
+    var bgColor = data.background_color || (data.extra_data && data.extra_data.background_color) || '';
+    var existingBgColorStyle = document.getElementById('ww-custom-bg-color-style');
+    if (bgColor) {
+      if (!existingBgColorStyle) {
+        existingBgColorStyle = document.createElement('style');
+        existingBgColorStyle.id = 'ww-custom-bg-color-style';
+        document.head.appendChild(existingBgColorStyle);
+      }
+      existingBgColorStyle.textContent =
+        ':root { ' +
+        '  --paper-ivory: ' + bgColor + ' !important; ' +
+        '  --paper-cream: ' + bgColor + ' !important; ' +
+        '} ' +
+        'body, .editorial-canvas, .editorial-scene, .scene-hero, .scene-couple, .scene-events, .scene-calendar, .scene-gallery, .scene-blessing, .editorial-finale, .stationery-form { ' +
+        '  background-color: ' + bgColor + ' !important; ' +
+        '  background-image: none !important; ' +
+        '}';
+    } else if (existingBgColorStyle) {
+      existingBgColorStyle.remove();
+    }
+
     var bgImg = data.background_image || (data.extra_data && data.extra_data.background_image) || '';
     var existingBgStyle = document.getElementById('ww-custom-bg-style');
     if (bgImg) {
@@ -1702,6 +1739,9 @@ const EDIT_MODE_SCRIPT = `
       var node = stack[i];
       if (node.closest && node.closest('.ww-badge, .ww-dp-mask, .ww-sheet-mask, .ww-date-input')) return null;
       if (node.closest && node.closest('[data-edit-dc]')) return { kind: 'dress', el: node, label: '🎨 Sửa dress code' };
+      if (node.closest && node.closest('[data-edit-blessing]')) return { kind: 'blessing', el: node, label: '💌 Cài đặt Lời chúc & Tham dự' };
+      var blArea = node.closest && node.closest('#blessing, .scene-blessing, .unified-blessing-form, .blessing-attendance-block, .blessing-journal-block, #gallery-gift-block, .gallery-gift-action');
+      if (blArea) return { kind: 'blessing', el: blArea, label: '💌 Cài đặt Lời chúc & Tham dự' };
       if (node.closest && node.closest('[data-edit-tl]')) return { kind: 'timeline', el: node, label: '✏️ Sửa lịch trình' };
       var dress = node.closest && node.closest('.ww-tl-dress, .dresscode-open-area, .dresscode-palette-row, .dresscode-swatch');
       if (dress) return { kind: 'dress', el: dress, label: '🎨 Sửa dress code' };
@@ -1943,6 +1983,7 @@ const EDIT_MODE_SCRIPT = `
     else if (hit.kind === 'href') openHrefField(hit.el);
     else if (hit.kind === 'image') openImagePicker(hit.el);
     else if (hit.kind === 'calendar') openDatePicker('ceremony');
+    else if (hit.kind === 'blessing') openBlessingEditor();
     else if (hit.kind === 'timeline') openTimelineEditor();
     else if (hit.kind === 'dress') openDressEditor();
   }, true);
@@ -2008,6 +2049,63 @@ const EDIT_MODE_SCRIPT = `
       '<button type="button" class="ww-del" title="Xoá mốc">&times;</button>' +
     '</div>';
   }
+
+  function openBlessingEditor() {
+    var data = window.invitationData || {};
+    var extra = data.extra_data || {};
+
+    var showRsvp = (extra.show_rsvp !== undefined) ? Boolean(extra.show_rsvp) : (data.show_rsvp !== undefined ? Boolean(data.show_rsvp) : true);
+    var allowWishes = (extra.allow_wishes !== undefined) ? Boolean(extra.allow_wishes) : (data.allow_wishes !== undefined ? Boolean(data.allow_wishes) : true);
+    var showWishesList = (extra.show_wishes_list !== undefined) ? Boolean(extra.show_wishes_list) : (data.show_wishes_list !== undefined ? Boolean(data.show_wishes_list) : true);
+    var showGiftBox = (extra.show_gift_box !== undefined) ? Boolean(extra.show_gift_box) : (data.show_gift_box !== undefined ? Boolean(data.show_gift_box) : true);
+
+    var body =
+      '<div style="display:flex;flex-direction:column;gap:12px">' +
+        '<label class="ww-toggle-label"><input type="checkbox" id="ww-rsvp-toggle"' + (showRsvp ? ' checked' : '') + '> <span><strong>1. Xác nhận tham gia (RSVP)</strong></span></label>' +
+        '<div style="font-size:11.5px;color:#7a6f68;margin:-8px 0 6px 30px">Hỏi khách có thể tham dự hay không và số lượng người đi cùng</div>' +
+
+        '<label class="ww-toggle-label"><input type="checkbox" id="ww-wishes-toggle"' + (allowWishes ? ' checked' : '') + '> <span><strong>2. Cho phép khách gửi lời chúc mới</strong></span></label>' +
+        '<div style="font-size:11.5px;color:#7a6f68;margin:-8px 0 6px 30px">Hiển thị ô nhập lời chúc và nút gợi ý câu chúc</div>' +
+
+        '<label class="ww-toggle-label"><input type="checkbox" id="ww-wishes-list-toggle"' + (showWishesList ? ' checked' : '') + '> <span><strong>3. Hiển thị sổ lưu bút lời chúc trên thiệp</strong></span></label>' +
+        '<div style="font-size:11.5px;color:#7a6f68;margin:-8px 0 6px 30px">Hiển thị danh sách các câu chúc khách gửi lên thiệp</div>' +
+
+        '<label class="ww-toggle-label"><input type="checkbox" id="ww-gift-toggle"' + (showGiftBox ? ' checked' : '') + '> <span><strong>4. Hiển thị nút Gửi quà mừng</strong></span></label>' +
+        '<div style="font-size:11.5px;color:#7a6f68;margin:-8px 0 6px 30px">Nút mở bảng thông tin STK và mã QR mừng cưới từ xa</div>' +
+
+        '<div style="margin-top:6px;padding:10px 14px;background:#fbf6f0;border:1px dashed #d9cebe;border-radius:10px;font-size:12px;color:#6e5845;line-height:1.45">' +
+          '💡 <strong>Lưu ý:</strong> Khi bạn tắt cả mục 1 (Xác nhận tham gia) và mục 2-3 (Lời chúc), nút <strong>GỬI QUÀ MỪNG</strong> sẽ tự động được di chuyển lên hiển thị trang trọng ngay dưới album ảnh cưới (Gallery).' +
+        '</div>' +
+      '</div>';
+
+    sheet('Cài đặt Lời chúc & Xác nhận tham dự', body, function (m) {
+      var isRsvp = !!m.querySelector('#ww-rsvp-toggle').checked;
+      var isWishes = !!m.querySelector('#ww-wishes-toggle').checked;
+      var isWishesList = !!m.querySelector('#ww-wishes-list-toggle').checked;
+      var isGift = !!m.querySelector('#ww-gift-toggle').checked;
+
+      post({ field: 'show_rsvp', kind: 'field', value: isRsvp });
+      post({ field: 'allow_wishes', kind: 'field', value: isWishes });
+      post({ field: 'show_wishes_list', kind: 'field', value: isWishesList });
+      post({ field: 'show_gift_box', kind: 'field', value: isGift });
+
+      var nextData = Object.assign({}, window.invitationData || {});
+      nextData.extra_data = Object.assign({}, nextData.extra_data || {}, {
+        show_rsvp: isRsvp,
+        allow_wishes: isWishes,
+        show_wishes_list: isWishesList,
+        show_gift_box: isGift
+      });
+      nextData.show_rsvp = isRsvp;
+      nextData.allow_wishes = isWishes;
+      nextData.show_wishes_list = isWishesList;
+      nextData.show_gift_box = isGift;
+      window.invitationData = nextData;
+      applyAll(nextData);
+    });
+  }
+
+  window.__wwOpenBlessingEditor = openBlessingEditor;
 
   function openTimelineEditor() {
     var data = window.invitationData || {};

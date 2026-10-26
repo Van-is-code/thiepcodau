@@ -702,6 +702,7 @@ const setDisplaySettings = async (id, body, actor) => {
 		allow_wishes: body.allow_wishes !== undefined ? Boolean(body.allow_wishes) : (curExtra.allow_wishes ?? true),
 		show_wishes_list: body.show_wishes_list !== undefined ? Boolean(body.show_wishes_list) : (curExtra.show_wishes_list ?? true),
 		show_gift_box: body.show_gift_box !== undefined ? Boolean(body.show_gift_box) : (curExtra.show_gift_box ?? true),
+		background_color: body.background_color !== undefined ? String(body.background_color || '').trim() : (curExtra.background_color || ''),
 		background_image: body.background_image !== undefined ? String(body.background_image || '').trim() : (curExtra.background_image || '')
 	};
 

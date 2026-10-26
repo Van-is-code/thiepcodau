@@ -484,7 +484,7 @@ export default function EditorPage() {
       allow_wishes: settings.allow_wishes,
       show_wishes_list: settings.show_wishes_list,
       show_gift_box: settings.show_gift_box,
-      background_image: settings.background_image,
+      background_color: settings.background_color,
     }
     const nextInv = {
       ...invitation,
@@ -493,7 +493,7 @@ export default function EditorPage() {
       allow_wishes: settings.allow_wishes,
       show_wishes_list: settings.show_wishes_list,
       show_gift_box: settings.show_gift_box,
-      background_image: settings.background_image,
+      background_color: settings.background_color,
     }
     setInvitation(nextInv)
     pushToIframe(nextInv, pending)
@@ -700,13 +700,13 @@ export default function EditorPage() {
         <div className="editor-actions" style={S.rightActions}>
           <button
             className="editor-action"
-            style={{ ...S.tplBtn, background: '#f5eefc', borderColor: '#e1d2f2', color: '#5b3a82', fontWeight: 600 }}
+            style={{ ...S.tplBtn, background: '#fdf6ee', borderColor: '#f2ded0', color: '#c96547', fontWeight: 600 }}
             onClick={openDisplaySettingsPanel}
             disabled={locked}
-            title="Cài đặt RSVP, lời chúc, quà mừng và ảnh nền background"
+            title="Đổi màu nền thiệp (RGB/HEX) và bật tắt các khối chức năng"
           >
-            <IconSliders size={15} color="#5b3a82" />
-            <span>Tuỳ Biến Giao Diện</span>
+            <IconPalette size={15} color="#c96547" />
+            <span>Màu Nền & Tính Năng</span>
           </button>
 
           <button className="editor-action" style={S.tplBtn} onClick={openMusicPanel} disabled={locked} title="Cài đặt nhạc nền và ghi âm lời chúc">
