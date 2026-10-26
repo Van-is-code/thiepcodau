@@ -1083,6 +1083,7 @@ button {
 
 /* Keepsake envelope: photos and a note emerge naturally from a real paper pocket. */
 .countdown-envelope-container {
+  --countdown-letter-width: 250px;
   width: min(100%, 340px);
   height: 430px;
   margin: 0 auto;
@@ -1124,7 +1125,7 @@ button {
   position: absolute;
   top: 0;
   left: 50%;
-  width: 100%;
+  width: var(--countdown-letter-width);
   height: 185px;
   z-index: 2;
   transform: translateX(-50%);
@@ -1168,7 +1169,7 @@ button {
   top: 58px;
   left: 50%;
   z-index: 4;
-  width: 250px;
+  width: var(--countdown-letter-width);
   height: 300px;
   transform: translateX(-50%);
   background: #fbfaf6 url('../images/khung-trang-tri-02.png') center / 100% 100% no-repeat;
