@@ -144,7 +144,7 @@ export default function InvitationsPage() {
           <h1 className="ph-t">Danh Sách Thiệp Cưới</h1>
           <p className="ph-d">Quản lý nội dung, hình ảnh, tài khoản mừng cưới và xuất bản thiệp của bạn.</p>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+        <div className="inv-header-actions" style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
           <div className={`quota-badge${quota.warn ? ' warn' : ''}`}>
             <span>Lượt tạo còn lại:</span>
             <strong>{quota.remain ?? '—'}</strong>

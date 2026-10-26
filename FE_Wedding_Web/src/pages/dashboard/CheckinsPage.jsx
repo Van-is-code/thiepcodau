@@ -316,7 +316,7 @@ export default function CheckinsPage() {
         </div>
       </div>
 
-      <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-subtle)', marginBottom: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <div className="checkin-list-meta" style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-subtle)', marginBottom: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <span>Hiển thị {visible.length} phản hồi</span>
         <span style={{ fontSize: 11.5, color: '#4f7e65', display: 'flex', alignItems: 'center', gap: 5 }}>
           <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#4f7e65', display: 'inline-block' }} />
@@ -474,9 +474,7 @@ export default function CheckinsPage() {
                   <span className={`mobile-status-pill ${cfg.cls}`}><StatusIcon size={14} /> {cfg.label}</span>
                 </div>
 
-                <div className={`mobile-checkin-message${message ? '' : ' empty'}`}>
-                  {message || 'Khách chưa để lại lời chúc.'}
-                </div>
+                {message && <div className="mobile-checkin-message">{message}</div>}
 
                 <div className="mobile-checkin-footer">
                   <span><IconUsers size={15} /> {statusKey === 'no' ? 'Không tham dự' : `${guestCount} người tham dự`}</span>

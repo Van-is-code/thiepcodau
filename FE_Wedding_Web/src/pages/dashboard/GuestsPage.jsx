@@ -255,7 +255,7 @@ export default function GuestsPage() {
 
       <InvitationSelector invitations={invitations} selectedId={selectedId} onChange={setSelectedId} />
 
-      <div style={{ display: 'flex', gap: 12, marginBottom: 18, alignItems: 'center' }}>
+      <div className="guest-searchbar" style={{ display: 'flex', gap: 12, marginBottom: 18, alignItems: 'center' }}>
         <div style={{ flex: 1, position: 'relative' }}>
           <span
             style={{
@@ -290,7 +290,7 @@ export default function GuestsPage() {
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
-        <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-subtle)', whiteSpace: 'nowrap' }}>
+        <span className="guest-search-count" style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-subtle)', whiteSpace: 'nowrap' }}>
           {filtered.length} kết quả
         </span>
       </div>
@@ -314,7 +314,7 @@ export default function GuestsPage() {
                   <div className="mobile-guest-avatar">{String(g.name || 'K').charAt(0).toUpperCase()}</div>
                   <div className="mobile-guest-title">
                     <strong>{g.name || 'Khách mời'}</strong>
-                    <span>{noteText || 'Thiệp mời cá nhân hóa'}</span>
+                    {noteText && <span>{noteText}</span>}
                   </div>
                   <button
                     type="button"

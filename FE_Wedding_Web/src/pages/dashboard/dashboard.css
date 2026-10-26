@@ -3149,6 +3149,58 @@
   .share-box { border-radius: 16px; }
   .ci-modal-hd { padding: 18px 18px 14px; }
   .ci-modal-bd { padding: 0 18px 20px; }
+
+  /* Mobile density pass: keep primary actions easy to tap, and tuck away
+     repeated context that is already available from the selected invitation. */
+  .pg { padding-top: 16px; }
+  .ph-row { margin-bottom: 11px; }
+  .inv-header-actions,
+  .guests-header-actions,
+  .checkins-header-actions { gap: 7px !important; }
+
+  .inv-header-actions .quota-badge,
+  .guests-header-actions .quota-badge { min-height: 32px; padding: 5px 9px; }
+
+  .inv-header-actions .btn-main,
+  .guests-header-actions .btn-main,
+  .checkins-header-actions .btn-main { min-height: 40px; }
+
+  .inv-sel { margin-bottom: 10px; }
+  .inv-sel-btn { min-height: 40px; font-size: 12.5px; }
+
+  .guest-searchbar { gap: 8px !important; margin-bottom: 10px !important; }
+  .guest-searchbar input { height: 39px !important; font-size: 12px !important; }
+  .guest-search-count { font-size: 10.5px !important; }
+
+  .checkin-list-meta { margin-bottom: 8px !important; font-size: 10.5px !important; }
+  .checkin-list-meta > span:last-child { font-size: 10px !important; }
+
+  .invite-link-settings {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 7px;
+    margin: 0 0 10px;
+  }
+
+  .invite-link-settings > span { font-size: 10.5px; }
+  .invite-link-settings .btn-sm { width: auto; min-height: 36px; padding: 6px 9px !important; font-size: 10.5px; }
+
+  .mobile-guest-title,
+  .mobile-checkin-name { gap: 1px; }
+  .mobile-guest-meta { margin: 7px 0; padding: 7px 9px; }
+  .mobile-checkin-message { margin: 8px 0; padding: 8px 9px; }
+  .mobile-checkin-footer { margin-top: 3px; }
+
+  .mobile-field { margin-top: 10px; }
+  .mobile-field input,
+  .mobile-settings-body input,
+  .mobile-settings-body textarea { min-height: 40px; }
+  .mobile-time-chips button { min-height: 28px; }
+  .mobile-create-invite { margin-top: 11px; }
+  .mobile-created-invite { margin-top: 11px; padding: 11px; }
+  .mobile-advanced-settings { margin-top: 10px; }
+  .mobile-advanced-settings summary { min-height: 44px; font-size: 12px; }
 }
 
 @media (max-width: 420px) {
@@ -3157,6 +3209,14 @@
   .mobile-bottom-item { font-size: 9.5px; }
   .tpl-grid { grid-template-columns: 1fr; }
   .ci-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ph-d { -webkit-line-clamp: 1; font-size: 11.5px; }
+  .ph-t { font-size: 24px; }
+  .quota-badge { font-size: 10.5px; }
+  .ci-sc { min-height: 73px; padding: 9px; }
+  .ci-sc-v { margin-top: 6px; font-size: 20px; }
+  .ci-sc-s { display: none; }
+  .mobile-invite-card h2 { font-size: 18px; }
+  .mobile-invite-card-head p { display: -webkit-box; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 1; }
   .ci-fbody { grid-template-columns: 1fr; }
   .ci-fbody .ci-ff:first-child { grid-column: auto; }
   .public-link-actions { grid-template-columns: 1fr; }
