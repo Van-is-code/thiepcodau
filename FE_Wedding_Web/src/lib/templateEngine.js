@@ -136,12 +136,25 @@ export const buildMergedData = (invitation) => {
 
   data.groom_name = invitation?.groom?.name_groom || ''
   data.bride_name = invitation?.bride?.name_bride || ''
-  data.groom_short_name = lastWord(data.groom_name)
-  data.bride_short_name = lastWord(data.bride_name)
-  data.groom_initial = data.groom_short_name.charAt(0)
-  data.bride_initial = data.bride_short_name.charAt(0)
 
-  if (!data.couple_names) {
+  // Cho phép người dùng tùy chỉnh tên ngắn / tên gọi và tên đôi hiển thị theo ý muốn,
+  // không bị ép buộc chỉ lấy chữ cuối (lastWord).
+  const customGroomShort = invitation?.extra_data?.groom_short_name ?? invitation?.groom_short_name
+  const customBrideShort = invitation?.extra_data?.bride_short_name ?? invitation?.bride_short_name
+  data.groom_short_name = (customGroomShort !== undefined && customGroomShort !== null && String(customGroomShort).trim() !== '')
+    ? String(customGroomShort).trim()
+    : (data.groom_name ? lastWord(data.groom_name) : '')
+  data.bride_short_name = (customBrideShort !== undefined && customBrideShort !== null && String(customBrideShort).trim() !== '')
+    ? String(customBrideShort).trim()
+    : (data.bride_name ? lastWord(data.bride_name) : '')
+
+  data.groom_initial = data.groom_short_name ? data.groom_short_name.charAt(0) : ''
+  data.bride_initial = data.bride_short_name ? data.bride_short_name.charAt(0) : ''
+
+  const customCoupleNames = invitation?.extra_data?.couple_names ?? invitation?.couple_names
+  if (customCoupleNames !== undefined && customCoupleNames !== null && String(customCoupleNames).trim() !== '') {
+    data.couple_names = String(customCoupleNames).trim()
+  } else if (!data.couple_names) {
     data.couple_names = [data.groom_short_name, data.bride_short_name].filter(Boolean).join(' & ')
   }
   if (!data.couple_full_names) {
@@ -217,8 +230,8 @@ export const buildMergedData = (invitation) => {
 // Field không khớp quy tắc nào bên dưới thì mặc định rơi vào extra_data (field
 // riêng theo mẫu) — khớp đúng cách buildMergedData() đã gộp extra_data vào top-level.
 // ---------------------------------------------------------------------------
-const GROOM_NAME_ALIASES = new Set(['groom_name', 'groom_short_name', 'groom_initial'])
-const BRIDE_NAME_ALIASES = new Set(['bride_name', 'bride_short_name', 'bride_initial'])
+const GROOM_NAME_ALIASES = new Set(['groom_name', 'groom_initial'])
+const BRIDE_NAME_ALIASES = new Set(['bride_name', 'bride_initial'])
 const CEREMONY_DATE_ALIASES = new Set([
   'ceremony_day', 'ceremony_month', 'ceremony_month_en', 'ceremony_year',
   'ceremony_weekday', 'ceremony_time_weekday', 'ceremony_short', 'ceremony_month_num', 'ceremony_year_num', 'ceremony_time', 'ceremony_weekday_date', 'ceremony_full_date',
@@ -239,6 +252,9 @@ const INVITATION_TEXT_FIELDS = new Set([
 export const resolveWriteTarget = (fieldKey) => {
   if (fieldKey.startsWith('groom.')) return { scope: 'groom', column: fieldKey.slice(6), widget: 'text' }
   if (fieldKey.startsWith('bride.')) return { scope: 'bride', column: fieldKey.slice(6), widget: 'text' }
+  if (fieldKey === 'groom_short_name') return { scope: 'extra_data', column: 'groom_short_name', widget: 'text' }
+  if (fieldKey === 'bride_short_name') return { scope: 'extra_data', column: 'bride_short_name', widget: 'text' }
+  if (fieldKey === 'couple_names') return { scope: 'extra_data', column: 'couple_names', widget: 'text' }
   if (GROOM_NAME_ALIASES.has(fieldKey)) return { scope: 'groom', column: 'name_groom', widget: 'text' }
   if (BRIDE_NAME_ALIASES.has(fieldKey)) return { scope: 'bride', column: 'name_bride', widget: 'text' }
   // Field GỐC (không phải alias hiển thị) mà chính openDateInput() và nút "Chọn ngày cưới"

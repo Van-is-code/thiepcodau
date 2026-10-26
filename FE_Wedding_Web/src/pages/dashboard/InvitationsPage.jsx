@@ -384,6 +384,16 @@ export default function InvitationsPage() {
                             />
                           )}
                         </div>
+                        <div className="fld full">
+                          <label>Tên cặp đôi hiển thị trên thiệp</label>
+                          <input
+                            value={
+                              inv.extra_data?.couple_names ||
+                              `${inv.extra_data?.groom_short_name || (inv.groom?.name_groom ? inv.groom.name_groom.trim().split(/\s+/).pop() : '')} & ${inv.extra_data?.bride_short_name || (inv.bride?.name_bride ? inv.bride.name_bride.trim().split(/\s+/).pop() : '')}`
+                            }
+                            readOnly
+                          />
+                        </div>
                         <div className="fld">
                           <label>Ngày tổ chức hôn lễ</label>
                           <input value={formatDate(inv.ceremony_date)} readOnly />
@@ -416,9 +426,19 @@ export default function InvitationsPage() {
                   {activeTab === 'chure' && (
                     <div className="dsec">
                       <div className="fgrid">
-                        <div className="fld full">
+                        <div className="fld">
                           <label>Họ tên chú rể</label>
                           <input value={inv.groom?.name_groom || inv.groom || ''} readOnly />
+                        </div>
+                        <div className="fld">
+                          <label>Tên gọi / hiển thị ngắn trên thiệp</label>
+                          <input
+                            value={
+                              inv.extra_data?.groom_short_name ||
+                              (inv.groom?.name_groom ? inv.groom.name_groom.trim().split(/\s+/).pop() : '')
+                            }
+                            readOnly
+                          />
                         </div>
                       </div>
                       {inv.groom_id ? (
@@ -439,9 +459,19 @@ export default function InvitationsPage() {
                   {activeTab === 'codau' && (
                     <div className="dsec">
                       <div className="fgrid">
-                        <div className="fld full">
+                        <div className="fld">
                           <label>Họ tên cô dâu</label>
                           <input value={inv.bride?.name_bride || inv.bride || ''} readOnly />
+                        </div>
+                        <div className="fld">
+                          <label>Tên gọi / hiển thị ngắn trên thiệp</label>
+                          <input
+                            value={
+                              inv.extra_data?.bride_short_name ||
+                              (inv.bride?.name_bride ? inv.bride.name_bride.trim().split(/\s+/).pop() : '')
+                            }
+                            readOnly
+                          />
                         </div>
                       </div>
                       {inv.bride_id ? (
