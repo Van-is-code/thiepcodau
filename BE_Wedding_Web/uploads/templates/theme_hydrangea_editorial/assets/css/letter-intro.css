@@ -475,13 +475,14 @@ body.intro-active {
 
 .letter-names {
   font-family: var(--intro-font-script, 'Alex Brush', cursive);
-  font-size: 26px;
+  font-size: clamp(17px, 4.8vw, 22px);
   font-weight: 400;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.01em;
   color: var(--intro-hydrangea-deep);
   text-transform: capitalize;
   line-height: 1.25;
   margin: 2px 0 4px;
+  white-space: nowrap;
 }
 
 .letter-botanical-rule {

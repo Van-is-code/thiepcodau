@@ -309,34 +309,39 @@ button {
   margin: 0;
   display: inline-flex;
   flex-direction: row;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: baseline;
   justify-content: center;
-  gap: 8px 12px;
-  row-gap: 2px;
+  gap: 6px 8px;
   width: 100%;
+  max-width: 100%;
+  padding: 0 10px;
+  box-sizing: border-box;
+  white-space: nowrap;
 }
 
 .cover-name {
   font-family: 'DFVN Ed Drayton', var(--font-script), cursive;
-  font-size: clamp(4.4rem, 15.5vw, 5.8rem);
+  font-size: clamp(2.2rem, 7.2vw, 3.4rem);
   font-weight: 400;
   letter-spacing: 0;
   color: #FFFFFF;
-  line-height: 1.12;
+  line-height: 1.15;
   text-shadow: 0 3px 18px rgba(0, 0, 0, 0.65), 0 1px 4px rgba(0, 0, 0, 0.4);
   display: inline-block;
+  white-space: nowrap;
 }
 
 .cover-amp {
   font-family: 'DFVN Ed Drayton', var(--font-script), cursive;
-  font-size: clamp(3.2rem, 11.5vw, 4.2rem);
+  font-size: clamp(1.8rem, 5.8vw, 2.6rem);
   color: #FFFFFF;
   opacity: 0.96;
   line-height: 1;
   margin: 0 4px;
   text-shadow: 0 3px 16px rgba(0, 0, 0, 0.65);
   display: inline-block;
+  flex-shrink: 0;
 }
 
 .cover-overlay-tagline {
@@ -2377,13 +2382,14 @@ button {
 
 .finale-couple-names {
   font-family: var(--font-script), 'Alex Brush', cursive;
-  font-size: clamp(2.4rem, 8vw, 3.2rem);
+  font-size: clamp(1.9rem, 6.0vw, 2.6rem);
   font-weight: 400;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.01em;
   text-transform: capitalize;
   color: var(--hydrangea-deep);
   margin-bottom: 4px;
-  line-height: 1.15;
+  line-height: 1.2;
+  white-space: nowrap;
 }
 
 .finale-date {
