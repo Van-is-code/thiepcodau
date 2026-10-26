@@ -1084,7 +1084,7 @@ button {
 /* Keepsake envelope: photos and a note emerge naturally from a real paper pocket. */
 .countdown-envelope-container {
   width: min(100%, 340px);
-  height: 450px;
+  height: 430px;
   margin: 0 auto;
   position: relative;
   z-index: 2;
@@ -1125,7 +1125,7 @@ button {
   top: 0;
   left: 0;
   width: 100%;
-  height: 164px;
+  height: 150px;
   z-index: 2;
 }
 
@@ -1144,10 +1144,28 @@ button {
   z-index: 3;
 }
 
+/* This is the back of the same envelope, not a separate panel behind the card. */
+.countdown-envelope-body::before {
+  content: '';
+  position: absolute;
+  top: 94px;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 0;
+  box-sizing: border-box;
+  border: 1px solid rgba(132, 111, 115, 0.25);
+  border-radius: 4px 4px 7px 7px;
+  background:
+    linear-gradient(180deg, rgba(255, 253, 247, 0.82), rgba(239, 229, 212, 0.96)),
+    url('../images/khung-trang-tri-02.png') center / 100% 100% no-repeat;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.85);
+}
+
 /* A smaller paper note, not a tall card pretending to be an envelope. */
 .countdown-letter-card {
   position: absolute;
-  top: 68px;
+  top: 58px;
   left: 50%;
   z-index: 4;
   width: 250px;
