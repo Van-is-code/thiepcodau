@@ -196,4 +196,13 @@ const setShareSettings = async (req, res) => {
 	}
 };
 
-module.exports = { getAll, getById, getBySlug, getOgImage, create, update, editorSave, changeTemplate, setMusic, setBank, remove, createDraft, checkSlug, setSlug, setTitle, setShareSettings };
+const setDisplaySettings = async (req, res) => {
+	try {
+		const data = await invitationService.setDisplaySettings(req.params.id, req.body, actorOf(req));
+		return res.status(200).json({ success: true, message: 'Đã cập nhật cài đặt giao diện', data });
+	} catch (error) {
+		return res.status(error.status || 500).json({ success: false, message: error.message || 'Cập nhật cài đặt giao diện thất bại' });
+	}
+};
+
+module.exports = { getAll, getById, getBySlug, getOgImage, create, update, editorSave, changeTemplate, setMusic, setBank, remove, createDraft, checkSlug, setSlug, setTitle, setShareSettings, setDisplaySettings };

@@ -24,6 +24,7 @@ router.patch('/:id/template', invitationController.changeTemplate);
 // Nhạc nền (1 hoặc nhiều link / kho nhạc): không tính vào hạn mức.
 router.patch('/:id/music', invitationController.setMusic);
 router.patch('/:id/bank', invitationController.setBank);
+router.patch('/:id/display-settings', invitationController.setDisplaySettings);
 // Đổi slug đường dẫn thiệp
 router.post('/:id/check-slug', invitationController.checkSlug);
 router.patch('/:id/slug', invitationController.setSlug);

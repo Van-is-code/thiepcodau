@@ -12,6 +12,7 @@
     initLightbox();
     initGiftModal();
     initUnifiedBlessing();
+    applySectionToggles(window.invitationData);
         initMusic();
     initScrollObserver();
     initMapDirections();
@@ -213,6 +214,117 @@
       /* ------------------------------------------------------------------ */
   /* 4. Stationery Gift Popup Modal (Hộp quà mừng cưới)                */
   /* ------------------------------------------------------------------ */
+  
+  /* ------------------------------------------------------------------ */
+  /* Display Toggles: RSVP, Wishes, Wishes List, Gift Box, Background   */
+  /* ------------------------------------------------------------------ */
+  function applySectionToggles(data) {
+    var d = data || window.invitationData || {};
+    var extra = d.extra_data || {};
+
+    var showRsvp = (extra.show_rsvp !== undefined) ? Boolean(extra.show_rsvp) : (d.show_rsvp !== undefined ? Boolean(d.show_rsvp) : true);
+    var allowWishes = (extra.allow_wishes !== undefined) ? Boolean(extra.allow_wishes) : (d.allow_wishes !== undefined ? Boolean(d.allow_wishes) : true);
+    var showWishesList = (extra.show_wishes_list !== undefined) ? Boolean(extra.show_wishes_list) : (d.show_wishes_list !== undefined ? Boolean(d.show_wishes_list) : true);
+    var showGiftBox = (extra.show_gift_box !== undefined) ? Boolean(extra.show_gift_box) : (d.show_gift_box !== undefined ? Boolean(d.show_gift_box) : true);
+    var bgImage = extra.background_image || d.background_image || '';
+
+    // Áp dụng ảnh nền tuỳ biến
+    var bgStyleEl = document.getElementById('theme-custom-bg-style');
+    if (bgImage) {
+      if (!bgStyleEl) {
+        bgStyleEl = document.createElement('style');
+        bgStyleEl.id = 'theme-custom-bg-style';
+        document.head.appendChild(bgStyleEl);
+      }
+      bgStyleEl.textContent =
+        'body, .editorial-canvas { ' +
+        '  background-image: url("' + bgImage + '") !important;' +
+        '  background-size: cover !important;' +
+        '  background-position: center !important;' +
+        '  background-attachment: fixed !important;' +
+        '  background-repeat: no-repeat !important;' +
+        '} ' +
+        '.editorial-canvas::before { ' +
+        '  content: ""; position: fixed; inset: 0; background: rgba(250, 247, 242, 0.78); pointer-events: none; z-index: 0; ' +
+        '} ' +
+        '.editorial-scene, .editorial-finale, .scene-hero { position: relative; z-index: 1; background-color: transparent !important; }';
+    } else if (bgStyleEl) {
+      bgStyleEl.remove();
+    }
+
+    var blessingSection = document.getElementById('blessing');
+    var galleryGiftBlock = document.getElementById('gallery-gift-block');
+    var form = document.querySelector('[data-unified-form]');
+    var attendanceBlock = document.querySelector('.blessing-attendance-block');
+    var guestsWrap = document.querySelector('#blessing-guests-wrap');
+    var msgInput = document.querySelector('#blessing-message');
+    var msgWrap = msgInput ? msgInput.closest('.form-field-hairline') : null;
+    var submitRow = document.querySelector('.blessing-submit-row');
+    var submitBtn = submitRow ? submitRow.querySelector('button[type="submit"]') : null;
+    var actionsDivider = document.querySelector('.blessing-actions-divider');
+    var blessingGiftAction = document.querySelector('.blessing-gift-action');
+    var journalBlock = document.querySelector('.blessing-journal-block');
+
+    var rsvpOff = !showRsvp;
+    var wishesAllOff = (!allowWishes && !showWishesList);
+
+    // Điều kiện: nếu cả 1 (RSVP) và 2 (gửi lời chúc + danh sách lời chúc) đều tắt, mà 3 (hộp quà) bật:
+    if (rsvpOff && wishesAllOff && showGiftBox) {
+      if (blessingSection) blessingSection.style.display = 'none';
+      if (galleryGiftBlock) galleryGiftBlock.style.display = 'block';
+    } else if (rsvpOff && wishesAllOff && !showGiftBox) {
+      if (blessingSection) blessingSection.style.display = 'none';
+      if (galleryGiftBlock) galleryGiftBlock.style.display = 'none';
+    } else {
+      if (blessingSection) blessingSection.style.display = '';
+      if (galleryGiftBlock) galleryGiftBlock.style.display = 'none';
+
+      // Chi tiết từng khối trong blessing:
+      if (attendanceBlock) attendanceBlock.style.display = showRsvp ? '' : 'none';
+      if (guestsWrap) {
+        if (!showRsvp) {
+          guestsWrap.style.display = 'none';
+        } else {
+          var yesChecked = document.querySelector('input[name="attending"][value="yes"]:checked');
+          guestsWrap.style.display = yesChecked ? '' : 'none';
+        }
+      }
+
+      if (msgWrap) msgWrap.style.display = allowWishes ? '' : 'none';
+      if (msgInput) {
+        if (allowWishes) {
+          msgInput.setAttribute('required', 'required');
+        } else {
+          msgInput.removeAttribute('required');
+        }
+      }
+
+      if (!showRsvp && !allowWishes) {
+        if (form) form.style.display = 'none';
+      } else {
+        if (form) form.style.display = '';
+        if (submitRow) submitRow.style.display = '';
+        if (submitBtn) {
+          if (showRsvp && allowWishes) {
+            submitBtn.textContent = 'GỬI LỜI CHÚC & XÁC NHẬN';
+          } else if (showRsvp && !allowWishes) {
+            submitBtn.textContent = 'XÁC NHẬN THAM DỰ';
+          } else if (!showRsvp && allowWishes) {
+            submitBtn.textContent = 'GỬI LỜI CHÚC';
+          }
+        }
+      }
+
+      if (journalBlock) journalBlock.style.display = showWishesList ? '' : 'none';
+      if (blessingGiftAction) blessingGiftAction.style.display = showGiftBox ? '' : 'none';
+      if (actionsDivider) {
+        actionsDivider.style.display = (showGiftBox && (showRsvp || allowWishes)) ? '' : 'none';
+      }
+    }
+  }
+
+  window.__wwApplyDisplayToggles = applySectionToggles;
+
   function initGiftModal() {
     var modal = document.getElementById('gift-modal');
     var openBtns = document.querySelectorAll('[data-open-gift-modal]');
@@ -397,6 +509,13 @@
     });
 
     if (closeBtn) closeBtn.addEventListener('click', closeModal);
+    document.addEventListener('click', function(e) {
+      var trigger = e.target && e.target.closest && e.target.closest('[data-open-gift-modal]');
+      if (trigger) {
+        e.preventDefault();
+        openModal();
+      }
+    });
 
     modal.addEventListener('click', function (e) {
       if (e.target === modal) closeModal();
@@ -656,6 +775,7 @@
           invId = incoming.id;
           storageKey = 'hydrangea_editorial_wishes_' + invId;
           loadWishes();
+          applySectionToggles(incoming);
         }
       }
     });

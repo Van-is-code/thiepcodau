@@ -2565,3 +2565,19 @@ button {
   transform: translateX(-50%) translateY(0);
   opacity: 1;
 }
+
+/* Nút gửi quà mừng khi chuyển lên dưới gallery */
+.gallery-gift-action {
+  margin-top: 36px;
+  margin-bottom: 24px;
+  padding: 0 20px;
+  text-align: center;
+}
+.gallery-gift-action .gift-trigger-hint {
+  font-family: var(--font-body, inherit);
+  font-size: 12px;
+  font-style: italic;
+  color: var(--ink-muted, #807871);
+  margin-bottom: 12px;
+  letter-spacing: 0.02em;
+}

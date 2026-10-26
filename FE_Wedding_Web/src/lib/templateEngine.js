@@ -191,6 +191,22 @@ export const buildMergedData = (invitation) => {
     data.wedding_location = `— ${data.wedding_city} —`
   }
 
+    // Tuỳ biến hiển thị: RSVP, Lời chúc, Danh sách lời chúc, Hộp quà, Ảnh nền
+  const customShowRsvp = invitation?.extra_data?.show_rsvp ?? invitation?.show_rsvp
+  data.show_rsvp = customShowRsvp !== undefined ? Boolean(customShowRsvp) : true
+
+  const customAllowWishes = invitation?.extra_data?.allow_wishes ?? invitation?.allow_wishes
+  data.allow_wishes = customAllowWishes !== undefined ? Boolean(customAllowWishes) : true
+
+  const customShowWishesList = invitation?.extra_data?.show_wishes_list ?? invitation?.show_wishes_list
+  data.show_wishes_list = customShowWishesList !== undefined ? Boolean(customShowWishesList) : true
+
+  const customShowGiftBox = invitation?.extra_data?.show_gift_box ?? invitation?.show_gift_box
+  data.show_gift_box = customShowGiftBox !== undefined ? Boolean(customShowGiftBox) : true
+
+  const customBgImage = invitation?.extra_data?.background_image ?? invitation?.background_image
+  data.background_image = customBgImage ? toAbsoluteMediaUrl(String(customBgImage).trim()) : ''
+
   data.invitation_id = invitation?.id || ''
   data.api_base = API_BASE || (typeof window !== 'undefined' ? window.location.origin : '')
   data.guest_name = invitation?.guest_name || ''
@@ -255,6 +271,7 @@ export const resolveWriteTarget = (fieldKey) => {
   if (fieldKey === 'groom_short_name') return { scope: 'extra_data', column: 'groom_short_name', widget: 'text' }
   if (fieldKey === 'bride_short_name') return { scope: 'extra_data', column: 'bride_short_name', widget: 'text' }
   if (fieldKey === 'couple_names') return { scope: 'extra_data', column: 'couple_names', widget: 'text' }
+  if (['show_rsvp', 'allow_wishes', 'show_wishes_list', 'show_gift_box', 'background_image'].includes(fieldKey)) return { scope: 'extra_data', column: fieldKey, widget: 'text' }
   if (GROOM_NAME_ALIASES.has(fieldKey)) return { scope: 'groom', column: 'name_groom', widget: 'text' }
   if (BRIDE_NAME_ALIASES.has(fieldKey)) return { scope: 'bride', column: 'name_bride', widget: 'text' }
   // Field GỐC (không phải alias hiển thị) mà chính openDateInput() và nút "Chọn ngày cưới"
@@ -1170,6 +1187,35 @@ const buildDomInjectScript = (editMode) => `
       }
     } catch (e) {}
     try { updateCountdownTimer(data); } catch (e) {}
+    try {
+      if (typeof window.__wwApplyDisplayToggles === 'function') {
+        window.__wwApplyDisplayToggles(data);
+      }
+    } catch (e) {}
+
+    var bgImg = data.background_image || (data.extra_data && data.extra_data.background_image) || '';
+    var existingBgStyle = document.getElementById('ww-custom-bg-style');
+    if (bgImg) {
+      if (!existingBgStyle) {
+        existingBgStyle = document.createElement('style');
+        existingBgStyle.id = 'ww-custom-bg-style';
+        document.head.appendChild(existingBgStyle);
+      }
+      existingBgStyle.textContent =
+        'body, .editorial-canvas, .ladi-wraper, .ladi-section-background { ' +
+        '  background-image: url("' + bgImg + '") !important;' +
+        '  background-size: cover !important;' +
+        '  background-position: center !important;' +
+        '  background-attachment: fixed !important;' +
+        '  background-repeat: no-repeat !important;' +
+        '} ' +
+        '.editorial-canvas::before { ' +
+        '  content: ""; position: fixed; inset: 0; background: rgba(250, 247, 242, 0.78); pointer-events: none; z-index: 0; ' +
+        '} ' +
+        '.editorial-scene, .editorial-finale, .scene-hero { position: relative; z-index: 1; background-color: transparent !important; }';
+    } else if (existingBgStyle) {
+      existingBgStyle.remove();
+    }
 
     var mSettings = data.music_settings || (data.extra_data && data.extra_data.music_settings) || {};
     var mVol = typeof mSettings.music_volume === 'number' ? mSettings.music_volume / 100 : 0.8;

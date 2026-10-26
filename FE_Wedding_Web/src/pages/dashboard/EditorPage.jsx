@@ -22,9 +22,11 @@ import {
   IconMusic,
   IconHelpCircle,
   IconEdit3,
+  IconSliders,
 } from '../../components/Icons'
 import BankQrPanel from '../../components/BankQrPanel'
 import MusicPanel from '../../components/MusicPanel'
+import DisplaySettingsPanel from '../../components/DisplaySettingsPanel'
 import ChangeTemplateModal from '../../components/ChangeTemplateModal'
 import ChangeSlugModal from '../../components/ChangeSlugModal'
 import ImageCropper from '../../components/ImageCropper'
@@ -64,6 +66,7 @@ export default function EditorPage() {
   const [lockState, setLockState] = useState(null)
   const [bankPanel, setBankPanel] = useState(false)
   const [musicPanel, setMusicPanel] = useState(false)
+  const [displaySettingsPanel, setDisplaySettingsPanel] = useState(false)
   const [changeTemplateModalOpen, setChangeTemplateModalOpen] = useState(false)
   const [changeSlugModalOpen, setChangeSlugModalOpen] = useState(false)
   const [isEditingTitle, setIsEditingTitle] = useState(false)
@@ -471,6 +474,36 @@ export default function EditorPage() {
   })()
 
   const openMusicPanel = openPanel(setMusicPanel)
+  const openDisplaySettingsPanel = openPanel(setDisplaySettingsPanel)
+
+  const handleDisplaySettingsSaved = (settings) => {
+    setDisplaySettingsPanel(false)
+    const nextExtra = {
+      ...(invitation?.extra_data || {}),
+      show_rsvp: settings.show_rsvp,
+      allow_wishes: settings.allow_wishes,
+      show_wishes_list: settings.show_wishes_list,
+      show_gift_box: settings.show_gift_box,
+      background_image: settings.background_image,
+    }
+    const nextInv = {
+      ...invitation,
+      extra_data: nextExtra,
+      show_rsvp: settings.show_rsvp,
+      allow_wishes: settings.allow_wishes,
+      show_wishes_list: settings.show_wishes_list,
+      show_gift_box: settings.show_gift_box,
+      background_image: settings.background_image,
+    }
+    setInvitation(nextInv)
+    pushToIframe(nextInv, pending)
+    modal.alert({
+      tone: 'success',
+      title: 'Đã lưu cài đặt giao diện',
+      message: 'Các tuỳ biến tính năng và ảnh nền đã được áp dụng thành công vào thiệp cưới.',
+    })
+  }
+
 
   // Sau khi quét + lưu QR mừng cưới (hỗ trợ cả cô dâu & chú rể + chọn chế độ hiển thị):
   // Cập nhật extra_data.bank + đẩy vào iframe để hiển thị ngay lập tức.
@@ -665,6 +698,17 @@ export default function EditorPage() {
         </div>
 
         <div className="editor-actions" style={S.rightActions}>
+          <button
+            className="editor-action"
+            style={{ ...S.tplBtn, background: '#f5eefc', borderColor: '#e1d2f2', color: '#5b3a82', fontWeight: 600 }}
+            onClick={openDisplaySettingsPanel}
+            disabled={locked}
+            title="Cài đặt RSVP, lời chúc, quà mừng và ảnh nền background"
+          >
+            <IconSliders size={15} color="#5b3a82" />
+            <span>Tuỳ Biến Giao Diện</span>
+          </button>
+
           <button className="editor-action" style={S.tplBtn} onClick={openMusicPanel} disabled={locked} title="Cài đặt nhạc nền và ghi âm lời chúc">
             <IconMusic size={15} />
             <span>Âm Thanh & Nhạc</span>
@@ -753,6 +797,13 @@ export default function EditorPage() {
       )}
       {musicPanel && (
         <MusicPanel invitation={invitation} onSaved={handleMusicSaved} onClose={() => setMusicPanel(false)} />
+      )}
+      {displaySettingsPanel && (
+        <DisplaySettingsPanel
+          invitation={invitation}
+          onSaved={handleDisplaySettingsSaved}
+          onClose={() => setDisplaySettingsPanel(false)}
+        />
       )}
       {changeTemplateModalOpen && (
         <ChangeTemplateModal

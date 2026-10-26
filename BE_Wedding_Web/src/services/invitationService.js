@@ -688,6 +688,30 @@ const setBank = async (id, body, actor) => {
 };
 
 // Đổi mẫu: không giới hạn số lần, nhưng vẫn chặn khi thiệp đã khoá.
+// Cài đặt hiển thị & giao diện (RSVP, Lời chúc, Danh sách lời chúc, Hộp quà, Ảnh nền background).
+// Không tính vào hạn mức sửa; vẫn chặn khi thiệp đã khoá.
+const setDisplaySettings = async (id, body, actor) => {
+	const item = await findRaw(id);
+	await ensureCanAccess(item, actor);
+	await ensureCustomerActivated(item.users_id, actor);
+
+	const curExtra = (typeof item.extra_data === 'object' && item.extra_data !== null) ? item.extra_data : {};
+	const nextExtra = {
+		...curExtra,
+		show_rsvp: body.show_rsvp !== undefined ? Boolean(body.show_rsvp) : (curExtra.show_rsvp ?? true),
+		allow_wishes: body.allow_wishes !== undefined ? Boolean(body.allow_wishes) : (curExtra.allow_wishes ?? true),
+		show_wishes_list: body.show_wishes_list !== undefined ? Boolean(body.show_wishes_list) : (curExtra.show_wishes_list ?? true),
+		show_gift_box: body.show_gift_box !== undefined ? Boolean(body.show_gift_box) : (curExtra.show_gift_box ?? true),
+		background_image: body.background_image !== undefined ? String(body.background_image || '').trim() : (curExtra.background_image || '')
+	};
+
+	item.extra_data = nextExtra;
+	if (Invitation.rawAttributes.updated_at) item.updated_at = new Date();
+	await item.save();
+
+	return withLockState(await findRaw(id));
+};
+
 const changeTemplate = async (id, templateId, actor) => {
 	if (!templateId || !isUuid(templateId)) {
 		const error = new Error('template_id không hợp lệ');
@@ -1283,6 +1307,6 @@ const getOgImageBuffer = async (slug) => {
 
 module.exports = {
 	getAll, getById, getBySlug, create, update, editorSave, changeTemplate, setMusic, setBank, remove, createDraft,
-	assertOwnMusic, checkSlugAvailability, updateSlug, cleanSlug, generateSlug, validateSlugFormat, updateTitle, updateShareSettings,
+	assertOwnMusic, checkSlugAvailability, updateSlug, cleanSlug, generateSlug, validateSlugFormat, updateTitle, updateShareSettings, setDisplaySettings,
 	getOgImageBuffer
 };
