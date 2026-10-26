@@ -2372,7 +2372,14 @@ button {
 }
 
 .finale-text-content {
-  padding: 0 24px;
+  padding: 0 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .finale-script-lg {
@@ -2382,14 +2389,16 @@ button {
 
 .finale-couple-names {
   font-family: var(--font-script), 'Alex Brush', cursive;
-  font-size: clamp(1.9rem, 6.0vw, 2.6rem);
+  font-size: clamp(20px, 5.6vw, 26px);
   font-weight: 400;
   letter-spacing: 0.01em;
   text-transform: capitalize;
   color: var(--hydrangea-deep);
   margin-bottom: 4px;
-  line-height: 1.2;
+  line-height: 1.25;
+  text-align: center;
   white-space: nowrap;
+  max-width: 100%;
 }
 
 .finale-date {
