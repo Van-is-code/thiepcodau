@@ -408,20 +408,35 @@
 
                 <!-- Keepsake envelope: a small letter and two memories tucked inside -->
     <div class="countdown-envelope-container">
+      <!-- Soft botanical accents stay behind the envelope rather than competing with its contents. -->
+      <div class="countdown-envelope-sprigs" aria-hidden="true">
+        <img src="assets/images/flower1-decoration.webp" alt="" class="countdown-envelope-sprig countdown-envelope-sprig--left">
+        <img src="assets/images/flower2-decoration.webp" alt="" class="countdown-envelope-sprig countdown-envelope-sprig--right">
+      </div>
+
+      <!-- The back flap is visible above and around the card: this is the missing 'nắp thư'. -->
+      <div class="countdown-top-flap" aria-hidden="true">
+        <svg class="countdown-top-flap-svg" viewBox="0 0 340 164" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="countdownFlapPaper" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#FFFDF8"/>
+              <stop offset="100%" stop-color="#EFE2CF"/>
+            </linearGradient>
+          </defs>
+          <path d="M1,160 L170,4 L339,160 Z" fill="url(#countdownFlapPaper)" stroke="rgba(128, 103, 125, 0.3)" stroke-width="1"/>
+          <path d="M9,157 L170,13 L331,157" fill="none" stroke="rgba(255,255,255,0.86)" stroke-width="1.2"/>
+        </svg>
+      </div>
+
       <!-- The pocket is deliberately kept separate from the card so it reads as a real envelope. -->
       <div class="countdown-envelope-body">
         <!-- Hand-torn stationery peeking out from the pocket -->
         <div class="countdown-letter-card">
           <div class="countdown-letter-card-inner">
-            <!-- Overlapping polaroids make the envelope feel like a keepsake, not a flat card. -->
+            <!-- One discreet polaroid is enough to make the envelope personal. -->
             <div class="cd-pinned-polaroid cd-pinned-polaroid--left">
               <div class="cd-mini-polaroid-frame">
                 <img src="assets/images/52ed9a3f-608e-403c-98a9-9cf73747e2a8.jpg" alt="Khoảnh khắc ngọt ngào" data-image="gallery" data-image-index="0" data-preserve-default="true" class="cd-mini-photo">
-              </div>
-            </div>
-            <div class="cd-pinned-polaroid cd-pinned-polaroid--right">
-              <div class="cd-mini-polaroid-frame">
-                <img src="assets/images/45a36f75-193b-41c4-a6ba-9e071ee1870c.jpg" alt="Khoảnh khắc ngọt ngào" data-image="gallery" data-image-index="1" data-preserve-default="true" class="cd-mini-photo">
               </div>
             </div>
 

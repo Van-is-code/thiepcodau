@@ -1084,11 +1084,56 @@ button {
 /* Keepsake envelope: photos and a note emerge naturally from a real paper pocket. */
 .countdown-envelope-container {
   width: min(100%, 340px);
-  height: 425px;
+  height: 450px;
   margin: 0 auto;
   position: relative;
   z-index: 2;
   filter: drop-shadow(0 14px 24px rgba(75, 58, 66, 0.14));
+}
+
+.countdown-envelope-sprigs {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.countdown-envelope-sprig {
+  position: absolute;
+  display: block;
+  opacity: 0.56;
+}
+
+.countdown-envelope-sprig--left {
+  top: -16px;
+  left: -13px;
+  width: 108px;
+  transform: rotate(-19deg);
+}
+
+.countdown-envelope-sprig--right {
+  top: -3px;
+  right: -16px;
+  width: 82px;
+  opacity: 0.46;
+  transform: scaleX(-1) rotate(-14deg);
+}
+
+/* The visible back flap gives the composition a real envelope silhouette. */
+.countdown-top-flap {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 164px;
+  z-index: 2;
+}
+
+.countdown-top-flap-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 2px 3px rgba(84, 63, 72, 0.07));
 }
 
 .countdown-envelope-body {
@@ -1096,14 +1141,15 @@ button {
   width: 100%;
   height: 100%;
   box-sizing: border-box;
+  z-index: 3;
 }
 
 /* A smaller paper note, not a tall card pretending to be an envelope. */
 .countdown-letter-card {
   position: absolute;
-  top: 30px;
+  top: 68px;
   left: 50%;
-  z-index: 3;
+  z-index: 4;
   width: 250px;
   height: 300px;
   transform: translateX(-50%);
@@ -1127,23 +1173,13 @@ button {
 }
 
 .cd-pinned-polaroid--left {
-  top: -22px;
-  left: -58px;
+  top: -38px;
+  left: -30px;
   transform: rotate(-8deg);
-}
-
-.cd-pinned-polaroid--right {
-  top: -52px;
-  right: -84px;
-  transform: rotate(9deg);
 }
 
 .cd-pinned-polaroid--left:hover {
   transform: rotate(-4deg) translateY(-3px) scale(1.03);
-}
-
-.cd-pinned-polaroid--right:hover {
-  transform: rotate(5deg) translateY(-3px) scale(1.03);
 }
 
 .cd-mini-polaroid-frame {
@@ -1151,15 +1187,10 @@ button {
   padding: 5px 5px 17px;
   border-radius: 1px;
   box-shadow: 0 5px 13px rgba(54, 37, 45, 0.2);
-  width: 96px;
-  height: 125px;
+  width: 86px;
+  height: 112px;
   box-sizing: border-box;
   display: flex;
-}
-
-.cd-pinned-polaroid--right .cd-mini-polaroid-frame {
-  width: 126px;
-  height: 164px;
 }
 
 .cd-mini-photo {
