@@ -2450,15 +2450,6 @@ button {
   opacity: 0.85;
 }
 
-.stationery-hallmark {
-  font-family: var(--font-primary);
-  font-size: 8.5px;
-  font-weight: 600;
-  letter-spacing: 0.28em;
-  color: var(--ink-faint);
-  margin-top: 12px;
-}
-
 /* A single compact maker line at the very bottom of the invitation. */
 .invitation-contact {
   display: flex;
