@@ -449,6 +449,8 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .fld label {
@@ -493,12 +495,13 @@
 
 .fgrid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 14px 18px;
 }
 
 .fgrid .full {
   grid-column: 1 / -1;
+  min-width: 0;
 }
 
 .savebar {
@@ -1894,10 +1897,11 @@
     padding: 0 16px;
   }
   .fgrid {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
   .fgrid .full {
     grid-column: 1;
+    min-width: 0;
   }
   .gt-head, .ci-thead {
     display: none;

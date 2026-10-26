@@ -288,11 +288,12 @@ export default function InvitationsPage() {
                               gap: 8,
                               boxSizing: 'border-box',
                               width: '100%',
+                              minWidth: 0,
                             }}
                           >
                             <div
                               style={{
-                                flex: 1,
+                                flex: '1 1 0',
                                 minWidth: 0,
                                 overflow: 'hidden',
                                 textOverflow: 'ellipsis',
