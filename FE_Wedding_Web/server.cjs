@@ -230,6 +230,8 @@ const metaChiaSe = async (req, slug) => {
   const origin = originCua(req);
   const canonicalUrl = `${origin}${req.url || `/${slug}`}`;
 
+  const siteName = coupleNames || 'Thiệp Cưới Online';
+
   return {
     title: chuoiGon(title, defaultPublicTitle),
     description: chuoiGon(description, defaultPublicDescription),
@@ -238,6 +240,7 @@ const metaChiaSe = async (req, slug) => {
     imageWidth,
     imageHeight,
     canonicalUrl,
+    siteName,
   };
 };
 
@@ -247,38 +250,45 @@ const chenMetaChiaSe = (html, meta) => {
   const canonicalUrl = boKyTuNguyHiem(meta.canonicalUrl);
   const image = boKyTuNguyHiem(meta.image);
   const imageType = boKyTuNguyHiem(meta.imageType || 'image/jpeg');
-  const imageWidth = boKyTuNguyHiem(meta.imageWidth || '1200');
-  const imageHeight = boKyTuNguyHiem(meta.imageHeight || '800');
-  const siteName = 'Thiệp Cưới Online';
+  const siteName = boKyTuNguyHiem(meta.siteName || 'Thiệp Cưới Online');
+
+  // KHÔNG đặt og:image:width và og:image:height nếu ảnh là dạng dọc (height > width)
+  // vì Facebook scraper có quy tắc nghiêm ngặt: nếu width < height trong thẻ meta,
+  // Facebook sẽ đánh dấu ảnh không đúng tỉ lệ card và từ chối tải ảnh hoàn toàn.
+  // Khi không khai báo width/height cứng, Facebook sẽ tự tải ảnh về và căn chỉnh hiển thị.
+  const isLandscapeOrSquare = Number(meta.imageWidth) >= Number(meta.imageHeight);
+  const dimensionTags = (image && isLandscapeOrSquare && meta.imageWidth && meta.imageHeight) ? [
+    `<meta property="og:image:width" content="${meta.imageWidth}" />`,
+    `<meta property="og:image:height" content="${meta.imageHeight}" />`,
+  ] : [];
 
   const tags = [
     `<title>${title}</title>`,
     `<meta name="description" content="${description}" />`,
     `<link rel="canonical" href="${canonicalUrl}" />`,
 
-    // Open Graph / Facebook / Zalo
-    '<meta property="og:type" content="website" />',
+    // Open Graph / Facebook / Messenger / Zalo
     `<meta property="og:site_name" content="${siteName}" />`,
-    `<meta property="og:url" content="${canonicalUrl}" />`,
+    '<meta property="og:type" content="website" />',
     `<meta property="og:title" content="${title}" />`,
+    `<meta property="og:url" content="${canonicalUrl}" />`,
     `<meta property="og:description" content="${description}" />`,
     ...(image ? [
       `<meta property="og:image" content="${image}" />`,
+      `<meta property="og:image:url" content="${image}" />`,
       `<meta property="og:image:secure_url" content="${image}" />`,
       `<meta property="og:image:type" content="${imageType}" />`,
-      `<meta property="og:image:width" content="${imageWidth}" />`,
-      `<meta property="og:image:height" content="${imageHeight}" />`,
+      ...dimensionTags,
       `<meta property="og:image:alt" content="${title}" />`,
     ] : []),
 
-    // Twitter Card / Messenger / Telegram (summary_large_image kích hoạt ảnh preview to)
+    // Twitter Card (Messenger đọc thẻ này để hiển thị ảnh preview tràn viền)
     '<meta name="twitter:card" content="summary_large_image" />',
-    `<meta name="twitter:url" content="${canonicalUrl}" />`,
     `<meta name="twitter:title" content="${title}" />`,
     `<meta name="twitter:description" content="${description}" />`,
     ...(image ? [
       `<meta name="twitter:image" content="${image}" />`,
-      `<meta name="twitter:image:alt" content="${title}" />`,
+      `<meta name="twitter:image:src" content="${image}" />`,
     ] : []),
 
     // Zalo hints
@@ -287,10 +297,18 @@ const chenMetaChiaSe = (html, meta) => {
     ...(image ? [`<meta property="zalo:image" content="${image}" />`] : []),
   ].join('\n    ');
 
-  const withoutTitle = html.replace(/<title>[\s\S]*?<\/title>/i, '');
-  const cleanHead = withoutTitle.replace(/<meta\s+(?:property|name)=["'](?:og:|twitter:|zalo:)[^>]*>/gi, '');
-  const withPrefix = cleanHead.replace(/<head>/i, '<head prefix="og: https://ogp.me/ns#">');
-  return withPrefix.replace(/<\/head>/i, `    ${tags}\n  </head>`);
+  // ĐẶT TOÀN BỘ THẺ META NGAY ĐẦU <head> (trước mọi thẻ <script> và <link css>)
+  // Các bot như Facebook/Messenger chỉ đọc ~60KB đầu tiên của HTML, nếu để script ở trước
+  // hoặc đặt thẻ meta ở cuối </head>, bot có thể bỏ qua không đọc thẻ og:image.
+  let output = html.replace(/<title>[\s\S]*?<\/title>/i, '');
+  output = output.replace(/<meta\s+(?:property|name)=["'](?:og:|twitter:|zalo:|description)[^>]*>/gi, '');
+  
+  if (/<head[^>]*>/i.test(output)) {
+    output = output.replace(/<head([^>]*)>/i, `<head$1 prefix="og: https://ogp.me/ns#">\n    ${tags}`);
+  } else {
+    output = `<head prefix="og: https://ogp.me/ns#">\n    ${tags}\n  </head>\n` + output;
+  }
+  return output;
 };
 
 const guiTrangThiep = (req, res, index, slug) => {
@@ -299,7 +317,9 @@ const guiTrangThiep = (req, res, index, slug) => {
     res.writeHead(200, {
       'Content-Type': 'text/html; charset=utf-8',
       'Content-Length': Buffer.byteLength(output),
-      'Cache-Control': 'no-cache',
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0',
       'X-Content-Type-Options': 'nosniff',
     });
     res.end(output);
@@ -366,6 +386,10 @@ const guiTep = (res, abs, urlPath) => {
 
 const server = http.createServer((req, res) => {
   const urlPath = (req.url || '/').split('?')[0];
+  const userAgent = req.headers['user-agent'] || '-';
+  if (/facebook|zalo|bot|crawl|preview|curl/i.test(userAgent) || urlPath.includes('minhhang-dangchien')) {
+    console.log(`[FE-REQ] ${req.method} ${req.url} | Host: ${req.headers.host} | UA: ${userAgent.slice(0, 80)}`);
+  }
 
   const backendMatch = req.url.match(CUA_BACKEND);
   if (backendMatch) {
