@@ -841,6 +841,13 @@ const buildDomInjectScript = (editMode) => `
       if (el === document.activeElement) continue; // đang gõ dở thì không ghi đè
       var value = getPath(data, el.getAttribute('data-field'));
       if (value !== undefined && value !== null && value !== '') {
+        // The letter's calligraphy makes a lowercase initial look especially
+        // ambiguous. Normalize name initials on that small introductory card.
+        if (el.classList && el.classList.contains('letter-names')) {
+          value = String(value).replace(/(^|[\\s&])([^\\s&])/g, function (_all, prefix, initial) {
+            return prefix + initial.toLocaleUpperCase('vi-VN');
+          });
+        }
         el.textContent = value;
       }
     }
