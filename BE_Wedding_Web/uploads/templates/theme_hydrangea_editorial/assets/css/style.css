@@ -2398,12 +2398,10 @@ button {
   position: absolute;
   inset: 0;
   z-index: 1;
-  /* A continuous photo vignette keeps the portrait intact—never a separate strip. */
-  background: linear-gradient(180deg,
-    rgba(24, 16, 28, 0.00) 0%,
-    rgba(24, 16, 28, 0.03) 42%,
-    rgba(24, 16, 28, 0.20) 62%,
-    rgba(24, 16, 28, 0.68) 100%);
+  /* A full paper-like veil softens the photo evenly, without creating a band. */
+  background: rgba(250, 247, 242, 0.46);
+  backdrop-filter: blur(1.4px) saturate(0.84);
+  -webkit-backdrop-filter: blur(1.4px) saturate(0.84);
   pointer-events: none;
 }
 
@@ -2448,8 +2446,8 @@ button {
 .finale-script-lg {
   font-size: 2.6rem;
   margin-bottom: 2px;
-  color: #fffdf9;
-  text-shadow: 0 2px 3px rgba(20, 11, 23, 0.76), 0 8px 20px rgba(20, 11, 23, 0.46);
+  color: var(--hydrangea-deep);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.98), 0 3px 14px rgba(255, 255, 255, 0.92);
 }
 
 .finale-couple-names {
@@ -2458,13 +2456,13 @@ button {
   font-weight: 400;
   letter-spacing: 0.01em;
   text-transform: capitalize;
-  color: #fffdf9;
+  color: var(--hydrangea-deep);
   margin-bottom: 4px;
   line-height: 1.25;
   text-align: center;
   white-space: nowrap;
   max-width: 100%;
-  text-shadow: 0 2px 3px rgba(20, 11, 23, 0.78), 0 7px 18px rgba(20, 11, 23, 0.45);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.98), 0 3px 13px rgba(255, 255, 255, 0.90);
 }
 
 .finale-date {
@@ -2472,28 +2470,33 @@ button {
   font-size: 10.5px;
   font-weight: 600;
   letter-spacing: 0.22em;
-  color: rgba(255, 253, 249, 0.90);
+  color: var(--hydrangea-mid);
   margin-bottom: 16px;
-  text-shadow: 0 1px 3px rgba(20, 11, 23, 0.75);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.96), 0 2px 10px rgba(255, 255, 255, 0.86);
 }
 
 .finale-heartfelt {
   font-size: 13px;
-  color: rgba(255, 253, 249, 0.94);
+  color: var(--ink-muted);
   line-height: 1.7;
   max-width: 320px;
   margin: 0 auto 22px;
-  text-shadow: 0 1px 3px rgba(20, 11, 23, 0.80);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.96), 0 2px 10px rgba(255, 255, 255, 0.82);
 }
 
 .finale-botanical-bottom {
-  display: none;
+  position: relative;
+  width: 68%;
+  max-width: 250px;
+  margin: 2px auto 0;
+  z-index: 1;
+  pointer-events: none;
 }
 
 .finale-garland-img {
   width: 100%;
   display: block;
-  opacity: 0.85;
+  opacity: 0.62;
 }
 
 /* Compact maker credit at the very bottom of the invitation. */
