@@ -15,7 +15,6 @@ import {
 import InvitationSelector from './InvitationSelector'
 import QuickShareModal from './QuickShareModal'
 import ChangeSlugModal from '../../components/ChangeSlugModal'
-import ImagePickerModal from '../../components/ImagePickerModal'
 import {
   IconSend,
   IconSparkles,
@@ -45,9 +44,6 @@ export default function InvitePage() {
   const [privateShareTitleDraft, setPrivateShareTitleDraft] = useState('')
   const [publicShareDescriptionDraft, setPublicShareDescriptionDraft] = useState('')
   const [privateShareDescriptionDraft, setPrivateShareDescriptionDraft] = useState('')
-  const [privateShareImageDraft, setPrivateShareImageDraft] = useState('')
-  const [shareImagePickerOpen, setShareImagePickerOpen] = useState(false)
-  const [shareImageUploading, setShareImageUploading] = useState(false)
   const [savingShareSettings, setSavingShareSettings] = useState(false)
   const [shareSettingsMessage, setShareSettingsMessage] = useState('')
   const [shareSettingsSection, setShareSettingsSection] = useState('')
@@ -105,7 +101,6 @@ export default function InvitePage() {
     setPrivateShareTitleDraft(privateShareTitleTemplate(currentInvitation))
     setPublicShareDescriptionDraft(publicShareDescription(currentInvitation))
     setPrivateShareDescriptionDraft(privateShareDescriptionTemplate(currentInvitation))
-    setPrivateShareImageDraft(String(currentInvitation?.extra_data?.share_image_private || '').trim())
     setShareSettingsMessage('')
   }, [currentInvitation?.id])
 
@@ -184,7 +179,6 @@ export default function InvitePage() {
         private_title: privateTitle,
         public_description: publicDescription,
         private_description: privateDescription,
-        private_image: privateShareImageDraft.trim(),
       })
       const updated = res.data?.data || res.data
       setInvitations((prev) => prev.map((item) => (
@@ -199,8 +193,6 @@ export default function InvitePage() {
                 share_description_public: publicDescription,
                 share_description_private: privateDescription,
               }
-              if (privateShareImageDraft.trim()) nextExtra.share_image_private = privateShareImageDraft.trim()
-              else delete nextExtra.share_image_private
               return { ...item, ...updated, extra_data: nextExtra }
             })()
       )))
@@ -209,44 +201,6 @@ export default function InvitePage() {
       setShareSettingsMessage(err?.response?.data?.message || err.message || 'Không thể lưu tiêu đề chia sẻ.')
     } finally {
       setSavingShareSettings(false)
-    }
-  }
-
-  const selectPrivateShareImage = (image) => {
-    if (!image?.image_url) return
-    setPrivateShareImageDraft(image.image_url)
-    setShareImagePickerOpen(false)
-    setShareSettingsSection('private')
-    setShareSettingsMessage('Đã chọn ảnh xem trước. Bấm lưu lời mời riêng để áp dụng.')
-  }
-
-  const uploadPrivateShareImage = async (file) => {
-    if (!file || !currentInvitation?.id) return
-    setShareImageUploading(true)
-    setShareSettingsSection('private')
-    setShareSettingsMessage('')
-    try {
-      const formData = new FormData()
-      formData.append('image', file)
-      formData.append('invitation_id', currentInvitation.id)
-      formData.append('image_type', 'share')
-      formData.append('sort_order', '0')
-      formData.append('image_alt', 'Ảnh xem trước link riêng')
-      const res = await api.createInvitationImage(formData)
-      const saved = res.data?.data || res.data
-      if (!saved?.image_url) throw new Error('Không nhận được ảnh sau khi tải lên.')
-      setPrivateShareImageDraft(saved.image_url)
-      setInvitations((prev) => prev.map((item) => (
-        String(item.id) === String(currentInvitation.id)
-          ? { ...item, images: [...(item.images || []), saved] }
-          : item
-      )))
-      setShareImagePickerOpen(false)
-      setShareSettingsMessage('Đã tải ảnh lên. Bấm lưu lời mời riêng để áp dụng.')
-    } catch (err) {
-      setShareSettingsMessage(err?.response?.data?.message || err.message || 'Không thể tải ảnh xem trước.')
-    } finally {
-      setShareImageUploading(false)
     }
   }
 
@@ -291,46 +245,6 @@ export default function InvitePage() {
       setIsSavingGuest(false)
     }
   }
-
-  const renderPrivateShareImageField = (mobile = false) => (
-    <div className={`share-preview-field${mobile ? ' share-preview-field--mobile' : ''}`}>
-      <label>Ảnh hiển thị khi gửi link riêng</label>
-      <div className="share-preview-picker">
-        {privateShareImageDraft ? (
-          <img src={privateShareImageDraft} alt="Ảnh xem trước link riêng" />
-        ) : (
-          <div className="share-preview-empty">Chưa chọn ảnh</div>
-        )}
-        <div className="share-preview-actions">
-          <strong>Ảnh xem trước trên Messenger, Zalo và Facebook</strong>
-          <p>Chỉ áp dụng cho link cá nhân hoá; nội dung thiệp không bị thay đổi.</p>
-          <div>
-            <button
-              type="button"
-              className="btn-sm ghost"
-              onClick={() => setShareImagePickerOpen(true)}
-              disabled={!currentInvitation || shareImageUploading}
-            >
-              {shareImageUploading ? 'Đang tải ảnh…' : 'Chọn hoặc tải ảnh'}
-            </button>
-            {privateShareImageDraft && (
-              <button
-                type="button"
-                className="btn-sm ghost share-preview-remove"
-                onClick={() => {
-                  setPrivateShareImageDraft('')
-                  setShareSettingsSection('private')
-                  setShareSettingsMessage('Đã bỏ ảnh xem trước. Bấm lưu lời mời riêng để áp dụng.')
-                }}
-              >
-                Dùng ảnh mặc định
-              </button>
-            )}
-          </div>
-        </div>
-      </div>
-    </div>
-  )
 
   return (
     <div className="pg invite-page-shell">
@@ -556,7 +470,6 @@ export default function InvitePage() {
                     setShareSettingsMessage('')
                   }}
                 />
-                {renderPrivateShareImageField(true)}
                 <button type="button" className="mobile-save-settings" onClick={() => saveShareSettings('private')} disabled={!currentInvitation || savingShareSettings}>
                   {savingShareSettings ? 'Đang lưu…' : 'Lưu nội dung chia sẻ'}
                 </button>
@@ -712,7 +625,6 @@ export default function InvitePage() {
               />
               <p>Dùng <code>{'{guest_name}'}</code>. Xem trước: <strong>{privateShareDescription({ extra_data: { share_description_private: privateShareDescriptionDraft } }, guestName || 'Vân')}</strong></p>
             </div>
-            {renderPrivateShareImageField()}
             <div className="share-settings-inline">
               <button
                 type="button"
@@ -866,18 +778,6 @@ export default function InvitePage() {
           </div>
         </section>
       </div>
-
-      {shareImagePickerOpen && currentInvitation && (
-        <ImagePickerModal
-          slot="share"
-          index={null}
-          ratio={1.91}
-          existingImages={currentInvitation.images || []}
-          onSelectExisting={selectPrivateShareImage}
-          onUploadNew={uploadPrivateShareImage}
-          onClose={() => setShareImagePickerOpen(false)}
-        />
-      )}
 
       {/* Share Modal Popup */}
       <QuickShareModal

@@ -221,8 +221,7 @@ const metaChiaSe = async (req, slug) => {
     || validUserImages[0]
     || null;
 
-  const privateShareImageUrl = guestName ? chuoiGon(extra.share_image_private) : '';
-  const shareImageUrl = privateShareImageUrl || chuoiGon(extra.share_image);
+  const shareImageUrl = chuoiGon(extra.share_image);
   const customShareImage = shareImageUrl
     ? allImages.find((img) => img?.image_url === shareImageUrl && img.image_type !== 'bank_qr')
     : null;
@@ -279,8 +278,7 @@ const metaChiaSe = async (req, slug) => {
   const imgTime = previewImage?.updated_at ? new Date(previewImage.updated_at).getTime().toString(36) : '';
   const invTime = invitation.updated_at ? new Date(invitation.updated_at).getTime().toString(36) : '';
   const imageVersion = `${contentHash || previewImage?.id?.slice(0, 8) || 'v'}_${imgTime || invTime || '1'}`;
-  const previewQuery = guestName ? 'private=1&' : '';
-  const ogImageUrl = `${origin}/api/invitations/slug/${encodeURIComponent(slug)}/og-image.jpg?${previewQuery}v=${encodeURIComponent(imageVersion)}`;
+  const ogImageUrl = `${origin}/api/invitations/slug/${encodeURIComponent(slug)}/og-image.jpg?v=${encodeURIComponent(imageVersion)}`;
 
   return {
     title: chuoiGon(title, defaultPublicTitle),

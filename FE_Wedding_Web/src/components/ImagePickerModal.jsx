@@ -9,7 +9,7 @@ function formatRatio(r) {
 }
 
 function getSlotTitle(slot, index) {
-  if (slot === 'share') return 'Ảnh xem trước khi gửi link riêng'
+  if (slot === 'share') return 'Ảnh xem trước khi gửi link'
   if (slot === 'cover') return 'Ảnh bìa thiệp cưới'
   if (slot === 'groom') return 'Ảnh chú rể'
   if (slot === 'bride') return 'Ảnh cô dâu'
@@ -19,7 +19,7 @@ function getSlotTitle(slot, index) {
 }
 
 function getSlotBadge(img) {
-  if (img.image_type === 'share') return 'Preview'
+  if (img.image_type === 'share') return 'Preview link'
   if (img.image_type === 'cover') return 'Bìa'
   if (img.image_type === 'groom') return 'Chú rể'
   if (img.image_type === 'bride') return 'Cô dâu'

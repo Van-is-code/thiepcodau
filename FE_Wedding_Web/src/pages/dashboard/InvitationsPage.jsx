@@ -4,6 +4,7 @@ import { api } from '../../api'
 import { formatDate, invitationName, invitationSlug, toArray } from './helpers'
 import BankQrUpload from '../../components/BankQrUpload'
 import MusicPanel from '../../components/MusicPanel'
+import ImagePickerModal from '../../components/ImagePickerModal'
 import {
   IconMail,
   IconPlus,
@@ -35,6 +36,9 @@ export default function InvitationsPage() {
   const [savingTitle, setSavingTitle] = useState(false)
   const [titleSuccessId, setTitleSuccessId] = useState('')
   const [titleError, setTitleError] = useState('')
+  const [shareImagePicker, setShareImagePicker] = useState(null)
+  const [savingShareImage, setSavingShareImage] = useState(false)
+  const [shareImageMessage, setShareImageMessage] = useState({ id: '', text: '', error: false })
 
   const handleStartEditTitle = (inv) => {
     setEditingTitleId(String(inv.id))
@@ -112,6 +116,75 @@ export default function InvitationsPage() {
   const handleMusicSaved = (updated) => {
     if (!updated || !updated.id) return
     setItems((prev) => prev.map((item) => (item.id === updated.id ? { ...item, ...updated } : item)))
+  }
+
+  const saveShareImage = async (invitation, imageUrl) => {
+    if (!invitation?.id) return
+    setSavingShareImage(true)
+    setShareImageMessage({ id: '', text: '', error: false })
+    try {
+      const res = await api.setInvitationShareSettings(invitation.id, { share_image: imageUrl || '' })
+      const updated = res.data?.data || res.data
+      setItems((prev) => prev.map((item) => {
+        if (String(item.id) !== String(invitation.id)) return item
+        const nextExtra = { ...(item.extra_data || {}), ...(updated?.extra_data || {}) }
+        if (imageUrl) nextExtra.share_image = imageUrl
+        else delete nextExtra.share_image
+        return { ...item, ...updated, images: updated?.images || item.images, extra_data: nextExtra }
+      }))
+      setShareImagePicker(null)
+      setShareImageMessage({
+        id: String(invitation.id),
+        text: imageUrl ? 'Đã lưu ảnh xem trước cho mọi link của thiệp.' : 'Đã dùng lại ảnh mặc định của thiệp.',
+        error: false,
+      })
+    } catch (err) {
+      setShareImageMessage({
+        id: String(invitation.id),
+        text: err?.response?.data?.message || err.message || 'Không thể lưu ảnh xem trước.',
+        error: true,
+      })
+    } finally {
+      setSavingShareImage(false)
+    }
+  }
+
+  const uploadShareImage = async (invitation, file) => {
+    if (!invitation?.id || !file) return
+    setSavingShareImage(true)
+    setShareImageMessage({ id: '', text: '', error: false })
+    try {
+      const formData = new FormData()
+      formData.append('image', file)
+      formData.append('invitation_id', invitation.id)
+      formData.append('image_type', 'share')
+      formData.append('sort_order', '0')
+      formData.append('image_alt', 'Ảnh xem trước khi chia sẻ thiệp')
+      const res = await api.createInvitationImage(formData)
+      const saved = res.data?.data || res.data
+      if (!saved?.image_url) throw new Error('Không nhận được ảnh sau khi tải lên.')
+      const shareRes = await api.setInvitationShareSettings(invitation.id, { share_image: saved.image_url })
+      const updated = shareRes.data?.data || shareRes.data
+      setItems((prev) => prev.map((item) => {
+        if (String(item.id) !== String(invitation.id)) return item
+        return {
+          ...item,
+          ...updated,
+          images: updated?.images || [...(item.images || []), saved],
+          extra_data: { ...(item.extra_data || {}), ...(updated?.extra_data || {}), share_image: saved.image_url },
+        }
+      }))
+      setShareImagePicker(null)
+      setShareImageMessage({ id: String(invitation.id), text: 'Đã tải và lưu ảnh xem trước cho mọi link.', error: false })
+    } catch (err) {
+      setShareImageMessage({
+        id: String(invitation.id),
+        text: err?.response?.data?.message || err.message || 'Không thể tải ảnh xem trước.',
+        error: true,
+      })
+    } finally {
+      setSavingShareImage(false)
+    }
   }
 
   if (loading) {
@@ -326,6 +399,45 @@ export default function InvitationsPage() {
                                 </>
                               )}
                             </button>
+                          </div>
+                        </div>
+                        <div className="fld full">
+                          <label>Ảnh nhúng khi chia sẻ link</label>
+                          <div className="share-preview-picker share-preview-picker--global">
+                            {inv.extra_data?.share_image ? (
+                              <img src={inv.extra_data.share_image} alt="Ảnh xem trước khi chia sẻ thiệp" />
+                            ) : (
+                              <div className="share-preview-empty">Dùng ảnh bìa hoặc ảnh cưới mặc định</div>
+                            )}
+                            <div className="share-preview-actions">
+                              <strong>Hiển thị cho cả link chung và link riêng</strong>
+                              <p>Ảnh này dùng trên thẻ nhúng Messenger, Zalo và Facebook; nội dung thiệp không thay đổi.</p>
+                              <div>
+                                <button
+                                  type="button"
+                                  className="btn-sm ghost"
+                                  onClick={() => setShareImagePicker(inv)}
+                                  disabled={savingShareImage}
+                                >
+                                  {savingShareImage && String(shareImagePicker?.id) === String(inv.id) ? 'Đang lưu…' : 'Chọn hoặc tải ảnh'}
+                                </button>
+                                {inv.extra_data?.share_image && (
+                                  <button
+                                    type="button"
+                                    className="btn-sm ghost share-preview-remove"
+                                    onClick={() => saveShareImage(inv, '')}
+                                    disabled={savingShareImage}
+                                  >
+                                    Dùng ảnh mặc định
+                                  </button>
+                                )}
+                              </div>
+                              {shareImageMessage.id === String(inv.id) && (
+                                <p className={shareImageMessage.error ? 'share-preview-message error' : 'share-preview-message'}>
+                                  {shareImageMessage.text}
+                                </p>
+                              )}
+                            </div>
                           </div>
                         </div>
                         <div className="fld full">
@@ -566,6 +678,17 @@ export default function InvitationsPage() {
           })
         )}
       </div>
+      {shareImagePicker && (
+        <ImagePickerModal
+          slot="share"
+          index={null}
+          ratio={1.91}
+          existingImages={shareImagePicker.images || []}
+          onSelectExisting={(image) => saveShareImage(shareImagePicker, image?.image_url || '')}
+          onUploadNew={(file) => uploadShareImage(shareImagePicker, file)}
+          onClose={() => setShareImagePicker(null)}
+        />
+      )}
     </div>
   )
 }

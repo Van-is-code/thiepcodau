@@ -1072,6 +1072,11 @@
   background: var(--bg-subtle);
 }
 
+.share-preview-picker--global {
+  background: #fffaf6;
+  border-color: #f1dacb;
+}
+
 .share-preview-picker > img,
 .share-preview-empty {
   width: 94px;
@@ -1109,6 +1114,15 @@
   color: var(--text-muted);
   font-size: 11.5px;
   line-height: 1.4;
+}
+
+.share-preview-actions .share-preview-message {
+  margin: 7px 0 0;
+  color: #4f7e65;
+}
+
+.share-preview-actions .share-preview-message.error {
+  color: #c04938;
 }
 
 .share-preview-actions > div {

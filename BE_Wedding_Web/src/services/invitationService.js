@@ -1138,16 +1138,22 @@ const updateShareSettings = async (invitationId, payload, actor) => {
 	const item = await findRaw(invitationId);
 	await ensureCanAccess(item, actor);
 
-	const clean = (value, fallback) => String(value ?? fallback).trim().replace(/\s+/g, ' ').slice(0, 160);
-	const publicTitle = clean(payload?.public_title ?? payload?.share_title_public, item.title_vi || 'Thiệp cưới');
-	const privateTitle = clean(
-		payload?.private_title ?? payload?.share_title_private,
-		'Mời {guest_name} đến chung vui cùng chúng tớ'
-	);
 	const currentExtra = (typeof item.extra_data === 'object' && item.extra_data !== null) ? item.extra_data : {};
+	const clean = (value, fallback) => String(value ?? fallback).trim().replace(/\s+/g, ' ').slice(0, 160);
+	const hasPublicTitle = Object.prototype.hasOwnProperty.call(payload || {}, 'public_title')
+		|| Object.prototype.hasOwnProperty.call(payload || {}, 'share_title_public');
+	const hasPrivateTitle = Object.prototype.hasOwnProperty.call(payload || {}, 'private_title')
+		|| Object.prototype.hasOwnProperty.call(payload || {}, 'share_title_private');
+	const publicTitle = hasPublicTitle
+		? clean(payload?.public_title ?? payload?.share_title_public, item.title_vi || 'Thiệp cưới')
+		: clean(currentExtra.share_title_public, item.title_vi || 'Thiệp cưới');
+	const privateTitle = hasPrivateTitle
+		? clean(payload?.private_title ?? payload?.share_title_private, 'Mời {guest_name} đến chung vui cùng chúng tớ')
+		: clean(currentExtra.share_title_private, 'Mời {guest_name} đến chung vui cùng chúng tớ');
 	const cleanDescription = (value, fallback) => String(value ?? fallback).trim().replace(/\s+/g, ' ').slice(0, 300);
 	const hasPublicDescription = Object.prototype.hasOwnProperty.call(payload || {}, 'public_description') || Object.prototype.hasOwnProperty.call(payload || {}, 'share_description_public');
 	const hasPrivateDescription = Object.prototype.hasOwnProperty.call(payload || {}, 'private_description') || Object.prototype.hasOwnProperty.call(payload || {}, 'share_description_private');
+	const hasShareImage = Object.prototype.hasOwnProperty.call(payload || {}, 'share_image');
 	const hasPrivateImage = Object.prototype.hasOwnProperty.call(payload || {}, 'private_image') || Object.prototype.hasOwnProperty.call(payload || {}, 'share_image_private');
 	const publicDescription = hasPublicDescription
 		? cleanDescription(payload?.public_description ?? payload?.share_description_public, '')
@@ -1155,19 +1161,25 @@ const updateShareSettings = async (invitationId, payload, actor) => {
 	const privateDescription = hasPrivateDescription
 		? cleanDescription(payload?.private_description ?? payload?.share_description_private, '')
 		: cleanDescription(currentExtra.share_description_private, '');
+	const validateOwnedShareImage = (url) => {
+		if (!url) return '';
+		const permittedImage = (Array.isArray(item.images) ? item.images : []).some((image) => (
+			image?.image_url === url && image.image_type !== 'bank_qr'
+		));
+		if (!permittedImage) {
+			const err = new Error('Ảnh xem trước phải là ảnh đã tải lên của chính thiệp này.');
+			err.status = 400;
+			throw err;
+		}
+		return url;
+	};
+	let shareImage = String(currentExtra.share_image || '').trim();
+	if (hasShareImage) {
+		shareImage = validateOwnedShareImage(String(payload?.share_image ?? '').trim());
+	}
 	let privateImage = String(currentExtra.share_image_private || '').trim();
 	if (hasPrivateImage) {
-		privateImage = String(payload?.private_image ?? payload?.share_image_private ?? '').trim();
-		if (privateImage) {
-			const permittedImage = (Array.isArray(item.images) ? item.images : []).some((image) => (
-				image?.image_url === privateImage && image.image_type !== 'bank_qr'
-			));
-			if (!permittedImage) {
-				const err = new Error('Ảnh xem trước phải là ảnh đã tải lên của chính thiệp này.');
-				err.status = 400;
-				throw err;
-			}
-		}
+		privateImage = validateOwnedShareImage(String(payload?.private_image ?? payload?.share_image_private ?? '').trim());
 	}
 	if (!publicTitle || !privateTitle || (hasPublicDescription && !publicDescription) || (hasPrivateDescription && !privateDescription)) {
 		const err = new Error('Tiêu đề và mô tả chia sẻ không được để trống.');
@@ -1185,6 +1197,10 @@ const updateShareSettings = async (invitationId, payload, actor) => {
 	if (hasPrivateImage) {
 		if (privateImage) nextExtra.share_image_private = privateImage;
 		else delete nextExtra.share_image_private;
+	}
+	if (hasShareImage) {
+		if (shareImage) nextExtra.share_image = shareImage;
+		else delete nextExtra.share_image;
 	}
 	item.extra_data = nextExtra;
 	if (Invitation.rawAttributes.updated_at) item.updated_at = getNowValue(Invitation.rawAttributes.updated_at);
@@ -1223,8 +1239,7 @@ const getOgImageBuffer = async (slug, { privatePreview = false } = {}) => {
 		|| validUserImages.find((img) => ['gallery', 'story', 'hero'].includes(img.image_type))
 		|| validUserImages[0]
 		|| null;
-	const privateShareImageUrl = privatePreview ? String(item.extra_data?.share_image_private || '').trim() : '';
-	const shareImageUrl = privateShareImageUrl || String(item.extra_data?.share_image || '').trim();
+	const shareImageUrl = String(item.extra_data?.share_image || '').trim();
 	const customShareImage = shareImageUrl
 		? allImages.find((img) => img?.image_url === shareImageUrl && img.image_type !== 'bank_qr')
 		: null;
