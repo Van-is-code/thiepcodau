@@ -2399,9 +2399,9 @@ button {
   inset: 0;
   z-index: 1;
   /* A full paper-like veil softens the photo evenly, without creating a band. */
-  background: rgba(250, 247, 242, 0.46);
-  backdrop-filter: blur(1.4px) saturate(0.84);
-  -webkit-backdrop-filter: blur(1.4px) saturate(0.84);
+  background: rgba(250, 247, 242, 0.32);
+  backdrop-filter: blur(1.8px) saturate(0.82);
+  -webkit-backdrop-filter: blur(1.8px) saturate(0.82);
   pointer-events: none;
 }
 
@@ -2432,22 +2432,28 @@ button {
 }
 
 .finale-text-content {
-  padding: 22px 10px 12px;
+  padding: 24px 20px 18px;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
   width: 100%;
-  max-width: 360px;
+  max-width: 344px;
   box-sizing: border-box;
-  background: transparent;
+  /* A compact vellum panel gives every custom text colour a calm, reliable ground. */
+  background: linear-gradient(135deg, rgba(255, 253, 249, 0.88), rgba(250, 246, 240, 0.76));
+  border: 1px solid rgba(255, 255, 255, 0.90);
+  border-radius: 20px;
+  box-shadow: 0 12px 30px rgba(67, 48, 67, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(7px);
+  -webkit-backdrop-filter: blur(7px);
 }
 
 .finale-script-lg {
   font-size: 2.6rem;
   margin-bottom: 2px;
   color: var(--hydrangea-deep);
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.98), 0 3px 14px rgba(255, 255, 255, 0.92);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.92);
 }
 
 .finale-couple-names {
@@ -2462,7 +2468,7 @@ button {
   text-align: center;
   white-space: nowrap;
   max-width: 100%;
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.98), 0 3px 13px rgba(255, 255, 255, 0.90);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.92);
 }
 
 .finale-date {
@@ -2472,7 +2478,7 @@ button {
   letter-spacing: 0.22em;
   color: var(--hydrangea-mid);
   margin-bottom: 16px;
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.96), 0 2px 10px rgba(255, 255, 255, 0.86);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.88);
 }
 
 .finale-heartfelt {
@@ -2481,7 +2487,7 @@ button {
   line-height: 1.7;
   max-width: 320px;
   margin: 0 auto 22px;
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.96), 0 2px 10px rgba(255, 255, 255, 0.82);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.88);
 }
 
 .finale-botanical-bottom {
