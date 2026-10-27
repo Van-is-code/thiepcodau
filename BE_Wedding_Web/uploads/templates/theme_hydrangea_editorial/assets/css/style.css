@@ -2431,34 +2431,7 @@ button {
   justify-content: flex-end;
 }
 
-.finale-photo-overlay::before,
-.finale-photo-overlay::after {
-  content: '';
-  position: absolute;
-  z-index: 0;
-  width: 148px;
-  height: 104px;
-  background: url('../images/hydrangea-bottom.webp') center / contain no-repeat;
-  filter: var(--botanical-filter, none);
-  opacity: 0.47;
-  pointer-events: none;
-}
-
-.finale-photo-overlay::before {
-  left: -26px;
-  bottom: 12px;
-  transform: rotate(10deg);
-}
-
-.finale-photo-overlay::after {
-  right: -30px;
-  top: 30%;
-  transform: scaleX(-1) rotate(18deg);
-}
-
 .finale-text-content {
-  position: relative;
-  z-index: 1;
   padding: 24px 16px 18px;
   display: flex;
   flex-direction: column;
@@ -2473,8 +2446,8 @@ button {
 .finale-script-lg {
   font-size: 2.6rem;
   margin-bottom: 2px;
-  color: #fffdf9;
-  text-shadow: 0 2px 3px rgba(23, 13, 28, 0.92), 0 6px 18px rgba(23, 13, 28, 0.72);
+  color: var(--hydrangea-mid);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.52), 0 2px 4px rgba(23, 13, 28, 0.94), 0 0 12px rgba(255, 255, 255, 0.30);
 }
 
 .finale-couple-names {
@@ -2483,13 +2456,13 @@ button {
   font-weight: 400;
   letter-spacing: 0.01em;
   text-transform: capitalize;
-  color: #fffdf9;
+  color: var(--hydrangea-deep);
   margin-bottom: 4px;
   line-height: 1.25;
   text-align: center;
   white-space: nowrap;
   max-width: 100%;
-  text-shadow: 0 2px 3px rgba(23, 13, 28, 0.94), 0 6px 18px rgba(23, 13, 28, 0.74);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.52), 0 2px 4px rgba(23, 13, 28, 0.96), 0 0 12px rgba(255, 255, 255, 0.30);
 }
 
 .finale-date {
@@ -2497,28 +2470,33 @@ button {
   font-size: 10.5px;
   font-weight: 600;
   letter-spacing: 0.22em;
-  color: rgba(255, 253, 249, 0.91);
+  color: var(--hydrangea-mid);
   margin-bottom: 16px;
-  text-shadow: 0 1px 3px rgba(23, 13, 28, 0.88);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.48), 0 1px 3px rgba(23, 13, 28, 0.92);
 }
 
 .finale-heartfelt {
   font-size: 13px;
-  color: rgba(255, 253, 249, 0.94);
+  color: var(--ink-muted);
   line-height: 1.7;
   max-width: 320px;
   margin: 0 auto 22px;
-  text-shadow: 0 1px 3px rgba(23, 13, 28, 0.90);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.50), 0 1px 3px rgba(23, 13, 28, 0.94);
 }
 
 .finale-botanical-bottom {
-  display: none;
+  position: relative;
+  width: 76%;
+  max-width: 270px;
+  margin: -8px auto 0;
+  z-index: 1;
+  pointer-events: none;
 }
 
 .finale-garland-img {
   width: 100%;
   display: block;
-  opacity: 0.62;
+  opacity: 0.85;
 }
 
 /* Compact maker credit at the very bottom of the invitation. */
