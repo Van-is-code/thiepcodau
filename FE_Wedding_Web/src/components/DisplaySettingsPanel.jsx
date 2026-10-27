@@ -38,6 +38,13 @@ const PRESET_TEXT_COLORS = [
   { name: 'Xám than dịu', hex: '#5E625D', border: '#bfc2bd' },
 ]
 
+const PRESET_COVER_OVERLAY_COLORS = [
+  { name: 'Tím than nguyên bản', hex: '#181020', border: '#766c7a' },
+  { name: 'Xanh sage đậm', hex: '#314237', border: '#9cae9a' },
+  { name: 'Nâu rượu vang', hex: '#503940', border: '#b69aa0' },
+  { name: 'Xám xanh than', hex: '#33434A', border: '#9eafb5' },
+]
+
 export default function DisplaySettingsPanel({ invitation, onSaved, onPreview, onClose }) {
   const extra = invitation?.extra_data || {}
 
@@ -76,6 +83,10 @@ export default function DisplaySettingsPanel({ invitation, onSaved, onPreview, o
   const [textColor, setTextColor] = useState(
     extra.text_color || invitation?.text_color || defaultTextColor
   )
+  const defaultCoverOverlayColor = '#181020'
+  const [coverOverlayColor, setCoverOverlayColor] = useState(
+    extra.cover_overlay_color || invitation?.cover_overlay_color || defaultCoverOverlayColor
+  )
 
   const [saving, setSaving] = useState(false)
   const [err, setErr] = useState('')
@@ -92,6 +103,7 @@ export default function DisplaySettingsPanel({ invitation, onSaved, onPreview, o
       background_color: String(bgColor || defaultBgColor).trim(),
       decor_color: String(decorColor || defaultDecorColor).trim(),
       text_color: String(textColor || defaultTextColor).trim(),
+      cover_overlay_color: String(coverOverlayColor || defaultCoverOverlayColor).trim(),
     }
   )
 
@@ -99,7 +111,7 @@ export default function DisplaySettingsPanel({ invitation, onSaved, onPreview, o
   // invitation immediately. Saving remains the explicit persistence action.
   useEffect(() => {
     onPreview && onPreview(buildPayload())
-  }, [showRsvp, allowWishes, showWishesList, showGiftBox, bgColor, decorColor, textColor])
+  }, [showRsvp, allowWishes, showWishesList, showGiftBox, bgColor, decorColor, textColor, coverOverlayColor])
 
   const handleSave = async () => {
     setSaving(true)
@@ -255,14 +267,14 @@ export default function DisplaySettingsPanel({ invitation, onSaved, onPreview, o
             </div>
           </div>
 
-          {/* Section: Màu họa tiết và màu chữ */}
+          {/* Section: Màu họa tiết, màu chữ và lớp phủ ảnh bìa */}
           <div style={S.sectionCard}>
             <div style={S.sectionTitleRow}>
               <div style={{ ...S.sectionIconWrap, background: '#edf3e9' }}>
                 <IconPalette size={16} color="#71866E" />
               </div>
               <div style={{ flex: 1 }}>
-                <h4 style={S.sectionTitle}>Màu họa tiết &amp; màu chữ</h4>
+                <h4 style={S.sectionTitle}>Màu họa tiết, chữ &amp; ảnh bìa</h4>
                 <p style={S.sectionDesc}>
                   Tách riêng tông lavender mờ của hoa/lá, viền và bóng giấy khỏi màu chữ để chỉnh đúng ý.
                 </p>
@@ -391,6 +403,72 @@ export default function DisplaySettingsPanel({ invitation, onSaved, onPreview, o
                           outline: isSelected ? '2px solid #342644' : 'none',
                         }}
                         onClick={() => setTextColor(p.hex)}
+                        title={`${p.name} (${p.hex})`}
+                      >
+                        {isSelected && <IconCheck size={12} color="#ffffff" />}
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
+
+              <div style={S.colorDivider} />
+
+              <div style={S.colorPickerRow}>
+                <label style={S.colorSwatchLabel} title="Bấm để chọn màu dải phủ ảnh bìa">
+                  <div
+                    style={{
+                      ...S.colorSwatchPreview,
+                      backgroundColor: coverOverlayColor || defaultCoverOverlayColor,
+                    }}
+                  />
+                  <input
+                    type="color"
+                    value={coverOverlayColor.startsWith('#') && coverOverlayColor.length === 7 ? coverOverlayColor : defaultCoverOverlayColor}
+                    onChange={(e) => setCoverOverlayColor(e.target.value)}
+                    style={S.hiddenColorInput}
+                  />
+                </label>
+
+                <div style={{ flex: 1 }}>
+                  <label style={S.inputLabel}>Màu dải phủ ảnh bìa (HEX):</label>
+                  <div style={S.inputRow}>
+                    <input
+                      type="text"
+                      value={coverOverlayColor}
+                      placeholder="#314237"
+                      onChange={(e) => setCoverOverlayColor(e.target.value)}
+                      style={S.colorTextInput}
+                    />
+                    <button
+                      type="button"
+                      style={S.btnResetColor}
+                      onClick={() => setCoverOverlayColor(defaultCoverOverlayColor)}
+                      title="Đặt lại dải tím than nguyên bản"
+                    >
+                      <IconRefreshCw size={13} />
+                      <span>Gốc</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div style={S.presetWrap}>
+                <span style={S.presetLabel}>Dải đậm → trong suốt trên ảnh bìa:</span>
+                <div style={S.presetGrid}>
+                  {PRESET_COVER_OVERLAY_COLORS.map((p) => {
+                    const isSelected = (coverOverlayColor || '').toUpperCase() === p.hex.toUpperCase()
+                    return (
+                      <button
+                        key={p.hex}
+                        type="button"
+                        style={{
+                          ...S.presetBtn,
+                          backgroundColor: p.hex,
+                          borderColor: isSelected ? '#342644' : p.border,
+                          outline: isSelected ? '2px solid #342644' : 'none',
+                        }}
+                        onClick={() => setCoverOverlayColor(p.hex)}
                         title={`${p.name} (${p.hex})`}
                       >
                         {isSelected && <IconCheck size={12} color="#ffffff" />}

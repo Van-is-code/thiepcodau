@@ -486,6 +486,7 @@ export default function EditorPage() {
       background_color: settings.background_color,
       decor_color: settings.decor_color,
       text_color: settings.text_color,
+      cover_overlay_color: settings.cover_overlay_color,
     }
     return {
       ...invitation,
@@ -497,6 +498,7 @@ export default function EditorPage() {
       background_color: settings.background_color,
       decor_color: settings.decor_color,
       text_color: settings.text_color,
+      cover_overlay_color: settings.cover_overlay_color,
     }
   }
 

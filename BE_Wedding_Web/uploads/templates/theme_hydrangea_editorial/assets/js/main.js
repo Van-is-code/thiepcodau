@@ -289,6 +289,29 @@
       themeStyleEl.remove();
     }
 
+    // The dark-to-transparent band on the cover photo is its own setting.
+    // It is intentionally independent from both the botanical tint and text ink.
+    var coverOverlayColor = normalizeHex(extra.cover_overlay_color || d.cover_overlay_color);
+    var coverOverlayStyleEl = document.getElementById('theme-custom-cover-overlay-style');
+    if (coverOverlayColor) {
+      var coverR = parseInt(coverOverlayColor.slice(1, 3), 16);
+      var coverG = parseInt(coverOverlayColor.slice(3, 5), 16);
+      var coverB = parseInt(coverOverlayColor.slice(5, 7), 16);
+      if (!coverOverlayStyleEl) {
+        coverOverlayStyleEl = document.createElement('style');
+        coverOverlayStyleEl.id = 'theme-custom-cover-overlay-style';
+        document.head.appendChild(coverOverlayStyleEl);
+      }
+      coverOverlayStyleEl.textContent =
+        '.cover-photo-overlay { background:linear-gradient(to top,' +
+        'rgba(' + coverR + ',' + coverG + ',' + coverB + ',0.95) 0%,' +
+        'rgba(' + coverR + ',' + coverG + ',' + coverB + ',0.72) 48%,' +
+        'rgba(' + coverR + ',' + coverG + ',' + coverB + ',0.22) 78%,' +
+        'rgba(' + coverR + ',' + coverG + ',' + coverB + ',0) 100%) !important; }';
+    } else if (coverOverlayStyleEl) {
+      coverOverlayStyleEl.remove();
+    }
+
     var showRsvp = (extra.show_rsvp !== undefined) ? Boolean(extra.show_rsvp) : (d.show_rsvp !== undefined ? Boolean(d.show_rsvp) : true);
     var allowWishes = (extra.allow_wishes !== undefined) ? Boolean(extra.allow_wishes) : (d.allow_wishes !== undefined ? Boolean(d.allow_wishes) : true);
     var showWishesList = (extra.show_wishes_list !== undefined) ? Boolean(extra.show_wishes_list) : (d.show_wishes_list !== undefined ? Boolean(d.show_wishes_list) : true);

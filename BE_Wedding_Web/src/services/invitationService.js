@@ -710,6 +710,7 @@ const setDisplaySettings = async (id, body, actor) => {
 		accent_color: body.accent_color !== undefined ? normalizeAccentColor(body.accent_color) : normalizeAccentColor(curExtra.accent_color),
 		decor_color: body.decor_color !== undefined ? normalizeAccentColor(body.decor_color) : normalizeAccentColor(curExtra.decor_color),
 		text_color: body.text_color !== undefined ? normalizeAccentColor(body.text_color) : normalizeAccentColor(curExtra.text_color),
+		cover_overlay_color: body.cover_overlay_color !== undefined ? normalizeAccentColor(body.cover_overlay_color) : normalizeAccentColor(curExtra.cover_overlay_color),
 		background_image: body.background_image !== undefined ? String(body.background_image || '').trim() : (curExtra.background_image || '')
 	};
 

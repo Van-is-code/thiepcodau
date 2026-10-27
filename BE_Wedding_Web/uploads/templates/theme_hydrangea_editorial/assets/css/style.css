@@ -2185,16 +2185,16 @@ button {
   width: 100%;
   max-width: 350px;
   background: #FAF7F2;
-  background-image: url('../images/nen-hoa-van-01.png');
-  background-size: 260px;
+  background-image: none;
   border: 1px solid rgba(122, 104, 144, 0.25);
   box-shadow: 0 16px 40px -10px rgba(45, 30, 60, 0.25);
-  padding: 32px 22px 26px;
+  padding: 20px 22px 14px;
   border-radius: 6px;
   transform: translateY(12px);
   transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-  max-height: 90vh;
+  max-height: calc(100dvh - 20px);
   overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .gift-modal-backdrop.is-open .gift-modal-card {
@@ -2223,27 +2223,6 @@ button {
   background: var(--hydrangea-mid);
   color: #fff;
   border-color: var(--hydrangea-mid);
-}
-
-.modal-corner-flourish {
-  position: absolute;
-  width: 75px;
-  pointer-events: none;
-  opacity: 0.6;
-  filter: var(--botanical-filter, none);
-}
-
-.modal-corner-flourish--tl {
-  top: 0;
-  left: 0;
-}
-
-.modal-corner-flourish--br {
-  right: -12px;
-  bottom: -10px;
-  width: 68px;
-  opacity: 0.38;
-  transform: scaleX(-1) rotate(14deg);
 }
 
 .modal-eyebrow {
@@ -2279,14 +2258,14 @@ button {
   color: var(--ink-muted);
   line-height: 1.55;
   max-width: 270px;
-  margin: 0 auto 16px;
+  margin: 0 auto 12px;
 }
 
 .recipient-switcher-row {
   display: flex;
   gap: 8px;
   justify-content: center;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 }
 
 .recipient-tab {
@@ -2311,9 +2290,9 @@ button {
 }
 
 .single-qr-mat {
-  width: 160px;
-  height: 160px;
-  margin: 0 auto 14px;
+  width: 150px;
+  height: 150px;
+  margin: 0 auto 10px;
   padding: 8px;
   background: #ffffff;
   border: 1px solid rgba(0, 0, 0, 0.08);
@@ -2329,7 +2308,7 @@ button {
 }
 
 .gift-modal-account-box {
-  margin-bottom: 14px;
+  margin-bottom: 10px;
 }
 
 .gift-modal-bank {
