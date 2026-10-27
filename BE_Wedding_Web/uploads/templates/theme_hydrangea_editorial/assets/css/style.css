@@ -2398,8 +2398,12 @@ button {
   position: absolute;
   inset: 0;
   z-index: 1;
-  /* Keep the couple visible; readability comes from the local veil below. */
-  background: linear-gradient(180deg, rgba(250, 247, 242, 0.04) 0%, rgba(250, 247, 242, 0.08) 55%, rgba(250, 247, 242, 0.14) 100%);
+  /* A continuous photo vignette keeps the portrait intact—never a separate strip. */
+  background: linear-gradient(180deg,
+    rgba(24, 16, 28, 0.00) 0%,
+    rgba(24, 16, 28, 0.03) 42%,
+    rgba(24, 16, 28, 0.20) 62%,
+    rgba(24, 16, 28, 0.68) 100%);
   pointer-events: none;
 }
 
@@ -2422,7 +2426,7 @@ button {
   position: relative;
   z-index: 2;
   min-height: inherit;
-  padding: 0 16px 30px;
+  padding: 0 20px 26px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -2430,23 +2434,22 @@ button {
 }
 
 .finale-text-content {
-  padding: 28px 24px 18px;
+  padding: 22px 10px 12px;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  width: calc(100% + 32px);
-  max-width: none;
+  width: 100%;
+  max-width: 360px;
   box-sizing: border-box;
-  background: linear-gradient(180deg, rgba(250, 247, 242, 0.16) 0%, rgba(250, 247, 242, 0.70) 30%, rgba(250, 247, 242, 0.88) 100%);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background: transparent;
 }
 
 .finale-script-lg {
   font-size: 2.6rem;
   margin-bottom: 2px;
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.84), 0 6px 18px rgba(65, 48, 71, 0.12);
+  color: #fffdf9;
+  text-shadow: 0 2px 3px rgba(20, 11, 23, 0.76), 0 8px 20px rgba(20, 11, 23, 0.46);
 }
 
 .finale-couple-names {
@@ -2455,13 +2458,13 @@ button {
   font-weight: 400;
   letter-spacing: 0.01em;
   text-transform: capitalize;
-  color: var(--hydrangea-deep);
+  color: #fffdf9;
   margin-bottom: 4px;
   line-height: 1.25;
   text-align: center;
   white-space: nowrap;
   max-width: 100%;
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.78), 0 4px 14px rgba(65, 48, 71, 0.12);
+  text-shadow: 0 2px 3px rgba(20, 11, 23, 0.78), 0 7px 18px rgba(20, 11, 23, 0.45);
 }
 
 .finale-date {
@@ -2469,26 +2472,22 @@ button {
   font-size: 10.5px;
   font-weight: 600;
   letter-spacing: 0.22em;
-  color: var(--hydrangea-mid);
+  color: rgba(255, 253, 249, 0.90);
   margin-bottom: 16px;
+  text-shadow: 0 1px 3px rgba(20, 11, 23, 0.75);
 }
 
 .finale-heartfelt {
   font-size: 13px;
-  color: var(--ink-muted);
+  color: rgba(255, 253, 249, 0.94);
   line-height: 1.7;
   max-width: 320px;
   margin: 0 auto 22px;
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.72);
+  text-shadow: 0 1px 3px rgba(20, 11, 23, 0.80);
 }
 
 .finale-botanical-bottom {
-  position: relative;
-  width: 76%;
-  max-width: 270px;
-  margin: -8px auto 0;
-  z-index: 1;
-  pointer-events: none;
+  display: none;
 }
 
 .finale-garland-img {
