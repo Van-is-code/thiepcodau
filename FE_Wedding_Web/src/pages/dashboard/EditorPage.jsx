@@ -476,8 +476,7 @@ export default function EditorPage() {
   const openMusicPanel = openPanel(setMusicPanel)
   const openDisplaySettingsPanel = openPanel(setDisplaySettingsPanel)
 
-  const handleDisplaySettingsSaved = (settings) => {
-    setDisplaySettingsPanel(false)
+  const displaySettingsInvitation = (settings) => {
     const nextExtra = {
       ...(invitation?.extra_data || {}),
       show_rsvp: settings.show_rsvp,
@@ -488,7 +487,7 @@ export default function EditorPage() {
       decor_color: settings.decor_color,
       text_color: settings.text_color,
     }
-    const nextInv = {
+    return {
       ...invitation,
       extra_data: nextExtra,
       show_rsvp: settings.show_rsvp,
@@ -499,6 +498,20 @@ export default function EditorPage() {
       decor_color: settings.decor_color,
       text_color: settings.text_color,
     }
+  }
+
+  const handleDisplaySettingsPreview = (settings) => {
+    pushToIframe(displaySettingsInvitation(settings), pending)
+  }
+
+  const closeDisplaySettingsPanel = () => {
+    setDisplaySettingsPanel(false)
+    pushToIframe(invitation, pending)
+  }
+
+  const handleDisplaySettingsSaved = (settings) => {
+    setDisplaySettingsPanel(false)
+    const nextInv = displaySettingsInvitation(settings)
     setInvitation(nextInv)
     pushToIframe(nextInv, pending)
     modal.alert({
@@ -806,7 +819,8 @@ export default function EditorPage() {
         <DisplaySettingsPanel
           invitation={invitation}
           onSaved={handleDisplaySettingsSaved}
-          onClose={() => setDisplaySettingsPanel(false)}
+          onPreview={handleDisplaySettingsPreview}
+          onClose={closeDisplaySettingsPanel}
         />
       )}
       {changeTemplateModalOpen && (

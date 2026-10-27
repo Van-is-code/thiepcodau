@@ -398,15 +398,13 @@ body.intro-active {
     0 8px 24px rgba(122, 104, 144, 0.15);
 }
 
-/* Interior lining of the pocket (Crisp Hydrangea Arch Lining) */
+/* A quiet plain lining keeps the letter interior clean when the flap opens. */
 .envelope-back-pocket {
   position: absolute;
   inset: 0;
   border-radius: 6px;
-  background-color: #E6DCED;
-  background-image: url('../images/intro-envelope-lining.png');
-  background-size: cover;
-  background-position: center;
+  background-color: #FDFBF7;
+  background-image: none;
   overflow: hidden;
   z-index: 2;
 }

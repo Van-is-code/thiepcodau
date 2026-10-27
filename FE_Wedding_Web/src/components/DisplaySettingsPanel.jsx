@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { api } from '../api'
 import {
   IconSliders,
@@ -38,7 +38,7 @@ const PRESET_TEXT_COLORS = [
   { name: 'Xám than dịu', hex: '#5E625D', border: '#bfc2bd' },
 ]
 
-export default function DisplaySettingsPanel({ invitation, onSaved, onClose }) {
+export default function DisplaySettingsPanel({ invitation, onSaved, onPreview, onClose }) {
   const extra = invitation?.extra_data || {}
 
   // 1. RSVP: Xác nhận tham gia
@@ -83,10 +83,8 @@ export default function DisplaySettingsPanel({ invitation, onSaved, onClose }) {
   // Kiểm tra điều kiện di chuyển nút quà mừng lên dưới gallery
   const isGiftRelocated = !showRsvp && !allowWishes && !showWishesList && showGiftBox
 
-  const handleSave = async () => {
-    setSaving(true)
-    setErr('')
-    const payload = {
+  const buildPayload = () => (
+    {
       show_rsvp: Boolean(showRsvp),
       allow_wishes: Boolean(allowWishes),
       show_wishes_list: Boolean(showWishesList),
@@ -95,6 +93,18 @@ export default function DisplaySettingsPanel({ invitation, onSaved, onClose }) {
       decor_color: String(decorColor || defaultDecorColor).trim(),
       text_color: String(textColor || defaultTextColor).trim(),
     }
+  )
+
+  // Color swatches should feel like a real customizer: show their effect in the
+  // invitation immediately. Saving remains the explicit persistence action.
+  useEffect(() => {
+    onPreview && onPreview(buildPayload())
+  }, [showRsvp, allowWishes, showWishesList, showGiftBox, bgColor, decorColor, textColor])
+
+  const handleSave = async () => {
+    setSaving(true)
+    setErr('')
+    const payload = buildPayload()
 
     try {
       if (invitation?.id) {
