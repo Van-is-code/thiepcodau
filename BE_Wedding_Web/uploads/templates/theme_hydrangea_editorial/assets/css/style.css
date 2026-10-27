@@ -2398,8 +2398,8 @@ button {
   position: absolute;
   inset: 0;
   z-index: 1;
-  /* A full paper-like veil softens the photo evenly, without creating a band. */
-  background: rgba(250, 247, 242, 0.32);
+  /* A full, coloured veil keeps the photograph visible without washing it white. */
+  background: linear-gradient(160deg, rgba(47, 31, 51, 0.28), rgba(38, 24, 43, 0.54));
   backdrop-filter: blur(1.8px) saturate(0.82);
   -webkit-backdrop-filter: blur(1.8px) saturate(0.82);
   pointer-events: none;
@@ -2431,29 +2431,50 @@ button {
   justify-content: flex-end;
 }
 
+.finale-photo-overlay::before,
+.finale-photo-overlay::after {
+  content: '';
+  position: absolute;
+  z-index: 0;
+  width: 148px;
+  height: 104px;
+  background: url('../images/hydrangea-bottom.webp') center / contain no-repeat;
+  filter: var(--botanical-filter, none);
+  opacity: 0.47;
+  pointer-events: none;
+}
+
+.finale-photo-overlay::before {
+  left: -26px;
+  bottom: 12px;
+  transform: rotate(10deg);
+}
+
+.finale-photo-overlay::after {
+  right: -30px;
+  top: 30%;
+  transform: scaleX(-1) rotate(18deg);
+}
+
 .finale-text-content {
-  padding: 24px 20px 18px;
+  position: relative;
+  z-index: 1;
+  padding: 24px 16px 18px;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
   width: 100%;
-  max-width: 344px;
+  max-width: 350px;
   box-sizing: border-box;
-  /* A compact vellum panel gives every custom text colour a calm, reliable ground. */
-  background: linear-gradient(135deg, rgba(255, 253, 249, 0.88), rgba(250, 246, 240, 0.76));
-  border: 1px solid rgba(255, 255, 255, 0.90);
-  border-radius: 20px;
-  box-shadow: 0 12px 30px rgba(67, 48, 67, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.72);
-  backdrop-filter: blur(7px);
-  -webkit-backdrop-filter: blur(7px);
+  background: transparent;
 }
 
 .finale-script-lg {
   font-size: 2.6rem;
   margin-bottom: 2px;
-  color: var(--hydrangea-deep);
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.92);
+  color: #fffdf9;
+  text-shadow: 0 2px 3px rgba(23, 13, 28, 0.92), 0 6px 18px rgba(23, 13, 28, 0.72);
 }
 
 .finale-couple-names {
@@ -2462,13 +2483,13 @@ button {
   font-weight: 400;
   letter-spacing: 0.01em;
   text-transform: capitalize;
-  color: var(--hydrangea-deep);
+  color: #fffdf9;
   margin-bottom: 4px;
   line-height: 1.25;
   text-align: center;
   white-space: nowrap;
   max-width: 100%;
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.92);
+  text-shadow: 0 2px 3px rgba(23, 13, 28, 0.94), 0 6px 18px rgba(23, 13, 28, 0.74);
 }
 
 .finale-date {
@@ -2476,27 +2497,22 @@ button {
   font-size: 10.5px;
   font-weight: 600;
   letter-spacing: 0.22em;
-  color: var(--hydrangea-mid);
+  color: rgba(255, 253, 249, 0.91);
   margin-bottom: 16px;
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.88);
+  text-shadow: 0 1px 3px rgba(23, 13, 28, 0.88);
 }
 
 .finale-heartfelt {
   font-size: 13px;
-  color: var(--ink-muted);
+  color: rgba(255, 253, 249, 0.94);
   line-height: 1.7;
   max-width: 320px;
   margin: 0 auto 22px;
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.88);
+  text-shadow: 0 1px 3px rgba(23, 13, 28, 0.90);
 }
 
 .finale-botanical-bottom {
-  position: relative;
-  width: 68%;
-  max-width: 250px;
-  margin: 2px auto 0;
-  z-index: 1;
-  pointer-events: none;
+  display: none;
 }
 
 .finale-garland-img {
