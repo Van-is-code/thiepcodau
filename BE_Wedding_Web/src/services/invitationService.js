@@ -1148,25 +1148,45 @@ const updateShareSettings = async (invitationId, payload, actor) => {
 	const cleanDescription = (value, fallback) => String(value ?? fallback).trim().replace(/\s+/g, ' ').slice(0, 300);
 	const hasPublicDescription = Object.prototype.hasOwnProperty.call(payload || {}, 'public_description') || Object.prototype.hasOwnProperty.call(payload || {}, 'share_description_public');
 	const hasPrivateDescription = Object.prototype.hasOwnProperty.call(payload || {}, 'private_description') || Object.prototype.hasOwnProperty.call(payload || {}, 'share_description_private');
+	const hasPrivateImage = Object.prototype.hasOwnProperty.call(payload || {}, 'private_image') || Object.prototype.hasOwnProperty.call(payload || {}, 'share_image_private');
 	const publicDescription = hasPublicDescription
 		? cleanDescription(payload?.public_description ?? payload?.share_description_public, '')
 		: cleanDescription(currentExtra.share_description_public, '');
 	const privateDescription = hasPrivateDescription
 		? cleanDescription(payload?.private_description ?? payload?.share_description_private, '')
 		: cleanDescription(currentExtra.share_description_private, '');
+	let privateImage = String(currentExtra.share_image_private || '').trim();
+	if (hasPrivateImage) {
+		privateImage = String(payload?.private_image ?? payload?.share_image_private ?? '').trim();
+		if (privateImage) {
+			const permittedImage = (Array.isArray(item.images) ? item.images : []).some((image) => (
+				image?.image_url === privateImage && image.image_type !== 'bank_qr'
+			));
+			if (!permittedImage) {
+				const err = new Error('Ảnh xem trước phải là ảnh đã tải lên của chính thiệp này.');
+				err.status = 400;
+				throw err;
+			}
+		}
+	}
 	if (!publicTitle || !privateTitle || (hasPublicDescription && !publicDescription) || (hasPrivateDescription && !privateDescription)) {
 		const err = new Error('Tiêu đề và mô tả chia sẻ không được để trống.');
 		err.status = 400;
 		throw err;
 	}
 
-	item.extra_data = {
+	const nextExtra = {
 		...currentExtra,
 		share_title_public: publicTitle,
 		share_title_private: privateTitle,
 		...(publicDescription ? { share_description_public: publicDescription } : {}),
 		...(privateDescription ? { share_description_private: privateDescription } : {})
 	};
+	if (hasPrivateImage) {
+		if (privateImage) nextExtra.share_image_private = privateImage;
+		else delete nextExtra.share_image_private;
+	}
+	item.extra_data = nextExtra;
 	if (Invitation.rawAttributes.updated_at) item.updated_at = getNowValue(Invitation.rawAttributes.updated_at);
 	await item.save();
 
@@ -1191,26 +1211,32 @@ const downloadUrlBuffer = (url) => new Promise((resolve, reject) => {
 	req.setTimeout(5000, () => req.destroy());
 });
 
-const getOgImageBuffer = async (slug) => {
+const getOgImageBuffer = async (slug, { privatePreview = false } = {}) => {
 	const item = await getBySlug(slug);
 	if (!item) return null;
 
 	// 1. Tìm ảnh đại diện đẹp nhất
 	const allImages = Array.isArray(item.images) ? item.images : [];
-	const validUserImages = allImages.filter((img) => img?.image_url && img?.image_type !== 'bank_qr');
+	const validUserImages = allImages.filter((img) => img?.image_url && !['bank_qr', 'share'].includes(img.image_type));
 	const chosenImg = validUserImages.find((img) => img.is_cover)
 		|| validUserImages.find((img) => img.image_type === 'cover')
 		|| validUserImages.find((img) => ['gallery', 'story', 'hero'].includes(img.image_type))
 		|| validUserImages[0]
 		|| null;
+	const privateShareImageUrl = privatePreview ? String(item.extra_data?.share_image_private || '').trim() : '';
+	const shareImageUrl = privateShareImageUrl || String(item.extra_data?.share_image || '').trim();
+	const customShareImage = shareImageUrl
+		? allImages.find((img) => img?.image_url === shareImageUrl && img.image_type !== 'bank_qr')
+		: null;
+	const previewImage = customShareImage || chosenImg;
 
 	// Fingerprint dựa trên mã băm nội dung của file ảnh, thời điểm cập nhật và ID thiệp
-	const urlMatch = String(chosenImg?.image_url || '').match(/\/([^/?#]+)\.[a-z0-9]+$/i);
+	const urlMatch = String(previewImage?.image_url || shareImageUrl || '').match(/\/([^/?#]+)\.[a-z0-9]+$/i);
 	const contentHash = urlMatch ? urlMatch[1].slice(0, 16) : '';
-	const imgTime = chosenImg?.updated_at ? new Date(chosenImg.updated_at).getTime().toString(36) : '';
+	const imgTime = previewImage?.updated_at ? new Date(previewImage.updated_at).getTime().toString(36) : '';
 	const invTime = item.updated_at ? new Date(item.updated_at).getTime().toString(36) : '';
-	const version = `${contentHash || chosenImg?.id?.slice(0, 8) || 'v'}_${imgTime || invTime || '1'}`;
-	const cacheKey = `${slug}:${version}`;
+	const version = `${contentHash || previewImage?.id?.slice(0, 8) || 'v'}_${imgTime || invTime || '1'}`;
+	const cacheKey = `${slug}:${privatePreview ? 'private' : 'public'}:${version}`;
 	const now = Date.now();
 	const cached = ogImageCache.get(cacheKey);
 	if (cached && cached.expiresAt > now) {
@@ -1218,12 +1244,12 @@ const getOgImageBuffer = async (slug) => {
 	}
 
 	let rawImageUrl = '';
-	if (chosenImg) {
+	if (shareImageUrl) {
+		rawImageUrl = shareImageUrl;
+	} else if (chosenImg) {
 		const jpegVariants = Array.isArray(chosenImg.variants?.jpeg) ? chosenImg.variants.jpeg : [];
 		const bestJpeg = jpegVariants.length > 0 ? jpegVariants[jpegVariants.length - 1] : null;
 		rawImageUrl = bestJpeg?.url || chosenImg.image_url;
-	} else if (item.extra_data?.share_image) {
-		rawImageUrl = item.extra_data.share_image;
 	} else if (item.template?.thumbnail_url) {
 		rawImageUrl = item.template.thumbnail_url;
 	} else {

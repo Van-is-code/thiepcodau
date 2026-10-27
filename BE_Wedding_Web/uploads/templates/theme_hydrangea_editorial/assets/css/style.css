@@ -746,7 +746,8 @@ button {
    SCENE 03: HAI BÊN GIA ĐÌNH (EQUAL OPEN CANVAS — NO BOXES)
    ========================================================================== */
 .scene-family {
-  padding: 60px 18px;
+  /* Nới thêm diện tích cho hai dòng tên phụ huynh trên màn hình nhỏ. */
+  padding: 60px 10px;
   position: relative;
   text-align: center;
   overflow: hidden;
@@ -786,9 +787,10 @@ button {
 /* Unified Side-by-Side Canvas: Two Equal Sides, Subtle Vertical Ornamental Divider */
 .family-duo-canvas {
   display: grid;
-  grid-template-columns: 1fr auto 1fr;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   align-items: center;
-  column-gap: 8px;
+  /* Hai bên được kéo sát vào đường phân cách, nhưng vẫn chừa chỗ cho hoạ tiết. */
+  column-gap: 2px;
   width: 100%;
   margin: 24px 0 16px;
   background: transparent;
@@ -804,6 +806,9 @@ button {
   padding: 0;
   text-align: center;
 }
+
+.family-unit--groom { transform: translateX(3px); }
+.family-unit--bride { transform: translateX(-3px); }
 
 .family-side-tag {
   font-family: var(--font-primary);
@@ -824,18 +829,19 @@ button {
 
 .family-member-line {
   font-family: var(--font-primary);
-  font-size: 13px;
-  line-height: 1.5;
+  font-size: clamp(12px, 4.1vw, 15.5px);
+  line-height: 1.45;
   color: var(--ink-primary);
   display: flex;
   justify-content: center;
   align-items: baseline;
-  gap: 4px;
+  gap: 3px;
   white-space: nowrap;
+  letter-spacing: -0.015em;
 }
 
 .member-title {
-  font-size: 11.5px;
+  font-size: 13px;
   font-weight: 400;
   color: var(--ink-muted);
 }
@@ -847,7 +853,7 @@ button {
 
 .family-location {
   font-family: var(--font-primary);
-  font-size: 11px;
+  font-size: 11.5px;
   font-style: italic;
   color: var(--ink-muted);
   margin-top: 6px;
@@ -861,7 +867,7 @@ button {
   align-items: center;
   justify-content: center;
   gap: 4px;
-  padding: 0 4px;
+  padding: 0 1px;
 }
 
 .divider-stem-top,
@@ -2467,10 +2473,12 @@ button {
 }
 
 .finale-couple-names {
-  font-family: var(--font-script), 'Alex Brush', cursive;
-  font-size: clamp(20px, 5.6vw, 26px);
+  /* Đồng bộ chữ hoa đầu tên với thiệp thư mở đầu và tên trên ảnh bìa. */
+  font-family: 'DFVN Ed Drayton', var(--font-script), 'Alex Brush', cursive;
+  font-size: clamp(24px, 6.5vw, 31px);
   font-weight: 400;
-  letter-spacing: 0.01em;
+  letter-spacing: 0;
+  font-feature-settings: 'liga' 1, 'calt' 1;
   text-transform: capitalize;
   color: var(--hydrangea-deep);
   margin-bottom: 4px;

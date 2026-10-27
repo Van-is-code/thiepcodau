@@ -31,7 +31,9 @@ const getBySlug = async (req, res) => {
 
 const getOgImage = async (req, res) => {
 	try {
-		const buffer = await invitationService.getOgImageBuffer(req.params.invitation_slug);
+		const buffer = await invitationService.getOgImageBuffer(req.params.invitation_slug, {
+			privatePreview: String(req.query.private || '') === '1',
+		});
 		if (!buffer) {
 			return res.status(404).send('Image not found');
 		}

@@ -213,7 +213,7 @@ const metaChiaSe = async (req, slug) => {
   // 5. Ảnh thumbnail_url của template
   // 6. Ảnh mặc định theo template_code (vd ảnh mẫu cưới Hydrangea / Blue Botanical)
   const allImages = Array.isArray(invitation.images) ? invitation.images : [];
-  const validUserImages = allImages.filter((img) => img?.image_url && img?.image_type !== 'bank_qr');
+  const validUserImages = allImages.filter((img) => img?.image_url && !['bank_qr', 'share'].includes(img.image_type));
 
   const chosenImg = validUserImages.find((img) => img.is_cover)
     || validUserImages.find((img) => img.image_type === 'cover')
@@ -221,18 +221,27 @@ const metaChiaSe = async (req, slug) => {
     || validUserImages[0]
     || null;
 
+  const privateShareImageUrl = guestName ? chuoiGon(extra.share_image_private) : '';
+  const shareImageUrl = privateShareImageUrl || chuoiGon(extra.share_image);
+  const customShareImage = shareImageUrl
+    ? allImages.find((img) => img?.image_url === shareImageUrl && img.image_type !== 'bank_qr')
+    : null;
+  const previewImage = customShareImage || chosenImg;
+
   let rawImageUrl = '';
   let imageWidth = 1200;
   let imageHeight = 800;
 
-  if (chosenImg) {
+  if (shareImageUrl) {
+    rawImageUrl = shareImageUrl;
+    imageWidth = previewImage?.width || imageWidth;
+    imageHeight = previewImage?.height || imageHeight;
+  } else if (chosenImg) {
     const jpegVariants = Array.isArray(chosenImg.variants?.jpeg) ? chosenImg.variants.jpeg : [];
     const bestJpeg = jpegVariants.length > 0 ? jpegVariants[jpegVariants.length - 1] : null;
     rawImageUrl = bestJpeg?.url || chosenImg.image_url;
     imageWidth = bestJpeg?.width || chosenImg.width || 1200;
     imageHeight = bestJpeg?.height || chosenImg.height || 800;
-  } else if (extra.share_image) {
-    rawImageUrl = extra.share_image;
   } else if (invitation.template?.thumbnail_url) {
     rawImageUrl = invitation.template.thumbnail_url;
   } else {
@@ -253,8 +262,8 @@ const metaChiaSe = async (req, slug) => {
   // Nếu ảnh gốc là dọc (portrait) hoặc vuông: 1000 x 1000 (chuẩn thẻ vuông Messenger di động)
   let targetWidth = 1000;
   let targetHeight = 1000;
-  if (chosenImg && chosenImg.width && chosenImg.height) {
-    if (Number(chosenImg.width) >= Number(chosenImg.height) * 1.15) {
+  if (previewImage && previewImage.width && previewImage.height) {
+    if (Number(previewImage.width) >= Number(previewImage.height) * 1.15) {
       targetWidth = 1200;
       targetHeight = 630;
     } else {
@@ -265,12 +274,13 @@ const metaChiaSe = async (req, slug) => {
 
   // Dùng endpoint chuyên dụng /api/invitations/slug/:slug/og-image.jpg
   // Tính fingerprint duy nhất từ mã băm nội dung của file ảnh, thời điểm cập nhật và ID
-  const urlMatch = String(chosenImg?.image_url || '').match(/\/([^/?#]+)\.[a-z0-9]+$/i);
+  const urlMatch = String(previewImage?.image_url || shareImageUrl || '').match(/\/([^/?#]+)\.[a-z0-9]+$/i);
   const contentHash = urlMatch ? urlMatch[1].slice(0, 16) : '';
-  const imgTime = chosenImg?.updated_at ? new Date(chosenImg.updated_at).getTime().toString(36) : '';
+  const imgTime = previewImage?.updated_at ? new Date(previewImage.updated_at).getTime().toString(36) : '';
   const invTime = invitation.updated_at ? new Date(invitation.updated_at).getTime().toString(36) : '';
-  const imageVersion = `${contentHash || chosenImg?.id?.slice(0, 8) || 'v'}_${imgTime || invTime || '1'}`;
-  const ogImageUrl = `${origin}/api/invitations/slug/${encodeURIComponent(slug)}/og-image.jpg?v=${encodeURIComponent(imageVersion)}`;
+  const imageVersion = `${contentHash || previewImage?.id?.slice(0, 8) || 'v'}_${imgTime || invTime || '1'}`;
+  const previewQuery = guestName ? 'private=1&' : '';
+  const ogImageUrl = `${origin}/api/invitations/slug/${encodeURIComponent(slug)}/og-image.jpg?${previewQuery}v=${encodeURIComponent(imageVersion)}`;
 
   return {
     title: chuoiGon(title, defaultPublicTitle),

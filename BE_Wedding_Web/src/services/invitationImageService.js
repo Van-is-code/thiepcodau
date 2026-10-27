@@ -13,7 +13,7 @@ const resourceName = 'Ảnh thiệp';
 const MAX_IMAGES_PER_INVITATION = Number.parseInt(process.env.MAX_IMAGES_PER_INVITATION, 10) || 60;
 
 // Chỉ các loại ô ảnh mà mẫu thiệp thật sự dùng. Không cho tự đặt tên tuỳ ý.
-const IMAGE_TYPES = new Set(['gallery', 'cover', 'groom', 'bride', 'bank_qr', 'thumbnail', 'banner', 'story']);
+const IMAGE_TYPES = new Set(['gallery', 'cover', 'groom', 'bride', 'bank_qr', 'thumbnail', 'banner', 'story', 'share']);
 
 const FILTERABLE = ['invitation_id', 'image_type', 'is_cover'];
 

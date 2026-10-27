@@ -472,10 +472,12 @@ body.intro-active {
 }
 
 .letter-names {
-  font-family: var(--intro-font-script, 'Alex Brush', cursive);
-  font-size: clamp(17px, 4.8vw, 22px);
+  /* Chữ hoa đầu tên cần nét calligraphy rõ ràng, đặc biệt M/N/H không bị đọc như chữ thường. */
+  font-family: 'DFVN Ed Drayton', var(--intro-font-script, 'Alex Brush', cursive);
+  font-size: clamp(21px, 5.8vw, 27px);
   font-weight: 400;
-  letter-spacing: 0.01em;
+  letter-spacing: 0;
+  font-feature-settings: 'liga' 1, 'calt' 1;
   color: var(--intro-hydrangea-deep);
   text-transform: capitalize;
   line-height: 1.25;

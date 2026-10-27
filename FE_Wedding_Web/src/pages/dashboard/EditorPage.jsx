@@ -23,6 +23,7 @@ import {
   IconHelpCircle,
   IconEdit3,
   IconSliders,
+  IconSend,
 } from '../../components/Icons'
 import BankQrPanel from '../../components/BankQrPanel'
 import MusicPanel from '../../components/MusicPanel'
@@ -772,6 +773,16 @@ export default function EditorPage() {
           >
             <span style={{ fontSize: 13 }}>🔗</span>
             <span>Đổi Link</span>
+          </button>
+
+          <button
+            className="editor-action"
+            style={{ ...S.tplBtn, background: '#fdf6ee', borderColor: '#f2ded0', color: '#c96547' }}
+            onClick={() => navigate(`/dashboard/invite?invitation=${encodeURIComponent(invitation?.id || invitationId)}`)}
+            title="Tạo link riêng và chọn ảnh hiển thị khi gửi link"
+          >
+            <IconSend size={15} />
+            <span>Link &amp; Ảnh Nhúng</span>
           </button>
 
           <button
